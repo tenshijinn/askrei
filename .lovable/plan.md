@@ -1,74 +1,33 @@
 
 
-# Rei — Standalone AI Agent Platform
+# Fix Build & Complete Rei Standalone Platform
 
-Extract the complete Rei AI Agent platform from the Arubaito project into this standalone app, preserving all design, functionality, and backend integration.
+## Current State
 
-## What We're Building
+All frontend code IS populated — `Rei.tsx` (316 lines), `ReiChatbot.tsx` (219 lines), `PostToRei.tsx` (169 lines), all 11 joinrei components, wallet providers, payment components, etc. The task list in your screenshot is outdated from a previous build attempt.
 
-A standalone Rei platform with the same dark "manga" terminal-inspired UI, featuring:
-- **Rei registration flow** — Twitter/X OAuth login, wallet connect, audio intro recording, role selection, profile analysis
-- **AskRei chatbot** — Terminal-style AI chat for job/task discovery with Solana payment integration
-- **PostToRei** — Submit jobs, tasks, gigs, and bounties with SOL/x402 payments
-- **Earnings Hub** — Points display, referral system, wallet tracking
-- **JoinRei landing page** — Marketing/onboarding page with all sections (hero, value prop, aggregation, how it works, chat demo, referral, pricing)
+The `/rei` page likely shows nothing because:
+1. The build may be failing due to a missing `@types/qrcode` dev dependency (used in `PostToRei.tsx`)
+2. Supabase is not connected — no `VITE_SUPABASE_URL` or `VITE_SUPABASE_PUBLISHABLE_KEY` env vars, so the client crashes on load
+3. No edge functions or database migrations exist yet (the `supabase/` directory is empty)
 
-## Pages & Routes
+## Plan
 
-| Route | Description |
-|-------|-------------|
-| `/` | JoinRei landing page (marketing/onboarding) |
-| `/rei` | Main Rei app (registration → dashboard with AskRei/Promote/Profile tabs) |
+### Step 1: Fix build errors
+- Add `@types/qrcode` to devDependencies
+- Ensure Supabase client handles missing env vars gracefully (fallback so the page at least renders)
 
-## Key Components to Migrate
+### Step 2: Connect Supabase
+- Connect this project to Supabase (same backend as Arubaito or a new project)
+- This provides the env vars needed for the client
 
-**Core pages:** `Rei.tsx`, `JoinRei.tsx`
+### Step 3: Copy edge functions and migrations
+- This is where your offer to "paste them here" would be most helpful — the `supabase/functions/` directory needs all Rei-related edge functions (`rei-chat`, `twitter-oauth`, `submit-rei-registration`, `check-rei-registration`, `verify-sol-payment`, etc.)
+- Database migrations need to be created for the schema
 
-**Components:**
-- `ReiChatbot.tsx` — Terminal-style AI chat with message history, presets, payment handling
-- `PostToRei.tsx` — Opportunity submission form
-- `ReiEarningsHub.tsx` — Points & earnings display
-- `AudioRecorder.tsx` — Voice intro recording
-- `JobCard.tsx`, `TalentCard.tsx` — Result cards
-- `SolanaPayQR.tsx`, `X402Payment.tsx`, `PaymentMethodSelector.tsx` — Payment components
-- `ReiPointsCard.tsx`, `ReferralShareCard.tsx`, `ReferralStats.tsx` — Gamification
-- `WalletProvider.tsx`, `EVMWalletProvider.tsx` — Blockchain wallet providers
-- All `chat/` sub-components and `joinrei/` section components
+## Recommendation
 
-**Styling:** Full `rei-theme` CSS system (terminal, chips, surfaces, fields, cursors) plus the Arubaito base theme as dark mode default
+**You should paste the edge functions and migrations from the Arubaito project.** The frontend is done, but the backend (`supabase/` folder) is completely empty and those functions are 1700+ lines each — they need to come from the source. After you paste them, I'll integrate everything.
 
-**Assets:** All `rei-*` images and `joinrei/` assets
-
-## Backend (Supabase Edge Functions)
-
-All Rei-related edge functions will be copied over:
-- `rei-chat` — Main AI chat handler (1700+ lines, intent classification, job search, talent matching)
-- `submit-rei-registration`, `check-rei-registration`, `analyze-rei-profile`
-- `twitter-oauth` — X/Twitter authentication
-- `submit-whitelist-request`, `approve-whitelist-submission`
-- `search-jobs`, `match-jobs-to-talent`, `match-talent-to-jobs`
-- `verify-sol-payment`, `verify-solana-pay`, `x402-create-payment`, `x402-verify-payment`
-- `generate-referral-code`, `get-referral-stats`, `track-referral-click`, `track-referral-conversion`
-- `award-payment-points`, `submit-community-opportunity`
-- `analyze-cv`, `transcribe-video` — Profile analysis tools
-- `_shared/` utilities
-
-## Database Migrations
-
-All existing Supabase migrations will be brought over to maintain the same schema (chat tables, registrations, jobs, tasks, payments, referrals, points, etc.)
-
-## Dependencies to Add
-
-- `@solana/wallet-adapter-*`, `@solana/web3.js`, `@solana/pay` — Solana integration
-- `@rainbow-me/rainbowkit`, `wagmi`, `viem` — EVM wallet support
-- `qrcode`, `bs58`, `x402-solana` — Payment utilities
-- `html2canvas`, `jspdf`, `pdfjs-dist` — Document handling
-
-## Key Changes from Original
-
-- **No Arubaito references** — All branding, routes, and navigation will be Rei-only
-- **`/` route** → JoinRei landing (was `/joinrei`)
-- **`/rei` route** → Main app (unchanged)
-- **Standalone Supabase connection** — Same backend secrets, own project config
-- **Simplified App.tsx** — Only Rei-related routes, no Club/Community/Admin/etc.
+For now, I'll fix the build so the UI at least renders, then we connect Supabase and add the backend.
 
