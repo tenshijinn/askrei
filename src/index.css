@@ -2,95 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: 0 0% 4%;
+    --foreground: 30 10% 93%;
+    --card: 0 0% 8%;
+    --card-foreground: 30 10% 93%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 30 10% 93%;
+    --primary: 18 52% 82%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 30 10% 93%;
+    --accent: 18 52% 82%;
+    --accent-foreground: 0 0% 4%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 30 3% 35%;
+    --destructive: 0 63% 55%;
+    --destructive-foreground: 30 10% 93%;
+    --border: 0 0% 100% / 0.08;
+    --input: 0 0% 12%;
+    --ring: 18 52% 82%;
+    --radius: 14px;
+    --gradient-primary: linear-gradient(135deg, hsl(18, 52%, 82%), hsl(18, 52%, 88%));
+    --shadow-elegant: 0 2px 8px -2px hsl(18 52% 82% / 0.15);
+    --shadow-glow: 0 0 16px hsl(18 52% 82% / 0.1);
+    --sidebar-background: 0 0% 6%;
+    --sidebar-foreground: 30 10% 93%;
+    --sidebar-primary: 18 52% 82%;
+    --sidebar-primary-foreground: 0 0% 4%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 30 10% 93%;
+    --sidebar-border: 0 0% 100% / 0.08;
+    --sidebar-ring: 18 52% 82%;
   }
-
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: 0 0% 4%;
+    --foreground: 30 10% 93%;
+    --card: 0 0% 8%;
+    --card-foreground: 30 10% 93%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 30 10% 93%;
+    --primary: 18 52% 82%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 30 10% 93%;
+    --accent: 18 52% 82%;
+    --accent-foreground: 0 0% 4%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 30 3% 35%;
+    --destructive: 0 63% 55%;
+    --destructive-foreground: 30 10% 93%;
+    --border: 0 0% 100% / 0.08;
+    --input: 0 0% 12%;
+    --ring: 18 52% 82%;
   }
 }
 
@@ -98,8 +63,178 @@ All colors MUST be HSL.
   * {
     @apply border-border;
   }
-
   body {
     @apply bg-background text-foreground;
+    font-family: 'SF Pro Display', 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.01em;
+    line-height: 1.6;
+    position: relative;
+  }
+  body > * {
+    position: relative;
+    z-index: 10;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'SF Pro Display', 'Inter', system-ui, sans-serif;
+    font-weight: 300;
+    letter-spacing: -0.025em;
+  }
+  button {
+    font-family: 'SF Mono', 'Consolas', monospace;
+    letter-spacing: 0.02em;
+  }
+  input, textarea, select {
+    font-family: 'SF Pro Display', 'Inter', system-ui, sans-serif;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }
+
+/* Rei theme (applied globally since this IS the Rei app) */
+.rei-theme {
+  --background: 0 0% 4%;
+  --foreground: 30 10% 93%;
+  --card: 0 0% 8%;
+  --card-foreground: 30 10% 93%;
+  --popover: 0 0% 8%;
+  --popover-foreground: 30 10% 93%;
+  --primary: 18 52% 82%;
+  --primary-foreground: 0 0% 4%;
+  --secondary: 0 0% 12%;
+  --secondary-foreground: 30 10% 93%;
+  --accent: 18 52% 82%;
+  --accent-foreground: 0 0% 4%;
+  --muted: 0 0% 12%;
+  --muted-foreground: 30 3% 35%;
+  --destructive: 0 63% 55%;
+  --destructive-foreground: 30 10% 93%;
+  --border: 0 0% 100% / 0.08;
+  --input: 0 0% 12%;
+  --ring: 18 52% 82%;
+  --radius: 14px;
+  --gradient-primary: linear-gradient(135deg, hsl(18, 52%, 82%), hsl(18, 52%, 88%));
+  --shadow-elegant: 0 2px 8px -2px hsl(18 52% 82% / 0.15);
+  --shadow-glow: 0 0 16px hsl(18 52% 82% / 0.1);
+}
+
+.rei-theme * {
+  border-color: hsla(0, 0%, 100%, 0.08);
+}
+
+.rei-theme h1, .rei-theme h2, .rei-theme h3, .rei-theme h4, .rei-theme h5, .rei-theme h6 {
+  font-family: 'SF Pro Display', 'Inter', system-ui, sans-serif;
+  font-weight: 300;
+  letter-spacing: -0.025em;
+}
+
+/* Manga dark button overrides */
+.rei-theme .btn-manga {
+  border-radius: 28px;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 22px;
+  border: none;
+  transition: opacity 0.15s;
+  letter-spacing: 0.01em;
+}
+.rei-theme .btn-manga:hover { opacity: 0.82; }
+.rei-theme .btn-manga-primary { background: hsl(30, 10%, 93%); color: #0a0a0a; }
+.rei-theme .btn-manga-outline { background: transparent; color: hsl(30, 10%, 93%); border: 0.5px solid hsla(0, 0%, 100%, 0.18); }
+.rei-theme .btn-manga-ghost { background: hsla(18, 52%, 82%, 0.12); color: hsl(18, 52%, 82%); border: 0.5px solid hsla(18, 52%, 82%, 0.22); }
+
+/* Also apply btn-manga outside rei-theme for JoinRei */
+.btn-manga {
+  border-radius: 28px;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 22px;
+  border: none;
+  transition: opacity 0.15s;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+}
+.btn-manga:hover { opacity: 0.82; }
+.btn-manga-primary { background: hsl(30, 10%, 93%); color: #0a0a0a; }
+.btn-manga-outline { background: transparent; color: hsl(30, 10%, 93%); border: 0.5px solid hsla(0, 0%, 100%, 0.18); }
+
+/* Terminal chat styles */
+.rei-terminal {
+  background: #0a0a0a;
+  border: 0.5px solid hsla(0, 0%, 100%, 0.18);
+  border-radius: 16px;
+  overflow: hidden;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+}
+.rei-terminal .term-bar { background: #0f0f0f; border-bottom: 0.5px solid hsla(0, 0%, 100%, 0.08); padding: 10px 16px; display: flex; align-items: center; gap: 10px; }
+.rei-terminal .term-dot { width: 9px; height: 9px; border-radius: 50%; background: #2a2826; }
+.rei-terminal .term-title { font-size: 11px; color: #4a4845; letter-spacing: 0.06em; margin-left: 4px; }
+.rei-terminal .term-status { margin-left: auto; font-size: 10px; color: #4a4845; letter-spacing: 0.04em; }
+.rei-terminal .term-online { color: hsl(18, 52%, 82%); }
+.rei-terminal .log-area { padding: 16px 20px; display: flex; flex-direction: column; }
+.rei-terminal .chat-line { display: flex; gap: 0; font-size: 13px; line-height: 1.9; white-space: pre-wrap; word-break: break-word; }
+.rei-terminal .chat-ts { color: #3d3b38; font-size: 11px; min-width: 76px; flex-shrink: 0; padding-top: 2px; letter-spacing: 0.01em; line-height: 1.9; }
+.rei-terminal .chat-handle { font-size: 12px; font-weight: 500; min-width: 72px; flex-shrink: 0; padding-right: 10px; line-height: 1.9; }
+.rei-terminal .handle-user { color: hsl(18, 52%, 82%); }
+.rei-terminal .handle-ai { color: #7a7874; }
+.rei-terminal .handle-sys { color: #3d3b38; }
+.rei-terminal .chat-msg { color: hsl(30, 10%, 93%); font-size: 13px; flex: 1; line-height: 1.9; }
+.rei-terminal .msg-ai { color: #b8b5b0; }
+.rei-terminal .msg-sys { color: #4a4845; font-style: italic; }
+.rei-terminal .line-gap { height: 3px; }
+.rei-terminal .term-divider { height: 0.5px; background: hsla(0, 0%, 100%, 0.08); margin: 8px 0; }
+.rei-terminal .input-row { border-top: 0.5px solid hsla(0, 0%, 100%, 0.08); padding: 11px 20px; display: flex; align-items: center; background: #0d0d0d; }
+.rei-terminal .prompt-prefix { font-size: 12px; color: hsl(18, 52%, 82%); flex-shrink: 0; padding-right: 8px; user-select: none; }
+.rei-terminal .term-input { background: transparent; border: none; outline: none; color: hsl(30, 10%, 93%); font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace; font-size: 13px; flex: 1; caret-color: hsl(18, 52%, 82%); }
+.rei-terminal .term-input::placeholder { color: #3d3b38; }
+.rei-terminal .send-btn { background: transparent; border: 0.5px solid hsla(0, 0%, 100%, 0.08); border-radius: 6px; color: #4a4845; font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace; font-size: 11px; padding: 4px 10px; cursor: pointer; letter-spacing: 0.05em; transition: color 0.15s, border-color 0.15s; }
+.rei-terminal .send-btn:hover { color: hsl(18, 52%, 82%); border-color: hsla(18, 52%, 82%, 0.3); }
+
+/* Chip styles */
+.rei-chip { display: flex; align-items: center; gap: 7px; background: #1e1e1e; border: 0.5px solid hsla(0, 0%, 100%, 0.18); border-radius: 100px; padding: 7px 14px; font-size: 12px; color: #a09e9a; cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+.rei-chip:hover { border-color: hsla(18, 52%, 82%, 0.3); color: hsl(18, 52%, 82%); }
+.rei-chip-dot { width: 6px; height: 6px; border-radius: 50%; background: hsl(18, 52%, 82%); flex-shrink: 0; }
+
+/* Surface cards */
+.rei-stat-card { background: #1e1e1e; border: 0.5px solid hsla(0, 0%, 100%, 0.08); border-radius: 14px; padding: 16px; }
+.rei-surface { background: #141414; border: 0.5px solid hsla(0, 0%, 100%, 0.08); border-radius: 20px; padding: 20px; }
+.rei-surface-2 { background: #1e1e1e; border: 0.5px solid hsla(0, 0%, 100%, 0.08); border-radius: 14px; }
+
+/* Field inputs */
+.rei-field { width: 100%; background: #1e1e1e; border: 0.5px solid hsla(0, 0%, 100%, 0.18); border-radius: 14px; padding: 11px 16px; color: #f0ede8; font-size: 13px; outline: none; transition: border-color 0.2s; }
+.rei-field::placeholder { color: #5c5a57; }
+.rei-field:focus { border-color: hsla(18, 52%, 82%, 0.45); }
+
+/* Cursor blink */
+@keyframes rei-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.rei-cursor { display: inline-block; width: 7px; height: 14px; background: hsl(18, 52%, 82%); margin-left: 2px; animation: rei-blink 0.8s step-end infinite; vertical-align: middle; }
+
+/* Section label */
+.rei-section-label {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #5c5a57;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.rei-section-label::after {
+  content: '';
+  flex: 1;
+  height: 0.5px;
+  background: hsla(0, 0%, 100%, 0.08);
+}
+
+/* Fade-in animation */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+
+/* slideDown */
+@keyframes slideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
