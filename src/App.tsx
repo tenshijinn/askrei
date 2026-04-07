@@ -3,24 +3,33 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
-import NotFound from "./pages/NotFound.tsx";
+import { WalletProvider } from "@/components/WalletProvider";
+import { EVMWalletProvider } from "@/components/EVMWalletProvider";
+import JoinRei from "./pages/JoinRei";
+import Rei from "./pages/Rei";
+import ReferralRedirect from "./pages/ReferralRedirect";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <WalletProvider>
+      <EVMWalletProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<JoinRei />} />
+              <Route path="/rei" element={<Rei />} />
+              <Route path="/r/:code" element={<ReferralRedirect />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </EVMWalletProvider>
+    </WalletProvider>
   </QueryClientProvider>
 );
 
