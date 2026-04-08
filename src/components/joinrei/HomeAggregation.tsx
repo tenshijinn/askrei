@@ -27,6 +27,7 @@ export const HomeAggregation = () => {
             Find Tasks from Across{' '}
             <span 
               className={`inline-block transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}
+              style={{ color: '#ed565a' }}
             >
               {rotatingPhrases[phraseIndex]}
             </span>
