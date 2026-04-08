@@ -40,7 +40,7 @@ export const HomeHero = () => {
             <span>Find Any Task from </span>
             <span 
               className={`inline-block transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}
-              style={{ minWidth: '4ch' }}
+              style={{ minWidth: '4ch', color: '#ed565a' }}
             >
               {rotatingWords[wordIndex]}
             </span>
