@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { WalletProvider } from "@/components/WalletProvider";
 import { EVMWalletProvider } from "@/components/EVMWalletProvider";
 import JoinRei from "./pages/JoinRei";
+import JoinReiOriginal from "./pages/JoinReiOriginal";
 import Rei from "./pages/Rei";
 import ReferralRedirect from "./pages/ReferralRedirect";
 import NotFound from "./pages/NotFound";
@@ -22,6 +23,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<JoinRei />} />
+              <Route path="/joinrei" element={<JoinReiOriginal />} />
               <Route path="/rei" element={<Rei />} />
               <Route path="/r/:code" element={<ReferralRedirect />} />
               <Route path="*" element={<NotFound />} />

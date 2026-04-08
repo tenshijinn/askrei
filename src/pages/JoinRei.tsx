@@ -1,22 +1,22 @@
-import { JoinReiHero } from '@/components/joinrei/JoinReiHero';
-import { JoinReiValueProp } from '@/components/joinrei/JoinReiValueProp';
-import { JoinReiAggregation } from '@/components/joinrei/JoinReiAggregation';
-import { JoinReiHowItWorks } from '@/components/joinrei/JoinReiHowItWorks';
-import { JoinReiDemoSection } from '@/components/joinrei/JoinReiDemoSection';
-import { JoinReiChatDemo } from '@/components/joinrei/JoinReiChatDemo';
-import { JoinReiReferral } from '@/components/joinrei/JoinReiReferral';
+import { HomeHero } from '@/components/joinrei/HomeHero';
+import { HomeValueProp } from '@/components/joinrei/HomeValueProp';
+import { HomeAggregation } from '@/components/joinrei/HomeAggregation';
+import { HomeHowItWorks } from '@/components/joinrei/HomeHowItWorks';
+import { HomeDemoSection } from '@/components/joinrei/HomeDemoSection';
+import { HomeChatDemo } from '@/components/joinrei/HomeChatDemo';
+import { HomeReferral } from '@/components/joinrei/HomeReferral';
 import { JoinReiPricing } from '@/components/joinrei/JoinReiPricing';
 
 const JoinRei = () => {
   return (
     <div className="rei-theme h-screen overflow-y-scroll snap-y snap-mandatory scrollbar-hide bg-[#0a0a0a]">
-      <JoinReiHero />
-      <JoinReiChatDemo />
-      <JoinReiValueProp />
-      <JoinReiAggregation />
-      <JoinReiDemoSection />
-      <JoinReiHowItWorks />
-      <JoinReiReferral />
+      <HomeHero />
+      <HomeChatDemo />
+      <HomeValueProp />
+      <HomeAggregation />
+      <HomeDemoSection />
+      <HomeHowItWorks />
+      <HomeReferral />
       <JoinReiPricing />
     </div>
   );
