@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import reiHero from '@/assets/joinrei/rei-hero.png';
 import ignyteAward from '@/assets/joinrei/awards2.png';
+import colosseumLogo from '@/assets/joinrei/colosseum-logo.png';
+import reiXLogo from '@/assets/joinrei/rei-x-logo.png';
 import reiSpeechBubble from '@/assets/joinrei/rei-speech-bubble.gif';
 
 const rotatingWords = ['Galxe', 'QuestN', 'TaskOn', 'Zealy', 'Layer3', 'Crew3', 'RabbitHole'];
@@ -81,6 +83,14 @@ export const HomeHero = () => {
               <span>Learn More</span>
               <ChevronDown className="h-4 w-4" />
             </button>
+            <a
+              href="https://x.com/askrei_"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-auto"
+            >
+              <img src={reiXLogo} alt="@askrei_" className="h-6 xl:h-7 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity" />
+            </a>
           </div>
         </div>
       </div>
@@ -90,7 +100,10 @@ export const HomeHero = () => {
         <div className="absolute top-[28%] left-[35%]">
           <img src={reiSpeechBubble} alt="Rei typing" className="h-20 xl:h-24 w-auto" />
         </div>
-        <div className="absolute bottom-8 right-8">
+        <div className="absolute bottom-8 right-8 flex flex-col items-end gap-3">
+          <a href="https://arena.colosseum.org/projects/explore/rei" target="_blank" rel="noopener noreferrer">
+            <img src={colosseumLogo} alt="Colosseum" className="h-8 xl:h-10 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" />
+          </a>
           <img src={ignyteAward} alt="IGNYTE Finalist - Build on Solana" className="h-10 xl:h-12 w-auto object-contain" />
         </div>
       </div>
@@ -100,7 +113,10 @@ export const HomeHero = () => {
         <img src={reiHero} alt="Rei AI Agent" className="w-full h-full object-cover object-right-center opacity-50" />
       </div>
 
-      <div className="lg:hidden absolute bottom-6 right-6 z-20">
+      <div className="lg:hidden absolute bottom-6 right-6 z-20 flex flex-col items-end gap-2">
+        <a href="https://arena.colosseum.org/projects/explore/rei" target="_blank" rel="noopener noreferrer">
+          <img src={colosseumLogo} alt="Colosseum" className="h-6 w-auto object-contain" />
+        </a>
         <img src={ignyteAward} alt="IGNYTE Finalist - Build on Solana" className="h-8 w-auto object-contain" />
       </div>
     </section>
