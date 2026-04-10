@@ -1,5 +1,6 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
 import reiCrossPlatform from '@/assets/joinrei/rei-cross-platform.png';
+import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
 
 export const HomeValueProp = () => {
   return (
@@ -16,22 +17,19 @@ export const HomeValueProp = () => {
         <div className="space-y-6 order-2 px-8 lg:px-16">
           <ScrollFadeIn>
             <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.2]">
-              Cross platform exposure.
+              Earn Points, Redeem NFTs
             </h2>
           </ScrollFadeIn>
 
           <ScrollFadeIn delay={100}>
             <p className="text-sm md:text-base font-mono text-primary/70 leading-relaxed">
-              Your tasks will get exposure to cross-platform traffic through Rei.
+              Accumulate points passively as you use the platform and redeem for NFTs.
             </p>
           </ScrollFadeIn>
 
           <ScrollFadeIn delay={200}>
             <blockquote className="text-xs md:text-sm font-mono text-primary/50 leading-relaxed border-l border-primary/30 pl-4 italic">
-              "A user who only uses Zealy may be matched
-              to your Task on QuestN, meaning your tasks
-              and community is now exposed to the
-              traffic from every task platform, community and project userbase that Rei works with."
+              "We're working with a variety of different artists who will create their own artistic expression of Rei | Royalties split with artists."
             </blockquote>
           </ScrollFadeIn>
 
@@ -41,6 +39,7 @@ export const HomeValueProp = () => {
                 <svg className="h-4 w-4 text-cream" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                 </svg>
+                <img src={twitterVerifiedBadge} alt="Verified" className="h-4 w-4 object-contain" />
                 <span className="text-xs text-cream/80 font-mono">Login</span>
               </div>
             </ScrollFadeIn>
