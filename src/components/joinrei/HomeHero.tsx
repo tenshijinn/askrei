@@ -29,9 +29,11 @@ export const HomeHero = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const scrollToHowToUse = () => {
-    const el = document.getElementById('how-to-use');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  const scrollToNextSection = () => {
+    const sections = document.querySelectorAll('.snap-start');
+    if (sections.length > 1) {
+      sections[1].scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
@@ -76,7 +78,7 @@ export const HomeHero = () => {
               Start Now
             </button>
             <button 
-              onClick={scrollToHowToUse}
+              onClick={scrollToNextSection}
               className="flex items-center gap-2 text-primary/70 hover:text-primary font-mono text-sm underline underline-offset-4 transition-colors cursor-pointer"
             >
               <ChevronDown className="h-4 w-4" />

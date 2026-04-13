@@ -1,4 +1,5 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
+import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
 
 export const HomeDemoSection = () => {
   return (
@@ -8,12 +9,9 @@ export const HomeDemoSection = () => {
           {/* Card 1: Onboarding - Proof of Humanity */}
           <ScrollFadeIn delay={0}>
             <div className="flex flex-col items-center text-center">
-              <h3 className="text-xs md:text-sm font-light text-primary mb-1 tracking-wide whitespace-nowrap">
+              <h3 className="text-sm md:text-base lg:text-lg font-light text-primary mb-4 tracking-wide whitespace-nowrap">
                 PROOF OF HUMANITY/TALENT
               </h3>
-              <p className="text-xs text-cream/70 font-mono mb-4 whitespace-nowrap">
-                Users Share Skills + On-Chain Experience
-              </p>
               <div className="w-full aspect-[552/816] rounded-2xl overflow-hidden border-[0.5px] border-white/10 bg-[#111]">
                 <div className="w-full h-full flex flex-col">
                   {/* Status bar */}
@@ -42,6 +40,7 @@ export const HomeDemoSection = () => {
                       <svg className="h-4 w-4 text-cream" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                       </svg>
+                      <img src={twitterVerifiedBadge} alt="Verified" className="h-4 w-4 object-contain" />
                       <span className="text-xs text-cream/80 font-mono">Sign in with X</span>
                     </button>
 
@@ -86,12 +85,9 @@ export const HomeDemoSection = () => {
           {/* Card 2: Chat with Rei */}
           <ScrollFadeIn delay={150}>
             <div className="flex flex-col items-center text-center">
-              <h3 className="text-xs md:text-sm font-light text-primary mb-1 tracking-wide whitespace-nowrap">
+              <h3 className="text-sm md:text-base lg:text-lg font-light text-primary mb-4 tracking-wide whitespace-nowrap">
                 FIND TASKS MATCHED TO SKILLS
               </h3>
-              <p className="text-xs text-cream/70 font-mono mb-4 whitespace-nowrap">
-                Rei matches tasks to their skills.
-              </p>
               <div className="w-full aspect-[552/816] rounded-2xl overflow-hidden border-[0.5px] border-white/10 bg-[#111]">
                 <div className="w-full h-full flex flex-col">
                   {/* Terminal header */}
@@ -129,8 +125,8 @@ export const HomeDemoSection = () => {
 
                     {/* User message */}
                     <div className="flex items-start gap-2 justify-end">
-                      <p className="text-[11px] text-cream/80 font-mono leading-relaxed text-right">Show me the Galxe quest details</p>
-                      <span className="shrink-0 text-[9px] px-2 py-0.5 rounded bg-white/10 text-cream/60 font-mono border border-white/20">You</span>
+                      <p className="text-[11px] text-blue-300 font-mono leading-relaxed text-right">Show me the Galxe quest details</p>
+                      <span className="shrink-0 text-[9px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono border border-blue-500/30">You</span>
                     </div>
 
                     {/* Rei reply */}
@@ -150,7 +146,7 @@ export const HomeDemoSection = () => {
 
                     {/* Input bar */}
                     <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-                      <span className="text-[10px] text-cream/30 font-mono flex-1">Ask Rei anything...</span>
+                      <span className="text-[10px] text-gray-500 font-mono flex-1 text-left">Ask Rei anything...</span>
                       <div className="w-5 h-5 rounded bg-[#ed565a]/20 flex items-center justify-center">
                         <svg className="w-3 h-3 text-[#ed565a]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
@@ -166,12 +162,9 @@ export const HomeDemoSection = () => {
           {/* Card 3: Post Tasks */}
           <ScrollFadeIn delay={300}>
             <div className="flex flex-col items-center text-center">
-              <h3 className="text-xs md:text-sm font-light text-primary mb-1 tracking-wide whitespace-nowrap">
+              <h3 className="text-sm md:text-base lg:text-lg font-light text-primary mb-4 tracking-wide whitespace-nowrap">
                 POST TASKS | CHATBOT OR X
               </h3>
-              <p className="text-xs text-cream/70 font-mono mb-4 whitespace-nowrap">
-                Post + Pay from Chatbot or X
-              </p>
               <div className="w-full aspect-[552/816] rounded-2xl overflow-hidden border-[0.5px] border-white/10 bg-[#111]">
                 <div className="w-full h-full flex flex-col">
                   {/* Header */}
@@ -185,7 +178,7 @@ export const HomeDemoSection = () => {
                   <div className="flex-1 p-4 flex flex-col gap-3 overflow-hidden">
                     {/* Opportunity type selector */}
                     <div>
-                      <span className="text-[10px] text-cream/40 font-mono mb-1.5 block">Type</span>
+                      <span className="text-[10px] text-cream/40 font-mono mb-1.5 block text-left">Type</span>
                       <div className="flex flex-wrap gap-1">
                         {['Job', 'Task', 'Bounty', 'Quest'].map((type, i) => (
                           <span 
@@ -203,25 +196,25 @@ export const HomeDemoSection = () => {
                     {/* Form fields */}
                     <div className="space-y-2.5">
                       <div>
-                        <span className="text-[10px] text-cream/40 font-mono mb-1 block">Title</span>
+                        <span className="text-[10px] text-cream/40 font-mono mb-1 block text-left">Title</span>
                         <div className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
-                          <span className="text-[10px] text-cream/60 font-mono">Community Bounty Q2</span>
+                        <span className="text-[10px] text-cream/60 font-mono text-left block">Community Bounty Q2</span>
                         </div>
                       </div>
                       <div>
-                        <span className="text-[10px] text-cream/40 font-mono mb-1 block">Company</span>
+                        <span className="text-[10px] text-cream/40 font-mono mb-1 block text-left">Company</span>
                         <div className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
-                          <span className="text-[10px] text-cream/60 font-mono">Phantom Wallet</span>
+                        <span className="text-[10px] text-cream/60 font-mono text-left block">Phantom Wallet</span>
                         </div>
                       </div>
                       <div>
-                        <span className="text-[10px] text-cream/40 font-mono mb-1 block">Description</span>
+                        <span className="text-[10px] text-cream/40 font-mono mb-1 block text-left">Description</span>
                         <div className="px-3 py-3 rounded-lg bg-white/5 border border-white/10">
                           <span className="text-[10px] text-cream/60 font-mono leading-relaxed">Create social media content for our community growth campaign...</span>
                         </div>
                       </div>
                       <div>
-                        <span className="text-[10px] text-cream/40 font-mono mb-1 block">Compensation</span>
+                        <span className="text-[10px] text-cream/40 font-mono mb-1 block text-left">Compensation</span>
                         <div className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
                           <span className="text-[10px] text-cream/60 font-mono">2.5 SOL</span>
                         </div>
@@ -230,7 +223,7 @@ export const HomeDemoSection = () => {
 
                     {/* Role tags */}
                     <div>
-                      <span className="text-[10px] text-cream/40 font-mono mb-1.5 block">Role Tags</span>
+                      <span className="text-[10px] text-cream/40 font-mono mb-1.5 block text-left">Role Tags</span>
                       <div className="flex flex-wrap gap-1">
                         {['Community', 'Content', 'Designer'].map((tag, i) => (
                           <span 
