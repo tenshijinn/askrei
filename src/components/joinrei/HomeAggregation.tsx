@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ScrollFadeIn } from './ScrollFadeIn';
-import reiFlowDiagram from '@/assets/joinrei/rei-flow-diagram.png';
+import reiFlowDiagram from '@/assets/joinrei/rei-cross-platform-pollination.png';
 
 const rotatingPhrases = ['Task Platforms', 'Across Chains', 'Communities'];
 
