@@ -1,6 +1,6 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
 import { ParallaxWrapper } from './ParallaxWrapper';
-import reiFlowDiagram from '@/assets/joinrei/rei-flow-diagram.png';
+import reiFlowDiagram from '@/assets/joinrei/rei-flow.png';
 
 export const JoinReiAggregation = () => {
   return (
