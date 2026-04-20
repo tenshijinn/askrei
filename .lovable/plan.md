@@ -1,33 +1,60 @@
 
 
-# Fix Build & Complete Rei Standalone Platform
+## Add "Rei Flow + Telegram CRM Outreach" parallax to /joinrei
 
-## Current State
+Port the full uploaded `Flow.tsx` design as a new full-viewport snap section, slotted between `JoinReiDemoSection` and `JoinReiReferral`.
 
-All frontend code IS populated — `Rei.tsx` (316 lines), `ReiChatbot.tsx` (219 lines), `PostToRei.tsx` (169 lines), all 11 joinrei components, wallet providers, payment components, etc. The task list in your screenshot is outdated from a previous build attempt.
+### Layout (from the uploaded file)
 
-The `/rei` page likely shows nothing because:
-1. The build may be failing due to a missing `@types/qrcode` dev dependency (used in `PostToRei.tsx`)
-2. Supabase is not connected — no `VITE_SUPABASE_URL` or `VITE_SUPABASE_PUBLISHABLE_KEY` env vars, so the client crashes on load
-3. No edge functions or database migrations exist yet (the `supabase/` directory is empty)
+```text
+                    REI FLOW (4 phones, connected horizontally)
+   ┌───────┐ ──► ┌───────┐ ──► ┌───────┐ ──► ┌───────┐
+   │PACKAGE│     │LISTED │     │SKILL- │     │  ICP  │
+   │ $2500 │     │ Live  │     │ SYNC  │     │ MATCH │
+   └───┬───┘     └───▲───┘     └───────┘     └───┬───┘
+       │             │                           │
+       │ L-shape     └──── loop back ────────────┘
+       ▼ (yellow)               (telegram blue)
+   ─────────────  TELEGRAM CRM OUTREACH  ─────────────
+   ┌───────┐         ┌───────┐                ┌───────┐
+   │ONBOARD│         │  CRM  │                │APPLIC.│
+   │TG blue│         │(TEAM) │                │  847  │
+   └───────┘         └───────┘                └───────┘
+                  ●━━━━ ● ● ● ●   step indicator
+```
 
-## Plan
+7 phone mockups total, two rows, with animated SVG connectors and a 5-step auto-cycling active state (3s interval).
 
-### Step 1: Fix build errors
-- Add `@types/qrcode` to devDependencies
-- Ensure Supabase client handles missing env vars gracefully (fallback so the page at least renders)
+### Implementation
 
-### Step 2: Connect Supabase
-- Connect this project to Supabase (same backend as Arubaito or a new project)
-- This provides the env vars needed for the client
+**Create `src/components/joinrei/JoinReiFlowDiagram.tsx`** — single self-contained component porting the uploaded `Flow.tsx` with these adaptations:
 
-### Step 3: Copy edge functions and migrations
-- This is where your offer to "paste them here" would be most helpful — the `supabase/functions/` directory needs all Rei-related edge functions (`rei-chat`, `twitter-oauth`, `submit-rei-registration`, `check-rei-registration`, `verify-sol-payment`, etc.)
-- Database migrations need to be created for the schema
+1. **Replace `motion/react` → `framer-motion`** (already in project, used elsewhere). All `<motion.div>`, `<motion.path>`, `<motion.polygon>` JSX stays identical.
+2. **Keep `lucide-react` icons** (Eye, Send, User, Target, Briefcase, ArrowRight, MessageSquare, CheckCircle, Users) — already a project dep.
+3. **Keep all inline `style={{}}` colors verbatim** — the design uses its own palette (`#e8c4b8` cream-pink, `#FFD700` gold, `#0088cc` Telegram blue, `#0a0a0a`/`#111` dark). These read well on Rei's existing dark background and shouldn't be re-skinned (the file is intentionally multi-color to distinguish Rei vs Telegram flows).
+4. **Wrap in snap section**: outer `<section className="min-h-screen snap-start flex items-center justify-center bg-[#0a0a0a]">` to match other JoinRei sections, replacing the file's `min-h-screen p-8 flex items-center justify-center` wrapper.
+5. **Responsive scaling**: the design is fixed-width (1800px max, 180px phones, hardcoded SVG coords like `M 290 402`). On screens below `lg`, scale the entire diagram down with a CSS `transform: scale()` wrapper rather than re-laying-out (preserves SVG arrow alignment). Below `md`, hide the cross-row SVG arrows and stack the two rows vertically with extra gap.
+6. **Auto-cycle**: keep the `useState`/`useEffect` 3s `setInterval` driving `activeStep` 0→4.
+7. **`PhoneMockup` and `ConnectionLine`** stay as internal sub-components inside the same file (matches uploaded structure).
 
-## Recommendation
+**Edit `src/pages/JoinRei.tsx`** — import and insert the new section:
 
-**You should paste the edge functions and migrations from the Arubaito project.** The frontend is done, but the backend (`supabase/` folder) is completely empty and those functions are 1700+ lines each — they need to come from the source. After you paste them, I'll integrate everything.
+```tsx
+import { JoinReiFlowDiagram } from '@/components/joinrei/JoinReiFlowDiagram';
+// ...
+<JoinReiDemoSection />
+<JoinReiFlowDiagram />   {/* new */}
+<JoinReiReferral />
+```
 
-For now, I'll fix the build so the UI at least renders, then we connect Supabase and add the backend.
+### Discarded / out of scope
+
+- Uploaded Tailwind v4 configs, `theme.css`, `fonts.css` — not used; we keep Rei's existing v3 setup.
+- No re-skin to `#ed565a` — the diagram's two-color story (cream-pink for Rei, Telegram blue for the outreach loop) is the whole point. Confirm if you want this overridden.
+- No new assets — every icon is inline `lucide-react`.
+
+### Files
+
+- **Create**: `src/components/joinrei/JoinReiFlowDiagram.tsx`
+- **Edit**: `src/pages/JoinRei.tsx`
 
