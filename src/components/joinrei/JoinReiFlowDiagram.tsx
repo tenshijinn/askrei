@@ -95,8 +95,9 @@ export const JoinReiFlowDiagram = () => {
       <div className="origin-center scale-[0.45] sm:scale-[0.6] md:scale-75 lg:scale-90 xl:scale-100">
         <div className="w-[1300px] relative">
           <svg className="absolute inset-0 w-full h-full pointer-events-none hidden md:block" style={{ zIndex: 10 }}>
+            {/* Yellow: from under PACKAGE text down to top-center of Telegram ONBOARD phone */}
             <motion.path
-              d="M 290 402 L 290 480 L 415 480 L 415 610"
+              d="M 290 395 L 290 510 L 390 510 L 390 545"
               stroke={activeStep >= 1 ? "#FFD700" : "rgba(255,255,255,0.1)"}
               strokeWidth="2"
               fill="none"
@@ -107,15 +108,16 @@ export const JoinReiFlowDiagram = () => {
             />
             {activeStep >= 1 && (
               <motion.polygon
-                points="415,618 410,608 420,608"
+                points="390,553 385,543 395,543"
                 fill="#FFD700"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
               />
             )}
+            {/* Blue: from top-center of APPLICANTS phone up to LISTED text */}
             <motion.path
-              d="M 1155 608 L 1155 540 L 1220 470 L 1220 400 L 560 400 L 560 378"
+              d="M 910 545 L 910 510 L 560 510 L 560 395"
               stroke={activeStep === 4 ? "#0088cc" : "rgba(255,255,255,0.1)"}
               strokeWidth="2"
               fill="none"
@@ -126,7 +128,7 @@ export const JoinReiFlowDiagram = () => {
             />
             {activeStep === 4 && (
               <motion.polygon
-                points="560,368 555,378 565,378"
+                points="560,387 555,397 565,397"
                 fill="#0088cc"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
