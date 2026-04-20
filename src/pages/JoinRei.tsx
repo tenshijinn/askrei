@@ -5,7 +5,6 @@ import { HomeHowItWorks } from '@/components/joinrei/HomeHowItWorks';
 import { HomeDemoSection } from '@/components/joinrei/HomeDemoSection';
 import { HomeChatDemo } from '@/components/joinrei/HomeChatDemo';
 import { HomeReferral } from '@/components/joinrei/HomeReferral';
-import { JoinReiFlowDiagram } from '@/components/joinrei/JoinReiFlowDiagram';
 
 const JoinRei = () => {
   return (
@@ -16,7 +15,6 @@ const JoinRei = () => {
       <HomeAggregation />
       <HomeDemoSection />
       <HomeHowItWorks />
-      <JoinReiFlowDiagram />
       <HomeReferral />
     </div>
   );
