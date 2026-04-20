@@ -6,6 +6,7 @@ import { JoinReiDemoSection } from '@/components/joinrei/JoinReiDemoSection';
 import { JoinReiChatDemo } from '@/components/joinrei/JoinReiChatDemo';
 import { JoinReiReferral } from '@/components/joinrei/JoinReiReferral';
 import { JoinReiPricing } from '@/components/joinrei/JoinReiPricing';
+import { JoinReiFlowDiagram } from '@/components/joinrei/JoinReiFlowDiagram';
 
 const JoinReiOriginal = () => {
   return (
@@ -16,6 +17,7 @@ const JoinReiOriginal = () => {
       <JoinReiAggregation />
       <JoinReiDemoSection />
       <JoinReiHowItWorks />
+      <JoinReiFlowDiagram />
       <JoinReiReferral />
       <JoinReiPricing />
     </div>
