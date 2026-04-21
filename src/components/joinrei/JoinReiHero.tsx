@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import reiHero from '@/assets/joinrei/rei-hero.png';
-import ignyteAward from '@/assets/joinrei/awards2.png';
 import reiSpeechBubble from '@/assets/joinrei/rei-speech-bubble.gif';
 
 const platforms = ['Zealy', 'Layer3', 'QuestN', 'TaskOn', 'Crew3', 'Bounty0x', 'Dework', 'RabbitHole'];
@@ -83,9 +82,6 @@ export const JoinReiHero = () => {
         <div className="absolute top-[28%] left-[35%]">
           <img src={reiSpeechBubble} alt="Rei typing" className="h-20 xl:h-24 w-auto" />
         </div>
-        <div className="absolute bottom-8 right-8">
-          <img src={ignyteAward} alt="IGNYTE Finalist - Build on Solana" className="h-10 xl:h-12 w-auto object-contain" />
-        </div>
       </div>
 
       <div className="lg:hidden absolute inset-0 -z-10">
@@ -93,9 +89,6 @@ export const JoinReiHero = () => {
         <img src={reiHero} alt="Rei AI Agent" className="w-full h-full object-cover object-right-center opacity-50" />
       </div>
 
-      <div className="lg:hidden absolute bottom-6 right-6 z-20">
-        <img src={ignyteAward} alt="IGNYTE Finalist - Build on Solana" className="h-8 w-auto object-contain" />
-      </div>
     </section>
   );
 };
