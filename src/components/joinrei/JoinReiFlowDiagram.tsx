@@ -461,36 +461,7 @@ export const JoinReiFlowDiagram = () => {
             </div>
           </div>
 
-          {/* Step indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5 }}
-            className="absolute text-center"
-            style={{ left: 0, right: 0, bottom: "-30px" }}
-          >
-            <div className="flex justify-center gap-2 mb-3">
-              {[0, 1, 2, 3, 4, 5, 6].map((step) => (
-                <motion.div
-                  key={step}
-                  className="h-0.5 rounded-full transition-all"
-                  style={{
-                    width: activeStep === step ? "32px" : "4px",
-                    background: activeStep === step ? "#e8c4b8" : "rgba(255,255,255,0.1)",
-                  }}
-                />
-              ))}
-            </div>
-            <div className="text-[9px]" style={{ color: "#6e6b67", letterSpacing: "0.06em" }}>
-              {activeStep === 0 && "PURCHASE PACKAGE"}
-              {activeStep === 1 && "TELEGRAM ONBOARDING"}
-              {activeStep === 2 && "CRM CAMPAIGN MANAGEMENT"}
-              {activeStep === 3 && "APPLICANTS COLLECTED"}
-              {activeStep === 4 && "LISTED ON REI"}
-              {activeStep === 5 && "SKILLSYNC MATCHING"}
-              {activeStep === 6 && "ICP MATCH COMPLETE"}
-            </div>
-          </motion.div>
+          {/* (step indicator moved to top of section) */}
         </div>
       </div>
     </section>
