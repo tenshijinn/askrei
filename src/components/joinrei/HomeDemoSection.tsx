@@ -5,7 +5,7 @@ export const HomeDemoSection = () => {
   return (
     <section className="min-h-screen snap-start relative flex items-center justify-center overflow-hidden bg-[#0a0a0a] py-20">
       <div className="container mx-auto px-8 lg:px-16">
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-16 lg:gap-20 max-w-6xl mx-auto">
           {/* Card 1: Onboarding - Proof of Humanity */}
           <ScrollFadeIn delay={0}>
             <div className="flex flex-col items-center text-center">
@@ -112,14 +112,14 @@ export const HomeDemoSection = () => {
                           <span className="text-[10px] text-cream/70 font-mono">Galxe Quest</span>
                           <span className="text-[9px] text-green-400/70 font-mono">0.5 SOL</span>
                         </div>
-                        <p className="text-[9px] text-cream/40 font-mono mt-0.5">Community activation campaign</p>
+                        <p className="text-[9px] text-cream/40 font-mono mt-0.5 text-left">Community activation campaign</p>
                       </div>
                       <div className="px-3 py-2 rounded-lg bg-white/5 border border-white/10">
                         <div className="flex items-center justify-between">
                           <span className="text-[10px] text-cream/70 font-mono">QuestN Bounty</span>
                           <span className="text-[9px] text-green-400/70 font-mono">1.2 SOL</span>
                         </div>
-                        <p className="text-[9px] text-cream/40 font-mono mt-0.5">Design social media assets</p>
+                        <p className="text-[9px] text-cream/40 font-mono mt-0.5 text-left">Design social media assets</p>
                       </div>
                     </div>
 
@@ -210,13 +210,13 @@ export const HomeDemoSection = () => {
                       <div>
                         <span className="text-[10px] text-cream/40 font-mono mb-1 block text-left">Description</span>
                         <div className="px-3 py-3 rounded-lg bg-white/5 border border-white/10">
-                          <span className="text-[10px] text-cream/60 font-mono leading-relaxed">Create social media content for our community growth campaign...</span>
+                          <span className="text-[10px] text-cream/60 font-mono leading-relaxed text-left block">Create social media content for our community growth campaign...</span>
                         </div>
                       </div>
                       <div>
                         <span className="text-[10px] text-cream/40 font-mono mb-1 block text-left">Compensation</span>
                         <div className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
-                          <span className="text-[10px] text-cream/60 font-mono">2.5 SOL</span>
+                          <span className="text-[10px] text-cream/60 font-mono text-left block">2.5 SOL</span>
                         </div>
                       </div>
                     </div>
