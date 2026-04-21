@@ -82,20 +82,21 @@ export const JoinReiFlowDiagram = () => {
 
   return (
     <section
-      className="min-h-screen snap-start flex flex-col items-center justify-start text-white py-6 px-4 overflow-hidden"
+      className="min-h-screen snap-start relative flex flex-col items-center justify-start text-white py-6 px-4 overflow-hidden"
       style={{
         background: "#0a0a0a",
         fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
       }}
     >
-      {/* Section title — top-left aligned, stacked, compact */}
-      <div className="w-full max-w-[1400px] mb-1 px-4">
+      {/* Section title — absolutely positioned top-left so the diagram can sit at the same top edge */}
+      <div className="absolute top-6 left-8 z-20 max-w-[40%]">
         <h2 className="text-xl md:text-2xl lg:text-3xl font-light text-left leading-[1.15]">
           <span style={{ color: "#FFD700" }} className="block">Rocket Reach</span>
-          <span style={{ color: "#e8c4b8" }} className="block">Reach Telegram&apos;s</span>
-          <span style={{ color: "#e8c4b8" }} className="block">350 million Crypto Users</span>
+          <span style={{ color: "#e8c4b8" }} className="block">Reach up to 350 million</span>
+          <span style={{ color: "#e8c4b8" }} className="block">Telegram Users With</span>
+          <span style={{ color: "#e8c4b8" }} className="block">Our Telegram CRM</span>
         </h2>
-        <div className="flex items-center gap-3 mt-2">
+        <div className="flex items-center gap-3 mt-3">
           <div className="flex gap-1.5">
             {[0, 1, 2, 3, 4, 5, 6].map((step) => (
               <motion.div
@@ -114,6 +115,7 @@ export const JoinReiFlowDiagram = () => {
         </div>
       </div>
 
+      {/* Diagram — anchored to top so the top row of mockups sits level with the title */}
       <div className="origin-top scale-[0.4] sm:scale-[0.5] md:scale-[0.6] lg:scale-[0.72] xl:scale-[0.85]">
         <div className="relative" style={{ width: "1100px", height: "960px" }}>
           {/* Animated SVG arrows — all hard-angled (terminal style) */}
