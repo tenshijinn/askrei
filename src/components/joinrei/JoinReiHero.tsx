@@ -28,8 +28,10 @@ export const JoinReiHero = () => {
   }, []);
 
   const scrollToHowToUse = () => {
-    const el = document.getElementById('how-to-use');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    const sections = document.querySelectorAll('.snap-start');
+    if (sections.length > 1) {
+      sections[1].scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (
