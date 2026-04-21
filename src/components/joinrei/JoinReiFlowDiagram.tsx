@@ -70,21 +70,53 @@ export const JoinReiFlowDiagram = () => {
   // Right-aligned columns x-centers: LISTED/ONBOARD=480, SKILLSYNC/CRM=720, ICP/APPLICANTS=960
   // PACKAGE x-center: 130, vertically centered between rows → top at ~290, bottom at ~650 (centered on 470 divider)
 
+  const stepLabels = [
+    "PURCHASE PACKAGE",
+    "TELEGRAM ONBOARDING",
+    "CRM CAMPAIGN MANAGEMENT",
+    "APPLICANTS COLLECTED",
+    "LISTED ON REI",
+    "SKILLSYNC MATCHING",
+    "ICP MATCH COMPLETE",
+  ];
+
   return (
     <section
-      className="min-h-screen snap-start flex items-center justify-center text-white py-16 px-4"
+      className="min-h-screen snap-start flex flex-col items-center justify-center text-white py-16 px-4"
       style={{
         background: "#0a0a0a",
         fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
       }}
     >
-      <div className="origin-center scale-[0.4] sm:scale-[0.5] md:scale-[0.65] lg:scale-75 xl:scale-90">
+      {/* Section title + active step label — matches other JoinRei section title sizing */}
+      <div className="text-center mb-6 px-4">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-center" style={{ color: "#e8c4b8" }}>
+          Rei Flow + Telegram CRM Outreach
+        </h2>
+        <div className="flex justify-center gap-2 mt-6 mb-3">
+          {[0, 1, 2, 3, 4, 5, 6].map((step) => (
+            <motion.div
+              key={step}
+              className="h-0.5 rounded-full transition-all"
+              style={{
+                width: activeStep === step ? "32px" : "4px",
+                background: activeStep === step ? "#e8c4b8" : "rgba(255,255,255,0.1)",
+              }}
+            />
+          ))}
+        </div>
+        <div className="text-[10px] md:text-xs" style={{ color: "#6e6b67", letterSpacing: "0.06em" }}>
+          {stepLabels[activeStep]}
+        </div>
+      </div>
+
+      <div className="origin-top scale-[0.4] sm:scale-[0.5] md:scale-[0.65] lg:scale-75 xl:scale-90">
         <div className="relative" style={{ width: "1100px", height: "960px" }}>
-          {/* Animated SVG arrows */}
+          {/* Animated SVG arrows — all hard-angled (terminal style) */}
           <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }} viewBox="0 0 1100 960" preserveAspectRatio="none" width="1100" height="960">
-            {/* Arrow 1: PACKAGE → ONBOARD (diagonal down-right, cream-pink) */}
+            {/* Arrow 1: PACKAGE → ONBOARD (hard L-angle, cream-pink). Package right edge x=220, midline y=455. Onboard top-center x=480, y=540 */}
             <motion.path
-              d="M 220 470 Q 320 490 380 540"
+              d="M 220 455 L 480 455 L 480 540"
               stroke={activeStep >= 1 ? "#e8c4b8" : "rgba(255,255,255,0.08)"}
               strokeWidth="2"
               fill="none"
@@ -95,7 +127,7 @@ export const JoinReiFlowDiagram = () => {
             />
             {activeStep >= 1 && (
               <motion.polygon
-                points="380,540 370,531 376,545"
+                points="480,540 472,528 488,528"
                 fill="#e8c4b8"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -103,9 +135,9 @@ export const JoinReiFlowDiagram = () => {
               />
             )}
 
-            {/* Arrow 2: APPLICANTS → LISTED (curved blue, looping back up) */}
+            {/* Arrow 2: APPLICANTS → LISTED (hard L-angle, blue). Applicants top-center x=960, y=540 → up to y=480 → left to x=480 → up to Listed bottom y=400 */}
             <motion.path
-              d="M 960 540 Q 960 460 720 440 T 480 410"
+              d="M 960 540 L 960 480 L 480 480 L 480 400"
               stroke={activeStep >= 4 ? "#0088cc" : "rgba(255,255,255,0.08)"}
               strokeWidth="2"
               fill="none"
@@ -116,32 +148,11 @@ export const JoinReiFlowDiagram = () => {
             />
             {activeStep >= 4 && (
               <motion.polygon
-                points="480,410 491,402 491,418"
+                points="480,400 472,412 488,412"
                 fill="#0088cc"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
-              />
-            )}
-
-            {/* Arrow 3: PACKAGE → LISTED (diagonal up-right, cream-pink) */}
-            <motion.path
-              d="M 220 410 Q 320 330 380 290"
-              stroke={activeStep >= 4 ? "#e8c4b8" : "rgba(255,255,255,0.08)"}
-              strokeWidth="2"
-              fill="none"
-              strokeDasharray="4 4"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: activeStep >= 4 ? 1 : 0 }}
-              transition={{ duration: 0.8 }}
-            />
-            {activeStep >= 4 && (
-              <motion.polygon
-                points="380,290 374,302 387,296"
-                fill="#e8c4b8"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
               />
             )}
 
@@ -303,12 +314,7 @@ export const JoinReiFlowDiagram = () => {
             </div>
           </div>
 
-          {/* DIVIDER */}
-          <div className="absolute flex items-center justify-center gap-4" style={{ left: "0", right: "0", top: "455px", zIndex: 1 }}>
-            <div className="h-[0.5px] flex-1 max-w-md" style={{ background: "rgba(255,255,255,0.1)" }} />
-            <div className="text-[9px]" style={{ color: "#6e6b67", letterSpacing: "0.06em" }}>TELEGRAM CRM OUTREACH</div>
-            <div className="h-[0.5px] flex-1 max-w-md" style={{ background: "rgba(255,255,255,0.1)" }} />
-          </div>
+          {/* (divider removed) */}
 
           {/* PACKAGE — left, vertically centered on divider. Center x=130, top y=275 (centers ~455) */}
           <div className="absolute" style={{ left: "40px", top: "275px", zIndex: 1 }}>
@@ -455,36 +461,7 @@ export const JoinReiFlowDiagram = () => {
             </div>
           </div>
 
-          {/* Step indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5 }}
-            className="absolute text-center"
-            style={{ left: 0, right: 0, bottom: "-30px" }}
-          >
-            <div className="flex justify-center gap-2 mb-3">
-              {[0, 1, 2, 3, 4, 5, 6].map((step) => (
-                <motion.div
-                  key={step}
-                  className="h-0.5 rounded-full transition-all"
-                  style={{
-                    width: activeStep === step ? "32px" : "4px",
-                    background: activeStep === step ? "#e8c4b8" : "rgba(255,255,255,0.1)",
-                  }}
-                />
-              ))}
-            </div>
-            <div className="text-[9px]" style={{ color: "#6e6b67", letterSpacing: "0.06em" }}>
-              {activeStep === 0 && "PURCHASE PACKAGE"}
-              {activeStep === 1 && "TELEGRAM ONBOARDING"}
-              {activeStep === 2 && "CRM CAMPAIGN MANAGEMENT"}
-              {activeStep === 3 && "APPLICANTS COLLECTED"}
-              {activeStep === 4 && "LISTED ON REI"}
-              {activeStep === 5 && "SKILLSYNC MATCHING"}
-              {activeStep === 6 && "ICP MATCH COMPLETE"}
-            </div>
-          </motion.div>
+          {/* (step indicator moved to top of section) */}
         </div>
       </div>
     </section>
