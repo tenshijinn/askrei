@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import reiHero from '@/assets/joinrei/rei-hero.png';
-import ignyteAward from '@/assets/joinrei/awards2.png';
 import colosseumLogo from '@/assets/joinrei/colosseum-logo.png';
 import reiXLogo from '@/assets/joinrei/rei-x-logo.png';
 import reiSpeechBubble from '@/assets/joinrei/rei-speech-bubble.gif';
@@ -106,7 +105,6 @@ export const HomeHero = () => {
           <a href="https://arena.colosseum.org/projects/explore/rei" target="_blank" rel="noopener noreferrer">
             <img src={colosseumLogo} alt="Colosseum" className="h-8 xl:h-10 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity" />
           </a>
-          <img src={ignyteAward} alt="IGNYTE Finalist - Build on Solana" className="h-10 xl:h-12 w-auto object-contain" />
         </div>
       </div>
 
@@ -119,7 +117,6 @@ export const HomeHero = () => {
         <a href="https://arena.colosseum.org/projects/explore/rei" target="_blank" rel="noopener noreferrer">
           <img src={colosseumLogo} alt="Colosseum" className="h-6 w-auto object-contain" />
         </a>
-        <img src={ignyteAward} alt="IGNYTE Finalist - Build on Solana" className="h-8 w-auto object-contain" />
       </div>
     </section>
   );
