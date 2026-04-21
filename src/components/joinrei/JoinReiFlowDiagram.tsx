@@ -314,12 +314,7 @@ export const JoinReiFlowDiagram = () => {
             </div>
           </div>
 
-          {/* DIVIDER */}
-          <div className="absolute flex items-center justify-center gap-4" style={{ left: "0", right: "0", top: "455px", zIndex: 1 }}>
-            <div className="h-[0.5px] flex-1 max-w-md" style={{ background: "rgba(255,255,255,0.1)" }} />
-            <div className="text-[9px]" style={{ color: "#6e6b67", letterSpacing: "0.06em" }}>TELEGRAM CRM OUTREACH</div>
-            <div className="h-[0.5px] flex-1 max-w-md" style={{ background: "rgba(255,255,255,0.1)" }} />
-          </div>
+          {/* (divider removed) */}
 
           {/* PACKAGE — left, vertically centered on divider. Center x=130, top y=275 (centers ~455) */}
           <div className="absolute" style={{ left: "40px", top: "275px", zIndex: 1 }}>
