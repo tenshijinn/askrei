@@ -88,30 +88,33 @@ export const JoinReiFlowDiagram = () => {
         fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
       }}
     >
-      {/* Section title + active step label — matches other JoinRei section title sizing */}
-      <div className="text-center mb-6 px-4">
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-center">
-          <span style={{ color: "#FFD700" }}>Rocket Reach</span>
-          <span style={{ color: "#e8c4b8" }}> - Reaching Telegram&apos;s 350 million Crypto Users</span>
+      {/* Section title — top-left aligned, stacked, compact */}
+      <div className="w-full max-w-[1400px] mb-2 px-4">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-left leading-tight">
+          <span style={{ color: "#FFD700" }} className="block">Rocket Reach</span>
+          <span style={{ color: "#e8c4b8" }} className="block">Reach Telegram&apos;s</span>
+          <span style={{ color: "#e8c4b8" }} className="block">350 million Crypto Users</span>
         </h2>
-        <div className="flex justify-center gap-2 mt-6 mb-3">
-          {[0, 1, 2, 3, 4, 5, 6].map((step) => (
-            <motion.div
-              key={step}
-              className="h-0.5 rounded-full transition-all"
-              style={{
-                width: activeStep === step ? "32px" : "4px",
-                background: activeStep === step ? "#e8c4b8" : "rgba(255,255,255,0.1)",
-              }}
-            />
-          ))}
-        </div>
-        <div className="text-[10px] md:text-xs" style={{ color: "#6e6b67", letterSpacing: "0.06em" }}>
-          {stepLabels[activeStep]}
+        <div className="flex items-center gap-3 mt-3">
+          <div className="flex gap-1.5">
+            {[0, 1, 2, 3, 4, 5, 6].map((step) => (
+              <motion.div
+                key={step}
+                className="h-0.5 rounded-full transition-all"
+                style={{
+                  width: activeStep === step ? "24px" : "4px",
+                  background: activeStep === step ? "#e8c4b8" : "rgba(255,255,255,0.1)",
+                }}
+              />
+            ))}
+          </div>
+          <div className="text-[10px] md:text-xs" style={{ color: "#6e6b67", letterSpacing: "0.06em" }}>
+            {stepLabels[activeStep]}
+          </div>
         </div>
       </div>
 
-      <div className="origin-top scale-[0.4] sm:scale-[0.5] md:scale-[0.65] lg:scale-75 xl:scale-90">
+      <div className="origin-top scale-[0.32] sm:scale-[0.42] md:scale-[0.5] lg:scale-[0.58] xl:scale-[0.65]">
         <div className="relative" style={{ width: "1100px", height: "960px" }}>
           {/* Animated SVG arrows — all hard-angled (terminal style) */}
           <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }} viewBox="0 0 1100 960" preserveAspectRatio="none" width="1100" height="960">
@@ -136,9 +139,11 @@ export const JoinReiFlowDiagram = () => {
               />
             )}
 
-            {/* Arrow 2: APPLICANTS → LISTED (hard L-angle, blue). Applicants top-center x=960, y=540 → up to y=480 → left to x=480 → up to Listed bottom y=400 */}
+            {/* Arrow 2: APPLICANTS → LISTED (hard L-angle, blue). Routed clear of pink arrow:
+                Applicants top-center x=960, y=540 → up to y=430 (above pink corridor at 455) →
+                left to x=540 (right of pink vertical at 480) → up to LISTED bottom-right at y=400 */}
             <motion.path
-              d="M 960 540 L 960 480 L 480 480 L 480 400"
+              d="M 960 540 L 960 430 L 540 430 L 540 400"
               stroke={activeStep >= 4 ? "#0088cc" : "rgba(255,255,255,0.08)"}
               strokeWidth="2"
               fill="none"
@@ -149,7 +154,7 @@ export const JoinReiFlowDiagram = () => {
             />
             {activeStep >= 4 && (
               <motion.polygon
-                points="480,400 472,412 488,412"
+                points="540,400 532,412 548,412"
                 fill="#0088cc"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
