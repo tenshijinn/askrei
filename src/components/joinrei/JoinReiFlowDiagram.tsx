@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { Eye, Send, User, Target, Briefcase, ArrowRight, MessageSquare, CheckCircle, Users } from "lucide-react";
+import { Send, Target, MessageSquare, CheckCircle, Users } from "lucide-react";
 import { useEffect, useState } from "react";
+import reiLogo from "@/assets/rei-logo-transparent.png";
 
 const PhoneMockup = ({
   children,
@@ -48,41 +49,26 @@ const PhoneMockup = ({
   );
 };
 
-const ConnectionLine = ({ active, delay = 0 }: { active: boolean; delay?: number }) => {
-  return (
-    <motion.div
-      initial={{ scaleX: 0 }}
-      animate={{ scaleX: 1 }}
-      transition={{ delay, duration: 0.5 }}
-      className="flex items-center justify-center"
-      style={{ width: "60px" }}
-    >
-      <div className="relative w-full h-[1px]">
-        <div className="absolute inset-0" style={{ background: "rgba(255,255,255,0.1)" }} />
-        {active && (
-          <motion.div
-            className="absolute inset-0"
-            style={{ background: "#e8c4b8", transformOrigin: "left" }}
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ duration: 0.8 }}
-          />
-        )}
-      </div>
-      <ArrowRight className={`w-3 h-3 ml-1 ${active ? "text-[#e8c4b8]" : "text-white/10"}`} />
-    </motion.div>
-  );
-};
-
 export const JoinReiFlowDiagram = () => {
+  // Step order: 0=Package, 1=Onboard, 2=CRM, 3=Applicants, 4=Listed, 5=Skillsync, 6=ICP Match
   const [activeStep, setActiveStep] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveStep((prev) => (prev + 1) % 5);
-    }, 3000);
+      setActiveStep((prev) => (prev + 1) % 7);
+    }, 2500);
     return () => clearInterval(interval);
   }, []);
+
+  // Diagram coordinates (within 1300x900 viewBox).
+  // Top row (LISTED, SKILLSYNC, ICP MATCH) right-aligned.
+  // Bottom row: PACKAGE far left vertically centered on divider; ONBOARD, CRM, APPLICANTS right-aligned matching top row x positions.
+  // Phones are 180x360, labels ~20px below.
+  // Top row Y: 40 (top) → 400 (bottom of phone)
+  // Divider Y: ~470
+  // Bottom row Y: 540 (top) → 900 (bottom)
+  // Right-aligned columns x-centers: LISTED/ONBOARD=480, SKILLSYNC/CRM=720, ICP/APPLICANTS=960
+  // PACKAGE x-center: 130, vertically centered between rows → top at ~290, bottom at ~650 (centered on 470 divider)
 
   return (
     <section
@@ -92,299 +78,393 @@ export const JoinReiFlowDiagram = () => {
         fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
       }}
     >
-      <div className="origin-center scale-[0.45] sm:scale-[0.6] md:scale-75 lg:scale-90 xl:scale-100">
-        <div className="w-[1300px] relative">
-          <svg className="absolute inset-0 w-full h-full pointer-events-none hidden md:block" style={{ zIndex: 10 }}>
-            {/* Yellow: from under PACKAGE text down to top-center of Telegram ONBOARD phone */}
+      <div className="origin-center scale-[0.4] sm:scale-[0.5] md:scale-[0.65] lg:scale-75 xl:scale-90">
+        <div className="relative" style={{ width: "1100px", height: "960px" }}>
+          {/* Animated SVG arrows */}
+          <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }} viewBox="0 0 1100 960" preserveAspectRatio="none" width="1100" height="960">
+            {/* Arrow 1: PACKAGE → ONBOARD (diagonal down-right, cream-pink) */}
             <motion.path
-              d="M 290 395 L 290 510 L 390 510 L 390 545"
-              stroke={activeStep >= 1 ? "#FFD700" : "rgba(255,255,255,0.1)"}
+              d="M 220 470 Q 320 490 380 540"
+              stroke={activeStep >= 1 ? "#e8c4b8" : "rgba(255,255,255,0.08)"}
               strokeWidth="2"
               fill="none"
               strokeDasharray="4 4"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: activeStep >= 1 ? 1 : 0 }}
-              transition={{ duration: 1 }}
+              transition={{ duration: 0.8 }}
             />
             {activeStep >= 1 && (
               <motion.polygon
-                points="390,553 385,543 395,543"
-                fill="#FFD700"
+                points="380,540 370,531 376,545"
+                fill="#e8c4b8"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
+                transition={{ delay: 0.6 }}
               />
             )}
-            {/* Blue: from top-center of APPLICANTS phone up to LISTED text */}
+
+            {/* Arrow 2: APPLICANTS → LISTED (curved blue, looping back up) */}
             <motion.path
-              d="M 910 545 L 910 510 L 560 510 L 560 395"
-              stroke={activeStep === 4 ? "#0088cc" : "rgba(255,255,255,0.1)"}
+              d="M 960 540 Q 960 460 720 440 T 480 410"
+              stroke={activeStep >= 4 ? "#0088cc" : "rgba(255,255,255,0.08)"}
               strokeWidth="2"
               fill="none"
               strokeDasharray="4 4"
               initial={{ pathLength: 0 }}
-              animate={{ pathLength: activeStep === 4 ? 1 : 0 }}
-              transition={{ duration: 1.2 }}
+              animate={{ pathLength: activeStep >= 4 ? 1 : 0 }}
+              transition={{ duration: 1 }}
             />
-            {activeStep === 4 && (
+            {activeStep >= 4 && (
               <motion.polygon
-                points="560,387 555,397 565,397"
+                points="480,410 491,402 491,418"
                 fill="#0088cc"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
               />
             )}
+
+            {/* Arrow 3: PACKAGE → LISTED (diagonal up-right, cream-pink) */}
+            <motion.path
+              d="M 220 410 Q 320 330 380 290"
+              stroke={activeStep >= 4 ? "#e8c4b8" : "rgba(255,255,255,0.08)"}
+              strokeWidth="2"
+              fill="none"
+              strokeDasharray="4 4"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: activeStep >= 4 ? 1 : 0 }}
+              transition={{ duration: 0.8 }}
+            />
+            {activeStep >= 4 && (
+              <motion.polygon
+                points="380,290 374,302 387,296"
+                fill="#e8c4b8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+              />
+            )}
+
+            {/* Inline horizontal connectors top row: LISTED → SKILLSYNC → ICP */}
+            <motion.line
+              x1="570" y1="220" x2="630" y2="220"
+              stroke={activeStep >= 5 ? "#e8c4b8" : "rgba(255,255,255,0.08)"}
+              strokeWidth="1.5"
+              strokeDasharray="3 3"
+            />
+            <motion.line
+              x1="810" y1="220" x2="870" y2="220"
+              stroke={activeStep >= 6 ? "#e8c4b8" : "rgba(255,255,255,0.08)"}
+              strokeWidth="1.5"
+              strokeDasharray="3 3"
+            />
+
+            {/* Inline horizontal connectors bottom row: ONBOARD → CRM → APPLICANTS */}
+            <motion.line
+              x1="570" y1="720" x2="630" y2="720"
+              stroke={activeStep >= 2 ? "#0088cc" : "rgba(255,255,255,0.08)"}
+              strokeWidth="1.5"
+              strokeDasharray="3 3"
+            />
+            <motion.line
+              x1="810" y1="720" x2="870" y2="720"
+              stroke={activeStep >= 3 ? "#0088cc" : "rgba(255,255,255,0.08)"}
+              strokeWidth="1.5"
+              strokeDasharray="3 3"
+            />
           </svg>
 
-          <div className="mb-20 relative" style={{ zIndex: 1 }}>
-            <div className="flex items-center justify-center gap-3 flex-wrap md:flex-nowrap">
-              <div className="flex flex-col items-center gap-2">
-                <PhoneMockup active={activeStep === 0} delay={0}>
-                  <div className="flex flex-col h-full p-5" style={{ background: "#111111" }}>
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="text-[8px]" style={{ color: "#6e6b67" }}>9:41</div>
-                      <div className="text-[8px]" style={{ color: "#e8c4b8", letterSpacing: "0.06em" }}>REI</div>
-                    </div>
-                    <div className="flex-1 flex flex-col justify-center">
-                      <div className="text-center mb-4">
-                        <div className="text-sm font-bold mb-1" style={{ color: "#FFD700", letterSpacing: "0.03em" }}>ROCKET REACH</div>
-                        <div className="text-[7px]" style={{ color: "#b8a068", letterSpacing: "0.04em" }}>Premium Package</div>
-                      </div>
-                      <div className="rounded-xl p-3 mb-3" style={{ border: "0.5px solid rgba(255, 215, 0, 0.3)", background: "rgba(255, 215, 0, 0.05)" }}>
-                        <div className="text-[7px] mb-2" style={{ color: "#b8a068" }}>INCLUDES</div>
-                        <div className="space-y-1">
-                          <div className="text-[8px]" style={{ color: "#FFD700" }}>• ICP Matching</div>
-                          <div className="text-[8px]" style={{ color: "#FFD700" }}>• Premium Listing</div>
-                          <div className="text-[8px]" style={{ color: "#FFD700" }}>• 350M Reach</div>
-                        </div>
-                        <div className="pt-2 mt-2" style={{ borderTop: "0.5px solid rgba(255, 215, 0, 0.2)" }}>
-                          <div className="text-xl font-bold text-center" style={{ color: "#FFD700" }}>$2,500</div>
-                        </div>
-                      </div>
-                    </div>
-                    <button className="w-full py-2 rounded-lg text-[8px]" style={{ border: "0.5px solid rgba(255, 215, 0, 0.3)", color: "#FFD700", background: "rgba(255, 215, 0, 0.05)", letterSpacing: "0.06em" }}>PURCHASE</button>
+          {/* TOP ROW — right-aligned: LISTED, SKILLSYNC, ICP MATCH */}
+          {/* LISTED — center x=480, top y=40 */}
+          <div className="absolute" style={{ left: "390px", top: "40px", zIndex: 1 }}>
+            <div className="flex flex-col items-center gap-2">
+              <PhoneMockup active={activeStep === 4} delay={0.3}>
+                <div className="flex flex-col h-full p-5" style={{ background: "#111111" }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-[8px]" style={{ color: "#6e6b67" }}>9:41</div>
+                    <div className="text-[8px]" style={{ color: "#e8c4b8", letterSpacing: "0.06em" }}>REI</div>
                   </div>
-                </PhoneMockup>
-                <div className="text-[8px] text-center" style={{ color: "#6e6b67", letterSpacing: "0.04em" }}>PACKAGE</div>
-              </div>
-
-              <ConnectionLine active={activeStep >= 1} delay={0.2} />
-
-              <div className="flex flex-col items-center gap-2">
-                <PhoneMockup active={activeStep === 1} delay={0.3}>
-                  <div className="flex flex-col h-full p-5" style={{ background: "#111111" }}>
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="text-[8px]" style={{ color: "#6e6b67" }}>9:41</div>
-                      <div className="text-[8px]" style={{ color: "#e8c4b8", letterSpacing: "0.06em" }}>REI</div>
+                  <div className="flex-1 flex flex-col justify-center">
+                    <div className="rounded-2xl p-4 text-center mb-3" style={{ border: "0.5px solid rgba(232, 196, 184, 0.3)", background: "rgba(232, 196, 184, 0.05)" }}>
+                      <img src={reiLogo} alt="Rei" className="w-12 h-12 mx-auto mb-2 object-contain" />
+                      <div className="text-xs font-bold mb-1" style={{ color: "#e8c4b8" }}>Live Listing</div>
+                      <div className="text-[7px]" style={{ color: "#6e6b67" }}>Now on Rei</div>
                     </div>
-                    <div className="flex-1 flex flex-col justify-center">
-                      <div className="rounded-2xl p-4 text-center mb-3" style={{ border: "0.5px solid rgba(232, 196, 184, 0.3)", background: "rgba(232, 196, 184, 0.05)" }}>
-                        <Eye className="w-10 h-10 mx-auto mb-2" style={{ color: "#e8c4b8" }} />
-                        <div className="text-xs font-bold mb-1" style={{ color: "#e8c4b8" }}>Live Listing</div>
-                        <div className="text-[7px]" style={{ color: "#6e6b67" }}>Now on Rei</div>
-                      </div>
-                      <div className="text-[7px] mb-1" style={{ color: "#6e6b67" }}>CHANNEL</div>
-                      <div className="rounded-lg p-2" style={{ border: "0.5px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.03)" }}>
-                        <div className="text-[9px] font-bold" style={{ color: "#e8c4b8" }}>Crypto Jobs</div>
-                        <div className="text-[7px]" style={{ color: "#6e6b67" }}>1.2M subscribers</div>
-                      </div>
+                    <div className="text-[7px] mb-1" style={{ color: "#6e6b67" }}>CHANNEL</div>
+                    <div className="rounded-lg p-2" style={{ border: "0.5px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.03)" }}>
+                      <div className="text-[9px] font-bold leading-tight" style={{ color: "#e8c4b8" }}>Sales Team</div>
+                      <div className="text-[7px]" style={{ color: "#6e6b67" }}>Community Outreach</div>
                     </div>
-                    <button className="w-full py-2 rounded-lg text-[8px]" style={{ border: "0.5px solid rgba(232, 196, 184, 0.3)", color: "#e8c4b8", background: "rgba(232, 196, 184, 0.05)", letterSpacing: "0.06em" }}>VIEW LISTING</button>
                   </div>
-                </PhoneMockup>
-                <div className="text-[8px] text-center" style={{ color: "#6e6b67", letterSpacing: "0.04em" }}>LISTED</div>
-              </div>
-
-              <ConnectionLine active={activeStep >= 2} delay={0.4} />
-
-              <div className="flex flex-col items-center gap-2">
-                <PhoneMockup active={activeStep === 2} delay={0.6}>
-                  <div className="flex flex-col h-full p-5" style={{ background: "#111111" }}>
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="text-[8px]" style={{ color: "#6e6b67" }}>9:41</div>
-                      <div className="text-[8px]" style={{ color: "#e8c4b8", letterSpacing: "0.06em" }}>MATCHING</div>
-                    </div>
-                    <div className="text-xs font-bold mb-3" style={{ color: "#e8c4b8" }}>Who are you<br />looking for?</div>
-                    <div className="flex-1 space-y-2">
-                      <div className="rounded-xl p-2" style={{ border: "0.5px solid rgba(232, 196, 184, 0.4)", background: "rgba(232, 196, 184, 0.08)" }}>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Briefcase className="w-3 h-3" style={{ color: "#e8c4b8" }} />
-                          <div className="text-[9px] font-bold" style={{ color: "#e8c4b8" }}>Senior Dev</div>
-                        </div>
-                        <div className="text-[7px]" style={{ color: "#6e6b67" }}>Solana • Rust</div>
-                      </div>
-                      <div className="rounded-xl p-2" style={{ border: "0.5px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.03)" }}>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Briefcase className="w-3 h-3" style={{ color: "#6e6b67" }} />
-                          <div className="text-[9px] font-bold" style={{ color: "#6e6b67" }}>Designer</div>
-                        </div>
-                        <div className="text-[7px]" style={{ color: "#4a4845" }}>UI/UX • Web3</div>
-                      </div>
-                      <div className="rounded-xl p-2" style={{ border: "0.5px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.03)" }}>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Briefcase className="w-3 h-3" style={{ color: "#6e6b67" }} />
-                          <div className="text-[9px] font-bold" style={{ color: "#6e6b67" }}>Growth Lead</div>
-                        </div>
-                        <div className="text-[7px]" style={{ color: "#4a4845" }}>Marketing</div>
-                      </div>
-                    </div>
-                    <button className="w-full py-2 rounded-lg text-[8px]" style={{ border: "0.5px solid rgba(232, 196, 184, 0.3)", color: "#e8c4b8", background: "rgba(232, 196, 184, 0.05)", letterSpacing: "0.06em" }}>FIND MATCH</button>
-                  </div>
-                </PhoneMockup>
-                <div className="text-[8px] text-center" style={{ color: "#6e6b67", letterSpacing: "0.04em" }}>SKILLSYNC</div>
-              </div>
-
-              <ConnectionLine active={activeStep >= 3} delay={0.8} />
-
-              <div className="flex flex-col items-center gap-2">
-                <PhoneMockup active={activeStep === 3} delay={1}>
-                  <div className="flex flex-col h-full p-5" style={{ background: "#111111" }}>
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="text-[8px]" style={{ color: "#6e6b67" }}>9:41</div>
-                      <div className="text-[7px] px-2 py-0.5 rounded" style={{ border: "0.5px solid rgba(232, 196, 184, 0.3)", color: "#e8c4b8" }}>MATCH</div>
-                    </div>
-                    <div className="flex-1 flex flex-col justify-center">
-                      <div className="rounded-2xl p-4 text-center" style={{ border: "0.5px solid rgba(232, 196, 184, 0.4)", background: "rgba(232, 196, 184, 0.08)" }}>
-                        <User className="w-12 h-12 mx-auto mb-2" style={{ color: "#e8c4b8" }} />
-                        <div className="text-sm font-bold mb-1" style={{ color: "#e8c4b8" }}>Perfect Match!</div>
-                        <div className="text-[8px] mb-3" style={{ color: "#6e6b67" }}>3 ICPs found for<br />Senior Solana Dev</div>
-                        <div className="flex justify-center gap-1 mb-3">
-                          <div className="w-6 h-6 rounded-full" style={{ border: "0.5px solid rgba(232, 196, 184, 0.3)", background: "rgba(232, 196, 184, 0.15)" }} />
-                          <div className="w-6 h-6 rounded-full" style={{ border: "0.5px solid rgba(232, 196, 184, 0.3)", background: "rgba(232, 196, 184, 0.15)" }} />
-                          <div className="w-6 h-6 rounded-full" style={{ border: "0.5px solid rgba(232, 196, 184, 0.3)", background: "rgba(232, 196, 184, 0.15)" }} />
-                        </div>
-                      </div>
-                    </div>
-                    <button className="w-full py-2 rounded-lg text-[8px] mb-1" style={{ border: "0.5px solid rgba(232, 196, 184, 0.3)", color: "#e8c4b8", background: "rgba(232, 196, 184, 0.05)", letterSpacing: "0.06em" }}>CONTACT ALL</button>
-                    <button className="w-full py-2 rounded-lg text-[8px]" style={{ border: "0.5px solid rgba(255,255,255,0.07)", color: "#6e6b67", background: "transparent", letterSpacing: "0.06em" }}>VIEW PROFILES</button>
-                  </div>
-                </PhoneMockup>
-                <div className="text-[8px] text-center" style={{ color: "#6e6b67", letterSpacing: "0.04em" }}>ICP MATCH</div>
-              </div>
+                  <button className="w-full py-2 rounded-lg text-[8px]" style={{ border: "0.5px solid rgba(232, 196, 184, 0.3)", color: "#e8c4b8", background: "rgba(232, 196, 184, 0.05)", letterSpacing: "0.06em" }}>VIEW LISTING</button>
+                </div>
+              </PhoneMockup>
+              <div className="text-[8px] text-center" style={{ color: "#6e6b67", letterSpacing: "0.04em" }}>LISTED</div>
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-4 mb-20">
+          {/* SKILLSYNC — center x=720, top y=40. Now: Rei chatbot conversation */}
+          <div className="absolute" style={{ left: "630px", top: "40px", zIndex: 1 }}>
+            <div className="flex flex-col items-center gap-2">
+              <PhoneMockup active={activeStep === 5} delay={0.6}>
+                <div className="flex flex-col h-full p-4" style={{ background: "#111111" }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-[8px]" style={{ color: "#6e6b67" }}>9:41</div>
+                    <div className="text-[8px]" style={{ color: "#e8c4b8", letterSpacing: "0.06em" }}>REI CHAT</div>
+                  </div>
+                  <div className="flex items-center gap-2 mb-3 pb-2" style={{ borderBottom: "0.5px solid rgba(255,255,255,0.07)" }}>
+                    <img src={reiLogo} alt="Rei" className="w-5 h-5 object-contain" />
+                    <div>
+                      <div className="text-[9px] font-bold" style={{ color: "#e8c4b8" }}>Rei</div>
+                      <div className="text-[6px]" style={{ color: "#6e6b67" }}>Online</div>
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-2 overflow-hidden">
+                    {/* User message */}
+                    <div className="flex justify-end">
+                      <div className="rounded-lg rounded-tr-sm px-2 py-1.5 max-w-[80%]" style={{ background: "rgba(232, 196, 184, 0.15)", border: "0.5px solid rgba(232, 196, 184, 0.3)" }}>
+                        <div className="text-[8px]" style={{ color: "#e8c4b8" }}>Any DeFi bounties open?</div>
+                      </div>
+                    </div>
+                    {/* Rei message */}
+                    <div className="flex justify-start">
+                      <div className="rounded-lg rounded-tl-sm px-2 py-1.5 max-w-[85%]" style={{ background: "rgba(255,255,255,0.04)", border: "0.5px solid rgba(255,255,255,0.07)" }}>
+                        <div className="text-[8px] mb-1" style={{ color: "#e8c4b8" }}>Found a match for you:</div>
+                        <div className="text-[7px]" style={{ color: "#6e6b67" }}>DeFi staking bounty on Galxe — 500 USDC</div>
+                      </div>
+                    </div>
+                    {/* Rei suggestion card */}
+                    <div className="flex justify-start">
+                      <div className="rounded-lg px-2 py-1.5 w-full" style={{ background: "rgba(136, 102, 204, 0.1)", border: "0.5px solid rgba(136, 102, 204, 0.3)" }}>
+                        <div className="text-[7px] mb-0.5" style={{ color: "#a78bda" }}>● Galxe</div>
+                        <div className="text-[8px] font-bold" style={{ color: "#e8c4b8" }}>DeFi Staking Quest</div>
+                      </div>
+                    </div>
+                  </div>
+                  <button className="w-full py-2 rounded-lg text-[8px] mt-2" style={{ border: "0.5px solid rgba(232, 196, 184, 0.3)", color: "#e8c4b8", background: "rgba(232, 196, 184, 0.05)", letterSpacing: "0.06em" }}>VIEW TASK</button>
+                </div>
+              </PhoneMockup>
+              <div className="text-[8px] text-center" style={{ color: "#6e6b67", letterSpacing: "0.04em" }}>SKILLSYNC</div>
+            </div>
+          </div>
+
+          {/* ICP MATCH — center x=960, top y=40. Now: Galxe task/bounty page (purple) */}
+          <div className="absolute" style={{ left: "870px", top: "40px", zIndex: 1 }}>
+            <div className="flex flex-col items-center gap-2">
+              <PhoneMockup active={activeStep === 6} delay={0.9}>
+                <div className="flex flex-col h-full p-4" style={{ background: "linear-gradient(180deg, #1a1530 0%, #0f0a1f 100%)" }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-[8px]" style={{ color: "#9b8bc4" }}>Close</div>
+                    <div className="text-center">
+                      <div className="text-[9px] font-bold text-white">Galxe</div>
+                      <div className="text-[6px]" style={{ color: "#9b8bc4" }}>Mini App</div>
+                    </div>
+                    <div className="w-4 h-4 rounded-full flex items-center justify-center" style={{ background: "rgba(155, 139, 196, 0.2)" }}>
+                      <div className="text-[7px]" style={{ color: "#9b8bc4" }}>···</div>
+                    </div>
+                  </div>
+                  <div className="rounded-md py-1.5 px-2 mb-3 text-center" style={{ background: "rgba(155, 139, 196, 0.1)", border: "0.5px solid rgba(155, 139, 196, 0.2)" }}>
+                    <div className="text-[7px]" style={{ color: "#a78bda" }}>≋ Galxe • Unlock Web3</div>
+                  </div>
+                  <div className="rounded-lg p-2 mb-2 flex items-center justify-between" style={{ background: "rgba(255,255,255,0.03)" }}>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-4 h-4 rounded-full" style={{ background: "linear-gradient(135deg, #a78bda, #6c4fb8)" }} />
+                      <div className="text-[8px] font-bold text-white">49GG</div>
+                    </div>
+                    <div className="text-[7px]" style={{ color: "#a78bda" }}>My Asset ›</div>
+                  </div>
+                  <div className="text-[8px] font-bold text-white mb-2">Task 2 Earn</div>
+                  <div className="flex-1 space-y-1.5">
+                    <div className="rounded-lg p-2 flex items-center justify-between" style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(155, 139, 196, 0.15)" }}>
+                      <div>
+                        <div className="text-[8px] font-bold text-white">DeFi Staking</div>
+                        <div className="text-[6px]" style={{ color: "#9b8bc4" }}>+500 USDC</div>
+                      </div>
+                      <div className="px-2 py-0.5 rounded text-[7px] font-bold text-white" style={{ background: "#7c5cd6" }}>Go</div>
+                    </div>
+                    <div className="rounded-lg p-2 flex items-center justify-between" style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(155, 139, 196, 0.15)" }}>
+                      <div>
+                        <div className="text-[8px] font-bold text-white">Join SUI TG</div>
+                        <div className="text-[6px]" style={{ color: "#9b8bc4" }}>+100 GG</div>
+                      </div>
+                      <div className="px-2 py-0.5 rounded text-[7px] font-bold text-white" style={{ background: "#7c5cd6" }}>Go</div>
+                    </div>
+                    <div className="rounded-lg p-2 flex items-center justify-between" style={{ background: "rgba(255,255,255,0.03)", border: "0.5px solid rgba(155, 139, 196, 0.15)" }}>
+                      <div>
+                        <div className="text-[8px] font-bold text-white">Invite friends</div>
+                        <div className="text-[6px]" style={{ color: "#9b8bc4" }}>+Up to 100 GG</div>
+                      </div>
+                      <div className="px-2 py-0.5 rounded text-[7px] font-bold text-white" style={{ background: "#7c5cd6" }}>Draw</div>
+                    </div>
+                  </div>
+                </div>
+              </PhoneMockup>
+              <div className="text-[8px] text-center" style={{ color: "#6e6b67", letterSpacing: "0.04em" }}>ICP MATCH</div>
+            </div>
+          </div>
+
+          {/* DIVIDER */}
+          <div className="absolute flex items-center justify-center gap-4" style={{ left: "0", right: "0", top: "455px", zIndex: 1 }}>
             <div className="h-[0.5px] flex-1 max-w-md" style={{ background: "rgba(255,255,255,0.1)" }} />
             <div className="text-[9px]" style={{ color: "#6e6b67", letterSpacing: "0.06em" }}>TELEGRAM CRM OUTREACH</div>
             <div className="h-[0.5px] flex-1 max-w-md" style={{ background: "rgba(255,255,255,0.1)" }} />
           </div>
 
-          <div className="relative" style={{ zIndex: 1 }}>
-            <div className="flex items-center justify-center gap-20 flex-wrap md:flex-nowrap">
-              <div className="flex flex-col items-center gap-2">
-                <PhoneMockup active={activeStep === 1} delay={0.2}>
-                  <div className="flex flex-col h-full p-5" style={{ background: "#0f0f0f" }}>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="text-[8px] text-white">9:41</div>
-                      <Send className="w-3 h-3 text-[#0088cc]" />
-                    </div>
-                    <div className="flex-1 flex flex-col justify-center text-center">
-                      <div className="w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center" style={{ background: "linear-gradient(135deg, #0088cc 0%, #00a0e9 100%)", boxShadow: "0 4px 12px rgba(0, 136, 204, 0.4)" }}>
-                        <Send className="w-8 h-8 text-white" />
-                      </div>
-                      <div className="text-sm font-bold mb-1 text-white">Welcome!</div>
-                      <div className="text-[8px] text-gray-400 mb-4">Join 350M+ users</div>
-                      <div className="rounded-xl p-2" style={{ border: "0.5px solid rgba(0, 136, 204, 0.3)", background: "rgba(0, 136, 204, 0.1)" }}>
-                        <div className="text-[7px] text-gray-400 mb-1">NEW ACCOUNT</div>
-                        <div className="text-xs font-bold text-[#0088cc]">350,000,001</div>
-                      </div>
-                    </div>
-                    <button className="w-full py-2 rounded-lg text-[8px]" style={{ background: "#0088cc", color: "white", letterSpacing: "0.06em" }}>GET STARTED</button>
+          {/* PACKAGE — left, vertically centered on divider. Center x=130, top y=275 (centers ~455) */}
+          <div className="absolute" style={{ left: "40px", top: "275px", zIndex: 1 }}>
+            <div className="flex flex-col items-center gap-2">
+              <PhoneMockup active={activeStep === 0} delay={0}>
+                <div className="flex flex-col h-full p-5" style={{ background: "#111111" }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-[8px]" style={{ color: "#6e6b67" }}>9:41</div>
+                    <div className="text-[8px]" style={{ color: "#e8c4b8", letterSpacing: "0.06em" }}>REI</div>
                   </div>
-                </PhoneMockup>
-                <div className="text-[8px] text-center" style={{ color: "#6e6b67", letterSpacing: "0.04em" }}>ONBOARD</div>
-              </div>
-
-              <div className="flex flex-col items-center gap-2">
-                <PhoneMockup active={activeStep === 2} delay={0.6}>
-                  <div className="flex flex-col h-full p-5" style={{ background: "#111111" }}>
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="text-[8px]" style={{ color: "#6e6b67" }}>CRM</div>
-                      <Users className="w-3 h-3" style={{ color: "#e8c4b8" }} />
+                  <div className="flex-1 flex flex-col justify-center">
+                    <div className="text-center mb-4">
+                      <div className="text-sm font-bold mb-1" style={{ color: "#FFD700", letterSpacing: "0.03em" }}>ROCKET REACH</div>
+                      <div className="text-[7px]" style={{ color: "#b8a068", letterSpacing: "0.04em" }}>Premium Package</div>
                     </div>
-                    <div className="text-xs font-bold mb-3" style={{ color: "#e8c4b8" }}>Campaign<br />Management</div>
-                    <div className="flex-1 space-y-2 overflow-y-auto">
-                      <div className="rounded-lg p-2" style={{ border: "0.5px solid rgba(232, 196, 184, 0.3)", background: "rgba(232, 196, 184, 0.05)" }}>
-                        <div className="flex items-center gap-2 mb-1">
-                          <MessageSquare className="w-3 h-3" style={{ color: "#e8c4b8" }} />
-                          <div className="text-[9px] font-bold" style={{ color: "#e8c4b8" }}>GameFi Outreach</div>
-                        </div>
-                        <div className="text-[7px] mb-1" style={{ color: "#6e6b67" }}>15.2K messages sent</div>
-                        <div className="flex justify-between text-[7px]">
-                          <span style={{ color: "#6e6b67" }}>Open: 68%</span>
-                          <span style={{ color: "#e8c4b8" }}>●</span>
-                        </div>
+                    <div className="rounded-xl p-3 mb-3" style={{ border: "0.5px solid rgba(255, 215, 0, 0.3)", background: "rgba(255, 215, 0, 0.05)" }}>
+                      <div className="text-[7px] mb-2" style={{ color: "#b8a068" }}>INCLUDES</div>
+                      <div className="space-y-1">
+                        <div className="text-[8px]" style={{ color: "#FFD700" }}>• ICP Matching</div>
+                        <div className="text-[8px]" style={{ color: "#FFD700" }}>• Premium Listing</div>
+                        <div className="text-[8px]" style={{ color: "#FFD700" }}>• 350M Reach</div>
                       </div>
-                      <div className="rounded-lg p-2" style={{ border: "0.5px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.03)" }}>
-                        <div className="flex items-center gap-2 mb-1">
-                          <CheckCircle className="w-3 h-3" style={{ color: "#6e6b67" }} />
-                          <div className="text-[9px] font-bold" style={{ color: "#6e6b67" }}>DeFi Campaign</div>
-                        </div>
-                        <div className="text-[7px] mb-1" style={{ color: "#4a4845" }}>8.5K messages sent</div>
-                        <div className="flex justify-between text-[7px]">
-                          <span style={{ color: "#4a4845" }}>Open: 71%</span>
-                          <span style={{ color: "#6e6b67" }}>●</span>
-                        </div>
-                      </div>
-                      <div className="rounded-lg p-2" style={{ border: "0.5px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.03)" }}>
-                        <div className="text-[7px] mb-1" style={{ color: "#6e6b67" }}>TARGETED SEGMENTS</div>
-                        <div className="text-[8px]" style={{ color: "#e8c4b8" }}>847 ICP Matches</div>
+                      <div className="pt-2 mt-2" style={{ borderTop: "0.5px solid rgba(255, 215, 0, 0.2)" }}>
+                        <div className="text-xl font-bold text-center" style={{ color: "#FFD700" }}>$2,500</div>
                       </div>
                     </div>
-                    <button className="w-full py-2 rounded-lg text-[8px]" style={{ border: "0.5px solid rgba(232, 196, 184, 0.3)", color: "#e8c4b8", background: "rgba(232, 196, 184, 0.05)", letterSpacing: "0.06em" }}>VIEW ANALYTICS</button>
                   </div>
-                </PhoneMockup>
-                <div className="text-[8px] text-center" style={{ color: "#6e6b67", letterSpacing: "0.04em" }}>CRM (TEAM)</div>
-              </div>
-
-              <div className="flex flex-col items-center gap-2">
-                <PhoneMockup active={activeStep === 3} delay={1}>
-                  <div className="flex flex-col h-full p-5" style={{ background: "#111111" }}>
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="text-[8px]" style={{ color: "#6e6b67" }}>9:41</div>
-                      <div className="text-[8px]" style={{ color: "#e8c4b8", letterSpacing: "0.06em" }}>REI</div>
-                    </div>
-                    <div className="flex-1 flex flex-col justify-center">
-                      <div className="rounded-2xl p-4 text-center mb-3" style={{ border: "0.5px solid rgba(232, 196, 184, 0.4)", background: "rgba(232, 196, 184, 0.08)" }}>
-                        <Target className="w-12 h-12 mx-auto mb-2" style={{ color: "#e8c4b8" }} />
-                        <div className="text-sm font-bold mb-1" style={{ color: "#e8c4b8" }}>847 Applicants</div>
-                        <div className="text-[8px] mb-3" style={{ color: "#6e6b67" }}>From Telegram<br />Outreach Campaign</div>
-                        <div className="rounded-lg p-2 mb-2" style={{ border: "0.5px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.03)" }}>
-                          <div className="flex justify-between text-[8px] mb-1">
-                            <span style={{ color: "#6e6b67" }}>Qualified</span>
-                            <span style={{ color: "#e8c4b8" }}>412</span>
-                          </div>
-                          <div className="flex justify-between text-[8px]">
-                            <span style={{ color: "#6e6b67" }}>Reviewed</span>
-                            <span style={{ color: "#e8c4b8" }}>189</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="rounded-lg p-2" style={{ border: "0.5px solid rgba(0, 136, 204, 0.3)", background: "rgba(0, 136, 204, 0.05)" }}>
-                        <div className="flex items-center gap-2">
-                          <Send className="w-3 h-3 text-[#0088cc]" />
-                          <div className="text-[8px]" style={{ color: "#0088cc" }}>Telegram → Rei Flow Complete</div>
-                        </div>
-                      </div>
-                    </div>
-                    <button className="w-full py-2 rounded-lg text-[8px]" style={{ border: "0.5px solid rgba(232, 196, 184, 0.3)", color: "#e8c4b8", background: "rgba(232, 196, 184, 0.05)", letterSpacing: "0.06em" }}>VIEW APPLICANTS</button>
-                  </div>
-                </PhoneMockup>
-                <div className="text-[8px] text-center" style={{ color: "#6e6b67", letterSpacing: "0.04em" }}>APPLICANTS</div>
-              </div>
+                  <button className="w-full py-2 rounded-lg text-[8px]" style={{ border: "0.5px solid rgba(255, 215, 0, 0.3)", color: "#FFD700", background: "rgba(255, 215, 0, 0.05)", letterSpacing: "0.06em" }}>PURCHASE</button>
+                </div>
+              </PhoneMockup>
+              <div className="text-[8px] text-center" style={{ color: "#6e6b67", letterSpacing: "0.04em" }}>PACKAGE</div>
             </div>
           </div>
 
+          {/* BOTTOM ROW — right-aligned: ONBOARD, CRM, APPLICANTS */}
+          {/* ONBOARD — center x=480, top y=540 */}
+          <div className="absolute" style={{ left: "390px", top: "540px", zIndex: 1 }}>
+            <div className="flex flex-col items-center gap-2">
+              <PhoneMockup active={activeStep === 1} delay={0.2}>
+                <div className="flex flex-col h-full p-5" style={{ background: "#0f0f0f" }}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="text-[8px] text-white">9:41</div>
+                    <Send className="w-3 h-3 text-[#0088cc]" />
+                  </div>
+                  <div className="flex-1 flex flex-col justify-center text-center">
+                    <div className="w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center" style={{ background: "linear-gradient(135deg, #0088cc 0%, #00a0e9 100%)", boxShadow: "0 4px 12px rgba(0, 136, 204, 0.4)" }}>
+                      <Send className="w-8 h-8 text-white" />
+                    </div>
+                    <div className="text-sm font-bold mb-1 text-white">Welcome!</div>
+                    <div className="text-[8px] text-gray-400 mb-4">Join 350M+ users</div>
+                    <div className="rounded-xl p-2" style={{ border: "0.5px solid rgba(0, 136, 204, 0.3)", background: "rgba(0, 136, 204, 0.1)" }}>
+                      <div className="text-[7px] text-gray-400 mb-1">NEW ACCOUNT</div>
+                      <div className="text-xs font-bold text-[#0088cc]">350,000,001</div>
+                    </div>
+                  </div>
+                  <button className="w-full py-2 rounded-lg text-[8px]" style={{ background: "#0088cc", color: "white", letterSpacing: "0.06em" }}>GET STARTED</button>
+                </div>
+              </PhoneMockup>
+              <div className="text-[8px] text-center" style={{ color: "#6e6b67", letterSpacing: "0.04em" }}>ONBOARD</div>
+            </div>
+          </div>
+
+          {/* CRM — center x=720, top y=540 */}
+          <div className="absolute" style={{ left: "630px", top: "540px", zIndex: 1 }}>
+            <div className="flex flex-col items-center gap-2">
+              <PhoneMockup active={activeStep === 2} delay={0.5}>
+                <div className="flex flex-col h-full p-5" style={{ background: "#111111" }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-[8px]" style={{ color: "#6e6b67" }}>CRM</div>
+                    <Users className="w-3 h-3" style={{ color: "#e8c4b8" }} />
+                  </div>
+                  <div className="text-xs font-bold mb-3" style={{ color: "#e8c4b8" }}>Campaign<br />Management</div>
+                  <div className="flex-1 space-y-2 overflow-hidden">
+                    <div className="rounded-lg p-2" style={{ border: "0.5px solid rgba(232, 196, 184, 0.3)", background: "rgba(232, 196, 184, 0.05)" }}>
+                      <div className="flex items-center gap-2 mb-1">
+                        <MessageSquare className="w-3 h-3" style={{ color: "#e8c4b8" }} />
+                        <div className="text-[9px] font-bold" style={{ color: "#e8c4b8" }}>GameFi Outreach</div>
+                      </div>
+                      <div className="text-[7px] mb-1" style={{ color: "#6e6b67" }}>15.2K messages sent</div>
+                      <div className="flex justify-between text-[7px]">
+                        <span style={{ color: "#6e6b67" }}>Open: 68%</span>
+                        <span style={{ color: "#e8c4b8" }}>●</span>
+                      </div>
+                    </div>
+                    <div className="rounded-lg p-2" style={{ border: "0.5px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.03)" }}>
+                      <div className="flex items-center gap-2 mb-1">
+                        <CheckCircle className="w-3 h-3" style={{ color: "#6e6b67" }} />
+                        <div className="text-[9px] font-bold" style={{ color: "#6e6b67" }}>DeFi Campaign</div>
+                      </div>
+                      <div className="text-[7px] mb-1" style={{ color: "#4a4845" }}>8.5K messages sent</div>
+                      <div className="flex justify-between text-[7px]">
+                        <span style={{ color: "#4a4845" }}>Open: 71%</span>
+                        <span style={{ color: "#6e6b67" }}>●</span>
+                      </div>
+                    </div>
+                    <div className="rounded-lg p-2" style={{ border: "0.5px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.03)" }}>
+                      <div className="text-[7px] mb-1" style={{ color: "#6e6b67" }}>TARGETED SEGMENTS</div>
+                      <div className="text-[8px]" style={{ color: "#e8c4b8" }}>847 ICP Matches</div>
+                    </div>
+                  </div>
+                  <button className="w-full py-2 rounded-lg text-[8px]" style={{ border: "0.5px solid rgba(232, 196, 184, 0.3)", color: "#e8c4b8", background: "rgba(232, 196, 184, 0.05)", letterSpacing: "0.06em" }}>VIEW ANALYTICS</button>
+                </div>
+              </PhoneMockup>
+              <div className="text-[8px] text-center" style={{ color: "#6e6b67", letterSpacing: "0.04em" }}>CRM (TEAM)</div>
+            </div>
+          </div>
+
+          {/* APPLICANTS — center x=960, top y=540 */}
+          <div className="absolute" style={{ left: "870px", top: "540px", zIndex: 1 }}>
+            <div className="flex flex-col items-center gap-2">
+              <PhoneMockup active={activeStep === 3} delay={0.8}>
+                <div className="flex flex-col h-full p-5" style={{ background: "#111111" }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-[8px]" style={{ color: "#6e6b67" }}>9:41</div>
+                    <div className="text-[8px]" style={{ color: "#e8c4b8", letterSpacing: "0.06em" }}>REI</div>
+                  </div>
+                  <div className="flex-1 flex flex-col justify-center">
+                    <div className="rounded-2xl p-4 text-center mb-3" style={{ border: "0.5px solid rgba(232, 196, 184, 0.4)", background: "rgba(232, 196, 184, 0.08)" }}>
+                      <Target className="w-12 h-12 mx-auto mb-2" style={{ color: "#e8c4b8" }} />
+                      <div className="text-sm font-bold mb-1" style={{ color: "#e8c4b8" }}>847 Applicants</div>
+                      <div className="text-[8px] mb-3" style={{ color: "#6e6b67" }}>From Telegram<br />Outreach Campaign</div>
+                      <div className="rounded-lg p-2 mb-2" style={{ border: "0.5px solid rgba(255,255,255,0.07)", background: "rgba(255,255,255,0.03)" }}>
+                        <div className="flex justify-between text-[8px] mb-1">
+                          <span style={{ color: "#6e6b67" }}>Qualified</span>
+                          <span style={{ color: "#e8c4b8" }}>412</span>
+                        </div>
+                        <div className="flex justify-between text-[8px]">
+                          <span style={{ color: "#6e6b67" }}>Reviewed</span>
+                          <span style={{ color: "#e8c4b8" }}>189</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="rounded-lg p-2" style={{ border: "0.5px solid rgba(0, 136, 204, 0.3)", background: "rgba(0, 136, 204, 0.05)" }}>
+                      <div className="flex items-center gap-2">
+                        <Send className="w-3 h-3 text-[#0088cc]" />
+                        <div className="text-[8px]" style={{ color: "#0088cc" }}>Telegram → Rei Flow</div>
+                      </div>
+                    </div>
+                  </div>
+                  <button className="w-full py-2 rounded-lg text-[8px]" style={{ border: "0.5px solid rgba(232, 196, 184, 0.3)", color: "#e8c4b8", background: "rgba(232, 196, 184, 0.05)", letterSpacing: "0.06em" }}>VIEW APPLICANTS</button>
+                </div>
+              </PhoneMockup>
+              <div className="text-[8px] text-center" style={{ color: "#6e6b67", letterSpacing: "0.04em" }}>APPLICANTS</div>
+            </div>
+          </div>
+
+          {/* Step indicator */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.5 }}
-            className="mt-16 text-center"
+            className="absolute text-center"
+            style={{ left: 0, right: 0, bottom: "-30px" }}
           >
             <div className="flex justify-center gap-2 mb-3">
-              {[0, 1, 2, 3, 4].map((step) => (
+              {[0, 1, 2, 3, 4, 5, 6].map((step) => (
                 <motion.div
                   key={step}
                   className="h-0.5 rounded-full transition-all"
@@ -397,10 +477,12 @@ export const JoinReiFlowDiagram = () => {
             </div>
             <div className="text-[9px]" style={{ color: "#6e6b67", letterSpacing: "0.06em" }}>
               {activeStep === 0 && "PURCHASE PACKAGE"}
-              {activeStep === 1 && "LIST ON REI • TELEGRAM ONBOARDING"}
-              {activeStep === 2 && "SKILLSYNC MATCHING • CRM MANAGEMENT"}
-              {activeStep === 3 && "ICP MATCH • APPLICANTS"}
-              {activeStep === 4 && "LOOP COMPLETE"}
+              {activeStep === 1 && "TELEGRAM ONBOARDING"}
+              {activeStep === 2 && "CRM CAMPAIGN MANAGEMENT"}
+              {activeStep === 3 && "APPLICANTS COLLECTED"}
+              {activeStep === 4 && "LISTED ON REI"}
+              {activeStep === 5 && "SKILLSYNC MATCHING"}
+              {activeStep === 6 && "ICP MATCH COMPLETE"}
             </div>
           </motion.div>
         </div>
