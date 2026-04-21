@@ -70,15 +70,47 @@ export const JoinReiFlowDiagram = () => {
   // Right-aligned columns x-centers: LISTED/ONBOARD=480, SKILLSYNC/CRM=720, ICP/APPLICANTS=960
   // PACKAGE x-center: 130, vertically centered between rows → top at ~290, bottom at ~650 (centered on 470 divider)
 
+  const stepLabels = [
+    "PURCHASE PACKAGE",
+    "TELEGRAM ONBOARDING",
+    "CRM CAMPAIGN MANAGEMENT",
+    "APPLICANTS COLLECTED",
+    "LISTED ON REI",
+    "SKILLSYNC MATCHING",
+    "ICP MATCH COMPLETE",
+  ];
+
   return (
     <section
-      className="min-h-screen snap-start flex items-center justify-center text-white py-16 px-4"
+      className="min-h-screen snap-start flex flex-col items-center justify-center text-white py-16 px-4"
       style={{
         background: "#0a0a0a",
         fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
       }}
     >
-      <div className="origin-center scale-[0.4] sm:scale-[0.5] md:scale-[0.65] lg:scale-75 xl:scale-90">
+      {/* Section title + active step label — matches other JoinRei section title sizing */}
+      <div className="text-center mb-6 px-4">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-center" style={{ color: "#e8c4b8" }}>
+          Rei Flow + Telegram CRM Outreach
+        </h2>
+        <div className="flex justify-center gap-2 mt-6 mb-3">
+          {[0, 1, 2, 3, 4, 5, 6].map((step) => (
+            <motion.div
+              key={step}
+              className="h-0.5 rounded-full transition-all"
+              style={{
+                width: activeStep === step ? "32px" : "4px",
+                background: activeStep === step ? "#e8c4b8" : "rgba(255,255,255,0.1)",
+              }}
+            />
+          ))}
+        </div>
+        <div className="text-[10px] md:text-xs" style={{ color: "#6e6b67", letterSpacing: "0.06em" }}>
+          {stepLabels[activeStep]}
+        </div>
+      </div>
+
+      <div className="origin-top scale-[0.4] sm:scale-[0.5] md:scale-[0.65] lg:scale-75 xl:scale-90">
         <div className="relative" style={{ width: "1100px", height: "960px" }}>
           {/* Animated SVG arrows */}
           <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }} viewBox="0 0 1100 960" preserveAspectRatio="none" width="1100" height="960">
