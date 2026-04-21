@@ -139,9 +139,11 @@ export const JoinReiFlowDiagram = () => {
               />
             )}
 
-            {/* Arrow 2: APPLICANTS → LISTED (hard L-angle, blue). Applicants top-center x=960, y=540 → up to y=480 → left to x=480 → up to Listed bottom y=400 */}
+            {/* Arrow 2: APPLICANTS → LISTED (hard L-angle, blue). Routed clear of pink arrow:
+                Applicants top-center x=960, y=540 → up to y=430 (above pink corridor at 455) →
+                left to x=540 (right of pink vertical at 480) → up to LISTED bottom-right at y=400 */}
             <motion.path
-              d="M 960 540 L 960 480 L 480 480 L 480 400"
+              d="M 960 540 L 960 430 L 540 430 L 540 400"
               stroke={activeStep >= 4 ? "#0088cc" : "rgba(255,255,255,0.08)"}
               strokeWidth="2"
               fill="none"
@@ -152,7 +154,7 @@ export const JoinReiFlowDiagram = () => {
             />
             {activeStep >= 4 && (
               <motion.polygon
-                points="480,400 472,412 488,412"
+                points="540,400 532,412 548,412"
                 fill="#0088cc"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
