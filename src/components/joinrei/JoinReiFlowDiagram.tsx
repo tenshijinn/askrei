@@ -82,20 +82,20 @@ export const JoinReiFlowDiagram = () => {
 
   return (
     <section
-      className="min-h-screen snap-start flex flex-col items-center justify-center text-white py-16 px-4"
+      className="min-h-screen snap-start flex flex-col items-center justify-start text-white py-6 px-4 overflow-hidden"
       style={{
         background: "#0a0a0a",
         fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
       }}
     >
       {/* Section title — top-left aligned, stacked, compact */}
-      <div className="w-full max-w-[1400px] mb-2 px-4">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-light text-left leading-tight">
+      <div className="w-full max-w-[1400px] mb-1 px-4">
+        <h2 className="text-xl md:text-2xl lg:text-3xl font-light text-left leading-[1.15]">
           <span style={{ color: "#FFD700" }} className="block">Rocket Reach</span>
           <span style={{ color: "#e8c4b8" }} className="block">Reach Telegram&apos;s</span>
           <span style={{ color: "#e8c4b8" }} className="block">350 million Crypto Users</span>
         </h2>
-        <div className="flex items-center gap-3 mt-3">
+        <div className="flex items-center gap-3 mt-2">
           <div className="flex gap-1.5">
             {[0, 1, 2, 3, 4, 5, 6].map((step) => (
               <motion.div
@@ -114,7 +114,7 @@ export const JoinReiFlowDiagram = () => {
         </div>
       </div>
 
-      <div className="origin-top scale-[0.32] sm:scale-[0.42] md:scale-[0.5] lg:scale-[0.58] xl:scale-[0.65]">
+      <div className="origin-top scale-[0.4] sm:scale-[0.5] md:scale-[0.6] lg:scale-[0.72] xl:scale-[0.85]">
         <div className="relative" style={{ width: "1100px", height: "960px" }}>
           {/* Animated SVG arrows — all hard-angled (terminal style) */}
           <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }} viewBox="0 0 1100 960" preserveAspectRatio="none" width="1100" height="960">
