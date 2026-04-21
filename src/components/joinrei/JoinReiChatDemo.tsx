@@ -6,6 +6,7 @@ const chatMessages = [
   { role: 'talent', text: 'What is it?' },
   { role: 'rei', text: 'Community activation for a DAO. Short scope. Paid in SOL.' },
   { role: 'talent', text: "I'm in. Send me the details." },
+  { role: 'rei', text: "Here you go → galxe.com/quest/dao-activation • Reward: 0.5 SOL + 250 XP" },
 ];
 
 export const JoinReiChatDemo = () => {
