@@ -90,8 +90,9 @@ export const JoinReiFlowDiagram = () => {
     >
       {/* Section title + active step label — matches other JoinRei section title sizing */}
       <div className="text-center mb-6 px-4">
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-center" style={{ color: "#e8c4b8" }}>
-          Rei Flow + Telegram CRM Outreach
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-center">
+          <span style={{ color: "#FFD700" }}>Rocket Reach</span>
+          <span style={{ color: "#e8c4b8" }}> - Reaching Telegram&apos;s 350 million Crypto Users</span>
         </h2>
         <div className="flex justify-center gap-2 mt-6 mb-3">
           {[0, 1, 2, 3, 4, 5, 6].map((step) => (
