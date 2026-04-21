@@ -112,11 +112,11 @@ export const JoinReiFlowDiagram = () => {
 
       <div className="origin-top scale-[0.4] sm:scale-[0.5] md:scale-[0.65] lg:scale-75 xl:scale-90">
         <div className="relative" style={{ width: "1100px", height: "960px" }}>
-          {/* Animated SVG arrows */}
+          {/* Animated SVG arrows — all hard-angled (terminal style) */}
           <svg className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }} viewBox="0 0 1100 960" preserveAspectRatio="none" width="1100" height="960">
-            {/* Arrow 1: PACKAGE → ONBOARD (diagonal down-right, cream-pink) */}
+            {/* Arrow 1: PACKAGE → ONBOARD (hard L-angle, cream-pink). Package right edge x=220, midline y=455. Onboard top-center x=480, y=540 */}
             <motion.path
-              d="M 220 470 Q 320 490 380 540"
+              d="M 220 455 L 480 455 L 480 540"
               stroke={activeStep >= 1 ? "#e8c4b8" : "rgba(255,255,255,0.08)"}
               strokeWidth="2"
               fill="none"
@@ -127,7 +127,7 @@ export const JoinReiFlowDiagram = () => {
             />
             {activeStep >= 1 && (
               <motion.polygon
-                points="380,540 370,531 376,545"
+                points="480,540 472,528 488,528"
                 fill="#e8c4b8"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -135,9 +135,9 @@ export const JoinReiFlowDiagram = () => {
               />
             )}
 
-            {/* Arrow 2: APPLICANTS → LISTED (curved blue, looping back up) */}
+            {/* Arrow 2: APPLICANTS → LISTED (hard L-angle, blue). Applicants top-center x=960, y=540 → up to y=480 → left to x=480 → up to Listed bottom y=400 */}
             <motion.path
-              d="M 960 540 Q 960 460 720 440 T 480 410"
+              d="M 960 540 L 960 480 L 480 480 L 480 400"
               stroke={activeStep >= 4 ? "#0088cc" : "rgba(255,255,255,0.08)"}
               strokeWidth="2"
               fill="none"
@@ -148,32 +148,11 @@ export const JoinReiFlowDiagram = () => {
             />
             {activeStep >= 4 && (
               <motion.polygon
-                points="480,410 491,402 491,418"
+                points="480,400 472,412 488,412"
                 fill="#0088cc"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
-              />
-            )}
-
-            {/* Arrow 3: PACKAGE → LISTED (diagonal up-right, cream-pink) */}
-            <motion.path
-              d="M 220 410 Q 320 330 380 290"
-              stroke={activeStep >= 4 ? "#e8c4b8" : "rgba(255,255,255,0.08)"}
-              strokeWidth="2"
-              fill="none"
-              strokeDasharray="4 4"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: activeStep >= 4 ? 1 : 0 }}
-              transition={{ duration: 0.8 }}
-            />
-            {activeStep >= 4 && (
-              <motion.polygon
-                points="380,290 374,302 387,296"
-                fill="#e8c4b8"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
               />
             )}
 
