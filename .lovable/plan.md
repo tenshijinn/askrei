@@ -1,60 +1,45 @@
 
 
-## Add "Rei Flow + Telegram CRM Outreach" parallax to /joinrei
+## Animate the 3 Mockups in HomeDemoSection
 
-Port the full uploaded `Flow.tsx` design as a new full-viewport snap section, slotted between `JoinReiDemoSection` and `JoinReiReferral`.
+Bring the three mockups (Onboarding, Chat with Rei, Post Tasks) to life so users can see each flow happen automatically when the section enters view.
 
-### Layout (from the uploaded file)
+### What changes
 
-```text
-                    REI FLOW (4 phones, connected horizontally)
-   ┌───────┐ ──► ┌───────┐ ──► ┌───────┐ ──► ┌───────┐
-   │PACKAGE│     │LISTED │     │SKILL- │     │  ICP  │
-   │ $2500 │     │ Live  │     │ SYNC  │     │ MATCH │
-   └───┬───┘     └───▲───┘     └───────┘     └───┬───┘
-       │             │                           │
-       │ L-shape     └──── loop back ────────────┘
-       ▼ (yellow)               (telegram blue)
-   ─────────────  TELEGRAM CRM OUTREACH  ─────────────
-   ┌───────┐         ┌───────┐                ┌───────┐
-   │ONBOARD│         │  CRM  │                │APPLIC.│
-   │TG blue│         │(TEAM) │                │  847  │
-   └───────┘         └───────┘                └───────┘
-                  ●━━━━ ● ● ● ●   step indicator
-```
+**Mockup 1 — Proof of Humanity / Onboarding**
+- Step indicator advances `1 → 2 → 3` over time (active pill highlights in accent red).
+- "Sign in with X" button briefly shows a hover/press state, then a green check appears next to it.
+- "Connect Wallet" button does the same, then shows a truncated wallet address (`7xKn…9pQ2`).
+- Role pills toggle on one by one (`Dev → Design → Community`), pulsing accent border as each activates.
+- Voice intro pill animates a small waveform for a couple of seconds.
 
-7 phone mockups total, two rows, with animated SVG connectors and a 5-step auto-cycling active state (3s interval).
+**Mockup 2 — Chat with Rei**
+- Messages appear sequentially with a typing indicator (3 bouncing dots) between each:
+  1. Rei: "Hey! I found 3 tasks…"
+  2. Task cards fade/slide in one by one
+  3. You: "Show me the Galxe quest details"
+  4. Rei: "Sure! Here's the breakdown…"
+  5. Final Rei message: link + reward (`galxe.com/quest/dao-activation • 0.5 SOL + 250 XP`)
+- The input bar shows a blinking caret while idle.
 
-### Implementation
+**Mockup 3 — Post Tasks**
+- Type pills cycle: `Job → Task → Bounty → Quest`, settling on Bounty.
+- Form fields type in their values character-by-character (Title, Company, Description, Compensation) with a blinking caret.
+- Role tags pop in one at a time.
+- "Pay 5 USDC & Post" button pulses subtly, then briefly switches label to "Posted ✓" in green before resetting.
 
-**Create `src/components/joinrei/JoinReiFlowDiagram.tsx`** — single self-contained component porting the uploaded `Flow.tsx` with these adaptations:
+**Loop behaviour**
+- Each mockup runs its own short loop (~8–12s), then resets and replays. Loops are independent so they don't feel synced/robotic.
+- Animations only run while the section is in the viewport (IntersectionObserver), and pause when out of view to save CPU.
+- Respects `prefers-reduced-motion`: falls back to a single static "final state" view (current behaviour) for users who opt out.
 
-1. **Replace `motion/react` → `framer-motion`** (already in project, used elsewhere). All `<motion.div>`, `<motion.path>`, `<motion.polygon>` JSX stays identical.
-2. **Keep `lucide-react` icons** (Eye, Send, User, Target, Briefcase, ArrowRight, MessageSquare, CheckCircle, Users) — already a project dep.
-3. **Keep all inline `style={{}}` colors verbatim** — the design uses its own palette (`#e8c4b8` cream-pink, `#FFD700` gold, `#0088cc` Telegram blue, `#0a0a0a`/`#111` dark). These read well on Rei's existing dark background and shouldn't be re-skinned (the file is intentionally multi-color to distinguish Rei vs Telegram flows).
-4. **Wrap in snap section**: outer `<section className="min-h-screen snap-start flex items-center justify-center bg-[#0a0a0a]">` to match other JoinRei sections, replacing the file's `min-h-screen p-8 flex items-center justify-center` wrapper.
-5. **Responsive scaling**: the design is fixed-width (1800px max, 180px phones, hardcoded SVG coords like `M 290 402`). On screens below `lg`, scale the entire diagram down with a CSS `transform: scale()` wrapper rather than re-laying-out (preserves SVG arrow alignment). Below `md`, hide the cross-row SVG arrows and stack the two rows vertically with extra gap.
-6. **Auto-cycle**: keep the `useState`/`useEffect` 3s `setInterval` driving `activeStep` 0→4.
-7. **`PhoneMockup` and `ConnectionLine`** stay as internal sub-components inside the same file (matches uploaded structure).
+### Scope
+- Update `src/components/joinrei/HomeDemoSection.tsx` only — adds local state + small reusable hooks (`useTypewriter`, `useStepCycle`) inside the component file or a small helper alongside it.
+- No new dependencies. Pure React state + CSS transitions and existing Tailwind animation utilities (`animate-fade-in`, `animate-pulse`).
+- `JoinReiDemoSection.tsx` (used on `/joinrei`) is **not** changed in this pass — the request was for `/` only. Happy to mirror it there next if you want.
 
-**Edit `src/pages/JoinRei.tsx`** — import and insert the new section:
-
-```tsx
-import { JoinReiFlowDiagram } from '@/components/joinrei/JoinReiFlowDiagram';
-// ...
-<JoinReiDemoSection />
-<JoinReiFlowDiagram />   {/* new */}
-<JoinReiReferral />
-```
-
-### Discarded / out of scope
-
-- Uploaded Tailwind v4 configs, `theme.css`, `fonts.css` — not used; we keep Rei's existing v3 setup.
-- No re-skin to `#ed565a` — the diagram's two-color story (cream-pink for Rei, Telegram blue for the outreach loop) is the whole point. Confirm if you want this overridden.
-- No new assets — every icon is inline `lucide-react`.
-
-### Files
-
-- **Create**: `src/components/joinrei/JoinReiFlowDiagram.tsx`
-- **Edit**: `src/pages/JoinRei.tsx`
+### Technical notes
+- Single `IntersectionObserver` at the section level toggles an `isActive` boolean passed to each mockup.
+- Each mockup is extracted into its own internal sub-component (`OnboardingMockup`, `ChatMockup`, `PostTaskMockup`) for clean state isolation — no change to the outer grid, headings, or `ScrollFadeIn` wrappers.
+- All timings tuned so a full cycle fits comfortably while the user dwells on the section; nothing flashes faster than ~250ms.
 
