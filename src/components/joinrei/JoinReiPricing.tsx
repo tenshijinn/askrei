@@ -151,14 +151,16 @@ export const JoinReiPricing = () => {
                         : 'btn-manga btn-manga-primary w-full'
                     }`}
                     onClick={() => {
-                      if (tier.bookCall) {
+                      if (tier.name === 'Rocket Reach') {
+                        window.location.href = '/rocket-reach';
+                      } else if (tier.bookCall) {
                         window.open('https://calendly.com/wayneanthonyd-thepipegdao/join-rei', '_blank');
                       } else {
                         window.location.href = '/rei';
                       }
                     }}
                   >
-                    {tier.bookCall ? 'Book a Call' : 'Get Started'}
+                    {tier.name === 'Rocket Reach' ? 'Launch Campaign' : tier.bookCall ? 'Book a Call' : 'Get Started'}
                   </button>
                 </div>
               </ScrollFadeIn>
