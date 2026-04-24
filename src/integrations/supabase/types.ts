@@ -50,6 +50,57 @@ export type Database = {
         }
         Relationships: []
       }
+      campaign_subscriptions: {
+        Row: {
+          created_at: string
+          customer_email: string
+          expires_at: string | null
+          id: string
+          last_error: string | null
+          last_scraped_at: string | null
+          project_link: string
+          project_name: string
+          scrape_count: number | null
+          screenshot_url: string | null
+          status: string
+          stripe_subscription_id: string
+          tasks_imported_count: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_email: string
+          expires_at?: string | null
+          id?: string
+          last_error?: string | null
+          last_scraped_at?: string | null
+          project_link: string
+          project_name: string
+          scrape_count?: number | null
+          screenshot_url?: string | null
+          status?: string
+          stripe_subscription_id: string
+          tasks_imported_count?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_email?: string
+          expires_at?: string | null
+          id?: string
+          last_error?: string | null
+          last_scraped_at?: string | null
+          project_link?: string
+          project_name?: string
+          scrape_count?: number | null
+          screenshot_url?: string | null
+          status?: string
+          stripe_subscription_id?: string
+          tasks_imported_count?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       chat_conversations: {
         Row: {
           created_at: string | null
@@ -580,6 +631,63 @@ export type Database = {
           },
         ]
       }
+      subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean | null
+          canceled_at: string | null
+          created_at: string
+          current_period_end: string | null
+          current_period_start: string | null
+          customer_email: string | null
+          environment: string
+          id: string
+          metadata: Json | null
+          price_id: string | null
+          product_id: string | null
+          status: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          cancel_at_period_end?: boolean | null
+          canceled_at?: string | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          customer_email?: string | null
+          environment?: string
+          id?: string
+          metadata?: Json | null
+          price_id?: string | null
+          product_id?: string | null
+          status: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          cancel_at_period_end?: boolean | null
+          canceled_at?: string | null
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          customer_email?: string | null
+          environment?: string
+          id?: string
+          metadata?: Json | null
+          price_id?: string | null
+          product_id?: string | null
+          status?: string
+          stripe_customer_id?: string
+          stripe_subscription_id?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       talent_views: {
         Row: {
           employer_wallet: string
@@ -606,6 +714,7 @@ export type Database = {
       }
       tasks: {
         Row: {
+          campaign_subscription_id: string | null
           company_name: string | null
           compensation: string | null
           created_at: string | null
@@ -627,6 +736,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          campaign_subscription_id?: string | null
           company_name?: string | null
           compensation?: string | null
           created_at?: string | null
@@ -648,6 +758,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          campaign_subscription_id?: string | null
           company_name?: string | null
           compensation?: string | null
           created_at?: string | null
@@ -668,7 +779,15 @@ export type Database = {
           title?: string
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tasks_campaign_subscription_id_fkey"
+            columns: ["campaign_subscription_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       twitter_whitelist: {
         Row: {
