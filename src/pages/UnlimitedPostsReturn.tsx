@@ -102,7 +102,7 @@ export default function UnlimitedPostsReturn() {
           </div>
           <h1 className="text-2xl font-light text-primary">Subscription active</h1>
           <p className="text-cream/80 text-sm leading-relaxed">
-            Rei is now scraping your campaign daily. New tasks are auto-indexed and matched to skill-fit contributors via AskRei and Agent Rei.
+            Your campaign is now active. Rei automatically indexes new tasks and matches them to skill-fit contributors via AskRei and Agent Rei.
           </p>
 
           {/* Campaign analytics */}
@@ -143,7 +143,7 @@ export default function UnlimitedPostsReturn() {
                 />
                 <StatCard
                   icon={<RefreshCw className="h-4 w-4" />}
-                  label="Daily scrapes"
+                  label="Sync cycles"
                   value={String(campaign.scrape_count ?? 0)}
                 />
                 <StatCard
@@ -162,7 +162,7 @@ export default function UnlimitedPostsReturn() {
 
               {campaign.last_scraped_at && (
                 <div className="text-[10px] text-cream/40 text-center">
-                  Last scrape: {new Date(campaign.last_scraped_at).toLocaleString()}
+                  Last sync: {new Date(campaign.last_scraped_at).toLocaleString()}
                 </div>
               )}
             </div>

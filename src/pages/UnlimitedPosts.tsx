@@ -39,25 +39,28 @@ export default function UnlimitedPosts() {
     projectName.trim().length > 0 &&
     projectLink.trim().length > 0 &&
     /^https?:\/\/.+/.test(projectLink) &&
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
-    screenshot !== null;
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const startSubscription = async () => {
-    if (!isValid || !screenshot) return;
+    if (!isValid) return;
     setIsUploading(true);
     try {
-      // Upload screenshot to storage
-      const ext = screenshot.name.split(".").pop() || "png";
-      const path = `unlimited-posts/${email.replace(/[^a-zA-Z0-9]/g, "_")}/${Date.now()}.${ext}`;
-      const { error: upErr } = await supabase.storage
-        .from("rei-contributor-files")
-        .upload(path, screenshot, { contentType: screenshot.type, upsert: false });
-      if (upErr) throw new Error(`Upload failed: ${upErr.message}`);
+      let screenshotUrl: string | null = null;
 
-      const { data: signed, error: signErr } = await supabase.storage
-        .from("rei-contributor-files")
-        .createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
-      if (signErr || !signed?.signedUrl) throw new Error("Could not generate screenshot URL");
+      if (screenshot) {
+        const ext = screenshot.name.split(".").pop() || "png";
+        const path = `unlimited-posts/${email.replace(/[^a-zA-Z0-9]/g, "_")}/${Date.now()}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("rei-contributor-files")
+          .upload(path, screenshot, { contentType: screenshot.type, upsert: false });
+        if (upErr) throw new Error(`Upload failed: ${upErr.message}`);
+
+        const { data: signed, error: signErr } = await supabase.storage
+          .from("rei-contributor-files")
+          .createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
+        if (signErr || !signed?.signedUrl) throw new Error("Could not generate image URL");
+        screenshotUrl = signed.signedUrl;
+      }
 
       setCheckoutMeta({
         customerEmail: email,
@@ -65,7 +68,7 @@ export default function UnlimitedPosts() {
           product_id: "unlimited_posts",
           project_name: projectName,
           project_link: projectLink,
-          screenshot_url: signed.signedUrl,
+          ...(screenshotUrl ? { screenshot_url: screenshotUrl } : {}),
           customer_email: email,
         },
       });
@@ -113,9 +116,9 @@ export default function UnlimitedPosts() {
             </div>
             <div className="mt-10 space-y-3 text-xs text-cream/60 leading-relaxed">
               <p>• Drop a link to your active campaign (Galxe, Zealy, QuestN, TaskOn, Layer3, custom).</p>
-              <p>• We softly scrape its public task list daily for the duration of your subscription.</p>
+              <p>• Rei keeps your campaign in sync automatically for the duration of your subscription.</p>
               <p>• Every new task is auto-indexed and surfaced to skill-matched contributors via AskRei + Agent Rei.</p>
-              <p>• Subscription renews monthly via Stripe. Cancel anytime — scraping stops at period end.</p>
+              <p>• Subscription renews monthly via Stripe. Cancel anytime — sync stops at period end.</p>
             </div>
           </div>
 
@@ -143,7 +146,7 @@ export default function UnlimitedPosts() {
                     className="rei-field"
                   />
                   <p className="mt-1 text-[10px] text-cream/40">
-                    Must be a public URL (Zealy / TaskOn / QuestN / Galxe / Layer3 / custom). No login walls.
+                    Public URL only (Zealy / TaskOn / QuestN / Galxe / Layer3 / custom). No login walls.
                   </p>
                 </div>
                 <div>
@@ -157,7 +160,7 @@ export default function UnlimitedPosts() {
                   />
                 </div>
                 <div>
-                  <div className="rei-section-label">Campaign screenshot *</div>
+                  <div className="rei-section-label">Campaign image (optional)</div>
                   <label className="block">
                     <div className="rei-surface-2 border-dashed border border-white/15 hover:border-primary/40 transition-colors rounded-xl p-5 cursor-pointer text-center">
                       {screenshotPreview ? (
@@ -168,7 +171,7 @@ export default function UnlimitedPosts() {
                       ) : (
                         <div className="space-y-2">
                           <Upload className="h-5 w-5 text-cream/40 mx-auto" />
-                          <div className="text-xs text-cream/60">Browse / drop image (PNG/JPG, max 10MB)</div>
+                          <div className="text-xs text-cream/60">Optional — helps us match your project's branding (PNG/JPG, max 10MB)</div>
                         </div>
                       )}
                     </div>
