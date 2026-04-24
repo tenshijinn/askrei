@@ -9,6 +9,8 @@ import JoinRei from "./pages/JoinRei";
 import JoinReiOriginal from "./pages/JoinReiOriginal";
 import Rei from "./pages/Rei";
 import RocketReach from "./pages/RocketReach";
+import UnlimitedPosts from "./pages/UnlimitedPosts";
+import UnlimitedPostsReturn from "./pages/UnlimitedPostsReturn";
 import ReferralRedirect from "./pages/ReferralRedirect";
 import NotFound from "./pages/NotFound";
 
@@ -27,6 +29,8 @@ const App = () => (
               <Route path="/joinrei" element={<JoinReiOriginal />} />
               <Route path="/rei" element={<Rei />} />
               <Route path="/rocket-reach" element={<RocketReach />} />
+              <Route path="/unlimited-posts" element={<UnlimitedPosts />} />
+              <Route path="/unlimited-posts/return" element={<UnlimitedPostsReturn />} />
               <Route path="/r/:code" element={<ReferralRedirect />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -153,6 +153,8 @@ export const JoinReiPricing = () => {
                     onClick={() => {
                       if (tier.name === 'Rocket Reach') {
                         window.location.href = '/rocket-reach';
+                      } else if (tier.name === 'Unlimited Posts') {
+                        window.location.href = '/unlimited-posts';
                       } else if (tier.bookCall) {
                         window.open('https://calendly.com/wayneanthonyd-thepipegdao/join-rei', '_blank');
                       } else {
@@ -160,7 +162,7 @@ export const JoinReiPricing = () => {
                       }
                     }}
                   >
-                    {tier.name === 'Rocket Reach' ? 'Launch Campaign' : tier.bookCall ? 'Book a Call' : 'Get Started'}
+                    {tier.name === 'Rocket Reach' ? 'Launch Campaign' : tier.name === 'Unlimited Posts' ? 'Start Subscription' : tier.bookCall ? 'Book a Call' : 'Get Started'}
                   </button>
                 </div>
               </ScrollFadeIn>
