@@ -12,6 +12,7 @@ const supabase = createClient(
 );
 
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
+const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
 
 interface ExtractedTask {
   title: string;
@@ -31,27 +32,28 @@ Deno.serve(async (req) => {
     let query = supabase.from("campaign_subscriptions").select("*");
     if (stripe_subscription_id) query = query.eq("stripe_subscription_id", stripe_subscription_id);
     else if (campaign_subscription_id) query = query.eq("id", campaign_subscription_id);
-    else throw new Error("stripe_subscription_id or campaign_subscription_id required");
+    else throw new Error("subscription identifier required");
 
     const { data: campaign, error: cErr } = await query.maybeSingle();
-    if (cErr || !campaign) throw new Error("Campaign subscription not found");
+    if (cErr || !campaign) throw new Error("Campaign not found");
 
     if (campaign.status !== "active") {
-      return json({ skipped: true, reason: "subscription not active" });
+      return json({ skipped: true, reason: "inactive" });
     }
     if (campaign.expires_at && new Date(campaign.expires_at) < new Date()) {
-      return json({ skipped: true, reason: "subscription expired" });
+      return json({ skipped: true, reason: "expired" });
     }
 
-    // Soft scrape
-    const html = await softScrape(campaign.project_link);
+    // Fetch rendered page content + visual via Firecrawl
+    const page = await fetchPageContent(campaign.project_link);
 
-    // AI extraction
+    // Extract tasks via AI from markdown + (optional) visual
+    const visualUrl = page.screenshot || campaign.screenshot_url || null;
     const tasks = await extractTasksWithAI({
       projectName: campaign.project_name,
       projectLink: campaign.project_link,
-      html,
-      screenshotUrl: campaign.screenshot_url,
+      content: page.markdown || page.html || "",
+      visualUrl,
     });
 
     // Insert / dedupe
@@ -71,7 +73,7 @@ Deno.serve(async (req) => {
         compensation: t.compensation || null,
         role_tags: t.role_tags || [],
         link: campaign.project_link,
-        og_image: campaign.screenshot_url,
+        og_image: visualUrl,
         employer_wallet: `email:${campaign.customer_email}`,
         payment_tx_signature: `stripe:${campaign.stripe_subscription_id}`,
         opportunity_type: "task",
@@ -86,21 +88,36 @@ Deno.serve(async (req) => {
       else imported++;
     }
 
-    // Update campaign tracking
+    // Update campaign tracking + refreshed visual
+    const updates: Record<string, unknown> = {
+      last_scraped_at: new Date().toISOString(),
+      scrape_count: (campaign.scrape_count || 0) + 1,
+      tasks_imported_count: (campaign.tasks_imported_count || 0) + imported,
+      last_error: null,
+    };
+    if (page.screenshot) updates.screenshot_url = page.screenshot;
+
     await supabase
       .from("campaign_subscriptions")
-      .update({
-        last_scraped_at: new Date().toISOString(),
-        scrape_count: (campaign.scrape_count || 0) + 1,
-        tasks_imported_count: (campaign.tasks_imported_count || 0) + imported,
-        last_error: null,
-      })
+      .update(updates)
       .eq("id", campaign.id);
 
-    return json({ success: true, scraped: tasks.length, imported });
+    return json({ success: true, found: tasks.length, imported });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("scrape-campaign-tasks error:", message);
+    console.error("sync error:", message);
+    // Persist last_error for internal debugging
+    try {
+      const body = await req.clone().json().catch(() => ({}));
+      const id = body.campaign_subscription_id;
+      const sid = body.stripe_subscription_id;
+      if (id || sid) {
+        const filter = id
+          ? supabase.from("campaign_subscriptions").update({ last_error: message }).eq("id", id)
+          : supabase.from("campaign_subscriptions").update({ last_error: message }).eq("stripe_subscription_id", sid);
+        await filter;
+      }
+    } catch (_) { /* noop */ }
     return json({ success: false, error: message }, 500);
   }
 });
@@ -112,36 +129,55 @@ function json(body: unknown, status = 200) {
   });
 }
 
-async function softScrape(url: string): Promise<string> {
+async function fetchPageContent(url: string): Promise<{ markdown: string; html: string; screenshot: string | null }> {
+  if (!FIRECRAWL_API_KEY) {
+    console.warn("FIRECRAWL_API_KEY not set; returning empty content");
+    return { markdown: "", html: "", screenshot: null };
+  }
+
   try {
-    const res = await fetch(url, {
+    const res = await fetch("https://api.firecrawl.dev/v2/scrape", {
+      method: "POST",
       headers: {
-        "User-Agent":
-          "Mozilla/5.0 (compatible; ReiBot/1.0; +https://askrei.lovable.app)",
-        Accept: "text/html,application/xhtml+xml",
+        Authorization: `Bearer ${FIRECRAWL_API_KEY}`,
+        "Content-Type": "application/json",
       },
-      redirect: "follow",
+      body: JSON.stringify({
+        url,
+        formats: ["markdown", "screenshot"],
+        onlyMainContent: true,
+        waitFor: 2000,
+      }),
     });
-    if (!res.ok) return "";
-    const html = await res.text();
-    // Strip scripts/styles, keep body text + structure
-    return html
-      .replace(/<script[\s\S]*?<\/script>/gi, "")
-      .replace(/<style[\s\S]*?<\/style>/gi, "")
-      .replace(/<svg[\s\S]*?<\/svg>/gi, "")
-      .slice(0, 60000); // cap for AI
+
+    if (!res.ok) {
+      const txt = await res.text();
+      console.error("firecrawl error:", res.status, txt);
+      return { markdown: "", html: "", screenshot: null };
+    }
+
+    const data = await res.json();
+    // SDK/REST shapes: fields can be on root or under data
+    const root = data?.data ?? data;
+    return {
+      markdown: typeof root?.markdown === "string" ? root.markdown : "",
+      html: typeof root?.html === "string" ? root.html : "",
+      screenshot: typeof root?.screenshot === "string" ? root.screenshot : null,
+    };
   } catch (e) {
-    console.error("Scrape fetch failed:", e);
-    return "";
+    console.error("firecrawl exception:", e);
+    return { markdown: "", html: "", screenshot: null };
   }
 }
 
 async function extractTasksWithAI(input: {
   projectName: string;
   projectLink: string;
-  html: string;
-  screenshotUrl?: string | null;
+  content: string;
+  visualUrl?: string | null;
 }): Promise<ExtractedTask[]> {
+  if (!input.content && !input.visualUrl) return [];
+
   const userContent: any[] = [
     {
       type: "text",
@@ -154,15 +190,15 @@ For each task return: title, description (1-2 sentences), compensation (if shown
 
 If the page is empty / login-walled / has no detectable tasks, return an empty array.
 
-HTML (truncated):
-\`\`\`html
-${input.html.slice(0, 50000)}
+Page content (markdown):
+\`\`\`
+${input.content.slice(0, 50000)}
 \`\`\``,
     },
   ];
 
-  if (input.screenshotUrl) {
-    userContent.push({ type: "image_url", image_url: { url: input.screenshotUrl } });
+  if (input.visualUrl) {
+    userContent.push({ type: "image_url", image_url: { url: input.visualUrl } });
   }
 
   const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -177,7 +213,7 @@ ${input.html.slice(0, 50000)}
         {
           role: "system",
           content:
-            "You extract structured task / quest data from Web3 campaign pages (Galxe, Zealy, QuestN, TaskOn, Layer3, custom). Always call the save_tasks tool. Skip cookie banners, navigation, and footer text. Be precise.",
+            "You extract structured task / quest data from Web3 campaign pages. Always call the save_tasks tool. Skip cookie banners, navigation, and footer text. Be precise.",
         },
         { role: "user", content: userContent },
       ],
@@ -217,7 +253,7 @@ ${input.html.slice(0, 50000)}
 
   if (!response.ok) {
     const txt = await response.text();
-    console.error("AI gateway error:", response.status, txt);
+    console.error("ai gateway error:", response.status, txt);
     return [];
   }
 

@@ -101,13 +101,13 @@ async function handleCheckoutCompleted(session: any, env: StripeEnv) {
     );
   if (csErr) console.error("Failed to upsert campaign_subscription:", csErr);
 
-  // Trigger first scrape (fire-and-forget)
+  // Trigger initial sync (fire-and-forget)
   try {
-    await supabase.functions.invoke("scrape-campaign-tasks", {
+    await supabase.functions.invoke("sync-campaign-tasks", {
       body: { stripe_subscription_id: subscriptionId },
     });
   } catch (e) {
-    console.error("Failed to invoke scrape-campaign-tasks:", e);
+    console.error("Failed to invoke sync-campaign-tasks:", e);
   }
 }
 

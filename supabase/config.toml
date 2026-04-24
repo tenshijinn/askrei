@@ -6,10 +6,10 @@ verify_jwt = false
 [functions.payments-webhook]
 verify_jwt = false
 
-[functions.scrape-campaign-tasks]
+[functions.sync-campaign-tasks]
 verify_jwt = false
 
-[functions.refresh-campaign-subscriptions]
+[functions.refresh-active-campaigns]
 verify_jwt = false
 
 [functions.create-portal-session]

@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
     const now = new Date().toISOString();
     const { data: active, error } = await supabase
       .from("campaign_subscriptions")
-      .select("id, stripe_subscription_id")
+      .select("id")
       .eq("status", "active")
       .gt("expires_at", now);
 
@@ -28,7 +28,7 @@ Deno.serve(async (req) => {
     const errors: string[] = [];
     for (const sub of active || []) {
       try {
-        await supabase.functions.invoke("scrape-campaign-tasks", {
+        await supabase.functions.invoke("sync-campaign-tasks", {
           body: { campaign_subscription_id: sub.id },
         });
         invoked++;
@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("refresh-campaign-subscriptions error:", message);
+    console.error("refresh error:", message);
     return new Response(JSON.stringify({ success: false, error: message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
