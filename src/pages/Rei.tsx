@@ -13,6 +13,7 @@ import { Check, Twitter, Shield, AlertCircle, Info, Sparkles, Briefcase, CheckCi
 import { useNavigate } from 'react-router-dom';
 import { ReiEarningsHub } from '@/components/ReiEarningsHub';
 import { Progress } from '@/components/ui/progress';
+import { ReiAnalysisOverlay, type AnalysisStage } from '@/components/ReiAnalysisOverlay';
 
 interface TwitterUser { x_user_id: string; handle: string; display_name: string; profile_image_url?: string; verified: boolean; }
 interface VerificationStatus { bluechip_verified: boolean; verification_type: string | null; }
@@ -50,6 +51,9 @@ export default function Rei() {
   const [useExistingTranscript, setUseExistingTranscript] = useState(false);
   const [activeTab, setActiveTab] = useState<'profile' | 'askrei' | 'post'>('askrei');
   const [checkedUserId, setCheckedUserId] = useState<string | null>(null);
+  const [analysisStage, setAnalysisStage] = useState<AnalysisStage>(null);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [uploadPercent, setUploadPercent] = useState(0);
 
   useEffect(() => {
     const restoreTwitterState = async () => {
@@ -130,17 +134,74 @@ export default function Rei() {
     const hasValidAudio = audioBlob || (useExistingTranscript && registrationData?.file_path);
     if (!hasValidAudio || !publicKey || !consent || !twitterUser) return;
     setIsSubmitting(true);
+    setAnalysisError(null);
+    setUploadPercent(0);
+
+    // Time-based stage advancement (real completion always wins)
+    const stageTimers: ReturnType<typeof setTimeout>[] = [];
+    const scheduleStages = () => {
+      stageTimers.push(setTimeout(() => setAnalysisStage((s) => (s === 'transcribing' ? 'analyzing' : s)), 6000));
+      stageTimers.push(setTimeout(() => setAnalysisStage((s) => (s === 'analyzing' ? 'categorizing' : s)), 16000));
+    };
+    const clearStageTimers = () => stageTimers.forEach(clearTimeout);
+
     try {
       let filePath: string;
-      if (useExistingTranscript && registrationData?.file_path) { filePath = registrationData.file_path; }
-      else if (audioBlob) { const fileName = `${twitterUser.x_user_id}_${Date.now()}_audio.webm`; filePath = fileName; const { error: uploadError } = await supabase.storage.from('rei-contributor-files').upload(filePath, audioBlob); if (uploadError) throw uploadError; }
-      else { throw new Error('No audio available'); }
+      if (useExistingTranscript && registrationData?.file_path) {
+        filePath = registrationData.file_path;
+        // Skip upload stage for re-analyze
+        setAnalysisStage('transcribing');
+        scheduleStages();
+      } else if (audioBlob) {
+        setAnalysisStage('uploading');
+        const fileName = `${twitterUser.x_user_id}_${Date.now()}_audio.webm`;
+        filePath = fileName;
+        // Simulate upload progress (Supabase JS doesn't expose progress events)
+        const uploadInterval = setInterval(() => {
+          setUploadPercent((p) => (p < 90 ? p + 8 : p));
+        }, 200);
+        const { error: uploadError } = await supabase.storage.from('rei-contributor-files').upload(filePath, audioBlob);
+        clearInterval(uploadInterval);
+        if (uploadError) throw uploadError;
+        setUploadPercent(100);
+        setAnalysisStage('transcribing');
+        scheduleStages();
+      } else {
+        throw new Error('No audio available');
+      }
+
       const { data, error } = await supabase.functions.invoke('submit-rei-registration', { body: { x_user_id: twitterUser.x_user_id, handle: twitterUser.handle, display_name: twitterUser.display_name, profile_image_url: twitterUser.profile_image_url, verified: twitterUser.verified, wallet_address: publicKey.toString(), file_path: filePath, portfolio_url: portfolioUrl || null, role_tags: selectedRoles, consent: true, reanalyze: useExistingTranscript } });
+      clearStageTimers();
       if (error) throw error;
-      if (data && data.registration) { setRegistrationData(data.registration); setIsSuccess(true); setIsEditMode(false); setUseExistingTranscript(false); toast({ title: 'Success!', description: useExistingTranscript ? 'Profile re-analyzed!' : (isEditMode ? 'Profile updated!' : (data.message || 'Registration successful!')) }); }
-      else { throw new Error('Registration succeeded but no data returned'); }
-    } catch (error) { toast({ title: 'Error', description: 'Failed to submit registration', variant: 'destructive' }); }
-    finally { setIsSubmitting(false); }
+      if (data?.error) throw new Error(data.error);
+      if (data && data.registration) {
+        setAnalysisStage('done');
+        setTimeout(() => {
+          setRegistrationData(data.registration);
+          setIsSuccess(true);
+          setIsEditMode(false);
+          setUseExistingTranscript(false);
+          setAnalysisStage(null);
+        }, 900);
+        toast({ title: 'Success!', description: useExistingTranscript ? 'Profile re-analyzed!' : (isEditMode ? 'Profile updated!' : (data.message || 'Registration successful!')) });
+      } else {
+        throw new Error('Registration succeeded but no data returned');
+      }
+    } catch (error: any) {
+      clearStageTimers();
+      const message = error?.message || error?.error?.message || 'Failed to submit registration';
+      setAnalysisError(message);
+      setAnalysisStage('error');
+      toast({ title: 'Error', description: message, variant: 'destructive' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const closeAnalysisOverlay = () => {
+    setAnalysisStage(null);
+    setAnalysisError(null);
+    setUploadPercent(0);
   };
 
   const handleWhitelistRequest = async () => {
@@ -293,14 +354,14 @@ export default function Rei() {
                         <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={useExistingTranscript} onChange={(e) => { setUseExistingTranscript(e.target.checked); if (e.target.checked) setAudioBlob(null); }} style={{ accentColor: '#e8c4b8' }} /><span style={{ fontSize: '13px', color: '#a09e9a' }}>Use existing introduction</span></label>
                       </div>
                     )}
-                    {!useExistingTranscript && <div><div className="rei-section-label">{isEditMode ? 'Record New Introduction' : 'Record Your Introduction'}</div><AudioRecorder onAudioReady={handleAudioReady} maxDurationMinutes={5} /></div>}
+                    {!useExistingTranscript && <div><div className="rei-section-label">{isEditMode ? 'Record New Introduction' : 'Record Your Introduction'}</div><AudioRecorder onAudioReady={handleAudioReady} maxDurationSeconds={60} /></div>}
                     <div><div className="rei-section-label">Portfolio URL (Optional)</div><input type="url" placeholder="https://..." value={portfolioUrl} onChange={(e) => setPortfolioUrl(e.target.value)} className="rei-field" /></div>
                     <div><div className="rei-section-label">Role Tags *</div><div className="flex flex-wrap gap-2">{ROLE_OPTIONS.map((role) => <button key={role.value} onClick={() => toggleRole(role.value)} className="rei-chip" style={{ background: selectedRoles.includes(role.value) ? 'hsla(18,52%,82%,0.12)' : '#1e1e1e', borderColor: selectedRoles.includes(role.value) ? 'hsla(18,52%,82%,0.22)' : 'hsla(0,0%,100%,0.18)', color: selectedRoles.includes(role.value) ? '#e8c4b8' : '#a09e9a' }}>{selectedRoles.includes(role.value) && <span className="rei-chip-dot" />}{role.label}</button>)}</div></div>
                     <div className="rei-surface-2" style={{ padding: '14px' }}><label className="flex items-start gap-2 cursor-pointer"><input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ accentColor: '#e8c4b8', marginTop: '2px' }} /><span style={{ fontSize: '13px', color: '#a09e9a' }}>I consent to data storage *</span></label></div>
                     <div className="flex gap-2">
                       {isEditMode && <button onClick={() => { setIsEditMode(false); setAudioBlob(null); setUseExistingTranscript(false); }} className="btn-manga btn-manga-outline flex-1" style={{ borderRadius: '28px', padding: '11px 22px', cursor: 'pointer' }}>Cancel</button>}
                       <button onClick={handleSubmit} disabled={!canSubmit || isSubmitting} className="btn-manga btn-manga-primary flex-1" style={{ borderRadius: '28px', padding: '11px 22px', cursor: canSubmit && !isSubmitting ? 'pointer' : 'not-allowed', opacity: canSubmit && !isSubmitting ? 1 : 0.4 }}>
-                        {isSubmitting ? (useExistingTranscript ? 'Re-analyzing...' : 'Submitting...') : useExistingTranscript ? 'Re-analyze Profile' : (isEditMode ? 'Update Profile' : 'Register & Claim NFT')}
+                        {isSubmitting ? (useExistingTranscript ? 'Re-analyzing...' : 'Submitting...') : useExistingTranscript ? 'Re-analyze Profile' : (isEditMode ? 'Update Profile' : 'Register')}
                       </button>
                     </div>
                   </div>
@@ -311,6 +372,7 @@ export default function Rei() {
         </div>
       </div>
       <div className="hidden md:block w-1/2 min-h-screen relative"><img src={reiSplit} alt="Rei" className="absolute inset-0 w-full h-full object-cover" /></div>
+      <ReiAnalysisOverlay stage={analysisStage} uploadPercent={uploadPercent} errorMessage={analysisError} onClose={closeAnalysisOverlay} />
     </div>
   );
 }
