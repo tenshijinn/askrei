@@ -1,45 +1,75 @@
+## Goals
+Bundle the previous fixes (broken submit + "Claim NFT" copy) with two new high-tech UX upgrades to the registration flow: a fixed 60s recording window with countdown, and a multi-stage "Rei is analyzing you" progress experience after pressing Register.
 
+---
 
-## Animate the 3 Mockups in HomeDemoSection
+## 1. Fix the broken `submit-rei-registration` upsert
+**Cause:** Function tries to write `skills` and `work_experience` columns that don't exist on `rei_registry` (Postgres `PGRST204`).
 
-Bring the three mockups (Onboarding, Chat with Rei, Post Tasks) to life so users can see each flow happen automatically when the section enters view.
+**Fix (recommended — preserve AI-extracted data):**
+- Migration adding to `public.rei_registry`:
+  - `skills text[] not null default '{}'`
+  - `work_experience jsonb not null default '[]'::jsonb`
+- No RLS change needed (existing policies cover all columns).
 
-### What changes
+## 2. Rename button + scrub NFT copy
+- `src/pages/Rei.tsx` line 303 — `'Register & Claim NFT'` → `'Register'`. Edit/reanalyze labels stay.
+- `supabase/functions/submit-rei-registration/index.ts` — drop NFT placeholder log + change success message from *"Your Proof-of-Talent NFT will be minted shortly"* to *"Your Rei profile is live."*
+- `src/components/joinrei/HomeValueProp.tsx` — change *"Earn Points, Redeem NFTs"* → *"Earn Points & Rewards"* (keeps the value prop without the dead NFT promise).
 
-**Mockup 1 — Proof of Humanity / Onboarding**
-- Step indicator advances `1 → 2 → 3` over time (active pill highlights in accent red).
-- "Sign in with X" button briefly shows a hover/press state, then a green check appears next to it.
-- "Connect Wallet" button does the same, then shows a truncated wallet address (`7xKn…9pQ2`).
-- Role pills toggle on one by one (`Dev → Design → Community`), pulsing accent border as each activates.
-- Voice intro pill animates a small waveform for a couple of seconds.
+## 3. Fixed 60-second recording window with countdown
+**File:** `src/components/AudioRecorder.tsx`
 
-**Mockup 2 — Chat with Rei**
-- Messages appear sequentially with a typing indicator (3 bouncing dots) between each:
-  1. Rei: "Hey! I found 3 tasks…"
-  2. Task cards fade/slide in one by one
-  3. You: "Show me the Galxe quest details"
-  4. Rei: "Sure! Here's the breakdown…"
-  5. Final Rei message: link + reward (`galxe.com/quest/dao-activation • 0.5 SOL + 250 XP`)
-- The input bar shows a blinking caret while idle.
+- Add `maxDurationSeconds` prop (default `60`); keep `maxDurationMinutes` for back-compat. `Rei.tsx` passes `maxDurationSeconds={60}`.
+- Replace the small floating timer pill with a **prominent countdown**:
+  - Big `MM:SS` showing **time remaining** (counts down from `01:00` → `00:00`).
+  - Linear progress bar underneath using shadcn `<Progress>` — starts full, drains to 0.
+  - Color shifts via existing tokens: neutral `>20s`, amber `≤20s`, destructive red `≤5s`.
+  - Subtle pulse on the digits during the final 5 seconds.
+- Auto-stop already exists at `maxDurationMs`; rewire to seconds and update toast to *"60-second limit reached"*.
+- "Stop Recording" button stays — user can end early.
+- Remove the now-redundant top-right timer pill (countdown replaces it).
 
-**Mockup 3 — Post Tasks**
-- Type pills cycle: `Job → Task → Bounty → Quest`, settling on Bounty.
-- Form fields type in their values character-by-character (Title, Company, Description, Compensation) with a blinking caret.
-- Role tags pop in one at a time.
-- "Pay 5 USDC & Post" button pulses subtly, then briefly switches label to "Posted ✓" in green before resetting.
+## 4. "Rei is analyzing you" progress overlay after Register
+**File:** `src/pages/Rei.tsx` (`handleSubmit`) + new component.
 
-**Loop behaviour**
-- Each mockup runs its own short loop (~8–12s), then resets and replays. Loops are independent so they don't feel synced/robotic.
-- Animations only run while the section is in the viewport (IntersectionObserver), and pause when out of view to save CPU.
-- Respects `prefers-reduced-motion`: falls back to a single static "final state" view (current behaviour) for users who opt out.
+Currently the Register button just shows *"Submitting..."*. Replace with a **full-screen overlay** that visualizes Rei's pipeline so the user feels the AI working.
 
-### Scope
-- Update `src/components/joinrei/HomeDemoSection.tsx` only — adds local state + small reusable hooks (`useTypewriter`, `useStepCycle`) inside the component file or a small helper alongside it.
-- No new dependencies. Pure React state + CSS transitions and existing Tailwind animation utilities (`animate-fade-in`, `animate-pulse`).
-- `JoinReiDemoSection.tsx` (used on `/joinrei`) is **not** changed in this pass — the request was for `/` only. Happy to mirror it there next if you want.
+**New component:** `src/components/ReiAnalysisOverlay.tsx`
+- Fixed full-viewport overlay (z-50, dark backdrop, blur), matches manga terminal aesthetic.
+- Rei logo + animated scanline (CSS only — reuse existing `rei-theme` tokens, accent `#ed565a`).
+- 4 sequential stages with icon, label, per-stage progress:
+  1. **Uploading audio** — driven by real Supabase storage upload progress (use `XMLHttpRequest` upload events via a small helper since `supabase-js` storage doesn't expose progress; if XHR path is too invasive, fall back to indeterminate animation for stage 1 only).
+  2. **Transcribing voice** — indeterminate shimmer while edge function runs transcription.
+  3. **Analyzing profile with Rei AI** — indeterminate shimmer while Gemini analysis runs.
+  4. **Categorizing skills & experience** — indeterminate shimmer until response returns.
+- Overall thin progress bar at top (25% per completed stage).
+- Stage states: `pending` (dim) / `active` (animated dots, accent) / `done` (check, muted).
+- Rotating "thinking" lines under the active stage from a small pool, e.g. *"parsing voice patterns…"*, *"matching to skill clusters…"*, *"scoring contribution signals…"* — refreshes every ~2s, purely cosmetic.
+- On completion: success flash → fade out → success state renders as today.
+- On error: red state with the actual error message.
 
-### Technical notes
-- Single `IntersectionObserver` at the section level toggles an `isActive` boolean passed to each mockup.
-- Each mockup is extracted into its own internal sub-component (`OnboardingMockup`, `ChatMockup`, `PostTaskMockup`) for clean state isolation — no change to the outer grid, headings, or `ScrollFadeIn` wrappers.
-- All timings tuned so a full cycle fits comfortably while the user dwells on the section; nothing flashes faster than ~250ms.
+**Integration in `handleSubmit`:**
+- Add `analysisStage` state (`'uploading' | 'transcribing' | 'analyzing' | 'categorizing' | null`) and `uploadPercent`.
+- Set `'uploading'` before storage upload → `'transcribing'` after upload completes (right before `functions.invoke`) → time-based advancement to `'analyzing'` (~6s in) and `'categorizing'` (~16s in). Real completion always wins and snaps to done.
+- Render `<ReiAnalysisOverlay stage={analysisStage} uploadPercent={uploadPercent} errorMessage={...} />` whenever `analysisStage !== null`.
 
+**Why time-based stage progression:** the edge function returns one response at the end — no streaming today. Estimated timings keep the *high-tech feel* without rewriting the backend, and the real result always overrides the timer so users never see stuck fake progress.
+
+## 5. Improve error visibility (carryover)
+- `handleSubmit` catch block: surface `error.message` in the toast (fall back to generic if missing).
+
+---
+
+## Files touched
+- **Migration**: add `skills`, `work_experience` columns to `rei_registry`
+- **New**: `src/components/ReiAnalysisOverlay.tsx`
+- **Edit**: `src/components/AudioRecorder.tsx` (60s countdown + progress bar)
+- **Edit**: `src/pages/Rei.tsx` (button label, overlay integration, error surfacing, 60s prop)
+- **Edit**: `supabase/functions/submit-rei-registration/index.ts` (drop NFT copy/logs)
+- **Edit**: `src/components/joinrei/HomeValueProp.tsx` (NFT copy → Rewards)
+
+## Out of scope
+- No streaming/SSE rewrite of `submit-rei-registration` (large refactor; time-based stage UI is the pragmatic win).
+- No actual NFT system removal beyond UI/log copy (no NFT code exists today — only marketing strings).
+- No changes to recording audio quality/format.

@@ -511,9 +511,11 @@ export type Database = {
           profile_score: number | null
           role_tags: Database["public"]["Enums"]["contributor_role"][] | null
           skill_category_ids: string[] | null
+          skills: string[]
           updated_at: string
           verified: boolean | null
           wallet_address: string
+          work_experience: Json
           x_user_id: string | null
         }
         Insert: {
@@ -532,9 +534,11 @@ export type Database = {
           profile_score?: number | null
           role_tags?: Database["public"]["Enums"]["contributor_role"][] | null
           skill_category_ids?: string[] | null
+          skills?: string[]
           updated_at?: string
           verified?: boolean | null
           wallet_address: string
+          work_experience?: Json
           x_user_id?: string | null
         }
         Update: {
@@ -553,9 +557,11 @@ export type Database = {
           profile_score?: number | null
           role_tags?: Database["public"]["Enums"]["contributor_role"][] | null
           skill_category_ids?: string[] | null
+          skills?: string[]
           updated_at?: string
           verified?: boolean | null
           wallet_address?: string
+          work_experience?: Json
           x_user_id?: string | null
         }
         Relationships: []
