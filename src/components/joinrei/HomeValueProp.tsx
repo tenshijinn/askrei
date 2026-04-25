@@ -17,13 +17,13 @@ export const HomeValueProp = () => {
         <div className="space-y-6 order-2 px-8 lg:px-16">
           <ScrollFadeIn>
             <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.2]">
-              Earn Points, Redeem NFTs
+              Earn Points & Rewards
             </h2>
           </ScrollFadeIn>
 
           <ScrollFadeIn delay={100}>
             <p className="text-sm md:text-base font-mono text-primary/70 leading-relaxed">
-              Accumulate points passively as you use the platform and redeem for NFTs.
+              Accumulate points passively as you use the platform and redeem for rewards.
             </p>
           </ScrollFadeIn>
 
