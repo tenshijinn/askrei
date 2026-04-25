@@ -7,11 +7,13 @@ import { useToast } from '@/hooks/use-toast';
 interface AudioRecorderProps {
   onAudioReady: (audioBlob: Blob) => void;
   maxDurationMinutes?: number;
+  maxDurationSeconds?: number;
 }
 
 export const AudioRecorder: React.FC<AudioRecorderProps> = ({ 
   onAudioReady,
-  maxDurationMinutes = 5 
+  maxDurationMinutes,
+  maxDurationSeconds,
 }) => {
   const { toast } = useToast();
   const [isRecording, setIsRecording] = useState(false);
@@ -30,7 +32,8 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const playbackTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const maxDurationMs = maxDurationMinutes * 60 * 1000;
+  const totalSeconds = maxDurationSeconds ?? (maxDurationMinutes != null ? maxDurationMinutes * 60 : 60);
+  const maxDurationMs = totalSeconds * 1000;
 
   useEffect(() => {
     return () => {
