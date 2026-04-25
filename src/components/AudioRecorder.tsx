@@ -89,7 +89,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
       timerRef.current = setInterval(() => {
         setRecordingTime(prev => {
           const newTime = prev + 1000;
-          if (newTime >= maxDurationMs) { stopRecording(); toast({ title: "Recording Complete", description: `Maximum recording time of ${maxDurationMinutes} minutes reached.` }); }
+          if (newTime >= maxDurationMs) { stopRecording(); toast({ title: "Recording Complete", description: `${totalSeconds}-second limit reached.` }); }
           return newTime;
         });
       }, 1000);
