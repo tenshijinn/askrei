@@ -372,6 +372,7 @@ export default function Rei() {
         </div>
       </div>
       <div className="hidden md:block w-1/2 min-h-screen relative"><img src={reiSplit} alt="Rei" className="absolute inset-0 w-full h-full object-cover" /></div>
+      <ReiAnalysisOverlay stage={analysisStage} uploadPercent={uploadPercent} errorMessage={analysisError} onClose={closeAnalysisOverlay} />
     </div>
   );
 }
