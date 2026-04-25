@@ -136,17 +136,59 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
     <Card>
       <CardContent className="pt-6">
         <div className="space-y-4">
-          <div className="relative bg-muted/50 rounded-lg overflow-hidden h-32 flex items-center justify-center border border-border/50">
-            {isRecording && (
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-8 bg-primary animate-pulse" style={{ animationDelay: '0ms' }} />
-                <div className="w-2 h-12 bg-primary animate-pulse" style={{ animationDelay: '150ms' }} />
-                <div className="w-2 h-16 bg-primary animate-pulse" style={{ animationDelay: '300ms' }} />
-                <div className="w-2 h-12 bg-primary animate-pulse" style={{ animationDelay: '450ms' }} />
-                <div className="w-2 h-8 bg-primary animate-pulse" style={{ animationDelay: '600ms' }} />
+          <div className="relative bg-muted/50 rounded-lg overflow-hidden h-40 flex items-center justify-center border border-border/50">
+            {isRecording && (() => {
+              const remainingMs = Math.max(0, maxDurationMs - recordingTime);
+              const remainingSec = Math.ceil(remainingMs / 1000);
+              const percentRemaining = (remainingMs / maxDurationMs) * 100;
+              const tone = remainingSec <= 5 ? 'destructive' : remainingSec <= 20 ? 'warning' : 'neutral';
+              const color = tone === 'destructive' ? 'hsl(var(--destructive))' : tone === 'warning' ? '#f59e0b' : 'hsl(var(--primary))';
+              return (
+                <div className="w-full px-6 flex flex-col items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-6 bg-primary animate-pulse" style={{ animationDelay: '0ms' }} />
+                    <div className="w-2 h-10 bg-primary animate-pulse" style={{ animationDelay: '150ms' }} />
+                    <div className="w-2 h-14 bg-primary animate-pulse" style={{ animationDelay: '300ms' }} />
+                    <div className="w-2 h-10 bg-primary animate-pulse" style={{ animationDelay: '450ms' }} />
+                    <div className="w-2 h-6 bg-primary animate-pulse" style={{ animationDelay: '600ms' }} />
+                  </div>
+                  <div
+                    className={remainingSec <= 5 ? 'animate-pulse' : ''}
+                    style={{
+                      fontSize: '34px',
+                      fontWeight: 300,
+                      letterSpacing: '-0.02em',
+                      color,
+                      fontVariantNumeric: 'tabular-nums',
+                      lineHeight: 1,
+                      transition: 'color 0.3s',
+                    }}
+                  >
+                    {formatTime(remainingMs)}
+                  </div>
+                  <div className="w-full max-w-xs">
+                    <div className="relative h-1.5 bg-background rounded-full overflow-hidden">
+                      <div
+                        className="absolute inset-y-0 left-0 transition-all duration-1000 ease-linear"
+                        style={{ width: `${percentRemaining}%`, background: color }}
+                      />
+                    </div>
+                    <div className="text-[10px] text-muted-foreground mt-1 text-center" style={{ fontFamily: "'SF Mono', Consolas, monospace", letterSpacing: '0.04em' }}>
+                      {remainingSec <= 5 ? 'WRAPPING UP' : remainingSec <= 20 ? 'TIME REMAINING' : `${totalSeconds}S WINDOW`}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+            {!hasPermission && !recordedBlob && !isRecording && <Mic className="w-12 h-12 text-muted-foreground" />}
+            {hasPermission && !recordedBlob && !isRecording && (
+              <div className="flex flex-col items-center gap-2">
+                <Mic className="w-10 h-10 text-muted-foreground" />
+                <div className="text-xs text-muted-foreground" style={{ fontFamily: "'SF Mono', Consolas, monospace", letterSpacing: '0.04em' }}>
+                  {totalSeconds}-SECOND WINDOW · STOP ANY TIME
+                </div>
               </div>
             )}
-            {!hasPermission && !recordedBlob && !isRecording && <Mic className="w-12 h-12 text-muted-foreground" />}
             {recordedBlob && (
               <div className="w-full px-6 space-y-3">
                 <audio ref={audioPreviewRef} className="hidden" />
@@ -164,12 +206,6 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
-            {isRecording && (
-              <div className="absolute top-4 right-4 flex items-center gap-2 bg-destructive text-destructive-foreground px-3 py-1.5 rounded-full">
-                <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                <span className="text-sm font-medium">{formatTime(recordingTime)}</span>
               </div>
             )}
           </div>
