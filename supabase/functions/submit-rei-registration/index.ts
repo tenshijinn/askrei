@@ -197,16 +197,11 @@ Deno.serve(async (req) => {
 
     console.log('Registration successful:', data.id);
 
-    // TODO: Trigger NFT minting
-    // This would call a Solana program to mint an SBT to the wallet_address
-    // For now, we'll just log it
-    console.log('NFT mint placeholder for wallet:', registrationData.wallet_address);
-
     return new Response(
       JSON.stringify({
         success: true,
         registration: data,
-        message: 'Registration successful! Your Proof-of-Talent NFT will be minted shortly.',
+        message: 'Registration successful! Your Rei profile is live.',
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
