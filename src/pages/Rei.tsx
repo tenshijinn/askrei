@@ -3,7 +3,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { supabase } from '@/integrations/supabase/client';
 import type { Session, User } from '@supabase/supabase-js';
-import reiLogo from '@/assets/rei-logo.png';
+import reiLogo from '@/assets/rei-logo-new.png';
 import reiSplit from '@/assets/rei-split.png';
 import { AudioRecorder } from '@/components/AudioRecorder';
 import ReiChatbot from '@/components/ReiChatbot';
@@ -232,8 +232,7 @@ export default function Rei() {
         {(registrationData?.wallet_address || publicKey) && <ReiEarningsHub registrationWallet={registrationData?.wallet_address} connectedWallet={publicKey?.toString()} xUserId={twitterUser?.x_user_id} />}
         <div className="fixed top-0 left-0 right-0 z-50" style={{ background: '#0a0a0a', borderBottom: '0.5px solid hsla(0,0%,100%,0.08)' }}>
           <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-            <div className="w-20" />
-            <img src={reiLogo} alt="REI" className="h-10 w-auto" style={{ opacity: 0.8 }} />
+            <img src={reiLogo} alt="REI" className="h-10 w-auto" style={{ opacity: 0.95 }} />
             <div className="flex items-center gap-2 justify-end">
               <button onClick={() => setActiveTab('profile')} className={activeTab === 'profile' ? 'btn-manga btn-manga-primary' : 'rei-chip'} style={{ padding: '5px 10px', fontSize: '11px', ...(activeTab === 'profile' ? { borderRadius: '28px', background: '#f0ede8', color: '#0a0a0a', border: 'none' } : {}) }} title="Profile"><UserCircle style={{ width: '14px', height: '14px' }} /></button>
               <button onClick={handleLogout} className="rei-chip" style={{ padding: '5px 12px', fontSize: '11px' }}><LogOut style={{ width: '12px', height: '12px', color: '#a09e9a' }} />Logout</button>
