@@ -206,10 +206,15 @@ const ReiChatbot = ({ walletAddress, userMode, twitterHandle }: ReiChatbotProps)
         <div ref={messagesEndRef} />
       </div>
       <div className="input-row" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50 }}>
-        <button onClick={() => setShowQuickActions(!showQuickActions)} className="send-btn mr-2" style={{ fontSize: '12px', padding: '4px 8px' }}>?</button>
-        <span className="prompt-prefix">@{twitterHandle || 'user'} &gt;</span>
-        <input className="term-input" value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && handleSend()} placeholder="type a message or /command..." disabled={loading} />
-        <button onClick={handleSend} disabled={loading || !input.trim()} className="send-btn" style={{ opacity: loading || !input.trim() ? 0.3 : 1 }}>{loading ? '...' : 'send'}</button>
+        <div className="input-row-inner">
+          <button onClick={() => setShowQuickActions(!showQuickActions)} className="send-btn" style={{ fontSize: '12px', padding: '4px 8px' }}>?</button>
+          <div className="input-field-wrap">
+            <span className="prompt-prefix">@{twitterHandle || 'user'} &gt;</span>
+            {!input && <span className="input-caret" aria-hidden="true" />}
+            <input className="term-input" value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === "Enter" && !e.shiftKey && handleSend()} placeholder="type a message or /command..." disabled={loading} />
+          </div>
+          <button onClick={handleSend} disabled={loading || !input.trim()} className="send-btn" style={{ opacity: loading || !input.trim() ? 0.3 : 1 }}>{loading ? '...' : 'send'}</button>
+        </div>
       </div>
       <QuickActionsPanel isOpen={showQuickActions} onClose={() => setShowQuickActions(false)} categories={getPresetsForMode(userMode)} onSelect={handlePresetSelect} />
     </div>
