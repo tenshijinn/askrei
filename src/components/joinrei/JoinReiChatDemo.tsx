@@ -84,7 +84,6 @@ export const JoinReiChatDemo = () => {
                 <SimplePill label="Database" />
                 <SimplePill label="Chatbot" />
                 <SimplePill label="AI Agent" />
-                <SimplePill label="Web3 Growth Engine" />
               </SinglePill>
             }
           >
@@ -106,7 +105,7 @@ export const JoinReiChatDemo = () => {
             delay={200}
             extra={<SinglePill><VerifiedLoginPill /><ProofOfTalentPill /></SinglePill>}
           >
-            Wallet activity + Twitter Blue helps to filter, engaged users,{' '}
+            Wallet activity + Twitter Blue support engaged users,{' '}
             <strong className="text-cream font-semibold">not JEETs or farmers</strong>.
           </Frame>
 
@@ -114,6 +113,7 @@ export const JoinReiChatDemo = () => {
             title="Better bounties. Better contributors. Less noise."
             speed={0.02}
             delay={300}
+            extra={<SinglePill><SimplePill label="Web3 Growth Engine" /></SinglePill>}
           >
             Higher signal in, higher value out — for projects and talent alike.
           </Frame>
