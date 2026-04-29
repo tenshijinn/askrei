@@ -1,4 +1,5 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
+import { scrollToLastSection } from './scrollHelpers';
 import reiCrossPlatform from '@/assets/joinrei/rei-cross-platform.png';
 import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
 
