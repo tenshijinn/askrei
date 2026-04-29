@@ -79,6 +79,14 @@ export const JoinReiChatDemo = () => {
             title="What is Rei?"
             speed={0.06}
             delay={0}
+            extra={
+              <SinglePill>
+                <SimplePill label="Database" />
+                <SimplePill label="Chatbot" />
+                <SimplePill label="AI Agent" />
+                <SimplePill label="Web3 Growth Engine" />
+              </SinglePill>
+            }
           >
             Rei is an AI platform that connects Web3 bounties with verified, high-intent talent.
           </Frame>
@@ -98,7 +106,7 @@ export const JoinReiChatDemo = () => {
             delay={200}
             extra={<SinglePill><VerifiedLoginPill /><ProofOfTalentPill /></SinglePill>}
           >
-            Wallet activity and Twitter Premium signals help identify real, engaged users,{' '}
+            Wallet activity + Twitter Blue helps to filter, engaged users,{' '}
             <strong className="text-cream font-semibold">not JEETs or farmers</strong>.
           </Frame>
 
