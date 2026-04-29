@@ -98,8 +98,11 @@ export const JoinReiPricing = () => {
         <div className="grid lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
           {pricingTiers.map((tier, index) => {
             const isPremium = tier.premium;
+            const isAutomated = tier.nameAccent === 'Automated';
+            const isUnlimited = isAutomated; // tier 2 = the unlimited subscription
+            const isRocketReach = tier.name === 'Rocket Reach';
             return (
-              <ScrollFadeIn key={tier.name} delay={index * 100}>
+              <ScrollFadeIn key={`${tier.name}-${index}`} delay={index * 100}>
                 <div className={`relative h-full flex flex-col p-6 rounded-2xl border-[0.5px] transition-all duration-300 hover:shadow-2xl ${
                   isPremium 
                     ? 'border-amber-500/40 bg-gradient-to-br from-amber-500/10 to-transparent hover:shadow-amber-500/10' 
@@ -113,9 +116,21 @@ export const JoinReiPricing = () => {
                     </div>
                   </div>
 
-                  <h3 className={`text-xl font-light font-mono mb-1 text-center ${isPremium ? 'text-amber-500' : 'text-primary'}`}>
+                  <h3 className={`text-lg lg:text-xl font-light font-mono mb-1 text-center leading-snug ${isPremium ? 'text-amber-500' : 'text-primary'}`}>
+                    {tier.nameAccent && (
+                      <>
+                        <span className="pulse-glow">{tier.nameAccent}</span>{' '}
+                      </>
+                    )}
                     {tier.name}
+                    {tier.leverage && (
+                      <span className="block text-[11px] text-cream/50 tracking-wider mt-1">{tier.leverage}</span>
+                    )}
                   </h3>
+
+                  <p className="text-[11px] text-center text-cream/70 font-mono mb-3 italic">
+                    {tier.subtitle}
+                  </p>
 
                   <div className="text-center mb-1">
                     <span className={`text-3xl font-light font-mono ${isPremium ? 'text-amber-500' : 'text-cream'}`}>
@@ -123,9 +138,20 @@ export const JoinReiPricing = () => {
                     </span>
                   </div>
 
-                  <p className="text-cream/60 font-mono text-sm text-center mb-3">{tier.period}</p>
+                  <p className="text-cream/60 font-mono text-sm text-center mb-1">{tier.period}</p>
 
-                  <p className="text-cream/80 text-sm text-center mb-4 font-mono leading-relaxed">
+                  {tier.perDay && (
+                    <p className="text-[11px] text-center text-primary/90 font-mono mb-1">
+                      {tier.perDay}
+                    </p>
+                  )}
+                  {tier.saveNote && (
+                    <p className="text-[10px] text-center text-cream/50 font-mono mb-2">
+                      {tier.saveNote}
+                    </p>
+                  )}
+
+                  <p className="text-cream/80 text-sm text-center mb-4 mt-2 font-mono leading-relaxed">
                     {tier.positioning}
                   </p>
 
