@@ -1,144 +1,116 @@
 ## Goal
 
-Give Rei (OpenClaw / external agent) a stable, **read-only, public-content-only** way to access listed `tasks`, `jobs`, community-shared opportunities, and skill taxonomy — with zero exposure of user PII (wallets, emails, talent profiles, drafts, payments).
+A new sales/landing page at **`/agents`** that sells AI agents (and the developers behind them) **read-only access** to Rei's public database of tasks, jobs, bounties, and skill categories — paid per call (or per key) via **x402 on Solana**. Inspired by superteam.fun/earn/agents, but speaks to AI agents as the ICP, with our manga/terminal aesthetic.
 
-## What's already public-safe vs private
+## Page structure (`/agents` — parallax/snap, same shell as `/joinrei`)
 
-Current RLS posture (verified):
-
-| Table | Public read? | Notes |
-|---|---|---|
-| `tasks` | yes — `status='active'` | Safe to expose. Contains `employer_wallet` + `payment_tx_signature` columns we must strip. |
-| `jobs` | yes — `status='active'` | Same — strip `employer_wallet`, `payment_tx_signature`. |
-| `skill_categories` | yes — open | Safe as-is. |
-| `community_submissions` | private (admin / submitter only) | Don't expose raw. Only expose items that have been **promoted** into `tasks`/`jobs` (already covered). |
-| `rei_registry` (talent) | private (owner / paid employer / admin) | **Never expose.** Out of scope for the public agent API. |
-| `user_points`, `chat_*`, `payment_*`, `referral_*`, `subscriptions`, `talent_views`, `twitter_whitelist*`, `admin_audit_log` | private | **Never expose.** |
-
-So the public surface area is: **active tasks, active jobs, skill categories** — plus simple search/filter on top.
-
-## Architecture
+Reuses `rei-theme h-screen overflow-y-scroll snap-y snap-mandatory` pattern with new section components under `src/components/agents/`.
 
 ```text
-┌──────────────┐    HTTPS + (optional API key)    ┌────────────────────────┐
-│ Rei / Agent  │ ───────────────────────────────► │ Edge Function:         │
-│ (OpenClaw)   │                                  │ public-feed            │
-└──────────────┘                                  │ (verify_jwt = false)   │
-                                                  └─────────┬──────────────┘
-                                                            │ service role
-                                                            ▼
-                                            ┌──────────────────────────────┐
-                                            │ Supabase (public-safe views) │
-                                            │  v_public_tasks              │
-                                            │  v_public_jobs               │
-                                            │  skill_categories            │
-                                            └──────────────────────────────┘
+1. AgentsHero            — "Let your agents discover crypto work."
+                           CTAs: [Get API Key] [Read the docs]
+                           Right side: Rei hero image + animated terminal mock (curl call)
+2. LogoBar               — reuse existing LogoBar (Galxe/Zealy/etc — sources synced)
+3. AgentsValueProp       — 3 cards: Read-only • Public-only • Pay-per-use (x402)
+4. AgentsEndpoints       — Visual list of endpoints (/tasks /jobs /skill-categories /feed)
+                           with example JSON response + copy buttons
+5. AgentsHowItWorks      — 4 steps: Buy key → Call endpoint → Get JSON → Agent acts
+6. AgentsCodeDemo        — Tabbed code samples (curl / TypeScript / Python) hitting
+                           the public-feed function with x-api-key header
+7. AgentsCompliance      — "Sync, don't scrape" + safety: no PII, whitelisted columns,
+                           rate-limited, revocable keys
+8. AgentsPricing         — x402 pricing tiers (see below); each CTA triggers x402 flow
 ```
 
-Two delivery options, both backed by the same views. Pick one (or both):
+## Pricing tiers (x402, USD priced, settled in SOL)
 
-- **A. REST endpoints** under one edge function — easiest for any agent / cron / webhook consumer.
-- **B. MCP server** (mcp-lite on Supabase Edge Functions) — plug-and-play for Claude / Claw-style agents that speak MCP.
+| Tier              | Price   | What you get                                      |
+|-------------------|---------|---------------------------------------------------|
+| Pay-as-you-go     | $0.001/call | Single API key, 60 req/min, all read endpoints |
+| Agent Starter     | $25 / 30 days unlimited | 1 key, 300 req/min, `/feed` polling   |
+| Agent Pro         | $99 / 30 days unlimited | 5 keys, 1000 req/min, priority routing, webhook on new tasks (later) |
 
-Recommendation: ship **A first** (universal), add **B** on top later if you want native MCP tool-calling.
+All purchased via the existing `X402Payment` component → on success we mint a key and store it.
 
-## Step 1 — Public-safe SQL views (migration)
+## Backend changes
 
-Create views that whitelist columns and hide wallets / payment signatures. Views inherit the underlying RLS, but we'll explicitly filter `status='active'` and time-bound `end_date`/`expires_at`.
-
+### New table `agent_api_keys`
 ```sql
-create or replace view public.v_public_tasks as
-select
-  id, title, description, link, role_tags, compensation,
-  og_image, source, company_name, end_date,
-  opportunity_type, skill_category_ids, created_at, updated_at
-from public.tasks
-where status = 'active'
-  and (end_date is null or end_date > now());
+create table public.agent_api_keys (
+  id uuid primary key default gen_random_uuid(),
+  key_hash text not null unique,        -- sha256 of the raw key
+  key_prefix text not null,             -- first 8 chars for display
+  label text,
+  buyer_wallet text not null,
+  tier text not null,                   -- 'payg' | 'starter' | 'pro'
+  rate_limit_per_min int not null default 60,
+  expires_at timestamptz,               -- null for payg
+  payment_tx_signature text not null,
+  payment_reference text,
+  revoked boolean not null default false,
+  created_at timestamptz default now(),
+  last_used_at timestamptz
+);
+-- RLS: buyer can SELECT own keys (by buyer_wallet jwt claim); service role manages.
 
-create or replace view public.v_public_jobs as
-select
-  id, title, description, requirements, role_tags, compensation,
-  og_image, link, apply_url, source, company_name, deadline, expires_at,
-  opportunity_type, skill_category_ids, created_at, updated_at
-from public.jobs
-where status = 'active'
-  and (expires_at is null or expires_at > now());
-
-grant select on public.v_public_tasks, public.v_public_jobs to anon, authenticated;
+create table public.agent_api_usage (
+  id bigserial primary key,
+  api_key_id uuid references public.agent_api_keys(id) on delete cascade,
+  endpoint text not null,
+  status int not null,
+  ts timestamptz default now()
+);
+create index on public.agent_api_usage(api_key_id, ts desc);
 ```
 
-Excluded on purpose: `employer_wallet`, `payment_tx_signature`, `solana_pay_reference`, `external_id`, `campaign_subscription_id`.
+### Updated edge function `public-feed`
+- Continue accepting the legacy `REI_AGENT_API_KEYS` env-secret keys (Rei/OpenClaw internal).
+- **Also** accept hashed keys from `agent_api_keys`: sha256 the incoming `x-api-key`, look up, check `expires_at`/`revoked`, enforce tier rate-limit (in-memory token bucket per key), log to `agent_api_usage`, update `last_used_at`.
 
-## Step 2 — `public-feed` edge function (REST)
+### New edge function `agents-issue-key`
+- Inputs: `{ tier, payment_reference, label? }`, JWT carries `wallet_address`.
+- Verifies the `payment_references` row matches tier price + status `verified` + payer = wallet.
+- Generates `rei_live_<32 hex>`, stores sha256, returns the raw key **once**.
 
-Single function, no JWT required, with optional `x-api-key` gate so we can rate-limit / revoke per agent.
+### New edge function `agents-list-keys`
+- Lists buyer's keys (prefix + tier + usage count + expires_at). No raw keys.
 
-Endpoints:
+## Frontend wiring
 
-- `GET /tasks?limit=&offset=&q=&role=&skill_category_id=&since=`
-- `GET /tasks/:id`
-- `GET /jobs?limit=&offset=&q=&role=&skill_category_id=&since=`
-- `GET /jobs/:id`
-- `GET /skill-categories`
-- `GET /feed?limit=&since=` — combined tasks+jobs sorted by `created_at desc` (best for a polling agent)
+- **Route**: add `<Route path="/agents" element={<Agents />} />` in `src/App.tsx`.
+- **Page**: `src/pages/Agents.tsx` composing the new sections.
+- **Pricing CTAs**: open a modal with `<X402Payment amount={price} memo="agent-key:<tier>" />` → on success call `agents-issue-key` → show the raw key once with copy + warning.
+- **Dashboard sliver** (in the same modal after issuance): "Your keys" list via `agents-list-keys`.
+- **Docs link**: button → `/docs/agent-integration.md` (already exists in repo) or open in new tab to a hosted version.
 
-Rules:
-- Read from `v_public_tasks` / `v_public_jobs` only.
-- Cap `limit` at 100, default 25.
-- `since` (ISO timestamp) → `created_at > since` for incremental sync.
-- Always JSON, always CORS-open, never echo any column outside the view whitelist.
-- Optional `REI_AGENT_API_KEYS` env var (comma-separated). If set, require matching `x-api-key` header.
-- Response shape: `{ data: [...], next_cursor: string|null, count: number }`.
+## Copy direction (ICP = AI agents / agent devs)
 
-`supabase/config.toml` add:
-```toml
-[functions.public-feed]
-verify_jwt = false
-```
+- Hero: *"Plug your agent into the largest cross-chain index of Web3 tasks, bounties & jobs."*
+- Value: *"One endpoint. JSON in, work out. Pay only for what your agent reads."*
+- Compliance: *"We sync sources legally so your agent doesn't have to scrape."*
 
-## Step 3 — Optional: MCP server for the agent
+## Out of scope (call out for follow-up)
 
-Add a second edge function `rei-mcp` using `mcp-lite` (per the MCP guide) that wraps the same views as MCP tools:
+- Webhook / push delivery of new tasks (Pro tier teaser only)
+- Per-agent dashboard page
+- MCP server wrapper
 
-- `list_tasks(query?, role?, skill_category_id?, since?, limit?)`
-- `get_task(id)`
-- `list_jobs(...)`
-- `get_job(id)`
-- `list_skill_categories()`
-- `feed(since?, limit?)`
+## Files to create / edit
 
-Same auth model (header API key, no JWT). Agent connects via Streamable HTTP at `/functions/v1/rei-mcp`.
+**Create**
+- `src/pages/Agents.tsx`
+- `src/components/agents/AgentsHero.tsx`
+- `src/components/agents/AgentsValueProp.tsx`
+- `src/components/agents/AgentsEndpoints.tsx`
+- `src/components/agents/AgentsHowItWorks.tsx`
+- `src/components/agents/AgentsCodeDemo.tsx`
+- `src/components/agents/AgentsCompliance.tsx`
+- `src/components/agents/AgentsPricing.tsx`
+- `supabase/functions/agents-issue-key/index.ts`
+- `supabase/functions/agents-list-keys/index.ts`
+- Migration for `agent_api_keys` + `agent_api_usage` (+ RLS)
 
-## Step 4 — Documentation for the agent operator
-
-Add `docs/agent-integration.md` covering:
-- Base URL: `https://qajahmmzqhgboeoorfqj.supabase.co/functions/v1/public-feed`
-- Auth: anon key + optional `x-api-key`
-- Endpoint reference + example responses
-- Pagination via `since` cursor
-- Field dictionary (with explicit "fields you will never see: wallets, tx signatures, emails")
-- Rate / fair-use note
-- MCP endpoint URL (if Step 3 shipped)
-
-## Security checklist
-
-- Views grant `select` only on whitelisted columns — wallets and tx signatures cannot leak.
-- Edge function uses **service role internally** but only ever queries the views, never the base tables.
-- No write endpoints. No talent / `rei_registry` exposure. No `chat_*` / `payment_*` / `subscriptions`.
-- Optional per-agent API key lets you revoke access without a redeploy of consumers.
-- CORS open is fine because data is already public.
-
-## Out of scope (explicitly)
-
-- Talent / Rei registry profiles (paid product — stays gated).
-- Any user-identifying data, drafts, payments, referral codes, points.
-- Write/submit endpoints (postToRei keeps its $5 SOL flow).
-
-## Deliverables when you approve
-
-1. Migration: `v_public_tasks`, `v_public_jobs` + grants.
-2. Edge function `public-feed` with the 6 endpoints above + `config.toml` block.
-3. (Optional toggle) Edge function `rei-mcp` using `mcp-lite`.
-4. `docs/agent-integration.md` for the OpenClaw operator.
-5. Optional `REI_AGENT_API_KEYS` secret you populate later in Cloud settings.
+**Edit**
+- `src/App.tsx` — add `/agents` route
+- `supabase/functions/public-feed/index.ts` — DB-backed key validation + rate limit + usage log
+- `docs/agent-integration.md` — add "Buy your own key at /agents" section
