@@ -1,85 +1,144 @@
-## Overview
+## Goal
 
-Two coordinated updates while we wait for Stripe to come back online:
+Give Rei (OpenClaw / external agent) a stable, **read-only, public-content-only** way to access listed `tasks`, `jobs`, community-shared opportunities, and skill taxonomy — with zero exposure of user PII (wallets, emails, talent profiles, drafts, payments).
 
-1. **Pricing tier rename + marketing copy** on the landing-page packages section.
-2. **Monthly / Yearly toggle** on `/unlimited-posts` ($99/mo or $999/yr — 15.9% off) wired through to the Stripe checkout flow so it's ready the moment Stripe is healthy again.
+## What's already public-safe vs private
 
-No Coinbase work — Stripe stays as the payment rail; we're just preparing the new pricing structure.
+Current RLS posture (verified):
 
----
+| Table | Public read? | Notes |
+|---|---|---|
+| `tasks` | yes — `status='active'` | Safe to expose. Contains `employer_wallet` + `payment_tx_signature` columns we must strip. |
+| `jobs` | yes — `status='active'` | Same — strip `employer_wallet`, `payment_tx_signature`. |
+| `skill_categories` | yes — open | Safe as-is. |
+| `community_submissions` | private (admin / submitter only) | Don't expose raw. Only expose items that have been **promoted** into `tasks`/`jobs` (already covered). |
+| `rei_registry` (talent) | private (owner / paid employer / admin) | **Never expose.** Out of scope for the public agent API. |
+| `user_points`, `chat_*`, `payment_*`, `referral_*`, `subscriptions`, `talent_views`, `twitter_whitelist*`, `admin_audit_log` | private | **Never expose.** |
 
-## 1. Stripe price for the yearly plan
+So the public surface area is: **active tasks, active jobs, skill categories** — plus simple search/filter on top.
 
-Add a new yearly recurring price alongside the existing `unlimited_posts_monthly`:
-
-- `unlimited_posts_monthly` — $99 / month (already exists)
-- `unlimited_posts_yearly` — $999 / year (new) → effectively $83.25/mo, ~15.9% off vs $99×12
-
-Created via the payments tool — no manual Stripe dashboard work needed. Both prices live under the same `unlimited_posts` product so existing webhook logic (`md.product_id === "unlimited_posts"`) keeps working unchanged.
-
----
-
-## 2. `/unlimited-posts` page — billing toggle
-
-Add a Monthly / Yearly toggle directly above the price line in the form panel.
+## Architecture
 
 ```text
-                  ┌───────────────┬──────────────┐
-                  │   Monthly     │ Yearly  -16% │
-                  └───────────────┴──────────────┘
-
-   Payment:  $99 p/m            (or)   $999 /yr
-   Just $3.30 per day                  Just $2.73 per day · save 15.9%
-   ─────────────────────────────       ─────────────────────────────
-   [        START SUBSCRIPTION        ]
+┌──────────────┐    HTTPS + (optional API key)    ┌────────────────────────┐
+│ Rei / Agent  │ ───────────────────────────────► │ Edge Function:         │
+│ (OpenClaw)   │                                  │ public-feed            │
+└──────────────┘                                  │ (verify_jwt = false)   │
+                                                  └─────────┬──────────────┘
+                                                            │ service role
+                                                            ▼
+                                            ┌──────────────────────────────┐
+                                            │ Supabase (public-safe views) │
+                                            │  v_public_tasks              │
+                                            │  v_public_jobs               │
+                                            │  skill_categories            │
+                                            └──────────────────────────────┘
 ```
 
-Behaviour:
-- Toggle state (`monthly` | `yearly`) drives which `priceId` is sent to `StripeEmbeddedCheckout` (`unlimited_posts_monthly` vs `unlimited_posts_yearly`).
-- Per-day marketing line updates with the toggle ($3.30/day or $2.73/day · 15.9% off).
-- The "STRIPE / MONTHLY SUBSCRIPTION" badge becomes "STRIPE / MONTHLY" or "STRIPE / YEARLY".
-- Selected plan is persisted into the Stripe checkout `metadata.billing_interval` so it shows up in the webhook + `campaign_subscriptions` row.
-- Bullet copy under "How it works" updated: "Subscription renews monthly or yearly via Stripe. Cancel anytime — sync stops at period end."
+Two delivery options, both backed by the same views. Pick one (or both):
 
-No webhook changes required — the existing handler picks up `current_period_end` from the subscription regardless of interval, so `campaign_subscriptions.expires_at` will correctly read 1 month or 1 year out.
+- **A. REST endpoints** under one edge function — easiest for any agent / cron / webhook consumer.
+- **B. MCP server** (mcp-lite on Supabase Edge Functions) — plug-and-play for Claude / Claw-style agents that speak MCP.
 
----
+Recommendation: ship **A first** (universal), add **B** on top later if you want native MCP tool-calling.
 
-## 3. Landing page packages (`JoinReiPricing.tsx`) — rename + subtitles
+## Step 1 — Public-safe SQL views (migration)
 
-Rename and add subtitles to all three tiers. Per-day copy added under price.
+Create views that whitelist columns and hide wallets / payment signatures. Views inherit the underlying RLS, but we'll explicitly filter `status='active'` and time-bound `end_date`/`expires_at`.
 
-| Old name | New name | Subtitle | Price line |
-|---|---|---|---|
-| Posts | **Community Growth Engine** · `x10 Leverage` | 1 Promotion Post | $5 / per post |
-| Unlimited Posts | **<span class="pulse">Automated</span> Community Growth Engine** · `x10 Leverage` | Unlimited Promotion Posts | $99/mo *(toggle to $999/yr)* — "Just $3.30/day" / "Just $2.73/day · save 15.9%" |
-| Rocket Reach | **Rocket Reach** · `Community Growth Engine x100 Leverage` | 1 Promotion Campaign | $2,500 / per campaign |
+```sql
+create or replace view public.v_public_tasks as
+select
+  id, title, description, link, role_tags, compensation,
+  og_image, source, company_name, end_date,
+  opportunity_type, skill_category_ids, created_at, updated_at
+from public.tasks
+where status = 'active'
+  and (end_date is null or end_date > now());
 
-**"Automated" glow effect** — soft pulse using a CSS keyframe (text-shadow on the primary accent), brighter→softer on a 2.4s loop. Inline `<span className="pulse-glow">Automated</span>` so only that word animates.
+create or replace view public.v_public_jobs as
+select
+  id, title, description, requirements, role_tags, compensation,
+  og_image, link, apply_url, source, company_name, deadline, expires_at,
+  opportunity_type, skill_category_ids, created_at, updated_at
+from public.jobs
+where status = 'active'
+  and (expires_at is null or expires_at > now());
 
-**Updated USP list for "Automated Community Growth Engine"** to reflect current functionality (replacing the older "Unlimited Posts" bullet list):
-- Auto-scrape & re-sync of your campaign tasks across Galxe, Zealy, QuestN, TaskOn, Layer3, custom
-- API ingestion — drop a link, Rei keeps it fresh
-- Auto-categorisation by skill, chain, payout type
-- Continuous matching to skill-aligned wallets via AskRei + Agent Rei
-- Cross-chain reach (Solana, Ethereum, Polygon, Arbitrum, Base)
-- Reduced contributor overlap & priority freshness
-- Basic performance insights (tasks indexed, sync cycles, last sync)
-- Monthly OR yearly billing — yearly saves 15.9%
+grant select on public.v_public_tasks, public.v_public_jobs to anon, authenticated;
+```
 
-The "Unlimited Posts" CTA on this card already routes to `/unlimited-posts` — no routing change needed; users land on the same page where they pick monthly/yearly.
+Excluded on purpose: `employer_wallet`, `payment_tx_signature`, `solana_pay_reference`, `external_id`, `campaign_subscription_id`.
 
----
+## Step 2 — `public-feed` edge function (REST)
 
-## Technical notes
+Single function, no JWT required, with optional `x-api-key` gate so we can rate-limit / revoke per agent.
 
-**Files touched**
-- `src/pages/UnlimitedPosts.tsx` — add `interval` state, toggle UI, dynamic priceId/copy.
-- `src/components/joinrei/JoinReiPricing.tsx` — rename tiers, add subtitles, swap "Unlimited Posts" USP list, route Unlimited button still → `/unlimited-posts`.
-- `src/index.css` — add `.pulse-glow` keyframe (soft brighter↔softer text-shadow loop on the primary accent).
-- Payments tool call: create `unlimited_posts_yearly` price ($999/yr, recurring=year, qty 1/1) under the existing `unlimited_posts` product.
+Endpoints:
 
-**No DB/migration changes.** Webhook + `campaign_subscriptions` schema already handle any interval.
+- `GET /tasks?limit=&offset=&q=&role=&skill_category_id=&since=`
+- `GET /tasks/:id`
+- `GET /jobs?limit=&offset=&q=&role=&skill_category_id=&since=`
+- `GET /jobs/:id`
+- `GET /skill-categories`
+- `GET /feed?limit=&since=` — combined tasks+jobs sorted by `created_at desc` (best for a polling agent)
 
-**Stripe-down note.** Per your message we're not switching providers — once Stripe checkout is healthy again, the new yearly price is already live and the toggle just works. If you want a temporary "Subscriptions paused" banner on `/unlimited-posts` while Stripe is down, say the word and I'll add it.
+Rules:
+- Read from `v_public_tasks` / `v_public_jobs` only.
+- Cap `limit` at 100, default 25.
+- `since` (ISO timestamp) → `created_at > since` for incremental sync.
+- Always JSON, always CORS-open, never echo any column outside the view whitelist.
+- Optional `REI_AGENT_API_KEYS` env var (comma-separated). If set, require matching `x-api-key` header.
+- Response shape: `{ data: [...], next_cursor: string|null, count: number }`.
+
+`supabase/config.toml` add:
+```toml
+[functions.public-feed]
+verify_jwt = false
+```
+
+## Step 3 — Optional: MCP server for the agent
+
+Add a second edge function `rei-mcp` using `mcp-lite` (per the MCP guide) that wraps the same views as MCP tools:
+
+- `list_tasks(query?, role?, skill_category_id?, since?, limit?)`
+- `get_task(id)`
+- `list_jobs(...)`
+- `get_job(id)`
+- `list_skill_categories()`
+- `feed(since?, limit?)`
+
+Same auth model (header API key, no JWT). Agent connects via Streamable HTTP at `/functions/v1/rei-mcp`.
+
+## Step 4 — Documentation for the agent operator
+
+Add `docs/agent-integration.md` covering:
+- Base URL: `https://qajahmmzqhgboeoorfqj.supabase.co/functions/v1/public-feed`
+- Auth: anon key + optional `x-api-key`
+- Endpoint reference + example responses
+- Pagination via `since` cursor
+- Field dictionary (with explicit "fields you will never see: wallets, tx signatures, emails")
+- Rate / fair-use note
+- MCP endpoint URL (if Step 3 shipped)
+
+## Security checklist
+
+- Views grant `select` only on whitelisted columns — wallets and tx signatures cannot leak.
+- Edge function uses **service role internally** but only ever queries the views, never the base tables.
+- No write endpoints. No talent / `rei_registry` exposure. No `chat_*` / `payment_*` / `subscriptions`.
+- Optional per-agent API key lets you revoke access without a redeploy of consumers.
+- CORS open is fine because data is already public.
+
+## Out of scope (explicitly)
+
+- Talent / Rei registry profiles (paid product — stays gated).
+- Any user-identifying data, drafts, payments, referral codes, points.
+- Write/submit endpoints (postToRei keeps its $5 SOL flow).
+
+## Deliverables when you approve
+
+1. Migration: `v_public_tasks`, `v_public_jobs` + grants.
+2. Edge function `public-feed` with the 6 endpoints above + `config.toml` block.
+3. (Optional toggle) Edge function `rei-mcp` using `mcp-lite`.
+4. `docs/agent-integration.md` for the OpenClaw operator.
+5. Optional `REI_AGENT_API_KEYS` secret you populate later in Cloud settings.
