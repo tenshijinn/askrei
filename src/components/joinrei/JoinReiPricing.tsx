@@ -203,6 +203,8 @@ export const JoinReiPricing = () => {
                         );
                       })}
                     </div>
+                  ) : (
+                    <div aria-hidden className="mb-3 mx-auto w-full max-w-[260px] h-[34px]" />
                   )}
 
                   <div className="text-center mb-1">
