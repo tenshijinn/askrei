@@ -1,4 +1,5 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
+import { scrollToLastSection } from './scrollHelpers';
 import reiCrossPlatform from '@/assets/joinrei/rei-cross-platform.png';
 import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
 
@@ -62,7 +63,7 @@ export const JoinReiValueProp = () => {
           <ScrollFadeIn delay={500}>
             <button 
               className="btn-manga btn-manga-primary px-8 py-3 mt-4"
-              onClick={() => window.location.href = '/rei'}
+              onClick={scrollToLastSection}
             >
               Promote Task
             </button>

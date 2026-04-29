@@ -1,5 +1,6 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
 import { ParallaxWrapper } from './ParallaxWrapper';
+import { scrollToLastSection } from './scrollHelpers';
 import reiFlowDiagram from '@/assets/joinrei/rei-flow.png';
 
 export const JoinReiAggregation = () => {
@@ -29,7 +30,7 @@ export const JoinReiAggregation = () => {
           <div className="flex justify-center mt-4">
             <button 
               className="btn-manga btn-manga-primary px-8 py-3"
-              onClick={() => window.location.href = '/rei'}
+              onClick={scrollToLastSection}
             >
               Promote Task
             </button>

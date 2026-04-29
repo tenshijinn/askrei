@@ -240,8 +240,11 @@ export const JoinReiPricing = () => {
                         if (isRocketReach) {
                           window.location.href = '/rocket-reach';
                         } else if (isUnlimited) {
-                          const params = interval === 'yearly' ? '?interval=yearly' : '';
-                          window.location.href = `/unlimited-posts${params}`;
+                          if (interval === 'yearly') {
+                            window.location.href = '/unlimited-posts?interval=yearly';
+                          } else {
+                            window.location.href = '/rocket-reach';
+                          }
                         } else if (tier.bookCall) {
                           window.open('https://calendly.com/wayneanthonyd-thepipegdao/join-rei', '_blank');
                         } else {

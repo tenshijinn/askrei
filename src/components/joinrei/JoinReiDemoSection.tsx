@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { ScrollFadeIn } from './ScrollFadeIn';
+import { scrollToLastSection } from './scrollHelpers';
 import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
 
 // ---------- Hooks ----------
@@ -501,7 +502,7 @@ export const JoinReiDemoSection = () => {
           <div className="flex justify-center mt-8">
             <button
               className="btn-manga btn-manga-primary px-8 py-3"
-              onClick={() => window.location.href = '/rei'}
+              onClick={scrollToLastSection}
             >
               Promote Task
             </button>
