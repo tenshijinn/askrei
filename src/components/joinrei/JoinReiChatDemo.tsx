@@ -51,11 +51,11 @@ interface FrameProps {
 const Frame = ({ title, children, speed = 0.04, delay = 0, extra }: FrameProps) => (
   <ParallaxWrapper speed={speed}>
     <ScrollFadeIn delay={delay}>
-      <div className="rei-terminal rounded-2xl border-[0.5px] border-white/10 p-8 md:p-10 bg-[#141414]/60 backdrop-blur-sm">
+      <div className="rei-terminal rounded-2xl border-[0.5px] border-white/10 p-8 md:p-10 bg-[#141414]/60 backdrop-blur-sm h-full flex flex-col min-h-[260px]">
         <h3 className="text-xl md:text-2xl lg:text-3xl font-light text-primary leading-tight mb-4">
           {title}
         </h3>
-        <div className="text-sm md:text-base font-mono text-primary/70 leading-relaxed">
+        <div className="text-sm md:text-base font-mono text-primary/70 leading-relaxed flex-1">
           {children}
         </div>
         {extra}
@@ -74,10 +74,10 @@ export const JoinReiChatDemo = () => {
           </h2>
         </ScrollFadeIn>
 
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto items-stretch">
           <Frame
             title="What is Rei?"
-            speed={0.06}
+            speed={0}
             delay={0}
             extra={
               <SinglePill>
@@ -92,7 +92,7 @@ export const JoinReiChatDemo = () => {
 
           <Frame
             title="SkillSync Auto Matches Users"
-            speed={0.03}
+            speed={0}
             delay={100}
             extra={<SinglePill><MatchesSkillsPill /></SinglePill>}
           >
@@ -101,7 +101,7 @@ export const JoinReiChatDemo = () => {
 
           <Frame
             title="Quality is pre-verified."
-            speed={0.05}
+            speed={0}
             delay={200}
             extra={<SinglePill><VerifiedLoginPill /><ProofOfTalentPill /></SinglePill>}
           >
@@ -110,8 +110,8 @@ export const JoinReiChatDemo = () => {
           </Frame>
 
           <Frame
-            title="Better bounties. Better contributors. Less noise."
-            speed={0.02}
+            title="Better Filters, Better Users"
+            speed={0}
             delay={300}
             extra={<SinglePill><SimplePill label="Web3 Growth Engine" /></SinglePill>}
           >
