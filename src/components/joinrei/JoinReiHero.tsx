@@ -38,6 +38,7 @@ export const JoinReiHero = () => {
     <section className="h-screen snap-start relative flex overflow-hidden bg-[#0a0a0a]">
       <div className="w-full lg:w-[45%] h-full flex flex-col justify-between p-8 lg:p-12 xl:p-16 relative z-10">
         <div className="pt-2">
+          <img src={reiLogo} alt="Rei" className="h-12 w-auto mb-6" />
           <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
             <span>Many </span>
             <span 
@@ -48,15 +49,13 @@ export const JoinReiHero = () => {
             </span>
             <span> Users</span>
             <br />
-            <span>Come Just to Farm Tokens</span>
-            <br />
-            <span>And Exit Your Community.</span>
+            <span>Farm Your Tokens & Leave</span>
             <br />
             <span>We're Fixing That.</span>
           </h1>
 
           <p className={`mt-6 text-sm md:text-base text-primary/90 font-mono leading-relaxed transition-opacity duration-500 max-w-lg ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
-            Rei is a Chatbot & AI Agent that promotes your tasks to 'Twitter Verified' and 'Skill Verified' Users.
+            Find Quality Users and Reduce Community Churn with Rei. Rei An AI Agent and Chatbot that promotes your tasks to Skill Verified and <BadgeCheck className="inline h-4 w-4 align-text-bottom" style={{ color: '#1DA1F2', fill: '#1DA1F2', stroke: '#0a0a0a' }} /> 'Twitter Blue Verified' users.
           </p>
         </div>
 
