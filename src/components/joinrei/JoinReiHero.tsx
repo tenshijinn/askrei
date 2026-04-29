@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronDown, BadgeCheck } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import reiHero from '@/assets/joinrei/rei-hero.png';
 import reiSpeechBubble from '@/assets/joinrei/rei-speech-bubble.gif';
 import reiLogo from '@/assets/joinrei/rei-logo.png';
@@ -55,7 +55,7 @@ export const JoinReiHero = () => {
           </h1>
 
           <p className={`mt-6 text-sm md:text-base text-primary/90 font-mono leading-relaxed transition-opacity duration-500 max-w-lg ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
-            Find Quality Users and Reduce Community Churn with Rei. Rei An AI Agent and Chatbot that promotes your tasks to Skill Verified and <BadgeCheck className="inline h-4 w-4 align-text-bottom" style={{ color: '#1DA1F2', fill: '#1DA1F2', stroke: '#0a0a0a' }} /> 'Twitter Blue Verified' users.
+            Quality users, less churn powered by Rei.
           </p>
         </div>
 
