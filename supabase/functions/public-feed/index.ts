@@ -26,13 +26,63 @@ function json(body: unknown, status = 200) {
   });
 }
 
-function checkApiKey(req: Request): { ok: true } | { ok: false; res: Response } {
+async function sha256Hex(input: string): Promise<string> {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+// In-memory token bucket per key id (resets on cold start; good enough for soft limits).
+const buckets = new Map<string, { count: number; minute: number }>();
+
+interface KeyContext { id: string | null; rate: number }
+
+async function checkApiKey(req: Request): Promise<{ ok: true; ctx: KeyContext } | { ok: false; res: Response }> {
+  const provided = (req.headers.get("x-api-key") ?? "").trim();
+  if (!provided) return { ok: false, res: json({ error: "Missing x-api-key" }, 401) };
+
+  // 1) Legacy env-secret keys (Rei/OpenClaw internal)
   const allowed = (Deno.env.get("REI_AGENT_API_KEYS") ?? "").trim();
-  if (!allowed) return { ok: true }; // gating disabled
-  const provided = req.headers.get("x-api-key") ?? "";
-  const keys = allowed.split(",").map((k) => k.trim()).filter(Boolean);
-  if (provided && keys.includes(provided)) return { ok: true };
-  return { ok: false, res: json({ error: "Invalid or missing x-api-key" }, 401) };
+  if (allowed) {
+    const envKeys = allowed.split(",").map((k) => k.trim()).filter(Boolean);
+    if (envKeys.includes(provided)) return { ok: true, ctx: { id: null, rate: 1000 } };
+  }
+
+  // 2) DB-backed agent keys (sold via /agents)
+  const hash = await sha256Hex(provided);
+  const { data, error } = await supabase
+    .from("agent_api_keys")
+    .select("id, rate_limit_per_min, expires_at, revoked")
+    .eq("key_hash", hash)
+    .maybeSingle();
+  if (error || !data) return { ok: false, res: json({ error: "Invalid x-api-key" }, 401) };
+  if (data.revoked) return { ok: false, res: json({ error: "Key revoked" }, 401) };
+  if (data.expires_at && new Date(data.expires_at) < new Date()) {
+    return { ok: false, res: json({ error: "Key expired" }, 401) };
+  }
+
+  // Rate limit
+  const minute = Math.floor(Date.now() / 60000);
+  const b = buckets.get(data.id);
+  if (!b || b.minute !== minute) {
+    buckets.set(data.id, { count: 1, minute });
+  } else {
+    b.count += 1;
+    if (b.count > data.rate_limit_per_min) {
+      return { ok: false, res: json({ error: "Rate limit exceeded" }, 429) };
+    }
+  }
+  return { ok: true, ctx: { id: data.id, rate: data.rate_limit_per_min } };
+}
+
+// Fire-and-forget usage logging
+function logUsage(ctx: KeyContext, endpoint: string, status: number) {
+  if (!ctx.id) return;
+  supabase.from("agent_api_usage").insert({ api_key_id: ctx.id, endpoint, status }).then(
+    () => {}, () => {},
+  );
+  supabase.from("agent_api_keys").update({ last_used_at: new Date().toISOString() }).eq("id", ctx.id).then(
+    () => {}, () => {},
+  );
 }
 
 function parseListParams(url: URL) {
@@ -86,8 +136,9 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "GET") return json({ error: "Method not allowed" }, 405);
 
-  const gate = checkApiKey(req);
+  const gate = await checkApiKey(req);
   if (!gate.ok) return gate.res;
+  const ctx = gate.ctx;
 
   const url = new URL(req.url);
   // path is /public-feed/<rest>
@@ -167,10 +218,15 @@ serve(async (req) => {
       }
 
       default:
+        logUsage(ctx, route || "/", 404);
         return json({ error: "Unknown endpoint", path: "/" + segs.join("/") }, 404);
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
+    logUsage(ctx, route || "/", 500);
     return json({ error: msg }, 500);
+  } finally {
+    // best-effort log success path (404/500 already logged above)
+    logUsage(ctx, route || "/", 200);
   }
 });

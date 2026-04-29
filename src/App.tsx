@@ -8,6 +8,7 @@ import { EVMWalletProvider } from "@/components/EVMWalletProvider";
 import JoinRei from "./pages/JoinRei";
 import JoinReiOriginal from "./pages/JoinReiOriginal";
 import Rei from "./pages/Rei";
+import Agents from "./pages/Agents";
 import RocketReach from "./pages/RocketReach";
 import UnlimitedPosts from "./pages/UnlimitedPosts";
 import UnlimitedPostsReturn from "./pages/UnlimitedPostsReturn";
@@ -28,6 +29,7 @@ const App = () => (
               <Route path="/" element={<JoinRei />} />
               <Route path="/joinrei" element={<JoinReiOriginal />} />
               <Route path="/rei" element={<Rei />} />
+              <Route path="/agents" element={<Agents />} />
               <Route path="/rocket-reach" element={<RocketReach />} />
               <Route path="/unlimited-posts" element={<UnlimitedPosts />} />
               <Route path="/unlimited-posts/return" element={<UnlimitedPostsReturn />} />
