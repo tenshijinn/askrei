@@ -1,4 +1,5 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
+import { scrollToLastSection } from './scrollHelpers';
 import solanaBadges from '@/assets/joinrei/solana-badges.png';
 import hiwImg1 from '@/assets/joinrei/hiw-img1.png';
 import hiwImg2 from '@/assets/joinrei/hiw-img2.png';
