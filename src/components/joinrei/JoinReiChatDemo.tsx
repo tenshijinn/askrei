@@ -91,7 +91,7 @@ export const JoinReiChatDemo = () => {
           </Frame>
 
           <Frame
-            title="It finds and filters users automatically."
+            title="SkillSync Auto Matches Users"
             speed={0.03}
             delay={100}
             extra={<SinglePill><MatchesSkillsPill /></SinglePill>}
