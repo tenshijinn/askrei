@@ -280,7 +280,7 @@ export default function UnlimitedPosts() {
                   <div className="text-cream/60">{projectName} · {email}</div>
                 </div>
                 <StripeEmbeddedCheckout
-                  priceId={PRICE_ID}
+                  priceId={PRICE_IDS[checkoutMeta.interval]}
                   customerEmail={checkoutMeta.customerEmail}
                   metadata={checkoutMeta.metadata}
                 />
