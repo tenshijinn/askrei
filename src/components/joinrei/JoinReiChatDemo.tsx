@@ -104,41 +104,6 @@ export const JoinReiChatDemo = () => {
             Higher signal in, higher value out — for projects and talent alike.
           </Frame>
         </div>
-            speed={0.06}
-            delay={0}
-          >
-            Rei is an AI platform that connects Web3 bounties with verified, high-intent talent.
-          </Frame>
-
-          <Frame
-            eyebrow="Frame 2 — Core Function"
-            title="It finds and filters users automatically."
-            speed={0.03}
-            delay={100}
-          >
-            AI matches the right tasks to the right people before they ever apply.
-          </Frame>
-
-          <Frame
-            eyebrow="Frame 3 — Verification Layer"
-            title="Quality is pre-verified."
-            speed={0.05}
-            delay={200}
-            extra={<Pills />}
-          >
-            Wallet activity and Twitter Premium signals help identify real, engaged users,{' '}
-            <strong className="text-cream font-semibold">not JEETs or farmers</strong>.
-          </Frame>
-
-          <Frame
-            eyebrow="Frame 4 — Outcome"
-            title="Better bounties. Better contributors. Less noise."
-            speed={0.02}
-            delay={300}
-          >
-            Higher signal in, higher value out — for projects and talent alike.
-          </Frame>
-        </div>
 
         <ScrollFadeIn delay={400}>
           <div className="mt-10 flex justify-center">
