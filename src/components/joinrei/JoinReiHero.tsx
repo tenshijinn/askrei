@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ChevronDown, BadgeCheck } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import reiHero from '@/assets/joinrei/rei-hero.png';
 import reiSpeechBubble from '@/assets/joinrei/rei-speech-bubble.gif';
 import reiLogo from '@/assets/joinrei/rei-logo.png';
