@@ -100,7 +100,7 @@ const pricingTiers: PricingTier[] = [
     positioning: 'Always-on distribution for teams running continuous tasks.',
     totalValue: '~$2,010',
     usps: [
-      { feature: 'Auto-scrape & re-sync of campaign tasks (Galxe, Zealy, QuestN, TaskOn, Layer3, custom)', worth: '$400' },
+      { feature: 'Auto-sync & re-sync of campaign tasks (Galxe, Zealy, QuestN, TaskOn, Layer3, custom)', worth: '$400' },
       { feature: 'API ingestion — drop a link, Rei keeps it fresh', worth: '$250' },
       { feature: 'Auto-categorisation by skill, chain & payout type', worth: '$220' },
       { feature: 'Continuous matching to skill-aligned wallets via AskRei + Agent Rei', worth: '$300' },
