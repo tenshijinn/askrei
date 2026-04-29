@@ -6,7 +6,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 
-const PRICE_ID = "unlimited_posts_monthly";
+type Interval = "monthly" | "yearly";
+const PRICE_IDS: Record<Interval, string> = {
+  monthly: "unlimited_posts_monthly",
+  yearly: "unlimited_posts_yearly",
+};
+const PRICE_COPY: Record<Interval, { amount: string; period: string; perDay: string; badgeSuffix: string; saveNote?: string }> = {
+  monthly: { amount: "$99", period: "p/m", perDay: "Just $3.30 per day", badgeSuffix: "MONTHLY", },
+  yearly:  { amount: "$999", period: "p/y", perDay: "Just $2.73 per day", badgeSuffix: "YEARLY", saveNote: "Save 15.9% vs monthly" },
+};
 
 export default function UnlimitedPosts() {
   const [projectName, setProjectName] = useState("");
@@ -15,9 +23,11 @@ export default function UnlimitedPosts() {
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [interval, setInterval] = useState<Interval>("monthly");
   const [checkoutMeta, setCheckoutMeta] = useState<{
     customerEmail: string;
     metadata: Record<string, string>;
+    interval: Interval;
   } | null>(null);
 
   const handleScreenshot = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,10 +74,12 @@ export default function UnlimitedPosts() {
 
       setCheckoutMeta({
         customerEmail: email,
+        interval,
         metadata: {
           product_id: "unlimited_posts",
           project_name: projectName,
           project_link: projectLink,
+          billing_interval: interval,
           ...(screenshotUrl ? { screenshot_url: screenshotUrl } : {}),
           customer_email: email,
         },
