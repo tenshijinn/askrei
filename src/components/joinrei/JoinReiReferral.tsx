@@ -1,4 +1,5 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
+import { scrollToLastSection } from './scrollHelpers';
 import shareGraphic from '@/assets/joinrei/share-graphic.png';
 
 export const JoinReiReferral = () => {
