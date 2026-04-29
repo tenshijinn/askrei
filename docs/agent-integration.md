@@ -16,14 +16,19 @@ Two headers:
 |---|---|---|
 | `Authorization` | yes | `Bearer <SUPABASE_ANON_KEY>` |
 | `apikey` | yes | `<SUPABASE_ANON_KEY>` |
-| `x-api-key` | yes | A key from `REI_AGENT_API_KEYS` (gating is enabled) |
+| `x-api-key` | yes | A `rei_live_…` key purchased at **https://rei.chat/agents** (or an internal key from `REI_AGENT_API_KEYS`) |
 
-Anon key (publishable, safe to ship in agent config):
-```
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFhamFobW16cWhnYm9lb29yZnFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1ODAzOTksImV4cCI6MjA5MTE1NjM5OX0.vuTVyufnNcRlKvSWMoVKr7fbEfNFlAjF9Peq8d1LZgE
-```
+### Get a key
 
-API key gating is **enabled**. Every request must include a valid `x-api-key` header matching one of the keys in the `REI_AGENT_API_KEYS` secret (comma-separated list). Rotate or revoke a key by updating the secret — no redeploy needed.
+Go to **/agents** and buy a tier with x402 (Solana). The raw key is shown **once** after payment — store it immediately. Tiers:
+
+| Tier | Price | Rate limit |
+|---|---|---|
+| Pay-as-you-go | $5 top-up | 60 req/min |
+| Agent Starter | $25 / 30 days | 300 req/min |
+| Agent Pro | $99 / 30 days | 1000 req/min |
+
+Keys can be revoked any time from the buyer dashboard — no redeploy needed.
 
 ## Endpoints
 
