@@ -70,7 +70,7 @@ const pricingTiers: PricingTier[] = [
     icon: iconDIY,
     premium: false,
     bookCall: false,
-    showSolanaBadges: true,
+    showSolanaBadges: false,
     positioning: 'One-off task amplification to relevant Web3 contributors.',
     totalValue: '~$685',
     usps: [
