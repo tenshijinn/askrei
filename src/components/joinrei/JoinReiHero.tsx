@@ -69,7 +69,7 @@ export const JoinReiHero = () => {
           <div className="flex items-center gap-6 flex-wrap">
             <button 
               className="btn-manga btn-manga-outline"
-              onClick={() => window.location.href = '/rei'}
+              onClick={scrollToLastSection}
             >
               Promote Task
             </button>
