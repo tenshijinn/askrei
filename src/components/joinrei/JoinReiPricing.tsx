@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { ScrollFadeIn } from './ScrollFadeIn';
-import { Zap, Rocket, Eye, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import solanaBadges from '@/assets/joinrei/solana-badges.png';
+import iconRocket from '@/assets/pricing-rocket.png';
+import iconDIY from '@/assets/pricing-diy.png';
+import iconAutomated from '@/assets/pricing-automated.png';
 
 type Interval = 'monthly' | 'yearly';
 
@@ -19,7 +22,7 @@ interface PricingTier {
   subtitle: string;
   prices: { monthly: PricingPoint; yearly?: PricingPoint };
   hasToggle: boolean;
-  icon: typeof Zap;
+  icon: string;
   premium: boolean;
   bookCall: boolean;
   showSolanaBadges?: boolean;
@@ -32,13 +35,13 @@ const pricingTiers: PricingTier[] = [
   {
     name: 'Rocket Reach Community Growth Engine',
     nameAccent: null,
-    leverage: 'x100 Leverage',
+    leverage: 'x100 Leverage User Growth',
     subtitle: '1 Promotion Campaign',
     prices: {
       monthly: { price: '$2,500', period: 'Per Campaign', perDay: null, saveNote: null },
     },
     hasToggle: false,
-    icon: Rocket,
+    icon: iconRocket,
     premium: true,
     bookCall: true,
     positioning: 'Paid amplification for launches, campaigns, and time-sensitive pushes.',
@@ -58,13 +61,13 @@ const pricingTiers: PricingTier[] = [
   {
     name: 'DIY Community Growth Engine',
     nameAccent: null,
-    leverage: 'x10 Leverage',
+    leverage: 'x10 Leverage User Growth',
     subtitle: '1 Promotion Post',
     prices: {
       monthly: { price: '$5', period: 'Per Post', perDay: null, saveNote: null },
     },
     hasToggle: false,
-    icon: Eye,
+    icon: iconDIY,
     premium: false,
     bookCall: false,
     showSolanaBadges: true,
@@ -84,14 +87,14 @@ const pricingTiers: PricingTier[] = [
   {
     name: 'Community Growth Engine',
     nameAccent: 'Automated',
-    leverage: 'x10 Leverage',
+    leverage: 'x10 Leverage User Growth',
     subtitle: 'Unlimited Promotion Posts',
     prices: {
       monthly: { price: '$99', period: 'p/m', perDay: 'Just $3.30 per day', saveNote: null },
       yearly: { price: '$999', period: 'p/y', perDay: 'Just $2.73 per day', saveNote: 'Save 15.9% vs monthly' },
     },
     hasToggle: true,
-    icon: Zap,
+    icon: iconAutomated,
     premium: false,
     bookCall: false,
     positioning: 'Always-on distribution for teams running continuous tasks.',
@@ -147,12 +150,8 @@ export const JoinReiPricing = () => {
                   {/* ── HEADER ─────────────────────────────────────────────── */}
                   <div className="p-6 pb-5">
                     <div className="flex items-start gap-3 mb-5">
-                      <div
-                        className={`p-2.5 rounded-xl border-[0.5px] flex-shrink-0 ${
-                          isPremium ? 'bg-amber-500/10 border-amber-500/30' : 'bg-white/5 border-white/10'
-                        }`}
-                      >
-                        <tier.icon className={`h-5 w-5 ${isPremium ? 'text-amber-500' : 'text-primary'}`} />
+                      <div className="flex-shrink-0">
+                        <img src={tier.icon} alt="" className="h-10 w-10 object-contain" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3
