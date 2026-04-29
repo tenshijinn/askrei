@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { ScrollFadeIn } from './ScrollFadeIn';
+import { scrollToLastSection } from './scrollHelpers';
 import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
 
 // ---------- Hooks ----------
