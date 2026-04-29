@@ -4,9 +4,14 @@ import solanaBadges from '@/assets/joinrei/solana-badges.png';
 
 const pricingTiers = [
   {
-    name: 'Posts',
+    name: 'Community Growth Engine',
+    nameAccent: null as string | null,
+    leverage: 'x10 Leverage',
+    subtitle: '1 Promotion Post',
     price: '$5',
     period: 'Per Post',
+    perDay: null as string | null,
+    saveNote: null as string | null,
     icon: Eye,
     premium: false,
     showSolanaBadges: true,
@@ -25,9 +30,14 @@ const pricingTiers = [
     ],
   },
   {
-    name: 'Unlimited Posts',
+    name: 'Community Growth Engine',
+    nameAccent: 'Automated',
+    leverage: 'x10 Leverage',
+    subtitle: 'Unlimited Promotion Posts',
     price: '$99',
-    period: '30 days',
+    period: 'p/m or $999 p/y',
+    perDay: 'Just $3.30/day · or $2.73/day yearly',
+    saveNote: 'Yearly saves 15.9%',
     icon: Zap,
     premium: false,
     showSolanaBadges: false,
@@ -35,22 +45,26 @@ const pricingTiers = [
     positioning: 'Always-on distribution for teams running continuous tasks.',
     totalValue: '~$2,010',
     usps: [
-      { feature: 'Unlimited task amplification', worth: '$400' },
-      { feature: 'API-based ingestion (no manual posting)', worth: '$250' },
-      { feature: 'Skill-matched contributors (wallet + declared skills)', worth: '$180' },
-      { feature: 'Ongoing visibility on Galxe, Zealy, QuestN, TaskOn, Layer3', worth: '$300' },
-      { feature: 'Extended cross-chain reach', worth: '$200' },
-      { feature: 'Continuous cross-community discovery', worth: '$150' },
-      { feature: 'Reduced contributor overlap', worth: '$120' },
-      { feature: 'Priority task freshness', worth: '$100' },
-      { feature: 'Basic task performance insights', worth: '$90' },
-      { feature: 'Lower effective cost per task', worth: '$120' },
+      { feature: 'Auto-scrape & re-sync of campaign tasks (Galxe, Zealy, QuestN, TaskOn, Layer3, custom)', worth: '$400' },
+      { feature: 'API ingestion — drop a link, Rei keeps it fresh', worth: '$250' },
+      { feature: 'Auto-categorisation by skill, chain & payout type', worth: '$220' },
+      { feature: 'Continuous matching to skill-aligned wallets via AskRei + Agent Rei', worth: '$300' },
+      { feature: 'Cross-chain reach (Solana, Ethereum, Polygon, Arbitrum, Base)', worth: '$200' },
+      { feature: 'Reduced contributor overlap & priority freshness', worth: '$180' },
+      { feature: 'Performance insights — tasks indexed, sync cycles, last sync', worth: '$150' },
+      { feature: 'Monthly or yearly billing — yearly saves 15.9%', worth: '$120' },
+      { feature: 'Lower effective cost per task', worth: '$90' },
     ],
   },
   {
     name: 'Rocket Reach',
+    nameAccent: null as string | null,
+    leverage: null as string | null,
+    subtitle: 'Community Growth Engine x100 Leverage',
     price: '$2,500',
     period: 'Per Campaign',
+    perDay: null as string | null,
+    saveNote: null as string | null,
     icon: Rocket,
     premium: true,
     showSolanaBadges: false,
@@ -84,8 +98,11 @@ export const JoinReiPricing = () => {
         <div className="grid lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
           {pricingTiers.map((tier, index) => {
             const isPremium = tier.premium;
+            const isAutomated = tier.nameAccent === 'Automated';
+            const isUnlimited = isAutomated; // tier 2 = the unlimited subscription
+            const isRocketReach = tier.name === 'Rocket Reach';
             return (
-              <ScrollFadeIn key={tier.name} delay={index * 100}>
+              <ScrollFadeIn key={`${tier.name}-${index}`} delay={index * 100}>
                 <div className={`relative h-full flex flex-col p-6 rounded-2xl border-[0.5px] transition-all duration-300 hover:shadow-2xl ${
                   isPremium 
                     ? 'border-amber-500/40 bg-gradient-to-br from-amber-500/10 to-transparent hover:shadow-amber-500/10' 
@@ -99,9 +116,21 @@ export const JoinReiPricing = () => {
                     </div>
                   </div>
 
-                  <h3 className={`text-xl font-light font-mono mb-1 text-center ${isPremium ? 'text-amber-500' : 'text-primary'}`}>
+                  <h3 className={`text-lg lg:text-xl font-light font-mono mb-1 text-center leading-snug ${isPremium ? 'text-amber-500' : 'text-primary'}`}>
+                    {tier.nameAccent && (
+                      <>
+                        <span className="pulse-glow">{tier.nameAccent}</span>{' '}
+                      </>
+                    )}
                     {tier.name}
+                    {tier.leverage && (
+                      <span className="block text-[11px] text-cream/50 tracking-wider mt-1">{tier.leverage}</span>
+                    )}
                   </h3>
+
+                  <p className="text-[11px] text-center text-cream/70 font-mono mb-3 italic">
+                    {tier.subtitle}
+                  </p>
 
                   <div className="text-center mb-1">
                     <span className={`text-3xl font-light font-mono ${isPremium ? 'text-amber-500' : 'text-cream'}`}>
@@ -109,9 +138,20 @@ export const JoinReiPricing = () => {
                     </span>
                   </div>
 
-                  <p className="text-cream/60 font-mono text-sm text-center mb-3">{tier.period}</p>
+                  <p className="text-cream/60 font-mono text-sm text-center mb-1">{tier.period}</p>
 
-                  <p className="text-cream/80 text-sm text-center mb-4 font-mono leading-relaxed">
+                  {tier.perDay && (
+                    <p className="text-[11px] text-center text-primary/90 font-mono mb-1">
+                      {tier.perDay}
+                    </p>
+                  )}
+                  {tier.saveNote && (
+                    <p className="text-[10px] text-center text-cream/50 font-mono mb-2">
+                      {tier.saveNote}
+                    </p>
+                  )}
+
+                  <p className="text-cream/80 text-sm text-center mb-4 mt-2 font-mono leading-relaxed">
                     {tier.positioning}
                   </p>
 
@@ -151,9 +191,9 @@ export const JoinReiPricing = () => {
                         : 'btn-manga btn-manga-primary w-full'
                     }`}
                     onClick={() => {
-                      if (tier.name === 'Rocket Reach') {
+                      if (isRocketReach) {
                         window.location.href = '/rocket-reach';
-                      } else if (tier.name === 'Unlimited Posts') {
+                      } else if (isUnlimited) {
                         window.location.href = '/unlimited-posts';
                       } else if (tier.bookCall) {
                         window.open('https://calendly.com/wayneanthonyd-thepipegdao/join-rei', '_blank');
@@ -162,7 +202,7 @@ export const JoinReiPricing = () => {
                       }
                     }}
                   >
-                    {tier.name === 'Rocket Reach' ? 'Launch Campaign' : tier.name === 'Unlimited Posts' ? 'Start Subscription' : tier.bookCall ? 'Book a Call' : 'Get Started'}
+                    {isRocketReach ? 'Launch Campaign' : isUnlimited ? 'Start Subscription' : 'Get Started'}
                   </button>
                 </div>
               </ScrollFadeIn>

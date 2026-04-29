@@ -6,7 +6,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 
-const PRICE_ID = "unlimited_posts_monthly";
+type Interval = "monthly" | "yearly";
+const PRICE_IDS: Record<Interval, string> = {
+  monthly: "unlimited_posts_monthly",
+  yearly: "unlimited_posts_yearly",
+};
+const PRICE_COPY: Record<Interval, { amount: string; period: string; perDay: string; badgeSuffix: string; saveNote?: string }> = {
+  monthly: { amount: "$99", period: "p/m", perDay: "Just $3.30 per day", badgeSuffix: "MONTHLY", },
+  yearly:  { amount: "$999", period: "p/y", perDay: "Just $2.73 per day", badgeSuffix: "YEARLY", saveNote: "Save 15.9% vs monthly" },
+};
 
 export default function UnlimitedPosts() {
   const [projectName, setProjectName] = useState("");
@@ -15,9 +23,11 @@ export default function UnlimitedPosts() {
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [interval, setInterval] = useState<Interval>("monthly");
   const [checkoutMeta, setCheckoutMeta] = useState<{
     customerEmail: string;
     metadata: Record<string, string>;
+    interval: Interval;
   } | null>(null);
 
   const handleScreenshot = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,10 +74,12 @@ export default function UnlimitedPosts() {
 
       setCheckoutMeta({
         customerEmail: email,
+        interval,
         metadata: {
           product_id: "unlimited_posts",
           project_name: projectName,
           project_link: projectLink,
+          billing_interval: interval,
           ...(screenshotUrl ? { screenshot_url: screenshotUrl } : {}),
           customer_email: email,
         },
@@ -118,7 +130,7 @@ export default function UnlimitedPosts() {
               <p>• Drop a link to your active campaign (Galxe, Zealy, QuestN, TaskOn, Layer3, custom).</p>
               <p>• Rei keeps your campaign in sync automatically for the duration of your subscription.</p>
               <p>• Every new task is auto-indexed and surfaced to skill-matched contributors via AskRei + Agent Rei.</p>
-              <p>• Subscription renews monthly via Stripe. Cancel anytime — sync stops at period end.</p>
+              <p>• Subscription renews monthly or yearly via Stripe. Cancel anytime — sync stops at period end.</p>
             </div>
           </div>
 
@@ -180,13 +192,54 @@ export default function UnlimitedPosts() {
                 </div>
 
                 <div className="pt-3 border-t border-white/10">
-                  <div className="flex items-baseline gap-2 mb-3">
+                  {/* Billing interval toggle */}
+                  <div className="rei-section-label">Billing</div>
+                  <div className="grid grid-cols-2 gap-2 p-1 rounded-full border border-white/10 bg-[#0f0f0f] mb-4">
+                    {(["monthly", "yearly"] as Interval[]).map((opt) => {
+                      const active = interval === opt;
+                      return (
+                        <button
+                          key={opt}
+                          type="button"
+                          onClick={() => setInterval(opt)}
+                          className={`relative py-2 rounded-full text-xs uppercase tracking-wider transition-all ${
+                            active
+                              ? "bg-primary text-[#0a0a0a] font-medium"
+                              : "text-cream/60 hover:text-cream"
+                          }`}
+                        >
+                          {opt === "monthly" ? "Monthly" : "Yearly"}
+                          {opt === "yearly" && (
+                            <span
+                              className={`ml-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-mono ${
+                                active ? "bg-[#0a0a0a]/20 text-[#0a0a0a]" : "bg-primary/20 text-primary"
+                              }`}
+                            >
+                              -15.9%
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex items-baseline gap-2 mb-1">
                     <span className="text-2xl font-light text-cream">Payment:</span>
-                    <span className="text-2xl font-light text-primary">$99 p/m</span>
+                    <span className="text-2xl font-light text-primary">
+                      {PRICE_COPY[interval].amount} {PRICE_COPY[interval].period}
+                    </span>
+                  </div>
+                  <div className="mb-3 text-[11px] text-cream/60">
+                    {PRICE_COPY[interval].perDay}
+                    {PRICE_COPY[interval].saveNote && (
+                      <span className="text-primary"> · {PRICE_COPY[interval].saveNote}</span>
+                    )}
                   </div>
                   <div className="rei-surface-2 p-4 text-center mb-4">
                     <div className="text-xl font-light text-cream mb-1">Stripe</div>
-                    <div className="text-[10px] text-cream/50 tracking-wider">MONTHLY SUBSCRIPTION</div>
+                    <div className="text-[10px] text-cream/50 tracking-wider">
+                      {PRICE_COPY[interval].badgeSuffix} SUBSCRIPTION
+                    </div>
                   </div>
                   <button
                     onClick={startSubscription}
@@ -227,7 +280,7 @@ export default function UnlimitedPosts() {
                   <div className="text-cream/60">{projectName} · {email}</div>
                 </div>
                 <StripeEmbeddedCheckout
-                  priceId={PRICE_ID}
+                  priceId={PRICE_IDS[checkoutMeta.interval]}
                   customerEmail={checkoutMeta.customerEmail}
                   metadata={checkoutMeta.metadata}
                 />
