@@ -23,7 +23,10 @@ export default function UnlimitedPosts() {
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [interval, setInterval] = useState<Interval>("monthly");
+  const [interval, setInterval] = useState<Interval>(() => {
+    if (typeof window === "undefined") return "monthly";
+    return new URLSearchParams(window.location.search).get("interval") === "yearly" ? "yearly" : "monthly";
+  });
   const [checkoutMeta, setCheckoutMeta] = useState<{
     customerEmail: string;
     metadata: Record<string, string>;
