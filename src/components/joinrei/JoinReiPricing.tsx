@@ -122,7 +122,7 @@ export const JoinReiPricing = () => {
           </h2>
         </ScrollFadeIn>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto items-stretch">
           {pricingTiers.map((tier, index) => {
             const isPremium = tier.premium;
             const isAutomated = tier.nameAccent === 'Automated';
@@ -138,154 +138,158 @@ export const JoinReiPricing = () => {
             return (
               <ScrollFadeIn key={`${tier.name}-${index}`} delay={index * 100}>
                 <div
-                  className={`relative h-full flex flex-col p-6 rounded-2xl border-[0.5px] transition-all duration-300 hover:shadow-2xl ${
+                  className={`relative h-full flex flex-col rounded-2xl border-[0.5px] overflow-hidden transition-all duration-300 hover:shadow-2xl ${
                     isPremium
-                      ? 'border-amber-500/40 bg-gradient-to-br from-amber-500/10 to-transparent hover:shadow-amber-500/10'
+                      ? 'border-amber-500/40 bg-[#141414] hover:shadow-amber-500/10'
                       : 'border-white/10 bg-[#141414] hover:shadow-white/5'
                   }`}
                 >
-                  <div className="flex justify-center mb-4">
-                    <div
-                      className={`p-3 rounded-2xl border-[0.5px] ${
-                        isPremium ? 'bg-amber-500/10 border-amber-500/30' : 'bg-white/5 border-white/10'
+                  {/* ── HEADER ─────────────────────────────────────────────── */}
+                  <div className="p-6 pb-5">
+                    <div className="flex items-start gap-3 mb-5">
+                      <div
+                        className={`p-2.5 rounded-xl border-[0.5px] flex-shrink-0 ${
+                          isPremium ? 'bg-amber-500/10 border-amber-500/30' : 'bg-white/5 border-white/10'
+                        }`}
+                      >
+                        <tier.icon className={`h-5 w-5 ${isPremium ? 'text-amber-500' : 'text-primary'}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3
+                          className={`text-base font-light font-mono leading-snug ${
+                            isPremium ? 'text-amber-500' : 'text-primary'
+                          }`}
+                        >
+                          {tier.nameAccent && (
+                            <>
+                              <span className="pulse-glow">{tier.nameAccent}</span>{' '}
+                            </>
+                          )}
+                          {tier.name}
+                        </h3>
+                        {tier.leverage && (
+                          <span className="block text-[10px] text-cream/50 tracking-wider mt-0.5 font-mono">
+                            {tier.leverage}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Toggle (or spacer) — fixed height to keep prices aligned */}
+                    {tier.hasToggle && tier.prices.yearly ? (
+                      <div className="inline-grid grid-cols-2 gap-1 p-1 rounded-full border border-white/10 bg-[#0f0f0f] mb-4">
+                        {(['monthly', 'yearly'] as Interval[]).map((opt) => {
+                          const active = interval === opt;
+                          return (
+                            <button
+                              key={opt}
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIntervals((prev) => ({ ...prev, [index]: opt }));
+                              }}
+                              className={`px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-mono transition-all ${
+                                active ? 'bg-primary text-[#0a0a0a] font-medium' : 'text-cream/60 hover:text-cream'
+                              }`}
+                            >
+                              {opt === 'monthly' ? 'Monthly' : 'Yearly'}
+                              {opt === 'yearly' && (
+                                <span
+                                  className={`ml-1 px-1 py-0.5 rounded-full text-[8px] ${
+                                    active ? 'bg-[#0a0a0a]/20 text-[#0a0a0a]' : 'bg-primary/20 text-primary'
+                                  }`}
+                                >
+                                  -15.9%
+                                </span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div aria-hidden className="mb-4 h-[30px]" />
+                    )}
+
+                    {/* Price */}
+                    <div className="flex items-baseline gap-2 mb-1">
+                      <span
+                        className={`text-4xl font-light font-mono ${isPremium ? 'text-amber-500' : 'text-cream'}`}
+                      >
+                        {activePrice.price}
+                      </span>
+                      <span className="text-cream/60 font-mono text-xs">{activePrice.period}</span>
+                    </div>
+
+                    <div className="min-h-[18px] mb-3">
+                      {activePrice.perDay && (
+                        <p className="text-[11px] text-primary/90 font-mono">{activePrice.perDay}</p>
+                      )}
+                      {activePrice.saveNote && (
+                        <p className="text-[10px] text-cream/50 font-mono">{activePrice.saveNote}</p>
+                      )}
+                    </div>
+
+                    <p className="text-cream/70 text-xs font-mono leading-relaxed mb-5">{tier.positioning}</p>
+
+                    <button
+                      className={`w-full font-mono py-2.5 rounded-full transition-all duration-300 text-sm ${
+                        isPremium
+                          ? 'bg-amber-500 text-[#0a0a0a] hover:bg-amber-400'
+                          : 'btn-manga btn-manga-primary'
                       }`}
+                      onClick={() => {
+                        if (isRocketReach) {
+                          window.location.href = '/rocket-reach';
+                        } else if (isUnlimited) {
+                          const params = interval === 'yearly' ? '?interval=yearly' : '';
+                          window.location.href = `/unlimited-posts${params}`;
+                        } else if (tier.bookCall) {
+                          window.open('https://calendly.com/wayneanthonyd-thepipegdao/join-rei', '_blank');
+                        } else {
+                          window.location.href = '/rei';
+                        }
+                      }}
                     >
-                      <tier.icon className={`h-8 w-8 ${isPremium ? 'text-amber-500' : 'text-primary'}`} />
-                    </div>
+                      {isRocketReach ? 'Launch Campaign' : isUnlimited ? 'Start Subscription' : 'Get Started'}
+                    </button>
+
+                    {tier.showSolanaBadges && (
+                      <div className="flex justify-center mt-4">
+                        <img src={solanaBadges} alt="Solana Pay & x402" className="h-6 w-auto object-contain opacity-80" />
+                      </div>
+                    )}
                   </div>
 
-                  <h3
-                    className={`text-lg lg:text-xl font-light font-mono mb-1 text-center leading-snug ${
-                      isPremium ? 'text-amber-500' : 'text-primary'
-                    }`}
-                  >
-                    {tier.nameAccent && (
-                      <>
-                        <span className="pulse-glow">{tier.nameAccent}</span>{' '}
-                      </>
-                    )}
-                    {tier.name}
-                    {tier.leverage && (
-                      <span className="block text-[11px] text-cream/50 tracking-wider mt-1">{tier.leverage}</span>
-                    )}
-                  </h3>
+                  {/* ── FEATURES ───────────────────────────────────────────── */}
+                  <div className="border-t border-white/5 p-6 flex-1 flex flex-col">
+                    <p className="text-[10px] uppercase tracking-[0.15em] font-mono text-cream/50 mb-1">
+                      {tier.subtitle}
+                    </p>
+                    <p className="text-[11px] text-cream/60 font-mono mb-4">What's included</p>
 
-                  <p className="text-[11px] text-center text-cream/70 font-mono mb-3 italic">{tier.subtitle}</p>
-
-                  {/* Billing toggle for tiers that support it — render an invisible spacer of equal height on non-toggle tiers so all prices line up */}
-                  {tier.hasToggle && tier.prices.yearly ? (
-                    <div className="grid grid-cols-2 gap-1 p-1 rounded-full border border-white/10 bg-[#0f0f0f] mb-3 mx-auto w-full max-w-[260px]">
-                      {(['monthly', 'yearly'] as Interval[]).map((opt) => {
-                        const active = interval === opt;
-                        return (
-                          <button
-                            key={opt}
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setIntervals((prev) => ({ ...prev, [index]: opt }));
-                            }}
-                            className={`relative py-1.5 rounded-full text-[10px] uppercase tracking-wider font-mono transition-all ${
-                              active ? 'bg-primary text-[#0a0a0a] font-medium' : 'text-cream/60 hover:text-cream'
-                            }`}
-                          >
-                            {opt === 'monthly' ? 'Monthly' : 'Yearly'}
-                            {opt === 'yearly' && (
-                              <span
-                                className={`ml-1 px-1 py-0.5 rounded-full text-[8px] ${
-                                  active ? 'bg-[#0a0a0a]/20 text-[#0a0a0a]' : 'bg-primary/20 text-primary'
-                                }`}
-                              >
-                                -15.9%
-                              </span>
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div aria-hidden className="mb-3 mx-auto w-full max-w-[260px] h-[34px]" />
-                  )}
-
-                  <div className="text-center mb-1">
-                    <span
-                      className={`text-3xl font-light font-mono ${isPremium ? 'text-amber-500' : 'text-cream'}`}
-                    >
-                      {activePrice.price}
-                    </span>
-                  </div>
-
-                  <p className="text-cream/60 font-mono text-sm text-center mb-1">{activePrice.period}</p>
-
-                  {activePrice.perDay && (
-                    <p className="text-[11px] text-center text-primary/90 font-mono mb-1">{activePrice.perDay}</p>
-                  )}
-                  {activePrice.saveNote && (
-                    <p className="text-[10px] text-center text-cream/50 font-mono mb-2">{activePrice.saveNote}</p>
-                  )}
-
-                  <p className="text-cream/80 text-sm text-center mb-4 mt-2 font-mono leading-relaxed">
-                    {tier.positioning}
-                  </p>
-
-                  {tier.showSolanaBadges && (
-                    <div className="flex justify-center mb-4">
-                      <img src={solanaBadges} alt="Solana Pay & x402" className="h-7 w-auto object-contain" />
-                    </div>
-                  )}
-
-                  <div className="flex-1 mb-4">
-                    <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-hide">
+                    <div className="space-y-3 flex-1">
                       {tier.usps.map((usp, uspIndex) => (
-                        <div key={uspIndex} className="flex items-start gap-2">
+                        <div key={uspIndex} className="flex items-start gap-2.5">
                           <Check
-                            className={`h-4 w-4 mt-0.5 flex-shrink-0 ${
+                            className={`h-3.5 w-3.5 mt-0.5 flex-shrink-0 ${
                               isPremium ? 'text-amber-500' : 'text-primary'
                             }`}
                           />
-                          <div className="flex-1 min-w-0">
-                            <span className="text-cream/90 text-xs font-mono leading-tight block">
-                              {usp.feature}
-                            </span>
-                            <span className={`text-xs font-mono ${isPremium ? 'text-amber-400' : 'text-primary'}`}>
-                              Worth {usp.worth}
-                            </span>
-                          </div>
+                          <span className="text-cream/85 text-xs font-mono leading-relaxed flex-1">
+                            {usp.feature}
+                          </span>
+                          <span className="text-[10px] font-mono text-cream/40 flex-shrink-0">{usp.worth}</span>
                         </div>
                       ))}
                     </div>
-                  </div>
 
-                  <div className={`rounded-xl p-3 mb-4 ${isPremium ? 'bg-amber-500/10' : 'bg-white/5'}`}>
-                    <p className="text-center font-mono">
-                      <span className="text-cream/60 text-xs">Total Value: </span>
-                      <span className={`text-lg font-light ${isPremium ? 'text-amber-500' : 'text-primary'}`}>
+                    <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-between">
+                      <span className="text-cream/60 text-[11px] font-mono uppercase tracking-wider">Total Value</span>
+                      <span className={`text-base font-light font-mono ${isPremium ? 'text-amber-500' : 'text-primary'}`}>
                         {tier.totalValue}
                       </span>
-                    </p>
+                    </div>
                   </div>
-
-                  <button
-                    className={`w-full font-mono py-3 rounded-full transition-all duration-300 text-sm ${
-                      isPremium
-                        ? 'bg-amber-500 text-[#0a0a0a] hover:bg-amber-400'
-                        : 'btn-manga btn-manga-primary w-full'
-                    }`}
-                    onClick={() => {
-                      if (isRocketReach) {
-                        window.location.href = '/rocket-reach';
-                      } else if (isUnlimited) {
-                        const params = interval === 'yearly' ? '?interval=yearly' : '';
-                        window.location.href = `/unlimited-posts${params}`;
-                      } else if (tier.bookCall) {
-                        window.open('https://calendly.com/wayneanthonyd-thepipegdao/join-rei', '_blank');
-                      } else {
-                        window.location.href = '/rei';
-                      }
-                    }}
-                  >
-                    {isRocketReach ? 'Launch Campaign' : isUnlimited ? 'Start Subscription' : 'Get Started'}
-                  </button>
                 </div>
               </ScrollFadeIn>
             );
