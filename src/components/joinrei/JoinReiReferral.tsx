@@ -26,7 +26,7 @@ export const JoinReiReferral = () => {
         <ScrollFadeIn delay={300}>
           <button 
             className="btn-manga btn-manga-primary px-8 py-3 mt-6"
-            onClick={() => window.location.href = '/rei'}
+            onClick={scrollToLastSection}
           >
             Promote Task
           </button>
