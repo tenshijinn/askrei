@@ -35,7 +35,6 @@ const SinglePill = ({ children }: { children: React.ReactNode }) => (
 );
 
 interface FrameProps {
-  eyebrow: string;
   title: string;
   children: React.ReactNode;
   speed?: number;
@@ -43,13 +42,10 @@ interface FrameProps {
   extra?: React.ReactNode;
 }
 
-const Frame = ({ eyebrow, title, children, speed = 0.04, delay = 0, extra }: FrameProps) => (
+const Frame = ({ title, children, speed = 0.04, delay = 0, extra }: FrameProps) => (
   <ParallaxWrapper speed={speed}>
     <ScrollFadeIn delay={delay}>
       <div className="rei-terminal rounded-2xl border-[0.5px] border-white/10 p-8 md:p-10 bg-[#141414]/60 backdrop-blur-sm">
-        <div className="text-[10px] md:text-xs font-mono uppercase tracking-[0.2em] text-primary/50 mb-3">
-          {eyebrow}
-        </div>
         <h3 className="text-xl md:text-2xl lg:text-3xl font-light text-primary leading-tight mb-4">
           {title}
         </h3>
@@ -74,8 +70,40 @@ export const JoinReiChatDemo = () => {
 
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto">
           <Frame
-            eyebrow="Frame 1 — Definition"
             title="What is Rei?"
+            speed={0.06}
+            delay={0}
+          >
+            Rei is an AI platform that connects Web3 bounties with verified, high-intent talent.
+          </Frame>
+
+          <Frame
+            title="It finds and filters users automatically."
+            speed={0.03}
+            delay={100}
+            extra={<SinglePill><MatchesSkillsPill /></SinglePill>}
+          >
+            AI matches the right tasks to the right people before they ever apply.
+          </Frame>
+
+          <Frame
+            title="Quality is pre-verified."
+            speed={0.05}
+            delay={200}
+            extra={<SinglePill><VerifiedLoginPill /><ProofOfTalentPill /></SinglePill>}
+          >
+            Wallet activity and Twitter Premium signals help identify real, engaged users,{' '}
+            <strong className="text-cream font-semibold">not JEETs or farmers</strong>.
+          </Frame>
+
+          <Frame
+            title="Better bounties. Better contributors. Less noise."
+            speed={0.02}
+            delay={300}
+          >
+            Higher signal in, higher value out — for projects and talent alike.
+          </Frame>
+        </div>
             speed={0.06}
             delay={0}
           >
