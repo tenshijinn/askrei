@@ -30,10 +30,10 @@ interface PricingTier {
 
 const pricingTiers: PricingTier[] = [
   {
-    name: 'Rocket Reach',
+    name: 'Rocket Reach Community Growth Engine',
     nameAccent: null,
-    leverage: null,
-    subtitle: 'Community Growth Engine x100 Leverage',
+    leverage: 'x100 Leverage',
+    subtitle: '1 Promotion Campaign',
     prices: {
       monthly: { price: '$2,500', period: 'Per Campaign', perDay: null, saveNote: null },
     },
@@ -56,7 +56,7 @@ const pricingTiers: PricingTier[] = [
     ],
   },
   {
-    name: 'Community Growth Engine',
+    name: 'DIY Community Growth Engine',
     nameAccent: null,
     leverage: 'x10 Leverage',
     subtitle: '1 Promotion Post',
@@ -172,8 +172,8 @@ export const JoinReiPricing = () => {
 
                   <p className="text-[11px] text-center text-cream/70 font-mono mb-3 italic">{tier.subtitle}</p>
 
-                  {/* Billing toggle for tiers that support it */}
-                  {tier.hasToggle && tier.prices.yearly && (
+                  {/* Billing toggle for tiers that support it — render an invisible spacer of equal height on non-toggle tiers so all prices line up */}
+                  {tier.hasToggle && tier.prices.yearly ? (
                     <div className="grid grid-cols-2 gap-1 p-1 rounded-full border border-white/10 bg-[#0f0f0f] mb-3 mx-auto w-full max-w-[260px]">
                       {(['monthly', 'yearly'] as Interval[]).map((opt) => {
                         const active = interval === opt;
@@ -203,6 +203,8 @@ export const JoinReiPricing = () => {
                         );
                       })}
                     </div>
+                  ) : (
+                    <div aria-hidden className="mb-3 mx-auto w-full max-w-[260px] h-[34px]" />
                   )}
 
                   <div className="text-center mb-1">
