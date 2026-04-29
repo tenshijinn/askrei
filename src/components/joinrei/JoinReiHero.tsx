@@ -27,9 +27,14 @@ export const JoinReiHero = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const scrollToHowToUse = () => {
+  const scrollToHowItWorks = () => {
     const sections = document.querySelectorAll('.snap-start');
-    if (sections.length > 1) {
+    const target = Array.from(sections).find((s) =>
+      s.textContent?.includes('How it works')
+    );
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    } else if (sections.length > 1) {
       sections[1].scrollIntoView({ behavior: 'smooth' });
     }
   };
@@ -68,11 +73,11 @@ export const JoinReiHero = () => {
               Promote Task
             </button>
             <button 
-              onClick={scrollToHowToUse}
+              onClick={scrollToHowItWorks}
               className="flex items-center gap-2 text-primary/70 hover:text-primary font-mono text-sm underline underline-offset-4 transition-colors cursor-pointer"
             >
               <ChevronDown className="h-4 w-4" />
-              <span>Learn More</span>
+              <span>How it Works</span>
               <ChevronDown className="h-4 w-4" />
             </button>
           </div>
