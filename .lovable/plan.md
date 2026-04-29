@@ -1,75 +1,85 @@
-## Goals
-Bundle the previous fixes (broken submit + "Claim NFT" copy) with two new high-tech UX upgrades to the registration flow: a fixed 60s recording window with countdown, and a multi-stage "Rei is analyzing you" progress experience after pressing Register.
+## Overview
+
+Two coordinated updates while we wait for Stripe to come back online:
+
+1. **Pricing tier rename + marketing copy** on the landing-page packages section.
+2. **Monthly / Yearly toggle** on `/unlimited-posts` ($99/mo or $999/yr — 15.9% off) wired through to the Stripe checkout flow so it's ready the moment Stripe is healthy again.
+
+No Coinbase work — Stripe stays as the payment rail; we're just preparing the new pricing structure.
 
 ---
 
-## 1. Fix the broken `submit-rei-registration` upsert
-**Cause:** Function tries to write `skills` and `work_experience` columns that don't exist on `rei_registry` (Postgres `PGRST204`).
+## 1. Stripe price for the yearly plan
 
-**Fix (recommended — preserve AI-extracted data):**
-- Migration adding to `public.rei_registry`:
-  - `skills text[] not null default '{}'`
-  - `work_experience jsonb not null default '[]'::jsonb`
-- No RLS change needed (existing policies cover all columns).
+Add a new yearly recurring price alongside the existing `unlimited_posts_monthly`:
 
-## 2. Rename button + scrub NFT copy
-- `src/pages/Rei.tsx` line 303 — `'Register & Claim NFT'` → `'Register'`. Edit/reanalyze labels stay.
-- `supabase/functions/submit-rei-registration/index.ts` — drop NFT placeholder log + change success message from *"Your Proof-of-Talent NFT will be minted shortly"* to *"Your Rei profile is live."*
-- `src/components/joinrei/HomeValueProp.tsx` — change *"Earn Points, Redeem NFTs"* → *"Earn Points & Rewards"* (keeps the value prop without the dead NFT promise).
+- `unlimited_posts_monthly` — $99 / month (already exists)
+- `unlimited_posts_yearly` — $999 / year (new) → effectively $83.25/mo, ~15.9% off vs $99×12
 
-## 3. Fixed 60-second recording window with countdown
-**File:** `src/components/AudioRecorder.tsx`
-
-- Add `maxDurationSeconds` prop (default `60`); keep `maxDurationMinutes` for back-compat. `Rei.tsx` passes `maxDurationSeconds={60}`.
-- Replace the small floating timer pill with a **prominent countdown**:
-  - Big `MM:SS` showing **time remaining** (counts down from `01:00` → `00:00`).
-  - Linear progress bar underneath using shadcn `<Progress>` — starts full, drains to 0.
-  - Color shifts via existing tokens: neutral `>20s`, amber `≤20s`, destructive red `≤5s`.
-  - Subtle pulse on the digits during the final 5 seconds.
-- Auto-stop already exists at `maxDurationMs`; rewire to seconds and update toast to *"60-second limit reached"*.
-- "Stop Recording" button stays — user can end early.
-- Remove the now-redundant top-right timer pill (countdown replaces it).
-
-## 4. "Rei is analyzing you" progress overlay after Register
-**File:** `src/pages/Rei.tsx` (`handleSubmit`) + new component.
-
-Currently the Register button just shows *"Submitting..."*. Replace with a **full-screen overlay** that visualizes Rei's pipeline so the user feels the AI working.
-
-**New component:** `src/components/ReiAnalysisOverlay.tsx`
-- Fixed full-viewport overlay (z-50, dark backdrop, blur), matches manga terminal aesthetic.
-- Rei logo + animated scanline (CSS only — reuse existing `rei-theme` tokens, accent `#ed565a`).
-- 4 sequential stages with icon, label, per-stage progress:
-  1. **Uploading audio** — driven by real Supabase storage upload progress (use `XMLHttpRequest` upload events via a small helper since `supabase-js` storage doesn't expose progress; if XHR path is too invasive, fall back to indeterminate animation for stage 1 only).
-  2. **Transcribing voice** — indeterminate shimmer while edge function runs transcription.
-  3. **Analyzing profile with Rei AI** — indeterminate shimmer while Gemini analysis runs.
-  4. **Categorizing skills & experience** — indeterminate shimmer until response returns.
-- Overall thin progress bar at top (25% per completed stage).
-- Stage states: `pending` (dim) / `active` (animated dots, accent) / `done` (check, muted).
-- Rotating "thinking" lines under the active stage from a small pool, e.g. *"parsing voice patterns…"*, *"matching to skill clusters…"*, *"scoring contribution signals…"* — refreshes every ~2s, purely cosmetic.
-- On completion: success flash → fade out → success state renders as today.
-- On error: red state with the actual error message.
-
-**Integration in `handleSubmit`:**
-- Add `analysisStage` state (`'uploading' | 'transcribing' | 'analyzing' | 'categorizing' | null`) and `uploadPercent`.
-- Set `'uploading'` before storage upload → `'transcribing'` after upload completes (right before `functions.invoke`) → time-based advancement to `'analyzing'` (~6s in) and `'categorizing'` (~16s in). Real completion always wins and snaps to done.
-- Render `<ReiAnalysisOverlay stage={analysisStage} uploadPercent={uploadPercent} errorMessage={...} />` whenever `analysisStage !== null`.
-
-**Why time-based stage progression:** the edge function returns one response at the end — no streaming today. Estimated timings keep the *high-tech feel* without rewriting the backend, and the real result always overrides the timer so users never see stuck fake progress.
-
-## 5. Improve error visibility (carryover)
-- `handleSubmit` catch block: surface `error.message` in the toast (fall back to generic if missing).
+Created via the payments tool — no manual Stripe dashboard work needed. Both prices live under the same `unlimited_posts` product so existing webhook logic (`md.product_id === "unlimited_posts"`) keeps working unchanged.
 
 ---
 
-## Files touched
-- **Migration**: add `skills`, `work_experience` columns to `rei_registry`
-- **New**: `src/components/ReiAnalysisOverlay.tsx`
-- **Edit**: `src/components/AudioRecorder.tsx` (60s countdown + progress bar)
-- **Edit**: `src/pages/Rei.tsx` (button label, overlay integration, error surfacing, 60s prop)
-- **Edit**: `supabase/functions/submit-rei-registration/index.ts` (drop NFT copy/logs)
-- **Edit**: `src/components/joinrei/HomeValueProp.tsx` (NFT copy → Rewards)
+## 2. `/unlimited-posts` page — billing toggle
 
-## Out of scope
-- No streaming/SSE rewrite of `submit-rei-registration` (large refactor; time-based stage UI is the pragmatic win).
-- No actual NFT system removal beyond UI/log copy (no NFT code exists today — only marketing strings).
-- No changes to recording audio quality/format.
+Add a Monthly / Yearly toggle directly above the price line in the form panel.
+
+```text
+                  ┌───────────────┬──────────────┐
+                  │   Monthly     │ Yearly  -16% │
+                  └───────────────┴──────────────┘
+
+   Payment:  $99 p/m            (or)   $999 /yr
+   Just $3.30 per day                  Just $2.73 per day · save 15.9%
+   ─────────────────────────────       ─────────────────────────────
+   [        START SUBSCRIPTION        ]
+```
+
+Behaviour:
+- Toggle state (`monthly` | `yearly`) drives which `priceId` is sent to `StripeEmbeddedCheckout` (`unlimited_posts_monthly` vs `unlimited_posts_yearly`).
+- Per-day marketing line updates with the toggle ($3.30/day or $2.73/day · 15.9% off).
+- The "STRIPE / MONTHLY SUBSCRIPTION" badge becomes "STRIPE / MONTHLY" or "STRIPE / YEARLY".
+- Selected plan is persisted into the Stripe checkout `metadata.billing_interval` so it shows up in the webhook + `campaign_subscriptions` row.
+- Bullet copy under "How it works" updated: "Subscription renews monthly or yearly via Stripe. Cancel anytime — sync stops at period end."
+
+No webhook changes required — the existing handler picks up `current_period_end` from the subscription regardless of interval, so `campaign_subscriptions.expires_at` will correctly read 1 month or 1 year out.
+
+---
+
+## 3. Landing page packages (`JoinReiPricing.tsx`) — rename + subtitles
+
+Rename and add subtitles to all three tiers. Per-day copy added under price.
+
+| Old name | New name | Subtitle | Price line |
+|---|---|---|---|
+| Posts | **Community Growth Engine** · `x10 Leverage` | 1 Promotion Post | $5 / per post |
+| Unlimited Posts | **<span class="pulse">Automated</span> Community Growth Engine** · `x10 Leverage` | Unlimited Promotion Posts | $99/mo *(toggle to $999/yr)* — "Just $3.30/day" / "Just $2.73/day · save 15.9%" |
+| Rocket Reach | **Rocket Reach** · `Community Growth Engine x100 Leverage` | 1 Promotion Campaign | $2,500 / per campaign |
+
+**"Automated" glow effect** — soft pulse using a CSS keyframe (text-shadow on the primary accent), brighter→softer on a 2.4s loop. Inline `<span className="pulse-glow">Automated</span>` so only that word animates.
+
+**Updated USP list for "Automated Community Growth Engine"** to reflect current functionality (replacing the older "Unlimited Posts" bullet list):
+- Auto-scrape & re-sync of your campaign tasks across Galxe, Zealy, QuestN, TaskOn, Layer3, custom
+- API ingestion — drop a link, Rei keeps it fresh
+- Auto-categorisation by skill, chain, payout type
+- Continuous matching to skill-aligned wallets via AskRei + Agent Rei
+- Cross-chain reach (Solana, Ethereum, Polygon, Arbitrum, Base)
+- Reduced contributor overlap & priority freshness
+- Basic performance insights (tasks indexed, sync cycles, last sync)
+- Monthly OR yearly billing — yearly saves 15.9%
+
+The "Unlimited Posts" CTA on this card already routes to `/unlimited-posts` — no routing change needed; users land on the same page where they pick monthly/yearly.
+
+---
+
+## Technical notes
+
+**Files touched**
+- `src/pages/UnlimitedPosts.tsx` — add `interval` state, toggle UI, dynamic priceId/copy.
+- `src/components/joinrei/JoinReiPricing.tsx` — rename tiers, add subtitles, swap "Unlimited Posts" USP list, route Unlimited button still → `/unlimited-posts`.
+- `src/index.css` — add `.pulse-glow` keyframe (soft brighter↔softer text-shadow loop on the primary accent).
+- Payments tool call: create `unlimited_posts_yearly` price ($999/yr, recurring=year, qty 1/1) under the existing `unlimited_posts` product.
+
+**No DB/migration changes.** Webhook + `campaign_subscriptions` schema already handle any interval.
+
+**Stripe-down note.** Per your message we're not switching providers — once Stripe checkout is healthy again, the new yearly price is already live and the toggle just works. If you want a temporary "Subscriptions paused" banner on `/unlimited-posts` while Stripe is down, say the word and I'll add it.
