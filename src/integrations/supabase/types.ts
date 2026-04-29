@@ -938,7 +938,117 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_public_jobs: {
+        Row: {
+          apply_url: string | null
+          company_name: string | null
+          compensation: string | null
+          created_at: string | null
+          deadline: string | null
+          description: string | null
+          expires_at: string | null
+          id: string | null
+          link: string | null
+          og_image: string | null
+          opportunity_type: string | null
+          requirements: string | null
+          role_tags: string[] | null
+          skill_category_ids: string[] | null
+          source: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          apply_url?: string | null
+          company_name?: string | null
+          compensation?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string | null
+          link?: string | null
+          og_image?: string | null
+          opportunity_type?: string | null
+          requirements?: string | null
+          role_tags?: string[] | null
+          skill_category_ids?: string[] | null
+          source?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          apply_url?: string | null
+          company_name?: string | null
+          compensation?: string | null
+          created_at?: string | null
+          deadline?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string | null
+          link?: string | null
+          og_image?: string | null
+          opportunity_type?: string | null
+          requirements?: string | null
+          role_tags?: string[] | null
+          skill_category_ids?: string[] | null
+          source?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      v_public_tasks: {
+        Row: {
+          company_name: string | null
+          compensation: string | null
+          created_at: string | null
+          description: string | null
+          end_date: string | null
+          id: string | null
+          link: string | null
+          og_image: string | null
+          opportunity_type: string | null
+          role_tags: string[] | null
+          skill_category_ids: string[] | null
+          source: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          company_name?: string | null
+          compensation?: string | null
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string | null
+          link?: string | null
+          og_image?: string | null
+          opportunity_type?: string | null
+          role_tags?: string[] | null
+          skill_category_ids?: string[] | null
+          source?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          company_name?: string | null
+          compensation?: string | null
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string | null
+          link?: string | null
+          og_image?: string | null
+          opportunity_type?: string | null
+          role_tags?: string[] | null
+          skill_category_ids?: string[] | null
+          source?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
