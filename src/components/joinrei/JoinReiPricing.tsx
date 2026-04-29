@@ -122,7 +122,7 @@ export const JoinReiPricing = () => {
           </h2>
         </ScrollFadeIn>
 
-        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
           {pricingTiers.map((tier, index) => {
             const isPremium = tier.premium;
             const isAutomated = tier.nameAccent === 'Automated';
