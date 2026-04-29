@@ -226,6 +226,12 @@ export const JoinReiPricing = () => {
                     {tier.positioning}
                   </p>
 
+                  {tier.showSolanaBadges && (
+                    <div className="flex justify-center mb-4">
+                      <img src={solanaBadges} alt="Solana Pay & x402" className="h-7 w-auto object-contain" />
+                    </div>
+                  )}
+
                   <div className="flex-1 mb-4">
                     <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-hide">
                       {tier.usps.map((usp, uspIndex) => (
