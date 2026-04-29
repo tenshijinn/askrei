@@ -50,6 +50,86 @@ export type Database = {
         }
         Relationships: []
       }
+      agent_api_keys: {
+        Row: {
+          buyer_wallet: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          key_hash: string
+          key_prefix: string
+          label: string | null
+          last_used_at: string | null
+          payment_reference: string | null
+          payment_tx_signature: string
+          rate_limit_per_min: number
+          revoked: boolean
+          tier: string
+        }
+        Insert: {
+          buyer_wallet: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          key_hash: string
+          key_prefix: string
+          label?: string | null
+          last_used_at?: string | null
+          payment_reference?: string | null
+          payment_tx_signature: string
+          rate_limit_per_min?: number
+          revoked?: boolean
+          tier: string
+        }
+        Update: {
+          buyer_wallet?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          key_hash?: string
+          key_prefix?: string
+          label?: string | null
+          last_used_at?: string | null
+          payment_reference?: string | null
+          payment_tx_signature?: string
+          rate_limit_per_min?: number
+          revoked?: boolean
+          tier?: string
+        }
+        Relationships: []
+      }
+      agent_api_usage: {
+        Row: {
+          api_key_id: string | null
+          endpoint: string
+          id: number
+          status: number
+          ts: string
+        }
+        Insert: {
+          api_key_id?: string | null
+          endpoint: string
+          id?: number
+          status: number
+          ts?: string
+        }
+        Update: {
+          api_key_id?: string | null
+          endpoint?: string
+          id?: number
+          status?: number
+          ts?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_api_usage_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "agent_api_keys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaign_subscriptions: {
         Row: {
           created_at: string
