@@ -47,7 +47,9 @@ export const JoinReiHero = () => {
             </span>
             <span> Users</span>
             <br />
-            <span>Just Farm and Leave,</span>
+            <span>Come Just to Farm Tokens</span>
+            <br />
+            <span>And Exit Your Community.</span>
             <br />
             <span>We're Fixing That.</span>
           </h1>
