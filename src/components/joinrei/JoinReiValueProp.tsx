@@ -63,7 +63,7 @@ export const JoinReiValueProp = () => {
           <ScrollFadeIn delay={500}>
             <button 
               className="btn-manga btn-manga-primary px-8 py-3 mt-4"
-              onClick={() => window.location.href = '/rei'}
+              onClick={scrollToLastSection}
             >
               Promote Task
             </button>
