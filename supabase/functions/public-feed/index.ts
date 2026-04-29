@@ -148,11 +148,12 @@ serve(async (req) => {
   const route = segs[0] ?? "";
   const id = segs[1] ?? null;
 
+  let res: Response;
   try {
     switch (route) {
       case "":
       case "health":
-        return json({
+        res = json({
           ok: true,
           name: "rei-public-feed",
           endpoints: [
@@ -164,29 +165,34 @@ serve(async (req) => {
             "GET /feed",
           ],
         });
+        break;
 
       case "tasks": {
         if (id) {
-          if (!UUID.test(id)) return json({ error: "Invalid id" }, 400);
+          if (!UUID.test(id)) { res = json({ error: "Invalid id" }, 400); break; }
           const { data, error } = await supabase
             .from("v_public_tasks").select("*").eq("id", id).maybeSingle();
-          if (error) return json({ error: error.message }, 500);
-          if (!data) return json({ error: "Not found" }, 404);
-          return json({ data });
+          if (error) { res = json({ error: error.message }, 500); break; }
+          if (!data) { res = json({ error: "Not found" }, 404); break; }
+          res = json({ data });
+        } else {
+          res = await listFromView("v_public_tasks", url);
         }
-        return await listFromView("v_public_tasks", url);
+        break;
       }
 
       case "jobs": {
         if (id) {
-          if (!UUID.test(id)) return json({ error: "Invalid id" }, 400);
+          if (!UUID.test(id)) { res = json({ error: "Invalid id" }, 400); break; }
           const { data, error } = await supabase
             .from("v_public_jobs").select("*").eq("id", id).maybeSingle();
-          if (error) return json({ error: error.message }, 500);
-          if (!data) return json({ error: "Not found" }, 404);
-          return json({ data });
+          if (error) { res = json({ error: error.message }, 500); break; }
+          if (!data) { res = json({ error: "Not found" }, 404); break; }
+          res = json({ data });
+        } else {
+          res = await listFromView("v_public_jobs", url);
         }
-        return await listFromView("v_public_jobs", url);
+        break;
       }
 
       case "skill-categories": {
@@ -194,8 +200,8 @@ serve(async (req) => {
           .from("skill_categories")
           .select("id,name,description,keywords,parent_category_id,task_count,job_count,talent_count")
           .order("name", { ascending: true });
-        if (error) return json({ error: error.message }, 500);
-        return json({ data: data ?? [], count: data?.length ?? 0 });
+        res = error ? json({ error: error.message }, 500) : json({ data: data ?? [], count: data?.length ?? 0 });
+        break;
       }
 
       case "feed": {
@@ -205,8 +211,8 @@ serve(async (req) => {
         let jQ = supabase.from("v_public_jobs").select("*").order("created_at", { ascending: false }).limit(half);
         if (since) { tQ = tQ.gt("created_at", since); jQ = jQ.gt("created_at", since); }
         const [tasks, jobs] = await Promise.all([tQ, jQ]);
-        if (tasks.error) return json({ error: tasks.error.message }, 500);
-        if (jobs.error) return json({ error: jobs.error.message }, 500);
+        if (tasks.error) { res = json({ error: tasks.error.message }, 500); break; }
+        if (jobs.error) { res = json({ error: jobs.error.message }, 500); break; }
         const merged = [
           ...(tasks.data ?? []).map((r) => ({ kind: "task", ...r })),
           ...(jobs.data ?? []).map((r) => ({ kind: "job", ...r })),
@@ -214,19 +220,17 @@ serve(async (req) => {
           .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
           .slice(0, limit);
         const next = merged.length === limit ? merged[merged.length - 1].created_at : null;
-        return json({ data: merged, count: merged.length, next_cursor: next, limit });
+        res = json({ data: merged, count: merged.length, next_cursor: next, limit });
+        break;
       }
 
       default:
-        logUsage(ctx, route || "/", 404);
-        return json({ error: "Unknown endpoint", path: "/" + segs.join("/") }, 404);
+        res = json({ error: "Unknown endpoint", path: "/" + segs.join("/") }, 404);
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
-    logUsage(ctx, route || "/", 500);
-    return json({ error: msg }, 500);
-  } finally {
-    // best-effort log success path (404/500 already logged above)
-    logUsage(ctx, route || "/", 200);
+    res = json({ error: msg }, 500);
   }
+  logUsage(ctx, route || "/", res.status);
+  return res;
 });
