@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ScrollFadeIn } from './ScrollFadeIn';
-import { Zap, Rocket, Check } from 'lucide-react';
+import { Zap, Rocket, Eye, Check } from 'lucide-react';
+import solanaBadges from '@/assets/joinrei/solana-badges.png';
 
 type Interval = 'monthly' | 'yearly';
 
@@ -21,6 +22,7 @@ interface PricingTier {
   icon: typeof Zap;
   premium: boolean;
   bookCall: boolean;
+  showSolanaBadges?: boolean;
   positioning: string;
   totalValue: string;
   usps: { feature: string; worth: string }[];
@@ -51,6 +53,32 @@ const pricingTiers: PricingTier[] = [
       { feature: 'Campaign-level reporting', worth: '$200' },
       { feature: 'Optional message framing support', worth: '$150' },
       { feature: 'Priority routing during campaign window', worth: '$200' },
+    ],
+  },
+  {
+    name: 'Community Growth Engine',
+    nameAccent: null,
+    leverage: 'x10 Leverage',
+    subtitle: '1 Promotion Post',
+    prices: {
+      monthly: { price: '$5', period: 'Per Post', perDay: null, saveNote: null },
+    },
+    hasToggle: false,
+    icon: Eye,
+    premium: false,
+    bookCall: false,
+    showSolanaBadges: true,
+    positioning: 'One-off task amplification to relevant Web3 contributors.',
+    totalValue: '~$685',
+    usps: [
+      { feature: 'Skill-matched contributors (wallet + declared skills)', worth: '$120' },
+      { feature: 'Cross-platform task discovery', worth: '$90' },
+      { feature: 'Visibility to contributors on Galxe, Zealy, QuestN, TaskOn, Layer3', worth: '$150' },
+      { feature: 'Discovery beyond your own community', worth: '$75' },
+      { feature: 'Cross-chain reach (Solana, Ethereum, Polygon, Arbitrum, Base)', worth: '$100' },
+      { feature: 'AI-filtered relevance', worth: '$60' },
+      { feature: 'No contributor onboarding required', worth: '$40' },
+      { feature: 'Traffic routed back to original task platform', worth: '$50' },
     ],
   },
   {
@@ -94,7 +122,7 @@ export const JoinReiPricing = () => {
           </h2>
         </ScrollFadeIn>
 
-        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
           {pricingTiers.map((tier, index) => {
             const isPremium = tier.premium;
             const isAutomated = tier.nameAccent === 'Automated';
@@ -197,6 +225,12 @@ export const JoinReiPricing = () => {
                   <p className="text-cream/80 text-sm text-center mb-4 mt-2 font-mono leading-relaxed">
                     {tier.positioning}
                   </p>
+
+                  {tier.showSolanaBadges && (
+                    <div className="flex justify-center mb-4">
+                      <img src={solanaBadges} alt="Solana Pay & x402" className="h-7 w-auto object-contain" />
+                    </div>
+                  )}
 
                   <div className="flex-1 mb-4">
                     <div className="space-y-2 max-h-64 overflow-y-auto scrollbar-hide">
