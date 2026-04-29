@@ -16,7 +16,7 @@ Two headers:
 |---|---|---|
 | `Authorization` | yes | `Bearer <SUPABASE_ANON_KEY>` |
 | `apikey` | yes | `<SUPABASE_ANON_KEY>` |
-| `x-api-key` | only if gating is enabled | A key from `REI_AGENT_API_KEYS` |
+| `x-api-key` | yes | A key from `REI_AGENT_API_KEYS` (gating is enabled) |
 
 Anon key (publishable, safe to ship in agent config):
 ```
