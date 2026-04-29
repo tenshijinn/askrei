@@ -30,7 +30,7 @@ export const JoinReiAggregation = () => {
           <div className="flex justify-center mt-4">
             <button 
               className="btn-manga btn-manga-primary px-8 py-3"
-              onClick={() => window.location.href = '/rei'}
+              onClick={scrollToLastSection}
             >
               Promote Task
             </button>
