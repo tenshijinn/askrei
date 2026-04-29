@@ -3,6 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import reiHero from '@/assets/joinrei/rei-hero.png';
 import reiSpeechBubble from '@/assets/joinrei/rei-speech-bubble.gif';
 import reiLogo from '@/assets/joinrei/rei-logo.png';
+import { scrollToLastSection } from './scrollHelpers';
 
 const platforms = ['Zealy', 'Layer3', 'QuestN', 'TaskOn', 'Crew3', 'Bounty0x', 'Dework', 'RabbitHole'];
 
