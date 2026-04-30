@@ -607,10 +607,10 @@ const AdminMockups = () => {
 
   return (
     <div ref={ref} className="rei-theme min-h-screen bg-[#0a0a0a] py-20 px-10 lg:px-20">
-      {/* 5 cols x 2 rows on xl, 4x3 on lg, 2x5 on md, 1x10 on sm */}
-      <div className="grid gap-12 lg:gap-16 xl:gap-20 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 max-w-[1800px] mx-auto">
+      {/* 2 mockups per row, sized close to a real phone (≈430px wide → 9:16 ≈ 764px tall) */}
+      <div className="grid gap-16 lg:gap-24 grid-cols-1 md:grid-cols-2 max-w-[1100px] mx-auto justify-items-center">
         {mockups.map((M, i) => (
-          <div key={i} className="w-full">
+          <div key={i} className="w-full max-w-[480px]">
             <M active={active} reduced={reduced} />
           </div>
         ))}
