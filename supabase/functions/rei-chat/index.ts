@@ -229,7 +229,7 @@ Present results in clean terminal format with match reasons.`,
     'SEARCH_TASKS': `[INTENT: SEARCH_TASKS]
 User wants to FIND task/bounty/gig opportunities to work on.
 ACTION: Call get_my_profile first to get their skills, then search_tasks to find matches.
-Present results in clean terminal format with match reasons.`,
+CARDS-ONLY OUTPUT: Do NOT list the tasks in terminal text. Write a single short intro line (e.g. "Here are some bounties that match your skills:") and then ONLY emit one [[rei-task:<id>]] marker per result on its own line — nothing else, no titles, no "Apply here" links, no descriptions. The UI renders the rich card from the marker. End with one short closing line if you want (e.g. "Want me to dig deeper into any of these?"). Never invent UUIDs — only use IDs returned by search_tasks.`,
     
     'SEARCH_TALENT': `[INTENT: SEARCH_TALENT]
 Employer wants to find candidates matching their requirements.
