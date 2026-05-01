@@ -75,6 +75,62 @@ function normalizeUrl(url: string): string {
     .replace(/(superteam\.fun\/earn)\/listings\//gi, "$1/listing/");
 }
 
+async function fetchOgImage(url: string): Promise<string | null> {
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    const res = await fetch(url, {
+      signal: ctrl.signal,
+      redirect: "follow",
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (compatible; ReiBot/1.0; +https://rei.chat)",
+        Accept: "text/html,application/xhtml+xml",
+      },
+    });
+    clearTimeout(timer);
+    if (!res.ok) return null;
+    // Read at most ~256KB of HTML — og tags live in <head>.
+    const reader = res.body?.getReader();
+    if (!reader) return null;
+    const decoder = new TextDecoder();
+    let html = "";
+    let received = 0;
+    const MAX = 256 * 1024;
+    while (received < MAX) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      received += value.byteLength;
+      html += decoder.decode(value, { stream: true });
+      if (html.includes("</head>")) break;
+    }
+    try {
+      await reader.cancel();
+    } catch {
+      /* ignore */
+    }
+    // Match og:image / og:image:secure_url, attribute order tolerant.
+    const patterns = [
+      /<meta[^>]+property=["']og:image(?::secure_url)?["'][^>]+content=["']([^"']+)["']/i,
+      /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image(?::secure_url)?["']/i,
+      /<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i,
+    ];
+    for (const re of patterns) {
+      const m = html.match(re);
+      if (m?.[1]) {
+        try {
+          return new URL(m[1], url).toString();
+        } catch {
+          return m[1];
+        }
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 function mapBounty(b: Bounty) {
   const description =
     b.description?.trim() ||
@@ -84,6 +140,9 @@ function mapBounty(b: Bounty) {
     ...(b.skills ?? []),
     ...(b.platform ? [b.platform] : []),
   ].filter(Boolean);
+
+  const og_image =
+    b.og_image?.trim() || b.image?.trim() || b.thumbnail?.trim() || null;
 
   return {
     external_id: b.id,
@@ -97,6 +156,7 @@ function mapBounty(b: Bounty) {
     source: "gdrive-aggregator",
     opportunity_type: "task",
     status: "active",
+    og_image,
     // Satisfy NOT NULL + UNIQUE constraints. Unique per external_id.
     payment_tx_signature: `gdrive:${b.id}`,
     employer_wallet: "gdrive:aggregator",
