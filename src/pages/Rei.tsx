@@ -234,7 +234,13 @@ export default function Rei() {
           <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
             <img src={reiLogo} alt="REI" className="h-10 w-auto" style={{ opacity: 0.95 }} />
             <div className="flex items-center gap-2 justify-end">
-              <button onClick={() => setActiveTab('profile')} className={activeTab === 'profile' ? 'btn-manga btn-manga-primary' : 'rei-chip'} style={{ padding: '5px 10px', fontSize: '11px', ...(activeTab === 'profile' ? { borderRadius: '28px', background: '#f0ede8', color: '#0a0a0a', border: 'none' } : {}) }} title="Profile"><UserCircle style={{ width: '14px', height: '14px' }} /></button>
+              <button onClick={() => setActiveTab('profile')} className={activeTab === 'profile' ? 'btn-manga btn-manga-primary' : 'rei-chip'} style={{ padding: twitterUser?.profile_image_url ? '3px' : '5px 10px', fontSize: '11px', display: 'flex', alignItems: 'center', justifyContent: 'center', ...(activeTab === 'profile' ? { borderRadius: '28px', background: '#f0ede8', color: '#0a0a0a', border: 'none' } : {}) }} title="Profile">
+                {twitterUser?.profile_image_url ? (
+                  <img src={twitterUser.profile_image_url} alt={twitterUser.handle || 'Profile'} style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover', display: 'block', boxShadow: activeTab === 'profile' ? '0 0 0 1.5px #0a0a0a' : 'none' }} />
+                ) : (
+                  <UserCircle style={{ width: '14px', height: '14px' }} />
+                )}
+              </button>
               <button onClick={handleLogout} className="rei-chip" style={{ padding: '5px 12px', fontSize: '11px' }}><LogOut style={{ width: '12px', height: '12px', color: '#a09e9a' }} />Logout</button>
             </div>
           </div>
