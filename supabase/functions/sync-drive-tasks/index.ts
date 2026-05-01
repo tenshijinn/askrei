@@ -118,10 +118,18 @@ async function fetchOgImage(url: string): Promise<string | null> {
     for (const re of patterns) {
       const m = html.match(re);
       if (m?.[1]) {
+        // Decode HTML entities (og:image often contains &amp; in query strings).
+        const decoded = m[1]
+          .replace(/&amp;/g, "&")
+          .replace(/&#x2F;/gi, "/")
+          .replace(/&#39;/g, "'")
+          .replace(/&quot;/g, '"')
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">");
         try {
-          return new URL(m[1], url).toString();
+          return new URL(decoded, url).toString();
         } catch {
-          return m[1];
+          return decoded;
         }
       }
     }
