@@ -64,6 +64,14 @@ function safeDate(s?: string | null): string | null {
   return Number.isNaN(d.getTime()) ? null : d.toISOString();
 }
 
+function normalizeUrl(url: string): string {
+  // Superteam Earn uses singular "/listing/" — upstream feed sometimes ships "/listings/".
+  return url.replace(
+    /(earn\.superteam\.fun)\/listings\//gi,
+    "$1/listing/",
+  );
+}
+
 function mapBounty(b: Bounty) {
   const description =
     b.description?.trim() ||
