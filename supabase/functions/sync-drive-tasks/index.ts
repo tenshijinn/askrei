@@ -222,6 +222,10 @@ Deno.serve(async (req) => {
       const listJson = (await listRes.json()) as {
         files?: { id: string; name: string; createdTime?: string }[];
       };
+      console.log(
+        `Drive folder ${folderId} contents:`,
+        JSON.stringify(listJson.files ?? []),
+      );
       const latest = listJson.files?.[0];
       if (!latest) {
         return new Response(
