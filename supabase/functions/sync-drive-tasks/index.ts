@@ -35,6 +35,9 @@ const BountySchema = z.object({
   sponsor: z.string().nullable().optional(),
   posted_at: z.string().nullable().optional(),
   fetched_at: z.string().nullable().optional(),
+  og_image: z.string().nullable().optional(),
+  image: z.string().nullable().optional(),
+  thumbnail: z.string().nullable().optional(),
 });
 
 const PayloadSchema = z.object({
