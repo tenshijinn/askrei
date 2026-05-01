@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 import reiHero from '@/assets/joinrei/rei-hero.png';
+import reiLogo from '@/assets/joinrei/rei-logo.png';
 import colosseumLogo from '@/assets/joinrei/colosseum-logo.png';
 import reiXLogo from '@/assets/joinrei/rei-x-logo.png';
 import reiSpeechBubble from '@/assets/joinrei/rei-speech-bubble.gif';
