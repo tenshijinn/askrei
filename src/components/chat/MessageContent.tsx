@@ -160,7 +160,14 @@ export const MessageContent = ({ content }: MessageContentProps) => {
 
   return (
     <div style={{ whiteSpace: 'pre-wrap' }}>
-      {parseContent(content)}
+      {parseContent(cleanContent)}
+      {taskIds.length > 0 && (
+        <div style={{ whiteSpace: 'normal', marginTop: 4 }}>
+          {taskIds.map((id) => (
+            <TaskPreviewCard key={id} taskId={id} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
