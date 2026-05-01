@@ -67,14 +67,6 @@ function safeDate(s?: string | null): string | null {
   return Number.isNaN(d.getTime()) ? null : d.toISOString();
 }
 
-function normalizeUrl(url: string): string {
-  // Superteam Earn uses singular "/listing/" — upstream feed sometimes ships "/listings/".
-  // Catches both earn.superteam.fun/listings/ and superteam.fun/earn/listings/.
-  return url
-    .replace(/(earn\.superteam\.fun)\/listings\//gi, "$1/listing/")
-    .replace(/(superteam\.fun\/earn)\/listings\//gi, "$1/listing/");
-}
-
 async function fetchOgImage(url: string): Promise<string | null> {
   try {
     const ctrl = new AbortController();
@@ -156,7 +148,7 @@ function mapBounty(b: Bounty) {
     external_id: b.id,
     title: b.title.slice(0, 500),
     description,
-    link: normalizeUrl(b.url),
+    link: b.url,
     compensation: formatCompensation(b.reward),
     end_date: safeDate(b.deadline),
     company_name: b.sponsor ?? null,
