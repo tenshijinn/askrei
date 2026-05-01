@@ -229,7 +229,7 @@ Present results in clean terminal format with match reasons.`,
     'SEARCH_TASKS': `[INTENT: SEARCH_TASKS]
 User wants to FIND task/bounty/gig opportunities to work on.
 ACTION: Call get_my_profile first to get their skills, then search_tasks to find matches.
-Present results in clean terminal format with match reasons.`,
+CARDS-ONLY OUTPUT: Do NOT list the tasks in terminal text. Write a single short intro line (e.g. "Here are some bounties that match your skills:") and then ONLY emit one [[rei-task:<id>]] marker per result on its own line — nothing else, no titles, no "Apply here" links, no descriptions. The UI renders the rich card from the marker. End with one short closing line if you want (e.g. "Want me to dig deeper into any of these?"). Never invent UUIDs — only use IDs returned by search_tasks.`,
     
     'SEARCH_TALENT': `[INTENT: SEARCH_TALENT]
 Employer wants to find candidates matching their requirements.
@@ -446,7 +446,8 @@ FORMATTING RULES:
 - [text](url) for clickable links
 - NO indentation anywhere
 - ALWAYS include apply link
-- When listing a Rei task/bounty returned by search_tasks, ALWAYS append the marker [[rei-task:<task.id>]] on the same line, immediately after the apply link. The UI hides this marker and uses it to render a rich preview card with the task's image. Never mention or explain the marker to the user. Only use task IDs you actually received from search_tasks results — do not invent UUIDs.
+- When presenting Rei tasks/bounties returned by search_tasks: DO NOT write the title, chevron details, "[TASK] · Posted X days ago", or "Apply here" link in text. Output ONLY a single [[rei-task:<task.id>]] marker per result, each on its own line. The UI renders a full preview card from the marker. A short intro sentence and short closing sentence around the markers is fine, but no per-task text. Never mention or explain the marker. Only use task IDs you actually received from search_tasks — do not invent UUIDs.
+- The cards-only rule applies to Rei tasks (search_tasks results). For external jobs from search_jobs that have no Rei task ID, use the normal terminal listing format above.
 
 CORE RULES:
 1. Be warm and personable but concise
