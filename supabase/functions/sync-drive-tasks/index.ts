@@ -66,10 +66,10 @@ function safeDate(s?: string | null): string | null {
 
 function normalizeUrl(url: string): string {
   // Superteam Earn uses singular "/listing/" — upstream feed sometimes ships "/listings/".
-  return url.replace(
-    /(earn\.superteam\.fun)\/listings\//gi,
-    "$1/listing/",
-  );
+  // Catches both earn.superteam.fun/listings/ and superteam.fun/earn/listings/.
+  return url
+    .replace(/(earn\.superteam\.fun)\/listings\//gi, "$1/listing/")
+    .replace(/(superteam\.fun\/earn)\/listings\//gi, "$1/listing/");
 }
 
 function mapBounty(b: Bounty) {
