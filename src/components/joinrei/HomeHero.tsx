@@ -5,12 +5,15 @@ import colosseumLogo from '@/assets/joinrei/colosseum-logo.png';
 import reiXLogo from '@/assets/joinrei/rei-x-logo.png';
 import reiSpeechBubble from '@/assets/joinrei/rei-speech-bubble.gif';
 
-const rotatingWords = ['Galxe', 'QuestN', 'TaskOn', 'Zealy', 'Layer3', 'Crew3', 'RabbitHole'];
+const rotatingPlatforms = ['Galxe', 'QuestN', 'TaskOn', 'Zealy', 'Layer3', 'Crew3', 'RabbitHole'];
+const rotatingTaskWords = ['Task', 'Bounty', 'Quest'];
 
 export const HomeHero = () => {
   const [headlineComplete, setHeadlineComplete] = useState(false);
   const [wordIndex, setWordIndex] = useState(0);
+  const [taskIndex, setTaskIndex] = useState(0);
   const [fade, setFade] = useState(true);
+  const [taskFade, setTaskFade] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => setHeadlineComplete(true), 1200);
@@ -21,10 +24,21 @@ export const HomeHero = () => {
     const interval = setInterval(() => {
       setFade(false);
       setTimeout(() => {
-        setWordIndex((prev) => (prev + 1) % rotatingWords.length);
+        setWordIndex((prev) => (prev + 1) % rotatingPlatforms.length);
         setFade(true);
       }, 300);
     }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTaskFade(false);
+      setTimeout(() => {
+        setTaskIndex((prev) => (prev + 1) % rotatingTaskWords.length);
+        setTaskFade(true);
+      }, 300);
+    }, 2400);
     return () => clearInterval(interval);
   }, []);
 
@@ -40,12 +54,20 @@ export const HomeHero = () => {
       <div className="w-full lg:w-[45%] h-full flex flex-col justify-between p-8 lg:p-12 xl:p-16 relative z-10">
         <div className="pt-2">
           <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
-            <span>Find Any Task from </span>
-            <span 
+            <span>Find Any </span>
+            <span
+              className={`inline-block transition-opacity duration-300 ${taskFade ? 'opacity-100' : 'opacity-0'}`}
+              style={{ minWidth: '5ch', color: '#ed565a' }}
+            >
+              {rotatingTaskWords[taskIndex]}
+            </span>
+            <br />
+            <span>from </span>
+            <span
               className={`inline-block transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}
               style={{ minWidth: '4ch', color: '#ed565a' }}
             >
-              {rotatingWords[wordIndex]}
+              {rotatingPlatforms[wordIndex]}
             </span>
             <br />
             <span>In One Place.</span>
