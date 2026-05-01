@@ -1,10 +1,33 @@
 import { ExternalLink } from "lucide-react";
+import { TaskPreviewCard } from "./TaskPreviewCard";
 
 interface MessageContentProps {
   content: string;
 }
 
+const TASK_MARKER_RE = /\[\[rei-task:([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\]\]/gi;
+const TASK_URL_RE = /https?:\/\/(?:www\.)?rei\.chat\/task\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/gi;
+
 export const MessageContent = ({ content }: MessageContentProps) => {
+  // Extract Rei task IDs (deduped) and strip the hidden markers from displayed text.
+  const taskIds: string[] = [];
+  const seen = new Set<string>();
+  const collect = (id: string) => {
+    const lower = id.toLowerCase();
+    if (!seen.has(lower)) {
+      seen.add(lower);
+      taskIds.push(lower);
+    }
+  };
+  let cleanContent = content.replace(TASK_MARKER_RE, (_m, id) => {
+    collect(id);
+    return "";
+  });
+  // Also detect rei.chat/task/<id> URLs but keep the URL visible.
+  for (const m of content.matchAll(TASK_URL_RE)) collect(m[1]);
+  // Tidy: collapse stray double spaces left behind by stripped markers.
+  cleanContent = cleanContent.replace(/[ \t]{2,}/g, " ").replace(/ \n/g, "\n");
+
   const parseContent = (text: string) => {
     const elements: (string | JSX.Element)[] = [];
     let keyIndex = 0;
@@ -137,7 +160,14 @@ export const MessageContent = ({ content }: MessageContentProps) => {
 
   return (
     <div style={{ whiteSpace: 'pre-wrap' }}>
-      {parseContent(content)}
+      {parseContent(cleanContent)}
+      {taskIds.length > 0 && (
+        <div style={{ whiteSpace: 'normal', marginTop: 4 }}>
+          {taskIds.map((id) => (
+            <TaskPreviewCard key={id} taskId={id} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
