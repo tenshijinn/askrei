@@ -138,8 +138,8 @@ Return ONLY the intent label (e.g., SEARCH_JOBS), nothing else.`;
 
 function getToolsForIntent(intent: Intent, allTools: any[]): any[] {
   const toolSets: Record<Intent, string[]> = {
-    'SEARCH_JOBS': ['get_my_profile', 'search_jobs'],
-    'SEARCH_TASKS': ['get_my_profile', 'search_tasks'],
+    'SEARCH_JOBS': ['search_jobs'],
+    'SEARCH_TASKS': ['search_tasks'],
     'SEARCH_TALENT': ['search_talent', 'generate_solana_pay_qr', 'get_talent_profile'],
     'POST_JOB': [
       'start_paid_job_posting', 'check_my_drafts', 'load_draft', 'save_draft',
