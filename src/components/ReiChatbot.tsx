@@ -77,8 +77,20 @@ const ReiChatbot = ({ walletAddress, userMode, twitterHandle }: ReiChatbotProps)
 
   const handleClearChat = async () => {
     if (!confirm("Are you sure you want to clear the chat? This cannot be undone.")) return;
-    try { if (conversationId) await supabase.from("chat_messages").delete().eq("conversation_id", conversationId); setMessages([]); setConversationId(null); localStorage.removeItem(`rei_chat_${walletAddress}`); localStorage.removeItem(`rei_chat_id_${walletAddress}`); toast({ title: "Chat Cleared", description: "Your conversation has been reset." }); }
-    catch (error) { console.error("Error clearing chat:", error); toast({ title: "Error", description: "Failed to clear chat.", variant: "destructive" }); }
+    try {
+      const { data, error } = await supabase.functions.invoke("clear-chat-conversation", { body: { walletAddress } });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setMessages([]);
+      setConversationId(null);
+      setDisplayedContent({});
+      localStorage.removeItem(`rei_chat_${walletAddress}`);
+      localStorage.removeItem(`rei_chat_id_${walletAddress}`);
+      toast({ title: "Chat Cleared", description: "Your conversation has been reset." });
+    } catch (error) {
+      console.error("Error clearing chat:", error);
+      toast({ title: "Error", description: "Failed to clear chat.", variant: "destructive" });
+    }
   };
 
   const handlePresetSelect = (preset: string) => { setInput(preset); setShowQuickActions(false); setTimeout(() => { const inputElement = document.querySelector('.term-input') as HTMLInputElement; inputElement?.focus(); }, 100); };
