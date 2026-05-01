@@ -50,11 +50,18 @@ const ReiChatbot = ({ walletAddress, userMode, twitterHandle }: ReiChatbotProps)
 
   const loadConversation = async () => {
     try {
-      const { data: conversation } = await supabase.from("chat_conversations").select("id").eq("wallet_address", walletAddress).single();
+      const { data: conversation } = await supabase.from("chat_conversations").select("id").eq("wallet_address", walletAddress).maybeSingle();
       if (conversation) {
-        setConversationId(conversation.id);
         const { data: messages } = await supabase.from("chat_messages").select("role, content, metadata").eq("conversation_id", conversation.id).order("created_at", { ascending: true });
-        if (messages) setMessages(messages.map((m) => ({ role: m.role as "user" | "assistant", content: m.content, metadata: m.metadata })));
+        if (messages && messages.length > 0) {
+          setConversationId(conversation.id);
+          setMessages(messages.map((m) => ({ role: m.role as "user" | "assistant", content: m.content, metadata: m.metadata })));
+        } else {
+          // Empty/cleared conversation — don't re-attach. Drop stale local refs.
+          setConversationId(null);
+          localStorage.removeItem(`rei_chat_${walletAddress}`);
+          localStorage.removeItem(`rei_chat_id_${walletAddress}`);
+        }
       }
     } catch (error) { console.error("Error loading conversation:", error); }
   };
