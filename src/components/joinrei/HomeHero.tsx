@@ -69,8 +69,7 @@ export const HomeHero = () => {
             >
               {rotatingPlatforms[wordIndex]}
             </span>
-            <br />
-            <span>In One Place.</span>
+            <span> In One Place.</span>
           </h1>
 
           <p className={`mt-6 text-sm md:text-base text-primary/90 font-mono leading-relaxed transition-opacity duration-500 max-w-lg ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
