@@ -283,7 +283,7 @@ export default function Rei() {
               </div>
             </div>
           )}
-          {activeTab === 'askrei' && <div className="overflow-y-auto h-full scrollbar-hide"><div className="max-w-4xl mx-auto px-4 pb-20"><ReiChatbot walletAddress={registrationData.wallet_address} userMode="talent" twitterHandle={twitterUser?.handle} /></div></div>}
+          {activeTab === 'askrei' && <div className="overflow-y-auto h-full scrollbar-hide"><div className="max-w-4xl mx-auto px-4 pb-20" style={{ borderLeft: '0.5px solid hsla(0,0%,100%,0.08)', borderRight: '0.5px solid hsla(0,0%,100%,0.08)', minHeight: '100%' }}><ReiChatbot walletAddress={registrationData.wallet_address} userMode="talent" twitterHandle={twitterUser?.handle} /></div></div>}
           {activeTab === 'post' && <div className="overflow-y-auto h-full scrollbar-hide"><div className="max-w-4xl mx-auto px-4 pb-20"><PostToRei /></div></div>}
         </div>
       </div>
