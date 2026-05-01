@@ -53,8 +53,8 @@ export const HomeHero = () => {
   return (
     <section className="h-screen snap-start relative flex overflow-hidden bg-[#0a0a0a]">
       <div className="w-full lg:w-[45%] h-full flex flex-col justify-between p-8 lg:p-12 xl:p-16 relative z-10">
-        <img src={reiLogo} alt="Rei" className="absolute top-6 left-6 lg:top-8 lg:left-8 h-8 lg:h-10 w-auto z-20" />
-        <div className="pt-12 lg:pt-14">
+        <img src={reiLogo} alt="Rei AI" className="absolute top-6 left-6 lg:top-8 lg:left-8 h-16 lg:h-20 xl:h-24 w-auto z-20" />
+        <div className="pt-24 lg:pt-28 xl:pt-32">
           <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
             <span>Find Any </span>
             <span
@@ -75,7 +75,7 @@ export const HomeHero = () => {
           </h1>
 
           <p className={`mt-6 text-sm md:text-base text-primary/90 font-mono leading-relaxed transition-opacity duration-500 max-w-lg ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
-            Rei matches crypto <strong className="font-bold text-primary">bounties</strong> to your <strong className="font-bold text-primary">skills</strong>
+            Rei AI matches crypto <strong className="font-bold text-primary">bounties</strong> to your <strong className="font-bold text-primary">skills</strong>
           </p>
 
           <div className={`mt-4 flex flex-wrap gap-2 transition-opacity duration-500 delay-200 ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
