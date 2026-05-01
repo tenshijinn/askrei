@@ -1,0 +1,1 @@
+UPDATE public.tasks SET og_image = REPLACE(og_image, '&amp;', '&') WHERE og_image LIKE '%&amp;%';

@@ -35,6 +35,9 @@ const BountySchema = z.object({
   sponsor: z.string().nullable().optional(),
   posted_at: z.string().nullable().optional(),
   fetched_at: z.string().nullable().optional(),
+  og_image: z.string().nullable().optional(),
+  image: z.string().nullable().optional(),
+  thumbnail: z.string().nullable().optional(),
 });
 
 const PayloadSchema = z.object({
@@ -72,6 +75,70 @@ function normalizeUrl(url: string): string {
     .replace(/(superteam\.fun\/earn)\/listings\//gi, "$1/listing/");
 }
 
+async function fetchOgImage(url: string): Promise<string | null> {
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    const res = await fetch(url, {
+      signal: ctrl.signal,
+      redirect: "follow",
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (compatible; ReiBot/1.0; +https://rei.chat)",
+        Accept: "text/html,application/xhtml+xml",
+      },
+    });
+    clearTimeout(timer);
+    if (!res.ok) return null;
+    // Read at most ~256KB of HTML — og tags live in <head>.
+    const reader = res.body?.getReader();
+    if (!reader) return null;
+    const decoder = new TextDecoder();
+    let html = "";
+    let received = 0;
+    const MAX = 256 * 1024;
+    while (received < MAX) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      received += value.byteLength;
+      html += decoder.decode(value, { stream: true });
+      if (html.includes("</head>")) break;
+    }
+    try {
+      await reader.cancel();
+    } catch {
+      /* ignore */
+    }
+    // Match og:image / og:image:secure_url, attribute order tolerant.
+    const patterns = [
+      /<meta[^>]+property=["']og:image(?::secure_url)?["'][^>]+content=["']([^"']+)["']/i,
+      /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image(?::secure_url)?["']/i,
+      /<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i,
+    ];
+    for (const re of patterns) {
+      const m = html.match(re);
+      if (m?.[1]) {
+        // Decode HTML entities (og:image often contains &amp; in query strings).
+        const decoded = m[1]
+          .replace(/&amp;/g, "&")
+          .replace(/&#x2F;/gi, "/")
+          .replace(/&#39;/g, "'")
+          .replace(/&quot;/g, '"')
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">");
+        try {
+          return new URL(decoded, url).toString();
+        } catch {
+          return decoded;
+        }
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 function mapBounty(b: Bounty) {
   const description =
     b.description?.trim() ||
@@ -81,6 +148,9 @@ function mapBounty(b: Bounty) {
     ...(b.skills ?? []),
     ...(b.platform ? [b.platform] : []),
   ].filter(Boolean);
+
+  const og_image =
+    b.og_image?.trim() || b.image?.trim() || b.thumbnail?.trim() || null;
 
   return {
     external_id: b.id,
@@ -94,6 +164,7 @@ function mapBounty(b: Bounty) {
     source: "gdrive-aggregator",
     opportunity_type: "task",
     status: "active",
+    og_image,
     // Satisfy NOT NULL + UNIQUE constraints. Unique per external_id.
     payment_tx_signature: `gdrive:${b.id}`,
     employer_wallet: "gdrive:aggregator",
@@ -231,6 +302,22 @@ Deno.serve(async (req) => {
       }
       rows.push(mapBounty(r.data));
     }
+
+    // 2b. For rows missing og_image, scrape it from the link in parallel (concurrency=8).
+    const needsOg = rows.filter((r) => !r.og_image && r.link);
+    let ogFilled = 0;
+    const CONCURRENCY = 8;
+    for (let i = 0; i < needsOg.length; i += CONCURRENCY) {
+      const batch = needsOg.slice(i, i + CONCURRENCY);
+      const results = await Promise.all(batch.map((r) => fetchOgImage(r.link)));
+      results.forEach((img, idx) => {
+        if (img) {
+          batch[idx].og_image = img;
+          ogFilled++;
+        }
+      });
+    }
+    console.log(`og_image: filled ${ogFilled}/${needsOg.length} via scrape`);
 
     // 3. Upsert in chunks of 200 to keep payloads reasonable.
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
