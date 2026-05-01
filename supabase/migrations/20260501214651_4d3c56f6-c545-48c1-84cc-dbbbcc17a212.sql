@@ -1,0 +1,1 @@
+UPDATE public.tasks SET link='https://superteam.fun/earn/listing/write-a-twitter-thread-on-kimia-protocol', updated_at=now() WHERE external_id='superteam-f5e68b87-4e4c-4b0c-9098-fa509ba4c205';
