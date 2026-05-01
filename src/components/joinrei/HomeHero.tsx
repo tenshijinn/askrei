@@ -75,7 +75,7 @@ export const HomeHero = () => {
           </h1>
 
           <p className={`mt-6 text-sm md:text-base text-primary/90 font-mono leading-relaxed transition-opacity duration-500 max-w-lg ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
-            Rei helps you find crypto tasks from Galxe, TaskOn, QuestN matched to your skills
+            Rei matches crypto <strong className="font-bold text-primary">bounties</strong> to your <strong className="font-bold text-primary">skills</strong>
           </p>
 
           <div className={`mt-4 flex flex-wrap gap-2 transition-opacity duration-500 delay-200 ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
