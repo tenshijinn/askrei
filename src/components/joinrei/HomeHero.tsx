@@ -5,12 +5,15 @@ import colosseumLogo from '@/assets/joinrei/colosseum-logo.png';
 import reiXLogo from '@/assets/joinrei/rei-x-logo.png';
 import reiSpeechBubble from '@/assets/joinrei/rei-speech-bubble.gif';
 
-const rotatingWords = ['Galxe', 'QuestN', 'TaskOn', 'Zealy', 'Layer3', 'Crew3', 'RabbitHole'];
+const rotatingPlatforms = ['Galxe', 'QuestN', 'TaskOn', 'Zealy', 'Layer3', 'Crew3', 'RabbitHole'];
+const rotatingTaskWords = ['Task', 'Bounty', 'Quest'];
 
 export const HomeHero = () => {
   const [headlineComplete, setHeadlineComplete] = useState(false);
   const [wordIndex, setWordIndex] = useState(0);
+  const [taskIndex, setTaskIndex] = useState(0);
   const [fade, setFade] = useState(true);
+  const [taskFade, setTaskFade] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => setHeadlineComplete(true), 1200);
@@ -21,10 +24,21 @@ export const HomeHero = () => {
     const interval = setInterval(() => {
       setFade(false);
       setTimeout(() => {
-        setWordIndex((prev) => (prev + 1) % rotatingWords.length);
+        setWordIndex((prev) => (prev + 1) % rotatingPlatforms.length);
         setFade(true);
       }, 300);
     }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTaskFade(false);
+      setTimeout(() => {
+        setTaskIndex((prev) => (prev + 1) % rotatingTaskWords.length);
+        setTaskFade(true);
+      }, 300);
+    }, 2400);
     return () => clearInterval(interval);
   }, []);
 
