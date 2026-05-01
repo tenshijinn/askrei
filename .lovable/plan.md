@@ -1,52 +1,33 @@
-## Goal
+I found why it still looks broken: the previous fix normalized the URL shape, but it also pinned one bad Superteam row to the wrong slug. The database currently has a task titled “Explain Defunds Finance” pointing at the Kimia Protocol Superteam page, so the format is valid but the destination is wrong.
 
-The `clear` button in the Rei chatbot looks like it works but doesn't actually reset the conversation context. The next message often behaves as if prior turns are still in play (e.g. answering "find bounties" with a points/profile reply that belongs to an earlier turn).
+Plan:
 
-## Root cause
+1. Fix the bad existing Superteam records
+   - Update any known mismatched Superteam rows, starting with:
+     - “Explain Defunds Finance” -> `https://superteam.fun/earn/listing/explain-defunds-finance`
+   - Re-check all Superteam links in the database after the update for non-canonical patterns.
 
-Three bugs compound:
+2. Harden the Google Drive sync so this does not happen again
+   - Improve `normalizeSuperteamUrl` to support these incoming variants:
+     - `https://earn.superteam.fun/listings/<slug>`
+     - `https://earn.superteam.fun/listing/<slug>`
+     - `https://superteam.fun/listings/<slug>`
+     - `https://superteam.fun/listing/<slug>`
+     - `https://superteam.fun/earn/listings/<slug>`
+     - `https://superteam.fun/earn/listing/<slug>`
+   - Always output the working canonical format:
+     - `https://superteam.fun/earn/listing/<slug>`
+   - Preserve query/hash only if needed, but never preserve the broken plural `/listings/` route.
 
-1. **RLS blocks the delete.** `chat_messages` has only `SELECT` and `INSERT` policies — no DELETE policy for end users. The client-side `supabase.from("chat_messages").delete()...` call in `handleClearChat` silently no-ops. The rows stay in the database.
-2. **The `chat_conversations` row is never cleared.** Even when `setConversationId(null)` clears local state, the server-side conversation row still exists and is re-attached on the next reload.
-3. **`loadConversation()` re-hydrates everything on mount.** On reload it looks up the conversation by `wallet_address`, finds the old row, and pulls back any messages that survived (which, per #1, is all of them). The "cleared" chat returns.
+3. Add a safer fallback for Superteam rows with bad/missing slugs
+   - If the provided URL slug looks wrong or unusable, generate a likely slug from the task title and use `/earn/listing/<title-slug>` as the fallback.
+   - This would have prevented “Explain Defunds Finance” from being pointed at the Kimia listing.
 
-Net effect: the backend keeps loading the last 3 messages of the old conversation, and the model anchors on stale context (the prior `get_my_profile` / points discussion).
+4. Deploy and run the sync
+   - Deploy the updated `sync-drive-tasks` backend function.
+   - Trigger it once so the latest Google Drive file is re-imported with corrected Superteam links.
 
-## Plan
-
-### 1. Add a server-authoritative reset path (edge function)
-
-Create a small new edge function `clear-chat-conversation` (verify_jwt validated in code, wallet read from JWT claims):
-
-- Look up the user's `chat_conversations` row by `wallet_address`.
-- Delete all `chat_messages` for that conversation.
-- Delete the `chat_conversations` row itself.
-- Return `{ ok: true }`.
-
-Using a service-role function avoids needing a new RLS DELETE policy on `chat_messages` and guarantees the wipe completes regardless of client RLS. The wallet is taken from the validated JWT, not the request body, so a user can only clear their own conversation.
-
-### 2. Update `handleClearChat` in `src/components/ReiChatbot.tsx`
-
-- Replace the direct `supabase.from("chat_messages").delete()` with `supabase.functions.invoke("clear-chat-conversation")`.
-- On success: `setMessages([])`, `setConversationId(null)`, clear both `localStorage` keys (already done), and also clear `displayedContent` state so the typewriter cache doesn't replay old text.
-- On failure: show the existing error toast and do NOT clear local state (so the UI stays consistent with the DB).
-
-### 3. Make `loadConversation()` defensive
-
-If a conversation row is found but it has zero messages, treat it as cleared: don't restore it, and clear the localStorage keys. This prevents a stale empty conversation from being silently re-attached.
-
-### 4. Backend already correct after this
-
-`rei-chat` reads the last 3 messages from `chat_messages` filtered by `conversation_id`. Once #1 and #2 wipe the conversation row, the next user message creates a brand-new conversation (existing code path at lines ~309-336), so there is no stale history to bias the model.
-
-## Files to change
-
-- `supabase/functions/clear-chat-conversation/index.ts` — new edge function (service role, JWT-validated wallet).
-- `src/components/ReiChatbot.tsx` — update `handleClearChat` to call the new function; make `loadConversation` ignore empty conversations and clear stale localStorage.
-
-## Out of scope / safety
-
-- No RLS changes (we route through service role instead — safer than opening DELETE on `chat_messages`).
-- No changes to `rei-chat`, intent classification, prompts, or any UI other than the clear flow.
-- No schema changes.
-- The only state mutation is deleting the user's own conversation + messages, gated by their authenticated wallet.
+5. Verify the result
+   - Query the task database for all Superteam rows.
+   - Confirm there are no `earn.superteam.fun/listings`, `/listings/`, or `/listing/` root-path leftovers.
+   - Spot-check representative Superteam URLs to confirm they resolve instead of 404ing.
