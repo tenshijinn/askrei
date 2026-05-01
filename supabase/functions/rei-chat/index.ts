@@ -222,14 +222,14 @@ async function checkForActiveDrafts(walletAddress: string, supabase: any): Promi
 function getIntentGuidance(intent: Intent): string {
   const guidance: Record<Intent, string> = {
     'SEARCH_JOBS': `[INTENT: SEARCH_JOBS]
-User wants to FIND job opportunities for themselves. 
-ACTION: Call get_my_profile first to get their skills, then search_jobs to find matches.
+User wants to FIND job opportunities for themselves.
+ACTION: Call search_jobs immediately. It loads the user's profile internally and scores matches — do NOT call get_my_profile, do NOT mention the user's points, and do NOT ask the user for skills first.
 Present results in clean terminal format with match reasons.`,
     
     'SEARCH_TASKS': `[INTENT: SEARCH_TASKS]
 User wants to FIND task/bounty/gig opportunities to work on.
-ACTION: Call get_my_profile first to get their skills, then search_tasks to find matches.
-CARDS-ONLY OUTPUT: Do NOT list the tasks in terminal text. Write a single short intro line (e.g. "Here are some bounties that match your skills:") and then ONLY emit one [[rei-task:<id>]] marker per result on its own line — nothing else, no titles, no "Apply here" links, no descriptions. The UI renders the rich card from the marker. End with one short closing line if you want (e.g. "Want me to dig deeper into any of these?"). Never invent UUIDs — only use IDs returned by search_tasks.`,
+ACTION: Call search_tasks immediately. It loads the user's profile internally and scores matches — do NOT call get_my_profile, do NOT mention the user's points, and do NOT ask the user for skills first.
+CARDS-ONLY OUTPUT: Do NOT list the tasks in terminal text. Write a single short intro line (e.g. "Here are some bounties that match your skills:") and then ONLY emit one [[rei-task:<id>]] marker per result on its own line — nothing else, no titles, no "Apply here" links, no descriptions. The UI renders the rich card from the marker. End with one short closing line if you want (e.g. "Want me to dig deeper into any of these?"). Never invent UUIDs — only use IDs returned by search_tasks. If search_tasks returns zero results, say so plainly and suggest they tap the avatar (top-right) → Edit Profile to add skills/role tags so Rei can match more — do NOT mention points.`,
     
     'SEARCH_TALENT': `[INTENT: SEARCH_TALENT]
 Employer wants to find candidates matching their requirements.
