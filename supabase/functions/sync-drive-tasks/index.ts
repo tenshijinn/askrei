@@ -111,7 +111,9 @@ Deno.serve(async (req) => {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY)
       throw new Error("Supabase service env not configured");
 
-    let body: { file_id?: string } = {};
+    const DEFAULT_FOLDER_ID = Deno.env.get("DRIVE_TASKS_FOLDER_ID");
+
+    let body: { file_id?: string; folder_id?: string } = {};
     if (req.method === "POST") {
       try {
         body = await req.json();
@@ -119,12 +121,60 @@ Deno.serve(async (req) => {
         body = {};
       }
     }
-    const fileId = body.file_id || DEFAULT_FILE_ID;
+
+    let fileId = body.file_id || DEFAULT_FILE_ID;
+    const folderId = body.folder_id || DEFAULT_FOLDER_ID;
+
+    // If a folder is configured, find the latest JSON file inside it.
+    if (!body.file_id && folderId) {
+      const q = encodeURIComponent(
+        `'${folderId}' in parents and trashed = false and (mimeType = 'application/json' or name contains '.json')`,
+      );
+      const listUrl =
+        `${GATEWAY_URL}/drive/v3/files?q=${q}` +
+        `&orderBy=${encodeURIComponent("createdTime desc")}` +
+        `&pageSize=10` +
+        `&fields=${encodeURIComponent("files(id,name,mimeType,createdTime,modifiedTime)")}`;
+
+      const listRes = await fetch(listUrl, {
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "X-Connection-Api-Key": GOOGLE_DRIVE_API_KEY,
+        },
+      });
+      if (!listRes.ok) {
+        const txt = await listRes.text();
+        throw new Error(
+          `Drive folder list failed [${listRes.status}]: ${txt.slice(0, 500)}`,
+        );
+      }
+      const listJson = (await listRes.json()) as {
+        files?: { id: string; name: string; createdTime?: string }[];
+      };
+      const latest = listJson.files?.[0];
+      if (!latest) {
+        return new Response(
+          JSON.stringify({
+            ok: false,
+            error: `No JSON files found in folder ${folderId}`,
+          }),
+          {
+            status: 404,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          },
+        );
+      }
+      fileId = latest.id;
+      console.log(
+        `Selected latest file in folder ${folderId}: ${latest.name} (${latest.id}, created ${latest.createdTime})`,
+      );
+    }
+
     if (!fileId) {
       return new Response(
         JSON.stringify({
           error:
-            "No file_id. Set DRIVE_TASKS_FILE_ID secret or pass { file_id } in body.",
+            "No file_id. Set DRIVE_TASKS_FOLDER_ID or DRIVE_TASKS_FILE_ID secret, or pass { file_id } / { folder_id } in body.",
         }),
         {
           status: 400,
