@@ -295,6 +295,22 @@ Deno.serve(async (req) => {
       rows.push(mapBounty(r.data));
     }
 
+    // 2b. For rows missing og_image, scrape it from the link in parallel (concurrency=8).
+    const needsOg = rows.filter((r) => !r.og_image && r.link);
+    let ogFilled = 0;
+    const CONCURRENCY = 8;
+    for (let i = 0; i < needsOg.length; i += CONCURRENCY) {
+      const batch = needsOg.slice(i, i + CONCURRENCY);
+      const results = await Promise.all(batch.map((r) => fetchOgImage(r.link)));
+      results.forEach((img, idx) => {
+        if (img) {
+          batch[idx].og_image = img;
+          ogFilled++;
+        }
+      });
+    }
+    console.log(`og_image: filled ${ogFilled}/${needsOg.length} via scrape`);
+
     // 3. Upsert in chunks of 200 to keep payloads reasonable.
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
       auth: { persistSession: false },
