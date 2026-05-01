@@ -1,91 +1,71 @@
 ## Goal
-Pull a JSON bounty feed from your Google Drive every 3 days and upsert each bounty into the existing `tasks` table so they show up in Rei's feed alongside everything else.
 
-## JSON shape (from your sample)
-```json
-{
-  "generated_at": "...",
-  "bounties": [
-    { "id", "platform", "title", "description", "reward": {amount, currency, type},
-      "deadline", "skills": [], "url", "sponsor", "posted_at", "fetched_at" }
-  ]
-}
+Three fixes to the Rei chat experience and data layer:
+
+1. Stop Rei from telling logged-in users to "register" with a bogus `app.rei.xyz/profile` link.
+2. Replace the generic `UserCircle` profile icon in the top-right with the user's X (Twitter) avatar.
+3. Correct the malformed Superteam URLs (`/listings/` → `/listing/`) in the tasks table and prevent the bad pattern in future syncs.
+
+---
+
+## Root cause of the bad reply
+
+The user pasted:
+> "register and create a profile so I can better match you with opportunities? Register → https://app.rei.xyz/profile"
+
+What actually happened:
+- The chatbot called the `search_jobs` tool, which invokes a Supabase Edge Function `match-talent-to-jobs`.
+- **That edge function does not exist** in this project (`supabase/functions/match-talent-to-jobs/` is missing). The invoke fails silently and returns an empty/error payload.
+- Receiving "no jobs", the model fell back to the system-prompt rule (line 478): *"If search returns 'profile not found': Include {action:'register', link:'/rei'}"* — and hallucinated the domain (`app.rei.xyz/profile`) because the rule is too vague.
+- The user is, in fact, already registered (they're inside the chat), so this branch should never trigger for them.
+
+---
+
+## Plan
+
+### 1. Fix `search_jobs` and the "no results" guidance (`supabase/functions/rei-chat/index.ts`)
+
+- Reimplement `case 'search_jobs'` inline (mirroring `search_tasks` at line 1029) instead of calling the missing `match-talent-to-jobs` function. It will:
+  - Look up the talent in `rei_registry` by wallet.
+  - If the registry row is missing, return `{ error: 'profile_missing' }`.
+  - Otherwise query `jobs` (or `tasks` filtered to job-like `opportunity_type`s — confirm against schema during implementation) for active rows, score them against `talent.skill_category_ids` / `role_tags`, and return top matches.
+- Update the system prompt (around lines 476–478) to be explicit and accurate:
+  - Remove the "register / link:/rei" instruction entirely (registered users should never see it).
+  - Add: *"If a search returns zero matches for a registered user, do NOT suggest registering. Suggest they enrich their profile by tapping the profile avatar (top-right) → Edit Profile, and add more skills / portfolio links so Rei can match more opportunities. Never invent URLs — only link to in-app routes (`/rei`)."*
+  - Reinforce: *"The user is already authenticated and registered if you can talk to them."*
+
+### 2. Use the X profile avatar in the top-right (`src/pages/Rei.tsx`, line 237)
+
+- Replace the `<UserCircle>` icon button with:
+  - If `twitterUser?.profile_image_url` is present → render the avatar `<img>` (circular, ~22px, with a subtle ring when `activeTab === 'profile'`).
+  - Fallback to current `UserCircle` icon if no avatar is loaded yet.
+- Keep click behavior identical (`setActiveTab('profile')`) and preserve `title="Profile"` for accessibility.
+
+### 3. Correct Superteam URLs
+
+Two parts:
+
+**a. Backfill existing rows** — migration that runs:
+```sql
+UPDATE public.tasks
+SET link = REPLACE(link, 'earn.superteam.fun/listings/', 'earn.superteam.fun/listing/')
+WHERE link ILIKE 'https://earn.superteam.fun/listings/%';
 ```
+(3 rows currently affected, confirmed via DB query.)
 
-## Field mapping → `tasks`
-| Source | → | `tasks` column |
-|---|---|---|
-| `id` (e.g. `superteam-71d3...`) | → | `external_id` (dedupe key for upsert) |
-| `title` | → | `title` |
-| `description` ?? `"<sponsor> bounty on <platform>"` | → | `description` (NOT NULL fallback) |
-| `reward.amount` + `reward.currency` (e.g. `"10000 USDC"`) | → | `compensation` |
-| `url` | → | `link` |
-| `deadline` | → | `end_date` |
-| `sponsor` | → | `company_name` |
-| `[platform]` | → | `role_tags` (until we add real skills) |
-| `"gdrive-aggregator"` | → | `source` |
-| `"gdrive:<file_id>"` | → | `payment_tx_signature` (mirrors `sync-campaign-tasks` pattern to satisfy NOT NULL) |
-| `"gdrive:aggregator"` | → | `employer_wallet` (NOT NULL placeholder) |
-| `"task"` | → | `opportunity_type` |
-| `"active"` | → | `status` |
+**b. Defensive fix in the sync function** (`supabase/functions/sync-drive-tasks/index.ts`)
+- In `mapBounty`, normalize the URL before storing: if `b.url` matches `earn.superteam.fun/listings/`, rewrite to `/listing/`. This protects against the upstream Drive JSON continuing to ship the wrong slug.
 
-## Architecture
+---
 
-```text
-[Google Drive: bounty-feed.json]
-        │  (Lovable Google Drive connector — your account)
-        ▼
-[Edge Function: sync-drive-tasks]
-        │  download → parse bounties[] → map → UPSERT (on external_id)
-        ▼
-[public.tasks]  source = 'gdrive-aggregator'
-        │
-        ▼
-[public-feed / Rei UI / Agent API]
+## Files to change
 
-[pg_cron every 3 days at 09:00 UTC] ──► sync-drive-tasks
-```
+- `supabase/functions/rei-chat/index.ts` — rewrite `search_jobs` handler; tighten system-prompt "no results" guidance.
+- `src/pages/Rei.tsx` — swap top-right profile icon for X avatar.
+- `supabase/functions/sync-drive-tasks/index.ts` — normalize Superteam URL in `mapBounty`.
+- New migration — `UPDATE` to fix the 3 existing bad Superteam URLs.
 
-## Steps
+## Out of scope / safety
 
-1. **Connect Google Drive** via the Lovable connector (one-time auth with your account).
-
-2. **Add secret** `DRIVE_TASKS_FILE_ID` — the file ID from the Drive share URL (between `/file/d/` and the next `/`).
-
-3. **Create edge function** `supabase/functions/sync-drive-tasks/index.ts`
-   - Downloads via `https://connector-gateway.lovable.dev/google_drive/drive/v3/files/{file_id}?alt=media` using `LOVABLE_API_KEY` + `GOOGLE_DRIVE_API_KEY` headers.
-   - Validates payload with Zod (`bounties` must be an array; each item needs `id`, `title`, `url`).
-   - Maps each bounty per the table above.
-   - **Upserts** with `supabase.from('tasks').upsert(rows, { onConflict: 'external_id' })` — updates title/description/compensation/end_date/role_tags/company_name on existing rows, inserts new ones.
-   - Returns `{ fetched, inserted_or_updated, skipped, errors }`.
-   - Accepts manual POST with optional `{ file_id }` override for ad-hoc refreshes.
-   - `verify_jwt = false` so cron + manual triggers work.
-
-4. **Ensure unique index on `tasks.external_id`** (required for `onConflict` upsert) — schema migration if not already present.
-
-5. **Schedule via pg_cron** (every 3 days, 09:00 UTC):
-   ```sql
-   select cron.schedule('sync-drive-tasks-3d', '0 9 */3 * *', $$
-     select net.http_post(
-       url := 'https://qajahmmzqhgboeoorfqj.supabase.co/functions/v1/sync-drive-tasks',
-       headers := '{"Content-Type":"application/json","apikey":"<anon>"}'::jsonb,
-       body := '{}'::jsonb
-     );
-   $$);
-   ```
-   Inserted via the data tool (not migrations) since it embeds project URL + key. Enables `pg_cron` + `pg_net` first if not already on.
-
-6. **Light extension points** (handled in the same function, no extra steps):
-   - When `platforms_pending` graduates to `platforms_included` (zealy, questn, taskon, layer3, galxe), the same mapper handles them — no code change needed as long as fields stay the same.
-   - `description: null` is handled with a generated fallback string.
-   - `skills: []` becomes empty `role_tags`; we tag `platform` so feed filters still work.
-
-## What you'll need to do
-- Approve this plan.
-- After Drive connector prompt appears, click through it once.
-- Paste the Google Drive **file ID** when I request the `DRIVE_TASKS_FILE_ID` secret.
-
-## Out of scope (can add later if you want)
-- Auto-expire bounties that disappear from the JSON.
-- Mapping `skills` → `skill_category_ids` once Superteam starts populating that field.
-- A `/admin` button to trigger an immediate sync.
+- No changes to `MessageContent.tsx`, `TaskPreviewCard.tsx`, `useTaskPreview.ts`, or any other Rei dependency — the cards, registration flow, and chat history all keep working.
+- No schema changes; only data backfill + edge-function logic.

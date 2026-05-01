@@ -475,7 +475,10 @@ CONFIRMING STATE:
 
 FOR TALENT:
 - Wallet connected (${walletAddress})
-- If search returns "profile not found": Include {"action":"register","link":"/rei"}
+- The user IS already registered and authenticated — if you can talk to them, they have an account. NEVER tell them to "register", "create a profile", or "sign up".
+- NEVER invent or guess URLs (no app.rei.xyz, no /profile path). The app lives at rei.chat. The only valid in-app route to reference is "/rei".
+- If a search returns zero matches, respond warmly and suggest they enrich their profile to improve matching: "Tap your avatar in the top-right and choose Edit Profile to add more skills, role tags, or a portfolio link so I can match you with more opportunities." Do NOT include a link — the avatar button is right there in the UI.
+- Only if a search tool explicitly returns {"error":"profile_missing"} (genuinely no rei_registry row) should you mention registration, and even then say: "Looks like your profile didn't finish setting up — please complete the registration step in the app." No external URLs.
 
 PAYMENT: $5 in SOL/SPL tokens → ${TREASURY_WALLET}, earns 10 points
 
@@ -1020,12 +1023,83 @@ async function executeTool(toolName: string, args: any, supabase: any) {
 
   switch (toolName) {
     case 'search_jobs': {
-      const response = await supabase.functions.invoke('match-talent-to-jobs', {
-        body: { walletAddress: args.walletAddress }
+      // Inline implementation — match-talent-to-jobs edge function does not exist.
+      // Mirrors search_tasks but scoped to job-style opportunity_types.
+      const { data: talent } = await supabase
+        .from('rei_registry')
+        .select('*')
+        .eq('wallet_address', args.walletAddress)
+        .single();
+
+      if (!talent) {
+        return { error: 'profile_missing' };
+      }
+
+      const { data: jobs, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(30);
+
+      if (error) {
+        return { error: 'Failed to fetch jobs' };
+      }
+
+      const talentCategoryIds: string[] = talent.skill_category_ids || [];
+      const talentRoleTags: string[] = (talent.role_tags || []).map((r: string) => String(r).toLowerCase());
+      const talentSkills: string[] = (talent.skills || []).map((s: string) => String(s).toLowerCase());
+
+      const scored = (jobs || []).map((j: any) => {
+        let score = 0;
+        const reasons: string[] = [];
+
+        const jobCatIds: string[] = j.skill_category_ids || [];
+        const catOverlap = jobCatIds.filter((c) => talentCategoryIds.includes(c)).length;
+        if (catOverlap > 0) {
+          score += catOverlap * 10;
+          reasons.push(`${catOverlap} matching skill categor${catOverlap === 1 ? 'y' : 'ies'}`);
+        }
+
+        const jobRoles: string[] = (j.role_tags || []).map((r: string) => String(r).toLowerCase());
+        const roleOverlap = jobRoles.filter((r) => talentRoleTags.includes(r)).length;
+        if (roleOverlap > 0) {
+          score += roleOverlap * 5;
+          reasons.push(`role match: ${jobRoles.filter((r) => talentRoleTags.includes(r)).join(', ')}`);
+        }
+
+        const haystack = `${j.title || ''} ${j.description || ''} ${j.requirements || ''}`.toLowerCase();
+        const skillHits = talentSkills.filter((s) => s && haystack.includes(s));
+        if (skillHits.length > 0) {
+          score += skillHits.length * 3;
+          reasons.push(`skills mentioned: ${skillHits.slice(0, 3).join(', ')}`);
+        }
+
+        return { job: j, score, reasons };
       });
-      return response.data || response.error;
+
+      const matches = scored
+        .filter((s) => s.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 8);
+
+      return {
+        total_active: jobs?.length || 0,
+        matches: matches.map(({ job, score, reasons }) => ({
+          id: job.id,
+          title: job.title,
+          company_name: job.company_name,
+          compensation: job.compensation,
+          opportunity_type: job.opportunity_type,
+          link: job.apply_url || job.link,
+          deadline: job.deadline,
+          posted_at: job.created_at,
+          match_score: score,
+          match_reasons: reasons,
+        })),
+      };
     }
-    
+
     case 'search_tasks': {
       // Search tasks matching talent profile using dynamic skill categories
       const { data: talent } = await supabase
