@@ -5,46 +5,46 @@ export interface PresetCategory {
 
 export const talentPresets: PresetCategory[] = [
   {
-    name: "JOB SEARCH",
+    name: "BOUNTIES",
     prompts: [
-      "find me web3 jobs matching my skills",
-      "show remote blockchain dev positions",
-      "looking for defi opportunities",
-      "entry-level web3 roles"
+      "find bounties matching my skills",
+      "show me open bounties",
+      "highest paying bounties right now",
+      "quick bounties I can finish this week"
     ]
   },
   {
-    name: "TASKS",
+    name: "TASKS & QUESTS",
     prompts: [
-      "show available web3 tasks",
-      "find quick bounties",
+      "show available tasks and quests",
+      "find quests I can complete",
       "smart contract auditing tasks",
-      "show me tasks matching my skills"
-    ]
-  },
-  {
-    name: "POST JOB",
-    prompts: [
-      "I want to post a job",
-      "create a job listing",
-      "hire for a web3 position"
+      "design tasks for web3 projects"
     ]
   },
   {
     name: "POST TASK",
     prompts: [
       "post a task or bounty",
-      "list a new task",
-      "create a bounty"
+      "list a new bounty",
+      "create a quest"
     ]
   },
   {
     name: "CONTRIBUTE",
     prompts: [
-      "I found a job to share",
-      "submit opportunity I found",
-      "contribute a job posting",
-      "share a task I discovered"
+      "I found a bounty to share",
+      "submit an opportunity I found",
+      "contribute a task I discovered",
+      "share a quest with the community"
+    ]
+  },
+  {
+    name: "JOBS",
+    prompts: [
+      "show web3 jobs matching my skills",
+      "remote blockchain dev roles",
+      "entry-level web3 jobs"
     ]
   },
   {
