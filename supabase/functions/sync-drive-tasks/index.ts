@@ -131,6 +131,25 @@ async function fetchOgImage(url: string): Promise<string | null> {
   }
 }
 
+function normalizeSuperteamUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    const host = u.hostname.toLowerCase();
+    if (host !== "superteam.fun" && !host.endsWith(".superteam.fun")) {
+      return url;
+    }
+    // Extract slug from any of: /earn/listing/<slug>, /earn/listings/<slug>,
+    // /listing/<slug>, /listings/<slug>
+    const parts = u.pathname.split("/").filter(Boolean);
+    const idx = parts.findIndex((p) => p === "listing" || p === "listings");
+    const slug = idx >= 0 ? parts[idx + 1] : parts[parts.length - 1];
+    if (!slug) return url;
+    return `https://superteam.fun/earn/listing/${slug.replace(/\/$/, "")}`;
+  } catch {
+    return url;
+  }
+}
+
 function mapBounty(b: Bounty) {
   const description =
     b.description?.trim() ||
