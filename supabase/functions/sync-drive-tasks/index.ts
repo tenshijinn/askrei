@@ -131,50 +131,6 @@ async function fetchOgImage(url: string): Promise<string | null> {
   }
 }
 
-function slugifyTitle(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/['']/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 100);
-}
-
-// Canonical Superteam listing URL: https://superteam.fun/earn/listing/<slug>
-// Accepts any of:
-//   superteam.fun/earn/listing/<slug>     (canonical)
-//   superteam.fun/earn/listings/<slug>    (plural - 404)
-//   superteam.fun/listing/<slug>          (missing /earn - 404)
-//   superteam.fun/listings/<slug>         (404)
-//   earn.superteam.fun/listing/<slug>     (subdomain, redirects)
-//   earn.superteam.fun/listings/<slug>    (subdomain - 404)
-function normalizeSuperteamUrl(url: string, fallbackTitle?: string): string {
-  const buildFallback = () => {
-    if (!fallbackTitle) return url;
-    const slug = slugifyTitle(fallbackTitle);
-    return slug ? `https://superteam.fun/earn/listing/${slug}` : url;
-  };
-  try {
-    const u = new URL(url);
-    const host = u.hostname.toLowerCase();
-    if (host !== "superteam.fun" && !host.endsWith(".superteam.fun")) {
-      return url;
-    }
-    const parts = u.pathname.split("/").filter(Boolean);
-    // Find listing/listings segment anywhere in the path
-    const idx = parts.findIndex((p) => p === "listing" || p === "listings");
-    let slug = idx >= 0 ? parts[idx + 1] : "";
-    // Skip if slug is empty / looks like another route segment
-    if (!slug || ["all", "s", "hackathon", "grants", "pro"].includes(slug)) {
-      return buildFallback();
-    }
-    slug = slug.replace(/\/$/, "");
-    return `https://superteam.fun/earn/listing/${slug}`;
-  } catch {
-    return buildFallback();
-  }
-}
-
 function mapBounty(b: Bounty) {
   const description =
     b.description?.trim() ||
@@ -192,7 +148,7 @@ function mapBounty(b: Bounty) {
     external_id: b.id,
     title: b.title.slice(0, 500),
     description,
-    link: normalizeSuperteamUrl(b.url, b.title),
+    link: b.url,
     compensation: formatCompensation(b.reward),
     end_date: safeDate(b.deadline),
     company_name: b.sponsor ?? null,
