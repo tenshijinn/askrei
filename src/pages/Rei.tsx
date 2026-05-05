@@ -417,3 +417,29 @@ export default function Rei() {
     </div>
   );
 }
+
+type CheckUIState = 'idle' | 'pending' | 'ok' | 'fail';
+
+function ChecklistRow({ state, label }: { state: CheckUIState; label: string }) {
+  if (state === 'idle') return null;
+  const icon =
+    state === 'pending' ? <Loader2 className="h-3.5 w-3.5 animate-spin" style={{ color: '#5c5a57' }} /> :
+    state === 'ok' ? <Check className="h-3.5 w-3.5" style={{ color: '#22c55e' }} /> :
+    <XIcon className="h-3.5 w-3.5" style={{ color: '#ef4444' }} />;
+  const color = state === 'fail' ? '#ef4444' : state === 'ok' ? '#f0ede8' : '#5c5a57';
+  return (
+    <div className="flex items-center gap-2" style={{ fontSize: '12px', color }}>
+      {icon}<span>{label}</span>
+    </div>
+  );
+}
+
+function FollowChecklist({ verified, follow }: { verified: CheckUIState; follow: CheckUIState }) {
+  if (verified === 'idle' && follow === 'idle') return null;
+  return (
+    <div className="rei-surface-2 space-y-1.5" style={{ padding: '10px 14px' }}>
+      <ChecklistRow state={verified} label="Checking for Verified Twitter" />
+      <ChecklistRow state={follow} label="Checking Follows @askrei_" />
+    </div>
+  );
+}
