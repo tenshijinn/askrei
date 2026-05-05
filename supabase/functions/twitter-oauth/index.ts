@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
       authUrl.searchParams.set('response_type', 'code');
       authUrl.searchParams.set('client_id', clientId);
       authUrl.searchParams.set('redirect_uri', redirectUri);
-      authUrl.searchParams.set('scope', 'tweet.read users.read offline.access');
+      authUrl.searchParams.set('scope', 'tweet.read users.read follows.read offline.access');
       authUrl.searchParams.set('state', crypto.randomUUID());
       authUrl.searchParams.set('code_challenge', codeChallenge);
       authUrl.searchParams.set('code_challenge_method', 'S256');
