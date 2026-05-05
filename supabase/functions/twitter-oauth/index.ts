@@ -113,6 +113,24 @@ Deno.serve(async (req) => {
         profileImageUrl = profileImageUrl.replace('_normal', '_400x400');
       }
 
+      // Follow-gate: must follow @askrei_ on X (skipped for admin)
+      if (!skipWhitelistCheck) {
+        const followsAskrei = await checkFollowsAskrei(
+          supabase,
+          userData.data.id,
+          tokenData.access_token,
+        );
+        if (!followsAskrei) {
+          return new Response(
+            JSON.stringify({
+              error: 'must_follow_askrei',
+              message: 'You must follow @askrei_ on X to continue.',
+            }),
+            { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+          );
+        }
+      }
+
       // Check if user is on the whitelist (case-insensitive) - skip for admin login
       let isVerified = false;
       let whitelistEntry = null;
@@ -135,6 +153,7 @@ Deno.serve(async (req) => {
         console.log('Skipping whitelist check (admin login)');
         isVerified = true; // Admin bypasses whitelist
       }
+
 
       return new Response(
         JSON.stringify({
