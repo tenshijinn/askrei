@@ -206,3 +206,99 @@ function base64URLEncode(buffer: Uint8Array): string {
     .replace(/\//g, '_')
     .replace(/=/g, '');
 }
+
+// Cache @askrei_'s X user id across warm invocations
+let cachedAskreiId: string | null = Deno.env.get('ASKREI_X_USER_ID') || null;
+const ASKREI_HANDLE = 'askrei_';
+const FOLLOW_CACHE_DAYS = 7;
+
+async function getAskreiUserId(appBearerToken: string): Promise<string | null> {
+  if (cachedAskreiId) return cachedAskreiId;
+  try {
+    const res = await fetch(
+      `https://api.twitter.com/2/users/by/username/${ASKREI_HANDLE}`,
+      { headers: { Authorization: `Bearer ${appBearerToken}` } },
+    );
+    if (!res.ok) {
+      console.error('Failed to resolve askrei_ id:', await res.text());
+      return null;
+    }
+    const json = await res.json();
+    cachedAskreiId = json?.data?.id ?? null;
+    return cachedAskreiId;
+  } catch (e) {
+    console.error('askrei_ lookup error:', e);
+    return null;
+  }
+}
+
+async function checkFollowsAskrei(
+  supabase: ReturnType<typeof import('https://esm.sh/@supabase/supabase-js@2.75.1').createClient>,
+  sourceUserId: string,
+  userAccessToken: string,
+): Promise<boolean> {
+  // 1. Check cache
+  try {
+    const { data: cached } = await supabase
+      .from('x_follow_checks')
+      .select('follows_askrei, checked_at')
+      .eq('x_user_id', sourceUserId)
+      .maybeSingle();
+    if (cached?.follows_askrei) {
+      const ageMs = Date.now() - new Date(cached.checked_at).getTime();
+      if (ageMs < FOLLOW_CACHE_DAYS * 24 * 60 * 60 * 1000) {
+        console.log('Follow check cache HIT for', sourceUserId);
+        return true;
+      }
+    }
+  } catch (e) {
+    console.error('Follow cache read error:', e);
+  }
+
+  // 2. Resolve askrei_ id (use user token as bearer — works for /users/by/username)
+  const askreiId = await getAskreiUserId(userAccessToken);
+  if (!askreiId) {
+    console.error('Could not resolve @askrei_ id; failing open=false');
+    return false;
+  }
+
+  // 3. Page through /following looking for askrei_
+  let nextToken: string | undefined;
+  let found = false;
+  let pages = 0;
+  do {
+    const url = new URL(`https://api.twitter.com/2/users/${sourceUserId}/following`);
+    url.searchParams.set('max_results', '1000');
+    if (nextToken) url.searchParams.set('pagination_token', nextToken);
+    const res = await fetch(url.toString(), {
+      headers: { Authorization: `Bearer ${userAccessToken}` },
+    });
+    if (!res.ok) {
+      console.error('following lookup failed:', res.status, await res.text());
+      return false;
+    }
+    const json = await res.json();
+    const list: Array<{ id: string }> = json?.data ?? [];
+    if (list.some((u) => u.id === askreiId)) {
+      found = true;
+      break;
+    }
+    nextToken = json?.meta?.next_token;
+    pages++;
+  } while (nextToken && pages < 5);
+
+  // 4. Cache positive result
+  if (found) {
+    try {
+      await supabase.from('x_follow_checks').upsert({
+        x_user_id: sourceUserId,
+        follows_askrei: true,
+        checked_at: new Date().toISOString(),
+      });
+    } catch (e) {
+      console.error('Follow cache write error:', e);
+    }
+  }
+  return found;
+}
+
