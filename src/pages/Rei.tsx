@@ -10,7 +10,7 @@ import { AudioRecorder } from '@/components/AudioRecorder';
 import ReiChatbot from '@/components/ReiChatbot';
 import { PostToRei } from '@/components/PostToRei';
 import { useToast } from '@/hooks/use-toast';
-import { Check, Twitter, Shield, AlertCircle, Info, Sparkles, Briefcase, CheckCircle2, Edit2, LogOut, UserCircle } from 'lucide-react';
+import { Check, Twitter, Shield, AlertCircle, Info, Sparkles, Briefcase, CheckCircle2, Edit2, LogOut, UserCircle, Loader2, X as XIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ReiEarningsHub } from '@/components/ReiEarningsHub';
 import { Progress } from '@/components/ui/progress';
