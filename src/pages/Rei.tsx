@@ -102,6 +102,7 @@ export default function Rei() {
   }, [twitterUser, checkedUserId, isLoadingRegistration]);
 
   const handleTwitterLogin = async (mode: 'signin' | 'signup') => {
+    setVerifiedCheck('idle'); setFollowCheck('idle');
     try {
       setAuthMode(mode); setNoAccountFound(false); sessionStorage.setItem('rei_auth_mode', mode);
       const redirectUri = `${window.location.origin}/rei`;
