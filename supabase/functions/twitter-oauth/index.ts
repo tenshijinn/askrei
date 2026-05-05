@@ -161,6 +161,8 @@ Deno.serve(async (req) => {
             profile_image_url: profileImageUrl,
             verified: userData.data.verified || false,
           },
+          verified_account: isVerifiedAccount,
+          follows_askrei: followsAskrei,
           bluechip_verified: isVerified,
           verification_type: whitelistEntry?.verification_type || null,
         }),
