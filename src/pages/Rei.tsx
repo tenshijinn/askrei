@@ -114,28 +114,47 @@ export default function Rei() {
 
   const handleTwitterCallback = async (code: string) => {
     setIsProcessingCallback(true);
+    setVerifiedCheck('pending');
+    setFollowCheck('pending');
     try {
       const storedVerifier = sessionStorage.getItem('twitter_code_verifier_rei'); sessionStorage.removeItem('twitter_code_verifier_rei');
       const redirectUri = `${window.location.origin}/rei`;
       const { data, error } = await supabase.functions.invoke('twitter-oauth', { body: { action: 'exchangeToken', code, codeVerifier: storedVerifier, redirectUri } });
-      if (error || data?.error === 'must_follow_askrei') {
-        const isFollowError = data?.error === 'must_follow_askrei' || (error?.message ?? '').includes('must_follow_askrei');
-        if (isFollowError) {
-          toast({ title: 'Follow @askrei_ to continue', description: 'You must follow @askrei_ on X (Twitter) before signing in.', variant: 'destructive' });
-          setIsProcessingCallback(false);
-          return;
-        }
-        if (error) throw error;
+      if (error) {
+        setVerifiedCheck('fail'); setFollowCheck('fail');
+        throw error;
       }
-      const storedMode = sessionStorage.getItem('rei_auth_mode') as 'signin' | 'signup' | null;
-      if (storedMode === 'signup' && !data.user.verified) { toast({ title: 'Verified Account Required', description: 'Only verified X (Twitter) accounts with a checkmark can register with Rei.', variant: 'destructive' }); setIsProcessingCallback(false); return; }
+
+      const isVerifiedAccount = !!(data?.verified_account ?? data?.user?.verified);
+      setVerifiedCheck(isVerifiedAccount ? 'ok' : 'fail');
+
+      if (!isVerifiedAccount) {
+        setFollowCheck('fail');
+        toast({ title: 'Verified Account Required', description: 'Only verified X (Twitter) accounts with a checkmark can continue.', variant: 'destructive' });
+        setIsProcessingCallback(false);
+        return;
+      }
+
+      const followsAskrei = !!data?.follows_askrei;
+      setFollowCheck(followsAskrei ? 'ok' : 'fail');
+
+      if (!followsAskrei) {
+        toast({ title: 'Follow @askrei_ to continue', description: 'You must follow @askrei_ on X (Twitter) before signing in.', variant: 'destructive' });
+        setIsProcessingCallback(false);
+        return;
+      }
+
       setTwitterUser(data.user);
       setVerificationStatus({ bluechip_verified: data.bluechip_verified, verification_type: data.verification_type });
       localStorage.setItem('rei_twitter_user', JSON.stringify(data.user));
       localStorage.setItem('rei_verification_status', JSON.stringify({ bluechip_verified: data.bluechip_verified, verification_type: data.verification_type }));
       window.history.replaceState({}, '', '/rei');
       toast({ title: 'Identity Verified!', description: `Welcome, @${data.user.handle}!` });
-    } catch (error) { toast({ title: 'Error', description: 'Failed to complete Twitter login', variant: 'destructive' }); }
+    } catch (error) {
+      setVerifiedCheck((s) => (s === 'pending' ? 'fail' : s));
+      setFollowCheck((s) => (s === 'pending' ? 'fail' : s));
+      toast({ title: 'Error', description: 'Failed to complete Twitter login', variant: 'destructive' });
+    }
     finally { setIsProcessingCallback(false); }
   };
 
