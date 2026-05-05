@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Session, User } from '@supabase/supabase-js';
 import reiLogo from '@/assets/rei-logo-new.png';
 import reiSplit from '@/assets/rei-split.png';
+import xVerifiedBadge from '@/assets/x-verified-badge.png';
 import { AudioRecorder } from '@/components/AudioRecorder';
 import ReiChatbot from '@/components/ReiChatbot';
 import { PostToRei } from '@/components/PostToRei';
