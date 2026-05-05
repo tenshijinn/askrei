@@ -10,7 +10,7 @@ import { AudioRecorder } from '@/components/AudioRecorder';
 import ReiChatbot from '@/components/ReiChatbot';
 import { PostToRei } from '@/components/PostToRei';
 import { useToast } from '@/hooks/use-toast';
-import { Check, Twitter, Shield, AlertCircle, Info, Sparkles, Briefcase, CheckCircle2, Edit2, LogOut, UserCircle } from 'lucide-react';
+import { Check, Twitter, Shield, AlertCircle, Info, Sparkles, Briefcase, CheckCircle2, Edit2, LogOut, UserCircle, Loader2, X as XIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ReiEarningsHub } from '@/components/ReiEarningsHub';
 import { Progress } from '@/components/ui/progress';
@@ -33,6 +33,9 @@ export default function Rei() {
   const [twitterUser, setTwitterUser] = useState<TwitterUser | null>(null);
   const [verificationStatus, setVerificationStatus] = useState<VerificationStatus | null>(null);
   const [isProcessingCallback, setIsProcessingCallback] = useState(false);
+  type CheckState = 'idle' | 'pending' | 'ok' | 'fail';
+  const [verifiedCheck, setVerifiedCheck] = useState<CheckState>('idle');
+  const [followCheck, setFollowCheck] = useState<CheckState>('idle');
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [authMode, setAuthMode] = useState<'signin' | 'signup' | null>(null);
@@ -99,6 +102,7 @@ export default function Rei() {
   }, [twitterUser, checkedUserId, isLoadingRegistration]);
 
   const handleTwitterLogin = async (mode: 'signin' | 'signup') => {
+    setVerifiedCheck('idle'); setFollowCheck('idle');
     try {
       setAuthMode(mode); setNoAccountFound(false); sessionStorage.setItem('rei_auth_mode', mode);
       const redirectUri = `${window.location.origin}/rei`;
@@ -111,28 +115,47 @@ export default function Rei() {
 
   const handleTwitterCallback = async (code: string) => {
     setIsProcessingCallback(true);
+    setVerifiedCheck('pending');
+    setFollowCheck('pending');
     try {
       const storedVerifier = sessionStorage.getItem('twitter_code_verifier_rei'); sessionStorage.removeItem('twitter_code_verifier_rei');
       const redirectUri = `${window.location.origin}/rei`;
       const { data, error } = await supabase.functions.invoke('twitter-oauth', { body: { action: 'exchangeToken', code, codeVerifier: storedVerifier, redirectUri } });
-      if (error || data?.error === 'must_follow_askrei') {
-        const isFollowError = data?.error === 'must_follow_askrei' || (error?.message ?? '').includes('must_follow_askrei');
-        if (isFollowError) {
-          toast({ title: 'Follow @askrei_ to continue', description: 'You must follow @askrei_ on X (Twitter) before signing in.', variant: 'destructive' });
-          setIsProcessingCallback(false);
-          return;
-        }
-        if (error) throw error;
+      if (error) {
+        setVerifiedCheck('fail'); setFollowCheck('fail');
+        throw error;
       }
-      const storedMode = sessionStorage.getItem('rei_auth_mode') as 'signin' | 'signup' | null;
-      if (storedMode === 'signup' && !data.user.verified) { toast({ title: 'Verified Account Required', description: 'Only verified X (Twitter) accounts with a checkmark can register with Rei.', variant: 'destructive' }); setIsProcessingCallback(false); return; }
+
+      const isVerifiedAccount = !!(data?.verified_account ?? data?.user?.verified);
+      setVerifiedCheck(isVerifiedAccount ? 'ok' : 'fail');
+
+      if (!isVerifiedAccount) {
+        setFollowCheck('fail');
+        toast({ title: 'Verified Account Required', description: 'Only verified X (Twitter) accounts with a checkmark can continue.', variant: 'destructive' });
+        setIsProcessingCallback(false);
+        return;
+      }
+
+      const followsAskrei = !!data?.follows_askrei;
+      setFollowCheck(followsAskrei ? 'ok' : 'fail');
+
+      if (!followsAskrei) {
+        toast({ title: 'Follow @askrei_ to continue', description: 'You must follow @askrei_ on X (Twitter) before signing in.', variant: 'destructive' });
+        setIsProcessingCallback(false);
+        return;
+      }
+
       setTwitterUser(data.user);
       setVerificationStatus({ bluechip_verified: data.bluechip_verified, verification_type: data.verification_type });
       localStorage.setItem('rei_twitter_user', JSON.stringify(data.user));
       localStorage.setItem('rei_verification_status', JSON.stringify({ bluechip_verified: data.bluechip_verified, verification_type: data.verification_type }));
       window.history.replaceState({}, '', '/rei');
       toast({ title: 'Identity Verified!', description: `Welcome, @${data.user.handle}!` });
-    } catch (error) { toast({ title: 'Error', description: 'Failed to complete Twitter login', variant: 'destructive' }); }
+    } catch (error) {
+      setVerifiedCheck((s) => (s === 'pending' ? 'fail' : s));
+      setFollowCheck((s) => (s === 'pending' ? 'fail' : s));
+      toast({ title: 'Error', description: 'Failed to complete Twitter login', variant: 'destructive' });
+    }
     finally { setIsProcessingCallback(false); }
   };
 
@@ -317,8 +340,9 @@ export default function Rei() {
                       <div className="space-y-3">
                         <h4 style={{ fontSize: '24px', fontWeight: 300, color: '#f0ede8', letterSpacing: '-0.025em' }}>Sign Up</h4>
                         <p style={{ fontSize: '13px', color: '#5c5a57' }}>Create a new talent profile</p>
-                        <button onClick={() => handleTwitterLogin('signup')} className="btn-manga btn-manga-primary w-full flex items-center justify-center gap-2" style={{ borderRadius: '28px', padding: '11px 22px', cursor: 'pointer' }}><Twitter style={{ width: '16px', height: '16px' }} />Verify with @askrei_<img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} /></button>
-                        <p style={{ fontSize: '11px', color: '#5c5a57', lineHeight: 1.5 }}>By signing up you confirm you are following <strong style={{ color: '#f0ede8' }}>@askrei_</strong> on X and agree to our terms. Only verified X accounts can register.</p>
+                        <button onClick={() => handleTwitterLogin('signup')} disabled={isProcessingCallback} className="btn-manga btn-manga-primary w-full flex items-center justify-center gap-1.5" style={{ borderRadius: '28px', padding: '11px 22px', cursor: isProcessingCallback ? 'wait' : 'pointer' }}><Twitter style={{ width: '16px', height: '16px' }} /><span>Sign up with</span><img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} /><span>Twitter</span></button>
+                        <FollowChecklist verified={verifiedCheck} follow={followCheck} />
+                        <p style={{ fontSize: '11px', color: '#5c5a57', lineHeight: 1.5 }}>You must have a <strong style={{ color: '#f0ede8' }}>Verified</strong> X (Twitter) account and be following <strong style={{ color: '#f0ede8' }}>@askrei_</strong> to continue.</p>
                       </div>
                       <p className="text-center" style={{ fontSize: '13px', color: '#5c5a57' }}>Already have an account?{' '}<button onClick={() => setShowSignUp(false)} style={{ fontWeight: 500, color: '#f0ede8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign in</button></p>
                       {noAccountFound && <div className="rei-surface-2 flex items-center gap-3" style={{ padding: '14px', borderColor: 'hsla(0,63%,55%,0.3)' }}><AlertCircle className="h-4 w-4" style={{ color: '#ef4444' }} /><span style={{ fontSize: '13px', color: '#ef4444' }}>No existing account found. Please sign up.</span></div>}
@@ -328,8 +352,9 @@ export default function Rei() {
                       <div className="space-y-3">
                         <h4 style={{ fontSize: '24px', fontWeight: 300, color: '#f0ede8', letterSpacing: '-0.025em' }}>Sign In</h4>
                         <p style={{ fontSize: '13px', color: '#5c5a57' }}>Access your existing talent profile</p>
-                        <button onClick={() => handleTwitterLogin('signin')} className="btn-manga btn-manga-outline w-full flex items-center justify-center gap-2" style={{ borderRadius: '28px', padding: '11px 22px', cursor: 'pointer' }}><Twitter style={{ width: '16px', height: '16px' }} />Sign in with @askrei_<img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} /></button>
-                        <p style={{ fontSize: '11px', color: '#5c5a57', lineHeight: 1.5 }}>You must be following <strong style={{ color: '#f0ede8' }}>@askrei_</strong> on X to sign in.</p>
+                        <button onClick={() => handleTwitterLogin('signin')} disabled={isProcessingCallback} className="btn-manga btn-manga-outline w-full flex items-center justify-center gap-1.5" style={{ borderRadius: '28px', padding: '11px 22px', cursor: isProcessingCallback ? 'wait' : 'pointer' }}><Twitter style={{ width: '16px', height: '16px' }} /><span>Sign in with</span><img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} /><span>Twitter</span></button>
+                        <FollowChecklist verified={verifiedCheck} follow={followCheck} />
+                        <p style={{ fontSize: '11px', color: '#5c5a57', lineHeight: 1.5 }}>You must have a <strong style={{ color: '#f0ede8' }}>Verified</strong> X (Twitter) account and be following <strong style={{ color: '#f0ede8' }}>@askrei_</strong> to continue.</p>
                       </div>
                       <p className="text-center" style={{ fontSize: '13px', color: '#5c5a57' }}>Don't have an account?{' '}<button onClick={() => setShowSignUp(true)} style={{ fontWeight: 500, color: '#f0ede8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign up</button></p>
                       {noAccountFound && <div className="rei-surface-2 flex items-center gap-3" style={{ padding: '14px', borderColor: 'hsla(0,63%,55%,0.3)' }}><AlertCircle className="h-4 w-4" style={{ color: '#ef4444' }} /><span style={{ fontSize: '13px', color: '#ef4444' }}>No existing account found. Please sign up.</span></div>}
@@ -389,6 +414,32 @@ export default function Rei() {
       </div>
       <div className="hidden md:block w-1/2 min-h-screen relative"><img src={reiSplit} alt="Rei" className="absolute inset-0 w-full h-full object-cover" /></div>
       <ReiAnalysisOverlay stage={analysisStage} uploadPercent={uploadPercent} errorMessage={analysisError} onClose={closeAnalysisOverlay} />
+    </div>
+  );
+}
+
+type CheckUIState = 'idle' | 'pending' | 'ok' | 'fail';
+
+function ChecklistRow({ state, label }: { state: CheckUIState; label: string }) {
+  if (state === 'idle') return null;
+  const icon =
+    state === 'pending' ? <Loader2 className="h-3.5 w-3.5 animate-spin" style={{ color: '#5c5a57' }} /> :
+    state === 'ok' ? <Check className="h-3.5 w-3.5" style={{ color: '#22c55e' }} /> :
+    <XIcon className="h-3.5 w-3.5" style={{ color: '#ef4444' }} />;
+  const color = state === 'fail' ? '#ef4444' : state === 'ok' ? '#f0ede8' : '#5c5a57';
+  return (
+    <div className="flex items-center gap-2" style={{ fontSize: '12px', color }}>
+      {icon}<span>{label}</span>
+    </div>
+  );
+}
+
+function FollowChecklist({ verified, follow }: { verified: CheckUIState; follow: CheckUIState }) {
+  if (verified === 'idle' && follow === 'idle') return null;
+  return (
+    <div className="rei-surface-2 space-y-1.5" style={{ padding: '10px 14px' }}>
+      <ChecklistRow state={verified} label="Checking for Verified Twitter" />
+      <ChecklistRow state={follow} label="Checking Follows @askrei_" />
     </div>
   );
 }

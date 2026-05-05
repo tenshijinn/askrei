@@ -113,22 +113,19 @@ Deno.serve(async (req) => {
         profileImageUrl = profileImageUrl.replace('_normal', '_400x400');
       }
 
-      // Follow-gate: must follow @askrei_ on X (skipped for admin)
-      if (!skipWhitelistCheck) {
-        const followsAskrei = await checkFollowsAskrei(
+      // Verified-account check (uses user.fields.verified from /users/me — no extra API call)
+      const isVerifiedAccount = userData.data.verified === true;
+
+      // Follow-gate: must follow @askrei_ on X (skipped for admin or if not verified — saves a call)
+      let followsAskrei = false;
+      if (skipWhitelistCheck) {
+        followsAskrei = true;
+      } else if (isVerifiedAccount) {
+        followsAskrei = await checkFollowsAskrei(
           supabase,
           userData.data.id,
           tokenData.access_token,
         );
-        if (!followsAskrei) {
-          return new Response(
-            JSON.stringify({
-              error: 'must_follow_askrei',
-              message: 'You must follow @askrei_ on X to continue.',
-            }),
-            { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-          );
-        }
       }
 
       // Check if user is on the whitelist (case-insensitive) - skip for admin login
@@ -164,6 +161,8 @@ Deno.serve(async (req) => {
             profile_image_url: profileImageUrl,
             verified: userData.data.verified || false,
           },
+          verified_account: isVerifiedAccount,
+          follows_askrei: followsAskrei,
           bluechip_verified: isVerified,
           verification_type: whitelistEntry?.verification_type || null,
         }),

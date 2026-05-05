@@ -1,70 +1,89 @@
 ## Goal
 
-1. Add the blue verified checkmark icon next to the X handle inside the Sign Up / Sign In buttons on `/rei`.
-2. Enforce that users must be following **@askrei_** on X before they can sign up or sign in.
-3. Do this without burning SocialData API credits — use the Twitter OAuth session we already have.
+Reflect the actual UX flow on `/rei`:
 
----
+1. The buttons should read **"Sign up with [badge]Twitter"** and **"Sign in with [badge]Twitter"** (badge inline between "with" and "Twitter").
+2. While the OAuth callback runs, show a small panel under the button with **two pending checkboxes** that flip to checked / failed in order:
+   - `Checking for Verified Twitter`
+   - `Checking Follows @askrei_`
 
-## 1. Verified checkmark in the button
+## 1. Button copy + badge placement (`src/pages/Rei.tsx`)
 
-Copy the uploaded badge to `src/assets/x-verified-badge.svg` and import it into `src/pages/Rei.tsx`. Render it inline next to the text in both buttons (lines 311 and 321), e.g.:
+Replace the current "Verify with @askrei_" / "Sign in with @askrei_" labels:
 
 ```
-Verify with X (Twitter) <img src={badge} className="h-4 w-4" />
-@askrei_ <img src={badge} className="h-4 w-4" />
+<Twitter /> Sign up with <img src={xVerifiedBadge} /> Twitter
+<Twitter /> Sign in with <img src={xVerifiedBadge} /> Twitter
 ```
 
-The badge will visually mirror the requirement ("follow the verified @askrei_ account").
+The badge sits between "with" and "Twitter" so it visually reads "verified Twitter".
 
----
+Update the helper paragraph beneath each button to:
 
-## 2. Follow-gate without using SocialData
+> "You must have a **Verified** X (Twitter) account and be following **@askrei_** to continue."
 
-We already have a Twitter OAuth 2.0 user-context token in `supabase/functions/twitter-oauth/index.ts` after `exchangeToken`. Twitter's own v2 API can answer "does user X follow @askrei_" for free under that token — no SocialData call needed.
+## 2. Two-step checklist UI
 
-### Approach (cheapest path)
+Add local state in `Rei.tsx`:
 
-1. **Add OAuth scope `follows.read`** to the auth URL in `twitter-oauth/index.ts` (`getAuthUrl` action). Existing users will re-consent on next login.
-2. **Resolve @askrei_'s user id once** and cache it as a Supabase function secret `ASKREI_X_USER_ID` (set manually after one-time lookup, or lazily fetched + memoized in module scope on cold start). This avoids a `users/by/username` call on every login.
-3. **After `exchangeToken` succeeds**, before returning the user payload, call:
-   `GET https://api.twitter.com/2/users/:source_id/following?user.fields=id&max_results=1000`
-   with the user's bearer token, paginating with `pagination_token` until `askrei_`'s id is found or list ends.
-   - For most users this is 1 request. Worst case (follows >1000), 2-3 requests.
-   - Rate limit: 15 req / 15 min per user — well within budget for a login flow.
-4. If not following → return `{ error: 'must_follow_askrei' }` with HTTP 403; frontend shows toast + keeps the user signed-out.
-5. **Cache the positive result** in the existing `twitter_whitelist`-adjacent storage: add a small table `x_follow_checks (x_user_id pk, follows_askrei bool, checked_at timestamptz)` with a 7-day TTL. On subsequent logins within 7 days we skip the API call entirely. This is the key resource-saver.
-
-### Frontend changes (`src/pages/Rei.tsx`)
-
-In `handleTwitterCallback`, handle the new error case:
 ```ts
-if (data?.error === 'must_follow_askrei') {
-  toast({ title: 'Follow @askrei_ to continue',
-          description: 'You must follow @askrei_ on X before signing in.',
-          variant: 'destructive' });
-  return;
-}
+type CheckState = 'idle' | 'pending' | 'ok' | 'fail';
+const [verifiedCheck, setVerifiedCheck] = useState<CheckState>('idle');
+const [followCheck, setFollowCheck]     = useState<CheckState>('idle');
 ```
 
-Also update the Sign Up paragraph copy under the button to state the conditions:
-> "By signing up you confirm you are following **@askrei_** on X and agree to our terms."
+Render under the button whenever `isProcessingCallback` is true OR either check is non-idle:
 
----
+```
+[ ] Checking for Verified Twitter   ← spinner while pending, ✓ green / ✕ red after
+[ ] Checking Follows @askrei_
+```
 
-## 3. Files touched
+Use `Loader2` (animate-spin) for pending, `Check` (green) for ok, `X` (red) for fail — all from `lucide-react`. Style with existing `rei-chip` look.
 
-- `src/assets/x-verified-badge.svg` (new — copied from upload)
-- `src/pages/Rei.tsx` (badge in buttons, error toast, signup conditions copy)
-- `supabase/functions/twitter-oauth/index.ts` (add `follows.read` scope, follow-check after token exchange, cache lookup)
-- New migration: `x_follow_checks` table with RLS (service role only).
+State transitions inside `handleTwitterCallback`:
 
----
+1. Before invoking the function: `setVerifiedCheck('pending'); setFollowCheck('pending')`.
+2. On response, inspect new structured payload from edge function:
+   - `verified: boolean`
+   - `follows_askrei: boolean`
+3. Map to UI:
+   - verified true → `ok`, else `fail` and stop (toast: "Your X account must be Verified.")
+   - follows true → `ok`, else `fail` (toast: "You must follow @askrei_ on X.")
+4. On success, both `ok` for ~600ms, then continue to step 2 of registration.
+5. On any failure, leave the row visible so the user understands which check failed; reset on next button click.
 
-## 4. Resource cost summary
+## 3. Edge-function response shape (`supabase/functions/twitter-oauth/index.ts`)
 
-- **SocialData**: 0 calls — not used.
-- **Twitter API**: 1 extra call per login, skipped entirely for 7 days after a positive check.
-- **DB**: one tiny cache table.
+The function already fetches `verified` and runs `checkFollowsAskrei`. Change the flow so it always returns both flags (instead of short-circuiting with HTTP 403 on follow failure), so the UI can render ordered failures cleanly:
 
-No background jobs, no polling.
+```ts
+const isVerifiedAccount = userData.data.verified === true
+                       || (userData.data as any).verified_type
+                          && (userData.data as any).verified_type !== 'none';
+
+let followsAskrei = false;
+if (isVerifiedAccount && !skipWhitelistCheck) {
+  followsAskrei = await checkFollowsAskrei(...);
+}
+
+return new Response(JSON.stringify({
+  user: {...},                       // only used by frontend if both checks pass
+  verified_account: isVerifiedAccount,
+  follows_askrei: followsAskrei || skipWhitelistCheck,
+  bluechip_verified: isVerified,
+}), { status: 200, headers: ... });
+```
+
+Frontend treats the login as successful only when `verified_account && follows_askrei`. This keeps the existing 7-day cache (`x_follow_checks`) and SocialData-free model intact, and skips the follow API call entirely if the user isn't verified — which actually saves resources.
+
+## 4. Files touched
+
+- `src/pages/Rei.tsx` — button copy/badge position, two-row checklist UI, updated `handleTwitterCallback` logic.
+- `supabase/functions/twitter-oauth/index.ts` — return both flags instead of 403 on follow failure; gate follow API call on `verified_account`.
+
+## 5. Resource impact
+
+- Verified check: zero new API calls (already in `users/me` response).
+- Follow check: now skipped entirely for unverified accounts → fewer Twitter API calls than today.
+- Cache TTL: unchanged (7 days).
