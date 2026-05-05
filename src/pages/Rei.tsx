@@ -33,6 +33,9 @@ export default function Rei() {
   const [twitterUser, setTwitterUser] = useState<TwitterUser | null>(null);
   const [verificationStatus, setVerificationStatus] = useState<VerificationStatus | null>(null);
   const [isProcessingCallback, setIsProcessingCallback] = useState(false);
+  type CheckState = 'idle' | 'pending' | 'ok' | 'fail';
+  const [verifiedCheck, setVerifiedCheck] = useState<CheckState>('idle');
+  const [followCheck, setFollowCheck] = useState<CheckState>('idle');
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [authMode, setAuthMode] = useState<'signin' | 'signup' | null>(null);
