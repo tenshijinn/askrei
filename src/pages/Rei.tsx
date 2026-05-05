@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import type { Session, User } from '@supabase/supabase-js';
 import reiLogo from '@/assets/rei-logo-new.png';
 import reiSplit from '@/assets/rei-split.png';
+import xVerifiedBadge from '@/assets/x-verified-badge.png';
 import { AudioRecorder } from '@/components/AudioRecorder';
 import ReiChatbot from '@/components/ReiChatbot';
 import { PostToRei } from '@/components/PostToRei';
@@ -114,7 +115,15 @@ export default function Rei() {
       const storedVerifier = sessionStorage.getItem('twitter_code_verifier_rei'); sessionStorage.removeItem('twitter_code_verifier_rei');
       const redirectUri = `${window.location.origin}/rei`;
       const { data, error } = await supabase.functions.invoke('twitter-oauth', { body: { action: 'exchangeToken', code, codeVerifier: storedVerifier, redirectUri } });
-      if (error) throw error;
+      if (error || data?.error === 'must_follow_askrei') {
+        const isFollowError = data?.error === 'must_follow_askrei' || (error?.message ?? '').includes('must_follow_askrei');
+        if (isFollowError) {
+          toast({ title: 'Follow @askrei_ to continue', description: 'You must follow @askrei_ on X (Twitter) before signing in.', variant: 'destructive' });
+          setIsProcessingCallback(false);
+          return;
+        }
+        if (error) throw error;
+      }
       const storedMode = sessionStorage.getItem('rei_auth_mode') as 'signin' | 'signup' | null;
       if (storedMode === 'signup' && !data.user.verified) { toast({ title: 'Verified Account Required', description: 'Only verified X (Twitter) accounts with a checkmark can register with Rei.', variant: 'destructive' }); setIsProcessingCallback(false); return; }
       setTwitterUser(data.user);
@@ -308,7 +317,8 @@ export default function Rei() {
                       <div className="space-y-3">
                         <h4 style={{ fontSize: '24px', fontWeight: 300, color: '#f0ede8', letterSpacing: '-0.025em' }}>Sign Up</h4>
                         <p style={{ fontSize: '13px', color: '#5c5a57' }}>Create a new talent profile</p>
-                        <button onClick={() => handleTwitterLogin('signup')} className="btn-manga btn-manga-primary w-full flex items-center justify-center gap-2" style={{ borderRadius: '28px', padding: '11px 22px', cursor: 'pointer' }}><Twitter style={{ width: '16px', height: '16px' }} />Verify with X (Twitter)</button>
+                        <button onClick={() => handleTwitterLogin('signup')} className="btn-manga btn-manga-primary w-full flex items-center justify-center gap-2" style={{ borderRadius: '28px', padding: '11px 22px', cursor: 'pointer' }}><Twitter style={{ width: '16px', height: '16px' }} />Verify with @askrei_<img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} /></button>
+                        <p style={{ fontSize: '11px', color: '#5c5a57', lineHeight: 1.5 }}>By signing up you confirm you are following <strong style={{ color: '#f0ede8' }}>@askrei_</strong> on X and agree to our terms. Only verified X accounts can register.</p>
                       </div>
                       <p className="text-center" style={{ fontSize: '13px', color: '#5c5a57' }}>Already have an account?{' '}<button onClick={() => setShowSignUp(false)} style={{ fontWeight: 500, color: '#f0ede8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign in</button></p>
                       {noAccountFound && <div className="rei-surface-2 flex items-center gap-3" style={{ padding: '14px', borderColor: 'hsla(0,63%,55%,0.3)' }}><AlertCircle className="h-4 w-4" style={{ color: '#ef4444' }} /><span style={{ fontSize: '13px', color: '#ef4444' }}>No existing account found. Please sign up.</span></div>}
@@ -318,7 +328,8 @@ export default function Rei() {
                       <div className="space-y-3">
                         <h4 style={{ fontSize: '24px', fontWeight: 300, color: '#f0ede8', letterSpacing: '-0.025em' }}>Sign In</h4>
                         <p style={{ fontSize: '13px', color: '#5c5a57' }}>Access your existing talent profile</p>
-                        <button onClick={() => handleTwitterLogin('signin')} className="btn-manga btn-manga-outline w-full flex items-center justify-center gap-2" style={{ borderRadius: '28px', padding: '11px 22px', cursor: 'pointer' }}><Twitter style={{ width: '16px', height: '16px' }} />Sign in with X (Twitter)</button>
+                        <button onClick={() => handleTwitterLogin('signin')} className="btn-manga btn-manga-outline w-full flex items-center justify-center gap-2" style={{ borderRadius: '28px', padding: '11px 22px', cursor: 'pointer' }}><Twitter style={{ width: '16px', height: '16px' }} />Sign in with @askrei_<img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} /></button>
+                        <p style={{ fontSize: '11px', color: '#5c5a57', lineHeight: 1.5 }}>You must be following <strong style={{ color: '#f0ede8' }}>@askrei_</strong> on X to sign in.</p>
                       </div>
                       <p className="text-center" style={{ fontSize: '13px', color: '#5c5a57' }}>Don't have an account?{' '}<button onClick={() => setShowSignUp(true)} style={{ fontWeight: 500, color: '#f0ede8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign up</button></p>
                       {noAccountFound && <div className="rei-surface-2 flex items-center gap-3" style={{ padding: '14px', borderColor: 'hsla(0,63%,55%,0.3)' }}><AlertCircle className="h-4 w-4" style={{ color: '#ef4444' }} /><span style={{ fontSize: '13px', color: '#ef4444' }}>No existing account found. Please sign up.</span></div>}

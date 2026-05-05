@@ -1016,6 +1016,24 @@ export type Database = {
         }
         Relationships: []
       }
+      x_follow_checks: {
+        Row: {
+          checked_at: string
+          follows_askrei: boolean
+          x_user_id: string
+        }
+        Insert: {
+          checked_at?: string
+          follows_askrei?: boolean
+          x_user_id: string
+        }
+        Update: {
+          checked_at?: string
+          follows_askrei?: boolean
+          x_user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       v_public_jobs: {
