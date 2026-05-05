@@ -115,7 +115,15 @@ export default function Rei() {
       const storedVerifier = sessionStorage.getItem('twitter_code_verifier_rei'); sessionStorage.removeItem('twitter_code_verifier_rei');
       const redirectUri = `${window.location.origin}/rei`;
       const { data, error } = await supabase.functions.invoke('twitter-oauth', { body: { action: 'exchangeToken', code, codeVerifier: storedVerifier, redirectUri } });
-      if (error) throw error;
+      if (error || data?.error === 'must_follow_askrei') {
+        const isFollowError = data?.error === 'must_follow_askrei' || (error?.message ?? '').includes('must_follow_askrei');
+        if (isFollowError) {
+          toast({ title: 'Follow @askrei_ to continue', description: 'You must follow @askrei_ on X (Twitter) before signing in.', variant: 'destructive' });
+          setIsProcessingCallback(false);
+          return;
+        }
+        if (error) throw error;
+      }
       const storedMode = sessionStorage.getItem('rei_auth_mode') as 'signin' | 'signup' | null;
       if (storedMode === 'signup' && !data.user.verified) { toast({ title: 'Verified Account Required', description: 'Only verified X (Twitter) accounts with a checkmark can register with Rei.', variant: 'destructive' }); setIsProcessingCallback(false); return; }
       setTwitterUser(data.user);
