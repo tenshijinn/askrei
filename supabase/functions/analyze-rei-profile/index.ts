@@ -315,7 +315,16 @@ Please analyze this contributor's profile based on their video introduction${wal
         const analysisText = assistantMessage.content;
         
         try {
-          finalAnalysis = JSON.parse(analysisText);
+          const cleaned = (analysisText || '')
+            .replace(/^\s*```(?:json)?\s*/i, '')
+            .replace(/\s*```\s*$/i, '')
+            .trim();
+          let toParse = cleaned;
+          if (!toParse.startsWith('{')) {
+            const m = cleaned.match(/\{[\s\S]*\}/);
+            if (m) toParse = m[0];
+          }
+          finalAnalysis = JSON.parse(toParse);
         } catch (parseError) {
           console.error('Failed to parse AI response as JSON:', analysisText);
           throw new Error('AI returned invalid JSON response');
