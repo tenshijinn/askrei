@@ -351,7 +351,7 @@ export default function Rei() {
                     <div className="space-y-6">
                       <div className="space-y-3">
                         <h4 style={{ fontSize: '24px', fontWeight: 300, color: '#f0ede8', letterSpacing: '-0.025em' }}>Sign In</h4>
-                        <p style={{ fontSize: '13px', color: '#5c5a57' }}>Access your existing talent profile</p>
+                        <p style={{ fontSize: '13px', color: '#5c5a57' }}>Access your existing profile on Rei</p>
                         <button onClick={() => handleTwitterLogin('signin')} disabled={isProcessingCallback} className="btn-manga btn-manga-outline w-full flex items-center justify-center gap-1.5" style={{ borderRadius: '28px', padding: '11px 22px', cursor: isProcessingCallback ? 'wait' : 'pointer' }}><Twitter style={{ width: '16px', height: '16px' }} /><span>Sign in with</span><img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} /><span>Twitter</span></button>
                         <FollowChecklist verified={verifiedCheck} follow={followCheck} />
                         <p style={{ fontSize: '11px', color: '#5c5a57', lineHeight: 1.5 }}>You must have a <strong style={{ color: '#f0ede8' }}>Verified</strong> X (Twitter) account and be following <strong style={{ color: '#f0ede8' }}>@askrei_</strong> to continue.</p>
