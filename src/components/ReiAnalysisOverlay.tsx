@@ -16,6 +16,7 @@ interface Props {
   uploadPercent?: number;
   errorMessage?: string | null;
   onClose?: () => void;
+  onRetry?: () => void;
 }
 
 const STAGES: { key: Exclude<AnalysisStage, null | 'done' | 'error'>; label: string; icon: any }[] = [
@@ -32,7 +33,7 @@ const THINKING_LINES: Record<string, string[]> = {
   categorizing: ['mapping to 14 skill clusters…', 'tagging role affinities…', 'finalizing profile vector…'],
 };
 
-export const ReiAnalysisOverlay: React.FC<Props> = ({ stage, uploadPercent = 0, errorMessage, onClose }) => {
+export const ReiAnalysisOverlay: React.FC<Props> = ({ stage, uploadPercent = 0, errorMessage, onClose, onRetry }) => {
   const [thinkingIdx, setThinkingIdx] = useState(0);
 
   useEffect(() => {
@@ -115,7 +116,12 @@ export const ReiAnalysisOverlay: React.FC<Props> = ({ stage, uploadPercent = 0, 
             >
               <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" style={{ color: '#ef4444' }} />
               <div style={{ fontSize: '12px', color: '#fca5a5', lineHeight: 1.5 }}>
-                {errorMessage || 'Failed to submit registration. Please try again.'}
+                Account update was unsuccessful. Press Retry to try again.
+                {errorMessage && (
+                  <div style={{ fontSize: '10px', color: '#fca5a5', opacity: 0.7, marginTop: '6px', fontFamily: "'SF Mono', Consolas, monospace" }}>
+                    {errorMessage}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -210,23 +216,42 @@ export const ReiAnalysisOverlay: React.FC<Props> = ({ stage, uploadPercent = 0, 
             <div style={{ fontSize: '10px', color: '#5c5a57', fontFamily: "'SF Mono', Consolas, monospace", letterSpacing: '0.04em' }}>
               {isError ? 'ERROR' : isDone ? 'COMPLETE' : 'PROCESSING'} · {Math.round(overallPercent)}%
             </div>
-            {(isError || isDone) && onClose && (
-              <button
-                onClick={onClose}
-                style={{
-                  fontSize: '11px',
-                  color: '#f0ede8',
-                  background: 'hsla(0,0%,100%,0.06)',
-                  border: '0.5px solid hsla(0,0%,100%,0.1)',
-                  padding: '6px 14px',
-                  borderRadius: '20px',
-                  cursor: 'pointer',
-                  fontFamily: "'SF Mono', Consolas, monospace",
-                }}
-              >
-                {isError ? 'Close' : 'Continue'}
-              </button>
-            )}
+            <div className="flex items-center gap-2">
+              {isError && onRetry && (
+                <button
+                  onClick={onRetry}
+                  style={{
+                    fontSize: '11px',
+                    color: '#0a0a0a',
+                    background: '#ed565a',
+                    border: '0.5px solid #ed565a',
+                    padding: '6px 14px',
+                    borderRadius: '20px',
+                    cursor: 'pointer',
+                    fontFamily: "'SF Mono', Consolas, monospace",
+                  }}
+                >
+                  Re-Try
+                </button>
+              )}
+              {(isError || isDone) && onClose && (
+                <button
+                  onClick={onClose}
+                  style={{
+                    fontSize: '11px',
+                    color: '#f0ede8',
+                    background: 'hsla(0,0%,100%,0.06)',
+                    border: '0.5px solid hsla(0,0%,100%,0.1)',
+                    padding: '6px 14px',
+                    borderRadius: '20px',
+                    cursor: 'pointer',
+                    fontFamily: "'SF Mono', Consolas, monospace",
+                  }}
+                >
+                  {isError ? 'Close' : 'Continue'}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
