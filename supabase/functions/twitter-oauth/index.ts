@@ -207,34 +207,14 @@ function base64URLEncode(buffer: Uint8Array): string {
 }
 
 // Cache @askrei_'s X user id across warm invocations
-let cachedAskreiId: string | null = Deno.env.get('ASKREI_X_USER_ID') || null;
-const ASKREI_HANDLE = 'askrei_';
+// @askrei_ X user id (resolved once via SocialData; hardcoded to avoid extra calls)
+const ASKREI_X_USER_ID = Deno.env.get('ASKREI_X_USER_ID') || '1796358502933200896';
 const FOLLOW_CACHE_DAYS = 7;
-
-async function getAskreiUserId(appBearerToken: string): Promise<string | null> {
-  if (cachedAskreiId) return cachedAskreiId;
-  try {
-    const res = await fetch(
-      `https://api.twitter.com/2/users/by/username/${ASKREI_HANDLE}`,
-      { headers: { Authorization: `Bearer ${appBearerToken}` } },
-    );
-    if (!res.ok) {
-      console.error('Failed to resolve askrei_ id:', await res.text());
-      return null;
-    }
-    const json = await res.json();
-    cachedAskreiId = json?.data?.id ?? null;
-    return cachedAskreiId;
-  } catch (e) {
-    console.error('askrei_ lookup error:', e);
-    return null;
-  }
-}
 
 async function checkFollowsAskrei(
   supabase: ReturnType<typeof import('https://esm.sh/@supabase/supabase-js@2.75.1').createClient>,
   sourceUserId: string,
-  userAccessToken: string,
+  _userAccessToken: string,
 ): Promise<boolean> {
   // 1. Check cache
   try {
@@ -254,50 +234,50 @@ async function checkFollowsAskrei(
     console.error('Follow cache read error:', e);
   }
 
-  // 2. Resolve askrei_ id (use user token as bearer — works for /users/by/username)
-  const askreiId = await getAskreiUserId(userAccessToken);
-  if (!askreiId) {
-    console.error('Could not resolve @askrei_ id; failing open=false');
+  // 2. Ask SocialData (single call, no pagination)
+  const apiKey = Deno.env.get('SOCIALDATA_API_KEY');
+  if (!apiKey) {
+    console.error('SOCIALDATA_API_KEY missing — cannot verify follow');
     return false;
   }
 
-  // 3. Page through /following looking for askrei_
-  let nextToken: string | undefined;
-  let found = false;
-  let pages = 0;
-  do {
-    const url = new URL(`https://api.twitter.com/2/users/${sourceUserId}/following`);
-    url.searchParams.set('max_results', '1000');
-    if (nextToken) url.searchParams.set('pagination_token', nextToken);
-    const res = await fetch(url.toString(), {
-      headers: { Authorization: `Bearer ${userAccessToken}` },
-    });
+  try {
+    const res = await fetch(
+      `https://api.socialdata.tools/twitter/user/${sourceUserId}/following/${ASKREI_X_USER_ID}`,
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          Accept: 'application/json',
+        },
+      },
+    );
+
     if (!res.ok) {
-      console.error('following lookup failed:', res.status, await res.text());
+      const body = await res.text();
+      console.error('SocialData follow check failed:', res.status, body);
       return false;
     }
-    const json = await res.json();
-    const list: Array<{ id: string }> = json?.data ?? [];
-    if (list.some((u) => u.id === askreiId)) {
-      found = true;
-      break;
-    }
-    nextToken = json?.meta?.next_token;
-    pages++;
-  } while (nextToken && pages < 5);
 
-  // 4. Cache positive result
-  if (found) {
-    try {
-      await supabase.from('x_follow_checks').upsert({
-        x_user_id: sourceUserId,
-        follows_askrei: true,
-        checked_at: new Date().toISOString(),
-      });
-    } catch (e) {
-      console.error('Follow cache write error:', e);
+    const json = await res.json();
+    const isFollowing = json?.is_following === true;
+    console.log('SocialData follow check:', sourceUserId, '→ askrei_:', isFollowing);
+
+    if (isFollowing) {
+      try {
+        await supabase.from('x_follow_checks').upsert({
+          x_user_id: sourceUserId,
+          follows_askrei: true,
+          checked_at: new Date().toISOString(),
+        });
+      } catch (e) {
+        console.error('Follow cache write error:', e);
+      }
     }
+
+    return isFollowing;
+  } catch (e) {
+    console.error('SocialData follow check error:', e);
+    return false;
   }
-  return found;
 }
 
