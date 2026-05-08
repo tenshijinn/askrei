@@ -113,25 +113,10 @@ Deno.serve(async (req) => {
         profileImageUrl = profileImageUrl.replace('_normal', '_400x400');
       }
 
-      // Verified-account check (uses user.fields.verified from /users/me — no extra API call)
-      const isVerifiedAccount = userData.data.verified === true;
-
-      // Follow-gate: must follow @askrei_ on X (skipped for admin or if not verified — saves a call)
-      let followsAskrei = false;
-      if (skipWhitelistCheck) {
-        followsAskrei = true;
-      } else if (isVerifiedAccount) {
-        followsAskrei = await checkFollowsAskrei(
-          supabase,
-          userData.data.id,
-          tokenData.access_token,
-        );
-      }
-
-      // Check if user is on the whitelist (case-insensitive) - skip for admin login
+      // Check whitelist first — "team" tier bypasses verified+follow gates
       let isVerified = false;
-      let whitelistEntry = null;
-      
+      let whitelistEntry: any = null;
+
       if (!skipWhitelistCheck) {
         const { data: whitelistData, error: whitelistError } = await supabase
           .from('twitter_whitelist')
@@ -148,7 +133,24 @@ Deno.serve(async (req) => {
         console.log('Whitelist verification:', isVerified ? 'VERIFIED' : 'NOT VERIFIED');
       } else {
         console.log('Skipping whitelist check (admin login)');
-        isVerified = true; // Admin bypasses whitelist
+        isVerified = true;
+      }
+
+      const isTeamBypass = whitelistEntry?.verification_type === 'team';
+
+      // Verified-account check (bypassed for team tier and admin)
+      const isVerifiedAccount = skipWhitelistCheck || isTeamBypass || userData.data.verified === true;
+
+      // Follow-gate: must follow @askrei_ on X (bypassed for team tier and admin)
+      let followsAskrei = false;
+      if (skipWhitelistCheck || isTeamBypass) {
+        followsAskrei = true;
+      } else if (isVerifiedAccount) {
+        followsAskrei = await checkFollowsAskrei(
+          supabase,
+          userData.data.id,
+          tokenData.access_token,
+        );
       }
 
 

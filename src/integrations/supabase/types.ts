@@ -1180,6 +1180,7 @@ export type Database = {
         | "thought_leader"
         | "web3_founder"
         | "manual"
+        | "team"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1322,6 +1323,7 @@ export const Constants = {
         "thought_leader",
         "web3_founder",
         "manual",
+        "team",
       ],
     },
   },
