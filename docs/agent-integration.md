@@ -41,6 +41,7 @@ Keys can be revoked any time from the buyer dashboard — no redeploy needed.
 | GET | `/skill-categories` | Full taxonomy |
 | GET | `/feed` | Combined tasks + jobs, newest first (best for polling) |
 | GET | `/health` | Self-describing healthcheck |
+| GET | `/registered` | **Internal only** — check if an X user has a rei.chat account (requires an internal `REI_AGENT_API_KEYS` key, not a paid `rei_live_…` key) |
 
 ### Common list query params
 
