@@ -34,7 +34,7 @@ async function sha256Hex(input: string): Promise<string> {
 // In-memory token bucket per key id (resets on cold start; good enough for soft limits).
 const buckets = new Map<string, { count: number; minute: number }>();
 
-interface KeyContext { id: string | null; rate: number }
+interface KeyContext { id: string | null; rate: number; internal: boolean }
 
 async function checkApiKey(req: Request): Promise<{ ok: true; ctx: KeyContext } | { ok: false; res: Response }> {
   const provided = (req.headers.get("x-api-key") ?? "").trim();
