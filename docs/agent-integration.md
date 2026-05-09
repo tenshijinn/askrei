@@ -98,6 +98,13 @@ curl -s "https://.../public-feed/jobs?q=rust&limit=20" \
 # Combined incremental feed since last sync
 curl -s "https://.../public-feed/feed?since=2026-04-29T00:00:00Z&limit=50" \
   -H "apikey: $ANON" -H "Authorization: Bearer $ANON"
+
+# Internal: check if an X user is registered on rei.chat (Rei agent only)
+curl -s "https://.../public-feed/registered?x_user_id=1234567890" \
+  -H "apikey: $ANON" -H "Authorization: Bearer $ANON" \
+  -H "x-api-key: $REI_INTERNAL_KEY"
+# → { "registered": true, "handle": "...", "display_name": "...", "verified": true, "has_profile_analysis": true, "registered_at": "..." }
+# → { "registered": false } if not found
 ```
 
 ## Security model
