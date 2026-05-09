@@ -41,6 +41,7 @@ Keys can be revoked any time from the buyer dashboard — no redeploy needed.
 | GET | `/skill-categories` | Full taxonomy |
 | GET | `/feed` | Combined tasks + jobs, newest first (best for polling) |
 | GET | `/health` | Self-describing healthcheck |
+| GET | `/registered` | **Internal only** — check if an X user has a rei.chat account (requires an internal `REI_AGENT_API_KEYS` key, not a paid `rei_live_…` key) |
 
 ### Common list query params
 
@@ -97,6 +98,13 @@ curl -s "https://.../public-feed/jobs?q=rust&limit=20" \
 # Combined incremental feed since last sync
 curl -s "https://.../public-feed/feed?since=2026-04-29T00:00:00Z&limit=50" \
   -H "apikey: $ANON" -H "Authorization: Bearer $ANON"
+
+# Internal: check if an X user is registered on rei.chat (Rei agent only)
+curl -s "https://.../public-feed/registered?x_user_id=1234567890" \
+  -H "apikey: $ANON" -H "Authorization: Bearer $ANON" \
+  -H "x-api-key: $REI_INTERNAL_KEY"
+# → { "registered": true, "handle": "...", "display_name": "...", "verified": true, "has_profile_analysis": true, "registered_at": "..." }
+# → { "registered": false } if not found
 ```
 
 ## Security model

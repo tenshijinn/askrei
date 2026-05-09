@@ -34,7 +34,7 @@ async function sha256Hex(input: string): Promise<string> {
 // In-memory token bucket per key id (resets on cold start; good enough for soft limits).
 const buckets = new Map<string, { count: number; minute: number }>();
 
-interface KeyContext { id: string | null; rate: number }
+interface KeyContext { id: string | null; rate: number; internal: boolean }
 
 async function checkApiKey(req: Request): Promise<{ ok: true; ctx: KeyContext } | { ok: false; res: Response }> {
   const provided = (req.headers.get("x-api-key") ?? "").trim();
@@ -44,7 +44,7 @@ async function checkApiKey(req: Request): Promise<{ ok: true; ctx: KeyContext } 
   const allowed = (Deno.env.get("REI_AGENT_API_KEYS") ?? "").trim();
   if (allowed) {
     const envKeys = allowed.split(",").map((k) => k.trim()).filter(Boolean);
-    if (envKeys.includes(provided)) return { ok: true, ctx: { id: null, rate: 1000 } };
+    if (envKeys.includes(provided)) return { ok: true, ctx: { id: null, rate: 1000, internal: true } };
   }
 
   // 2) DB-backed agent keys (sold via /agents)
@@ -71,7 +71,7 @@ async function checkApiKey(req: Request): Promise<{ ok: true; ctx: KeyContext } 
       return { ok: false, res: json({ error: "Rate limit exceeded" }, 429) };
     }
   }
-  return { ok: true, ctx: { id: data.id, rate: data.rate_limit_per_min } };
+  return { ok: true, ctx: { id: data.id, rate: data.rate_limit_per_min, internal: false } };
 }
 
 // Fire-and-forget usage logging
@@ -221,6 +221,36 @@ serve(async (req) => {
           .slice(0, limit);
         const next = merged.length === limit ? merged[merged.length - 1].created_at : null;
         res = json({ data: merged, count: merged.length, next_cursor: next, limit });
+        break;
+      }
+
+      case "registered": {
+        // Internal-only: gated to REI_AGENT_API_KEYS holders (Rei agent).
+        if (!ctx.internal) { res = json({ error: "Not found" }, 404); break; }
+        const xUserId = (url.searchParams.get("x_user_id") ?? "").trim().slice(0, 64);
+        const handle = (url.searchParams.get("handle") ?? "").trim().replace(/^@/, "").slice(0, 64);
+        if (!xUserId && !handle) {
+          res = json({ error: "Provide x_user_id or handle" }, 400);
+          break;
+        }
+        let q = supabase
+          .from("rei_registry")
+          .select("x_user_id, handle, display_name, verified, profile_analysis, created_at")
+          .limit(1);
+        if (xUserId) q = q.eq("x_user_id", xUserId);
+        else q = q.ilike("handle", handle);
+        const { data, error } = await q.maybeSingle();
+        if (error) { res = json({ error: error.message }, 500); break; }
+        if (!data) { res = json({ registered: false }); break; }
+        res = json({
+          registered: true,
+          x_user_id: data.x_user_id,
+          handle: data.handle,
+          display_name: data.display_name,
+          verified: !!data.verified,
+          has_profile_analysis: !!data.profile_analysis,
+          registered_at: data.created_at,
+        });
         break;
       }
 
