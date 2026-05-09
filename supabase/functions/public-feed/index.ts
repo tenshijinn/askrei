@@ -44,7 +44,7 @@ async function checkApiKey(req: Request): Promise<{ ok: true; ctx: KeyContext } 
   const allowed = (Deno.env.get("REI_AGENT_API_KEYS") ?? "").trim();
   if (allowed) {
     const envKeys = allowed.split(",").map((k) => k.trim()).filter(Boolean);
-    if (envKeys.includes(provided)) return { ok: true, ctx: { id: null, rate: 1000 } };
+    if (envKeys.includes(provided)) return { ok: true, ctx: { id: null, rate: 1000, internal: true } };
   }
 
   // 2) DB-backed agent keys (sold via /agents)
