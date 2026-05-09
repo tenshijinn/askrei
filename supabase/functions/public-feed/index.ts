@@ -224,6 +224,36 @@ serve(async (req) => {
         break;
       }
 
+      case "registered": {
+        // Internal-only: gated to REI_AGENT_API_KEYS holders (Rei agent).
+        if (!ctx.internal) { res = json({ error: "Not found" }, 404); break; }
+        const xUserId = (url.searchParams.get("x_user_id") ?? "").trim().slice(0, 64);
+        const handle = (url.searchParams.get("handle") ?? "").trim().replace(/^@/, "").slice(0, 64);
+        if (!xUserId && !handle) {
+          res = json({ error: "Provide x_user_id or handle" }, 400);
+          break;
+        }
+        let q = supabase
+          .from("rei_registry")
+          .select("x_user_id, handle, display_name, verified, profile_analysis, created_at")
+          .limit(1);
+        if (xUserId) q = q.eq("x_user_id", xUserId);
+        else q = q.ilike("handle", handle);
+        const { data, error } = await q.maybeSingle();
+        if (error) { res = json({ error: error.message }, 500); break; }
+        if (!data) { res = json({ registered: false }); break; }
+        res = json({
+          registered: true,
+          x_user_id: data.x_user_id,
+          handle: data.handle,
+          display_name: data.display_name,
+          verified: !!data.verified,
+          has_profile_analysis: !!data.profile_analysis,
+          registered_at: data.created_at,
+        });
+        break;
+      }
+
       default:
         res = json({ error: "Unknown endpoint", path: "/" + segs.join("/") }, 404);
     }
