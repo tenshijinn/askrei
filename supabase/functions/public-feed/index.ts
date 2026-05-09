@@ -71,7 +71,7 @@ async function checkApiKey(req: Request): Promise<{ ok: true; ctx: KeyContext } 
       return { ok: false, res: json({ error: "Rate limit exceeded" }, 429) };
     }
   }
-  return { ok: true, ctx: { id: data.id, rate: data.rate_limit_per_min } };
+  return { ok: true, ctx: { id: data.id, rate: data.rate_limit_per_min, internal: false } };
 }
 
 // Fire-and-forget usage logging
