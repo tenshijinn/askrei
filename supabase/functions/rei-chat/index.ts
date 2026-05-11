@@ -824,7 +824,13 @@ Be warm and human. Match user energy. Celebrate successes.`;
           model: 'google/gemini-2.5-flash',
           messages: aiMessages,
           tools: filteredTools.length > 0 ? filteredTools : undefined,
-          tool_choice: filteredTools.length > 0 ? 'auto' : undefined
+          // Force the model to call the tool on iteration 1 when intent narrowed to a single tool.
+          // This prevents hallucinated UUIDs when the model decides to skip search_tasks.
+          tool_choice: filteredTools.length > 0
+            ? (iteration === 1 && filteredTools.length === 1
+                ? { type: 'function', function: { name: filteredTools[0].function.name } }
+                : 'auto')
+            : undefined
         })
       });
 
