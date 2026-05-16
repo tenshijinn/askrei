@@ -111,18 +111,11 @@ export const HomeChatDemo = () => {
           </Frame>
 
           <Frame
-            title="Get paid on-chain."
+            title="Find Highest Paying Bounties"
             speed={0}
             delay={300}
-            extra={
-              <SinglePill>
-                <SimplePill label="SOL" />
-                <SimplePill label="Points & Rewards" />
-                <SimplePill label="NFT Drops" />
-              </SinglePill>
-            }
           >
-            Settle bounties directly to your wallet, stack points passively, and unlock NFT rewards as you contribute.
+            Time is money, so stop doing bounties for worthless rewards. Rei filters for highest paying rewards automatically.
           </Frame>
         </div>
 
