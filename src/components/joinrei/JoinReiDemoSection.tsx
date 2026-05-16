@@ -469,11 +469,17 @@ export const JoinReiDemoSection = () => {
       className="min-h-screen snap-start relative flex items-center justify-center overflow-hidden bg-[#0a0a0a] py-20"
     >
       <div className="container mx-auto px-8 lg:px-16">
+        <ScrollFadeIn>
+          <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary text-center mb-16">
+            How to Use
+          </h2>
+        </ScrollFadeIn>
+
         <div className="grid md:grid-cols-3 gap-16 lg:gap-20 max-w-6xl mx-auto">
           <ScrollFadeIn delay={0}>
             <div className="flex flex-col items-center text-center">
-              <h3 className="text-sm md:text-base lg:text-lg font-light text-primary mb-4 tracking-wide whitespace-nowrap">
-                PROOF OF HUMANITY/TALENT
+              <h3 className="text-xl font-light text-cream font-mono mb-4">
+                Signup
               </h3>
               <OnboardingMockup active={isActive} reduced={reduced} />
             </div>
@@ -481,8 +487,8 @@ export const JoinReiDemoSection = () => {
 
           <ScrollFadeIn delay={150}>
             <div className="flex flex-col items-center text-center">
-              <h3 className="text-sm md:text-base lg:text-lg font-light text-primary mb-4 tracking-wide whitespace-nowrap">
-                FIND TASKS MATCHED TO SKILLS
+              <h3 className="text-xl font-light text-cream font-mono mb-4">
+                Find Tasks
               </h3>
               <ChatMockup active={isActive} reduced={reduced} />
             </div>
@@ -490,8 +496,8 @@ export const JoinReiDemoSection = () => {
 
           <ScrollFadeIn delay={300}>
             <div className="flex flex-col items-center text-center">
-              <h3 className="text-sm md:text-base lg:text-lg font-light text-primary mb-4 tracking-wide whitespace-nowrap">
-                POST TASKS | CHATBOT OR X
+              <h3 className="text-xl font-light text-cream font-mono mb-4">
+                Promote Bounty
               </h3>
               <PostTaskMockup active={isActive} reduced={reduced} />
             </div>
