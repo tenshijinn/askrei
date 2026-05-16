@@ -10,14 +10,14 @@ const VerifiedLoginPill = () => (
   </div>
 );
 
-const TopRewardsPill = () => (
+const MatchesSkillsPill = () => (
   <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#181818] border border-primary/20">
     <svg className="h-4 w-4 text-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <rect x="3" y="3" width="18" height="18" rx="2" />
       <path d="M9 12l2 2 4-4" />
       <line x1="3" y1="9" x2="21" y2="9" />
     </svg>
-    <span className="text-xs text-cream/80 font-mono">Highest Paying</span>
+    <span className="text-xs text-cream/80 font-mono">Matched to You</span>
   </div>
 );
 
@@ -92,12 +92,12 @@ export const HomeChatDemo = () => {
           </Frame>
 
           <Frame
-            title="Find Highest Paying Bounties"
+            title="Tasks that fit your skills."
             speed={0}
             delay={100}
-            extra={<SinglePill><TopRewardsPill /></SinglePill>}
+            extra={<SinglePill><MatchesSkillsPill /></SinglePill>}
           >
-            Time is money, so stop doing bounties for worthless rewards. Rei filters for highest paying rewards automatically.
+            SkillSync surfaces bounties matched to your wallet history and on-chain track record — not random noise.
           </Frame>
 
           <Frame
