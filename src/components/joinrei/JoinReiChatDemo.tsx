@@ -36,6 +36,27 @@ const SimplePill = ({ label }: { label: string }) => (
   </div>
 );
 
+const XPill = () => (
+  <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#181818] border border-primary/20">
+    <svg className="h-4 w-4 text-cream" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+    <span className="text-xs text-cream/80 font-mono">@AskRei_</span>
+  </div>
+);
+
+const GrokPill = () => (
+  <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#181818] border border-primary/20">
+    <span className="text-xs text-cream/80 font-mono">Powered by Grok</span>
+  </div>
+);
+
+const HermesPill = () => (
+  <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#181818] border border-primary/20">
+    <span className="text-xs text-cream/80 font-mono">Powered by Hermes</span>
+  </div>
+);
+
 const SinglePill = ({ children }: { children: React.ReactNode }) => (
   <div className="flex items-center gap-3 flex-wrap pt-4">{children}</div>
 );
@@ -94,7 +115,12 @@ export const JoinReiChatDemo = () => {
             title="SkillSync Auto Matches Users"
             speed={0}
             delay={100}
-            extra={<SinglePill><MatchesSkillsPill /></SinglePill>}
+            extra={
+              <SinglePill>
+                <MatchesSkillsPill />
+                <SimplePill label="Web3 Growth Engine" />
+              </SinglePill>
+            }
           >
             AI matches the right tasks to the right people before they ever apply.
           </Frame>
@@ -110,12 +136,18 @@ export const JoinReiChatDemo = () => {
           </Frame>
 
           <Frame
-            title="Better Filters, Better Users"
+            title="Bounties Promo by AI Agent"
             speed={0}
             delay={300}
-            extra={<SinglePill><SimplePill label="Web3 Growth Engine" /></SinglePill>}
+            extra={
+              <SinglePill>
+                <XPill />
+                <GrokPill />
+                <HermesPill />
+              </SinglePill>
+            }
           >
-            Higher signal in, higher value out — for projects and talent alike.
+            Rei reads all bounties that goes through rei.chat platform and promotes bounties 24/7.
           </Frame>
         </div>
 
