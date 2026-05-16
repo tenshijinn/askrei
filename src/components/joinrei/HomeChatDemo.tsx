@@ -92,12 +92,12 @@ export const HomeChatDemo = () => {
           </Frame>
 
           <Frame
-            title="Tasks that fit your skills."
+            title="Find Highest Paying Bounties"
             speed={0}
             delay={100}
-            extra={<SinglePill><MatchesSkillsPill /></SinglePill>}
+            extra={<SinglePill><TopRewardsPill /></SinglePill>}
           >
-            SkillSync surfaces bounties matched to your wallet history and on-chain track record — not random noise.
+            Time is money, so stop doing bounties for worthless rewards. Rei filters for highest paying rewards automatically.
           </Frame>
 
           <Frame
