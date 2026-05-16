@@ -1,6 +1,7 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
 import { scrollToLastSection } from './scrollHelpers';
 import shareGraphic from '@/assets/joinrei/share-graphic.png';
+import solanaShare from '@/assets/joinrei/solana-share.png';
 
 export const JoinReiReferral = () => {
   return (
@@ -34,10 +35,8 @@ export const JoinReiReferral = () => {
       </div>
 
       <div className="hidden lg:block absolute right-0 top-0 w-[55%] h-full p-8">
-        <div className="relative w-full h-full rounded-2xl overflow-hidden bg-black border-[0.5px] border-white/10">
-          <video autoPlay loop muted playsInline className="w-full h-full object-cover">
-            <source src="/joinrei/terminal-video.mp4" type="video/mp4" />
-          </video>
+        <div className="relative w-full h-full rounded-2xl overflow-hidden border-[0.5px] border-white/10">
+          <img src={solanaShare} alt="Solana cyberpunk" className="w-full h-full object-cover" />
         </div>
       </div>
 
