@@ -235,13 +235,24 @@ serve(async (req) => {
         }
         let q = supabase
           .from("rei_registry")
-          .select("x_user_id, handle, display_name, verified, profile_analysis, created_at")
+          .select("x_user_id, handle, display_name, verified, profile_analysis, analysis_summary, profile_score, profile_image_url, skills, role_tags, skill_category_ids, created_at")
           .limit(1);
         if (xUserId) q = q.eq("x_user_id", xUserId);
         else q = q.ilike("handle", handle);
         const { data, error } = await q.maybeSingle();
         if (error) { res = json({ error: error.message }, 500); break; }
         if (!data) { res = json({ registered: false }); break; }
+
+        const catIds: string[] = Array.isArray(data.skill_category_ids) ? data.skill_category_ids : [];
+        let topCategories: { id: string; name: string }[] = [];
+        if (catIds.length) {
+          const { data: cats } = await supabase
+            .from("skill_categories")
+            .select("id,name")
+            .in("id", catIds);
+          topCategories = cats ?? [];
+        }
+
         res = json({
           registered: true,
           x_user_id: data.x_user_id,
@@ -250,6 +261,104 @@ serve(async (req) => {
           verified: !!data.verified,
           has_profile_analysis: !!data.profile_analysis,
           registered_at: data.created_at,
+          profile_image_url: data.profile_image_url ?? null,
+          profile_score: data.profile_score ?? null,
+          analysis_summary: data.analysis_summary ?? null,
+          skills: data.skills ?? [],
+          role_tags: data.role_tags ?? [],
+          skill_category_ids: catIds,
+          top_categories: topCategories,
+        });
+        break;
+      }
+
+      case "match": {
+        // Internal-only: gated to REI_AGENT_API_KEYS holders (Rei agent).
+        if (!ctx.internal) { res = json({ error: "Not found" }, 404); break; }
+        const xUserId = (url.searchParams.get("x_user_id") ?? "").trim().slice(0, 64);
+        const handle = (url.searchParams.get("handle") ?? "").trim().replace(/^@/, "").slice(0, 64);
+        const kind = (url.searchParams.get("kind") ?? "all").toLowerCase();
+        const limit = Math.min(Math.max(parseInt(url.searchParams.get("limit") ?? "10", 10) || 10, 1), 25);
+        if (!xUserId && !handle) {
+          res = json({ error: "Provide x_user_id or handle" }, 400);
+          break;
+        }
+
+        let pq = supabase
+          .from("rei_registry")
+          .select("x_user_id, handle, display_name, verified, profile_image_url, profile_score, analysis_summary, skills, role_tags, skill_category_ids")
+          .limit(1);
+        if (xUserId) pq = pq.eq("x_user_id", xUserId);
+        else pq = pq.ilike("handle", handle);
+        const { data: profile, error: pErr } = await pq.maybeSingle();
+        if (pErr) { res = json({ error: pErr.message }, 500); break; }
+        if (!profile) {
+          res = json({ registered: false, cta: "https://rei.chat" });
+          break;
+        }
+
+        const catIds: string[] = Array.isArray(profile.skill_category_ids) ? profile.skill_category_ids : [];
+        const roleTags: string[] = Array.isArray(profile.role_tags) ? profile.role_tags : [];
+
+        let topCategories: { id: string; name: string }[] = [];
+        if (catIds.length) {
+          const { data: cats } = await supabase
+            .from("skill_categories")
+            .select("id,name")
+            .in("id", catIds);
+          topCategories = cats ?? [];
+        }
+
+        const orFilters: string[] = [];
+        if (catIds.length) orFilters.push(`skill_category_ids.ov.{${catIds.join(",")}}`);
+        if (roleTags.length) orFilters.push(`role_tags.ov.{${roleTags.map((t) => `"${t.replace(/"/g, "")}"`).join(",")}}`);
+        const orStr = orFilters.join(",");
+
+        const taskCols = "id,title,compensation,company_name,link,role_tags,skill_category_ids,created_at";
+        const jobCols = "id,title,compensation,company_name,link,apply_url,role_tags,skill_category_ids,created_at";
+
+        const wantTasks = kind === "all" || kind === "task";
+        const wantJobs = kind === "all" || kind === "job";
+
+        const [tasksRes, jobsRes] = await Promise.all([
+          wantTasks
+            ? (orStr
+                ? supabase.from("v_public_tasks").select(taskCols).or(orStr).order("created_at", { ascending: false }).limit(limit)
+                : supabase.from("v_public_tasks").select(taskCols).order("created_at", { ascending: false }).limit(limit))
+            : Promise.resolve({ data: [], error: null } as any),
+          wantJobs
+            ? (orStr
+                ? supabase.from("v_public_jobs").select(jobCols).or(orStr).order("created_at", { ascending: false }).limit(limit)
+                : supabase.from("v_public_jobs").select(jobCols).order("created_at", { ascending: false }).limit(limit))
+            : Promise.resolve({ data: [], error: null } as any),
+        ]);
+        if (tasksRes.error) { res = json({ error: tasksRes.error.message }, 500); break; }
+        if (jobsRes.error) { res = json({ error: jobsRes.error.message }, 500); break; }
+
+        const matches = [
+          ...((tasksRes.data ?? []) as any[]).map((r) => ({ kind: "task", ...r })),
+          ...((jobsRes.data ?? []) as any[]).map((r) => ({ kind: "job", ...r })),
+        ]
+          .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
+          .slice(0, limit);
+
+        res = json({
+          registered: true,
+          profile: {
+            x_user_id: profile.x_user_id,
+            handle: profile.handle,
+            display_name: profile.display_name,
+            verified: !!profile.verified,
+            profile_image_url: profile.profile_image_url ?? null,
+            profile_score: profile.profile_score ?? null,
+            analysis_summary: profile.analysis_summary ?? null,
+            skills: profile.skills ?? [],
+            role_tags: roleTags,
+            skill_category_ids: catIds,
+            top_categories: topCategories,
+          },
+          matches,
+          count: matches.length,
         });
         break;
       }
