@@ -104,8 +104,40 @@ curl -s "https://.../public-feed/feed?since=2026-04-29T00:00:00Z&limit=50" \
 curl -s "https://.../public-feed/registered?x_user_id=1234567890" \
   -H "apikey: $ANON" -H "Authorization: Bearer $ANON" \
   -H "x-api-key: $REI_INTERNAL_KEY"
-# → { "registered": true, "handle": "...", "display_name": "...", "verified": true, "has_profile_analysis": true, "registered_at": "..." }
+# → {
+#     "registered": true,
+#     "x_user_id": "...", "handle": "...", "display_name": "...",
+#     "verified": true, "profile_image_url": "...",
+#     "profile_score": 0.82, "analysis_summary": "Senior Rust dev with...",
+#     "skills": ["rust","solana","anchor"],
+#     "role_tags": ["developer","smart-contracts"],
+#     "skill_category_ids": ["uuid1","uuid2"],
+#     "top_categories": [{"id":"uuid1","name":"Smart Contracts"}],
+#     "has_profile_analysis": true,
+#     "registered_at": "..."
+#   }
 # → { "registered": false } if not found
+
+# Internal: one-shot match — light profile + ranked active opportunities
+curl -s "https://.../public-feed/match?x_user_id=1234567890&limit=10&kind=all" \
+  -H "apikey: $ANON" -H "Authorization: Bearer $ANON" \
+  -H "x-api-key: $REI_INTERNAL_KEY"
+# → {
+#     "registered": true,
+#     "profile": { handle, display_name, skills, role_tags, skill_category_ids, top_categories, profile_score, analysis_summary, profile_image_url, verified },
+#     "matches": [
+#       { "kind":"task", "id":"...", "title":"...", "compensation":"$2,500",
+#         "company_name":"...", "link":"...", "role_tags":[...],
+#         "skill_category_ids":[...], "created_at":"..." }
+#     ],
+#     "count": 7
+#   }
+# → { "registered": false, "cta": "https://rei.chat" } if X user has no rei.chat account
+#
+# Query params for /match:
+#   x_user_id   (or handle)  — required
+#   limit       1–25, default 10
+#   kind        task | job | all (default all)
 ```
 
 ## Security model
