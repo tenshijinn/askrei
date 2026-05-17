@@ -56,25 +56,28 @@ export const HomeHero = () => {
         <img src={reiLogo} alt="Rei AI" className="absolute top-6 left-6 lg:top-8 lg:left-8 h-16 lg:h-20 xl:h-24 w-auto z-20" />
         <div className="pt-24 lg:pt-28 xl:pt-32">
           <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
-            <span>Find Any </span>
+            A Thousand Unicorn Bounties in Your Chat
+          </h1>
+
+          <p className={`mt-4 text-lg md:text-xl text-primary/90 font-light leading-relaxed transition-opacity duration-500 max-w-lg ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
+            Find{' '}
             <span
               className={`inline-block transition-opacity duration-300 ${taskFade ? 'opacity-100' : 'opacity-0'}`}
               style={{ minWidth: '5ch', color: '#ed565a' }}
             >
               {rotatingTaskWords[taskIndex]}
             </span>
-            <br />
-            <span>from </span>
+            {' '}from{' '}
             <span
               className={`inline-block transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}
               style={{ minWidth: '4ch', color: '#ed565a' }}
             >
               {rotatingPlatforms[wordIndex]}
             </span>
-            <span> In One Place.</span>
-          </h1>
+            {' '}with Rei.
+          </p>
 
-          <p className={`mt-6 text-sm md:text-base text-primary/90 font-mono leading-relaxed transition-opacity duration-500 max-w-lg ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
+          <p className={`mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed transition-opacity duration-500 max-w-lg ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
             Rei AI matches crypto <strong className="font-bold text-primary">bounties</strong> to your <strong className="font-bold text-primary">skills</strong>
           </p>
 
