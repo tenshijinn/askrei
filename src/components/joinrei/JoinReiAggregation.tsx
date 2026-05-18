@@ -1,7 +1,7 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
 import { ParallaxWrapper } from './ParallaxWrapper';
 import { scrollToLastSection } from './scrollHelpers';
-import reiFlowDiagram from '@/assets/joinrei/rei-flow.png';
+import reiFlowDiagram from '@/assets/joinrei/rei-aggregation-matching.png';
 
 export const JoinReiAggregation = () => {
   return (
