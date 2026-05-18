@@ -1,5 +1,5 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
-import reiCrossPlatform from '@/assets/joinrei/rei-cross-platform.png';
+import reiCrossPlatform from '@/assets/joinrei/rei-nft.png';
 import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
 
 export const HomeValueProp = () => {

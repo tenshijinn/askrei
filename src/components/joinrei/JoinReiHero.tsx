@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { ChevronDown } from 'lucide-react';
 import reiHero from '@/assets/joinrei/rei-hero.png';
 import reiSpeechBubble from '@/assets/joinrei/rei-speech-bubble.gif';
 import reiLogo from '@/assets/joinrei/rei-logo.png';
@@ -44,12 +43,11 @@ export const JoinReiHero = () => {
     <section className="h-screen snap-start relative flex overflow-hidden bg-[#0a0a0a]">
       <div className="w-full lg:w-[45%] h-full flex flex-col justify-between p-8 lg:p-12 xl:p-16 relative z-10">
         <div className="pt-2">
-          <img src={reiLogo} alt="Rei" className="h-20 md:h-24 lg:h-28 w-auto mb-6" />
           <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
             <span>Many </span>
-            <span 
+            <span
               className={`inline-block transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}
-              style={{ minWidth: '4ch', color: '#ed565a' }}
+              style={{ color: '#ed565a' }}
             >
               {platforms[platformIndex]}
             </span>
@@ -67,22 +65,25 @@ export const JoinReiHero = () => {
 
         <div className={`transition-all duration-500 delay-300 ${headlineComplete ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <div className="flex items-center gap-6 flex-wrap">
-            <button 
-              className="btn-manga btn-manga-outline"
+            <button
+              className="btn-manga"
+              style={{ backgroundColor: '#ed565a', borderColor: '#ed565a', color: '#181818' }}
               onClick={scrollToLastSection}
             >
               Promote Task
             </button>
-            <button 
+            <button
               onClick={scrollToHowItWorks}
-              className="flex items-center gap-2 text-primary/70 hover:text-primary font-mono text-sm underline underline-offset-4 transition-colors cursor-pointer"
+              className="btn-manga btn-manga-outline"
             >
-              <ChevronDown className="h-4 w-4" />
-              <span>How it Works</span>
-              <ChevronDown className="h-4 w-4" />
+              How it Works
             </button>
           </div>
         </div>
+      </div>
+
+      <div className="absolute top-6 right-6 lg:top-8 lg:right-8 z-30 bg-[#0a0a0a] p-2 lg:p-3">
+        <img src={reiLogo} alt="Rei" className="h-16 lg:h-20 xl:h-24 w-auto block" />
       </div>
 
       <div className="hidden lg:block absolute right-0 top-0 w-[55%] h-full">
