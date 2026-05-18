@@ -34,8 +34,25 @@ Deno.serve(async (req) => {
     console.log('Submitting registration for:', registrationData.handle || registrationData.wallet_address);
     console.log('Reanalyze mode:', registrationData.reanalyze);
 
-    // Server-side enforcement: only verified X accounts can register (skip for reanalyze)
-    if (!registrationData.reanalyze && !registrationData.verified) {
+    // Server-side enforcement: only verified X accounts OR whitelisted handles can register
+    // (skip for reanalyze)
+    let isWhitelisted = false;
+    if (registrationData.handle) {
+      const { data: wl, error: wlErr } = await supabase
+        .from('twitter_whitelist')
+        .select('verification_type')
+        .ilike('twitter_handle', registrationData.handle)
+        .maybeSingle();
+      if (wlErr) {
+        console.error('Whitelist lookup error:', wlErr);
+      }
+      isWhitelisted = !!wl;
+      if (isWhitelisted) {
+        console.log('Whitelisted handle:', registrationData.handle, '(', wl?.verification_type, ')');
+      }
+    }
+
+    if (!registrationData.reanalyze && !registrationData.verified && !isWhitelisted) {
       return new Response(
         JSON.stringify({ error: 'Only verified X (Twitter) accounts can register with Rei.' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
