@@ -5,7 +5,7 @@ import reiFlowDiagram from '@/assets/joinrei/rei-aggregation-matching.png';
 
 export const JoinReiAggregation = () => {
   return (
-    <section className="min-h-screen snap-start relative flex items-center justify-center overflow-hidden bg-[#0a0a0a] py-10">
+    <section className="min-h-screen snap-start relative flex items-center justify-center overflow-hidden bg-black py-10">
       <div className="container mx-auto px-8 lg:px-16 flex flex-col h-full justify-center">
         <ScrollFadeIn>
           <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary text-center leading-tight mb-6">

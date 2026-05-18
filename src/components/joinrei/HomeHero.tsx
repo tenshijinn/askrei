@@ -107,7 +107,7 @@ export const HomeHero = () => {
               onClick={scrollToNextSection}
               className="btn-manga btn-manga-outline"
             >
-              Learn More
+              How it Works
             </button>
           </div>
         </div>
