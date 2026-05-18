@@ -52,8 +52,7 @@ export const HomeHero = () => {
   return (
     <section className="h-screen snap-start relative flex overflow-hidden bg-[#0a0a0a]">
       <div className="w-full lg:w-[45%] h-full flex flex-col justify-between p-8 lg:p-12 xl:p-16 relative z-10">
-        <img src={reiLogo} alt="Rei AI" className="absolute top-6 left-6 lg:top-8 lg:left-8 h-16 lg:h-20 xl:h-24 w-auto z-20" />
-        <div className="pt-24 lg:pt-28 xl:pt-32">
+        <div className="pt-2">
           <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
             A Thousand Unicorn Bounties in Your Chat
           </h1>
@@ -61,15 +60,13 @@ export const HomeHero = () => {
           <p className={`mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed transition-opacity duration-500 max-w-lg ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
             Rei AI matches crypto{' '}
             <span
-              className={`inline-block transition-opacity duration-300 font-bold text-primary ${taskFade ? 'opacity-100' : 'opacity-0'}`}
-              style={{ minWidth: '6ch' }}
+              className={`transition-opacity duration-300 font-bold text-primary ${taskFade ? 'opacity-100' : 'opacity-0'}`}
             >
               {rotatingTaskWords[taskIndex]}
             </span>
             {' '}from{' '}
             <span
-              className={`inline-block transition-opacity duration-300 font-bold text-primary ${fade ? 'opacity-100' : 'opacity-0'}`}
-              style={{ minWidth: '10ch' }}
+              className={`transition-opacity duration-300 font-bold text-primary ${fade ? 'opacity-100' : 'opacity-0'}`}
             >
               {rotatingPlatforms[wordIndex]}
             </span>
@@ -99,23 +96,16 @@ export const HomeHero = () => {
             </button>
             <button 
               onClick={scrollToNextSection}
-              className="flex items-center gap-2 text-primary/70 hover:text-primary font-mono text-sm underline underline-offset-4 transition-colors cursor-pointer"
+              className="btn-manga btn-manga-outline"
             >
-              <ChevronDown className="h-4 w-4" />
-              <span>Learn More</span>
-              <ChevronDown className="h-4 w-4" />
+              Learn More
             </button>
-            <a
-              href="https://x.com/askrei_"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ml-auto"
-            >
-              <img src={reiXLogo} alt="@askrei_" className="h-6 xl:h-7 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity" />
-            </a>
           </div>
         </div>
       </div>
+
+      <img src={reiLogo} alt="Rei AI" className="absolute top-6 right-6 lg:top-8 lg:right-8 h-16 lg:h-20 xl:h-24 w-auto z-30" />
+
 
       <div className="hidden lg:block absolute right-0 top-0 w-[55%] h-full">
         <img src={reiHero} alt="Rei AI Agent" className="w-full h-full object-cover object-center" />
