@@ -109,7 +109,10 @@ export const HomeHero = () => {
         </div>
       </div>
 
-      <img src={reiLogo} alt="Rei AI" className="absolute top-6 right-6 lg:top-8 lg:right-8 h-16 lg:h-20 xl:h-24 w-auto z-30" />
+      <div className="absolute top-6 right-6 lg:top-8 lg:right-8 z-30 bg-[#0a0a0a] p-2 lg:p-3">
+        <img src={reiLogo} alt="Rei AI" className="h-16 lg:h-20 xl:h-24 w-auto block" />
+      </div>
+
 
 
       <div className="hidden lg:block absolute right-0 top-0 w-[55%] h-full">
