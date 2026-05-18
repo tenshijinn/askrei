@@ -5,13 +5,13 @@ import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
 
 export const JoinReiValueProp = () => {
   return (
-    <section className="min-h-screen snap-start relative flex items-center overflow-hidden bg-[#0a0a0a]">
+    <section className="min-h-screen snap-start relative flex items-center overflow-hidden bg-[#0f0f0f]">
       <div className="grid lg:grid-cols-2 gap-0 items-center w-full">
-        <div className="hidden lg:block order-1 relative h-screen">
+        <div className="hidden lg:flex order-1 relative h-screen items-center justify-center">
           <img 
             src={reiCrossPlatform}
             alt="Rei cross-platform exposure"
-            className="w-full h-full object-cover"
+            className="max-w-full max-h-full object-contain"
           />
         </div>
 
