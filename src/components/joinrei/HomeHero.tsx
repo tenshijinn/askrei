@@ -92,11 +92,13 @@ export const HomeHero = () => {
         <div className={`transition-all duration-500 delay-300 ${headlineComplete ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <div className="flex items-center gap-6 flex-wrap">
             <button 
-              className="btn-manga btn-manga-outline"
+              className="btn-manga"
+              style={{ backgroundColor: '#ed565a', borderColor: '#ed565a', color: '#181818' }}
               onClick={() => window.location.href = '/rei'}
             >
               Start Now
             </button>
+
             <button 
               onClick={scrollToNextSection}
               className="btn-manga btn-manga-outline"
