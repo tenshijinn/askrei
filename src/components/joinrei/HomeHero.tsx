@@ -59,7 +59,7 @@ export const HomeHero = () => {
             in Your Chat
           </h1>
 
-          <p className={`mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed transition-opacity duration-500 max-w-2xl ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
+          <p className={`mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed transition-opacity duration-500 lg:whitespace-nowrap ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
 
             Rei AI matches crypto{' '}
             <span
