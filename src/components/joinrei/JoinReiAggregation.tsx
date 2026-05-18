@@ -5,8 +5,8 @@ import reiFlowDiagram from '@/assets/joinrei/rei-aggregation-matching.png';
 
 export const JoinReiAggregation = () => {
   return (
-    <section className="min-h-screen snap-start relative flex items-center justify-center overflow-hidden bg-black py-10">
-      <div className="container mx-auto px-8 lg:px-16 flex flex-col h-full justify-center">
+    <section className="min-h-screen snap-start relative flex items-start justify-center overflow-hidden bg-black py-12">
+      <div className="container mx-auto px-8 lg:px-16 flex flex-col h-full justify-start">
         <ScrollFadeIn>
           <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary text-center leading-tight mb-6">
             Get Task Talent from Cross-Chains,<br />
@@ -15,15 +15,13 @@ export const JoinReiAggregation = () => {
         </ScrollFadeIn>
 
         <ScrollFadeIn delay={200}>
-          <ParallaxWrapper speed={0.05}>
-            <div className="flex justify-center">
-              <img 
-                src={reiFlowDiagram} 
-                alt="Rei Aggregation Flow - Blockchains to Project Tasks to Aggregation Layer to Talent" 
-                className="w-full max-w-5xl mx-auto object-contain max-h-[68vh]"
-              />
-            </div>
-          </ParallaxWrapper>
+          <div className="flex justify-center">
+            <img 
+              src={reiFlowDiagram} 
+              alt="Rei Aggregation Flow - Blockchains to Project Tasks to Aggregation Layer to Talent" 
+              className="w-full max-w-5xl mx-auto object-contain max-h-[58vh]"
+            />
+          </div>
         </ScrollFadeIn>
 
         <ScrollFadeIn delay={300}>
