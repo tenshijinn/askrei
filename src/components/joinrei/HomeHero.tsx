@@ -59,26 +59,22 @@ export const HomeHero = () => {
             A Thousand Unicorn Bounties in Your Chat
           </h1>
 
-          <p className={`mt-4 text-lg md:text-xl text-primary/90 font-light leading-relaxed transition-opacity duration-500 max-w-lg ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
-            Find{' '}
+          <p className={`mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed transition-opacity duration-500 max-w-lg ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
+            Rei AI matches crypto{' '}
             <span
-              className={`inline-block transition-opacity duration-300 ${taskFade ? 'opacity-100' : 'opacity-0'}`}
-              style={{ minWidth: '5ch', color: '#ed565a' }}
+              className={`inline-block transition-opacity duration-300 font-bold text-primary ${taskFade ? 'opacity-100' : 'opacity-0'}`}
+              style={{ minWidth: '6ch' }}
             >
               {rotatingTaskWords[taskIndex]}
             </span>
             {' '}from{' '}
             <span
-              className={`inline-block transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}
-              style={{ minWidth: '4ch', color: '#ed565a' }}
+              className={`inline-block transition-opacity duration-300 font-bold text-primary ${fade ? 'opacity-100' : 'opacity-0'}`}
+              style={{ minWidth: '10ch' }}
             >
               {rotatingPlatforms[wordIndex]}
             </span>
-            {' '}with Rei.
-          </p>
-
-          <p className={`mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed transition-opacity duration-500 max-w-lg ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
-            Rei AI matches crypto <strong className="font-bold text-primary">bounties</strong> to your <strong className="font-bold text-primary">skills</strong>
+            {' '}to your <strong className="font-bold text-primary">skills</strong>
           </p>
 
           <div className={`mt-4 flex flex-wrap gap-2 transition-opacity duration-500 delay-200 ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
