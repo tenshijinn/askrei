@@ -1,6 +1,6 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
 import { scrollToLastSection } from './scrollHelpers';
-import reiCrossPlatform from '@/assets/joinrei/rei-cross-platform.png';
+import reiCrossPlatform from '@/assets/joinrei/rei-ui.png';
 import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
 
 export const JoinReiValueProp = () => {
