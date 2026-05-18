@@ -187,7 +187,7 @@ Deno.serve(async (req) => {
           handle: registrationData.handle,
           display_name: registrationData.display_name,
           profile_image_url: registrationData.profile_image_url,
-          verified: registrationData.verified,
+          verified: registrationData.verified || isWhitelisted,
           wallet_address: registrationData.wallet_address,
           file_path: processedFilePath,
           portfolio_url: registrationData.portfolio_url,
