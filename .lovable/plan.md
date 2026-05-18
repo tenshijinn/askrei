@@ -1,68 +1,39 @@
-# Expose Light Profile Data to the Rei Agent
+# Fix: whitelisted "team" users blocked at registration submit
 
-Extend the existing `public-feed` edge function so the Rei agent can pull a *minimal, match-ready* profile for a registered X user. Just enough signal to recommend bounties — never enough to dox or contact the user off-platform.
+## Root cause
 
-## What changes
+The error is **directly related to ovdizzle being a team-whitelist user, not a true X-verified account**. The login (`twitter-oauth`) correctly bypasses the verified+follow gate for `verification_type = 'team'`, so he can sign in. But the registration submit step does a second, independent check that the bypass never reaches:
 
-### 1. Enrich `/registered` (internal-only)
+- `twitter-oauth` returns `verified: userData.data.verified` — the *raw* X blue-check value (false for ovdizzle). The whitelist bypass is exposed separately as `verified_account` / `bluechip_verified`.
+- `src/pages/Rei.tsx` forwards only `verified: twitterUser.verified` (the raw false) to `submit-rei-registration`.
+- `submit-rei-registration` enforces: `if (!reanalyze && !verified) return 403`.
+- Result: 403 → frontend shows "Account update was unsuccessful. Edge Function returned a non-2xx status code."
 
-Already gated to `REI_AGENT_API_KEYS` holders (the Rei agent). Add the matching fields it needs:
+So every team/whitelist user who isn't *also* an X-verified account hits this on a fresh registration. Reanalyze flows skip the check and work fine, which is why it only shows for new submits.
 
-Returned today:
-`registered, x_user_id, handle, display_name, verified, has_profile_analysis, registered_at`
+Confirmed: `twitter_whitelist` has `ovdizzle` as `team`, and `rei_registry` has no row for him yet.
 
-Add:
-- `skills` — string array from `rei_registry.skills`
-- `role_tags` — string array from `rei_registry.role_tags`
-- `skill_category_ids` — uuid array (so the agent can pivot directly into `/tasks?skill_category_id=...`)
-- `profile_score` — numeric (rough seniority/quality signal)
-- `analysis_summary` — short text blurb (already a human-readable summary, safe to expose)
-- `profile_image_url` — for chat UI avatars on X
-- `top_categories` — server-side join: names of the skill categories matched by `skill_category_ids` (so the agent doesn't need a second call)
+## Fix
 
-### 2. New endpoint: `GET /match` (internal-only)
+Make `submit-rei-registration` accept whitelisted users the same way login does, using the service role (RLS-safe, can't be spoofed by the client).
 
-Convenience endpoint the agent calls in one shot when a user DMs it on X:
+1. In `supabase/functions/submit-rei-registration/index.ts`, before the verified check, look up the handle in `twitter_whitelist`:
+   ```
+   isWhitelisted = exists row where ilike(twitter_handle, registrationData.handle)
+   ```
+2. Change the gate to: `if (!reanalyze && !verified && !isWhitelisted) → 403`.
+3. Persist the whitelist signal on the registry row so downstream features can see it:
+   - set `verified: true` on the upsert when `isWhitelisted` is true (or add a `whitelist_type` column later if we want to preserve the distinction — out of scope for this fix).
 
-```
-GET /match?x_user_id=...&limit=10&kind=task|job|all
-```
+No frontend changes required. No schema migration required.
 
-Server logic:
-1. Look up the X user in `rei_registry` (by `x_user_id` or `handle`).
-2. If not registered → `{ registered: false }` plus a CTA link to `https://rei.chat`.
-3. If registered → return the light profile above *plus* a ranked list of currently active tasks/jobs whose `skill_category_ids` or `role_tags` intersect the user's. Newest first, capped at `limit` (max 25).
+## Verification
 
-Response shape:
-```json
-{
-  "registered": true,
-  "profile": { handle, display_name, skills, role_tags, skill_category_ids, top_categories, profile_score, analysis_summary, profile_image_url, verified },
-  "matches": [ { kind: "task", id, title, compensation, company_name, link, role_tags, skill_category_ids, created_at }, ... ],
-  "count": 7
-}
-```
+- Curl `submit-rei-registration` with `{ handle: "ovdizzle", verified: false, ... }` → expect 200.
+- Curl with a random non-whitelisted, non-verified handle → expect 403 (unchanged).
+- Ask ovdizzle to retry registration end-to-end.
 
-## What stays private (never exposed)
+## Out of scope
 
-`wallet_address`, `file_path` (resume), `portfolio_url`, full `profile_analysis` JSON, `work_experience`, `nft_mint_address`, anything from `chat_*`, `payment_*`, `referral_*`, `user_points`, `twitter_whitelist*`. Same hard whitelist principle as the rest of `public-feed`.
-
-## Auth & rate limiting
-
-- Both endpoints stay gated behind `ctx.internal` (env-secret `REI_AGENT_API_KEYS`). Paid `rei_live_…` keys keep getting `404 Not found` on these routes — public marketplace keys must not enumerate users.
-- Existing per-key minute bucket already applies.
-
-## Docs
-
-Update `docs/agent-integration.md`:
-- Expand the `/registered` field list.
-- Add a `/match` section with the same shape as other endpoints (params, sample response, internal-only note).
-
-## Technical notes
-
-- Files touched: `supabase/functions/public-feed/index.ts`, `docs/agent-integration.md`.
-- No DB migration needed — all source columns already exist on `rei_registry` and `skill_categories`.
-- Matching query: pull user's `skill_category_ids` + `role_tags`, then
-  `tasks/jobs` where `status='active'` and `skill_category_ids && user.skill_category_ids` OR `role_tags && user.role_tags`, ordered by `created_at desc`, limited.
-- `top_categories` resolved with a single `skill_categories.select('id,name').in('id', user.skill_category_ids)` call.
-- No changes to RLS — function uses service role and hand-picks columns, same pattern as the rest of `public-feed`.
+- Reworking the OAuth response to send a single `is_allowed` flag (cleaner but touches more code).
+- Adding `whitelist_type` to `rei_registry`.
