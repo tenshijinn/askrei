@@ -54,10 +54,13 @@ export const HomeHero = () => {
       <div className="w-full lg:w-[45%] h-full flex flex-col justify-between p-8 lg:p-12 xl:p-16 relative z-10">
         <div className="pt-2">
           <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
-            A Thousand Unicorn Bounties in Your Chat
+            A Thousand Unicorn Bounties
+            <br />
+            in Your Chat
           </h1>
 
-          <p className={`mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed transition-opacity duration-500 max-w-lg ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
+          <p className={`mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed transition-opacity duration-500 lg:whitespace-nowrap ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
+
             Rei AI matches crypto{' '}
             <span
               className={`transition-opacity duration-300 font-bold text-primary ${taskFade ? 'opacity-100' : 'opacity-0'}`}
@@ -89,11 +92,13 @@ export const HomeHero = () => {
         <div className={`transition-all duration-500 delay-300 ${headlineComplete ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <div className="flex items-center gap-6 flex-wrap">
             <button 
-              className="btn-manga btn-manga-outline"
+              className="btn-manga"
+              style={{ backgroundColor: '#ed565a', borderColor: '#ed565a', color: '#181818' }}
               onClick={() => window.location.href = '/rei'}
             >
               Start Now
             </button>
+
             <button 
               onClick={scrollToNextSection}
               className="btn-manga btn-manga-outline"
@@ -104,7 +109,10 @@ export const HomeHero = () => {
         </div>
       </div>
 
-      <img src={reiLogo} alt="Rei AI" className="absolute top-6 right-6 lg:top-8 lg:right-8 h-16 lg:h-20 xl:h-24 w-auto z-30" />
+      <div className="absolute top-6 right-6 lg:top-8 lg:right-8 z-30 bg-[#0a0a0a] p-2 lg:p-3">
+        <img src={reiLogo} alt="Rei AI" className="h-16 lg:h-20 xl:h-24 w-auto block" />
+      </div>
+
 
 
       <div className="hidden lg:block absolute right-0 top-0 w-[55%] h-full">
