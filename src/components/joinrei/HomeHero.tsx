@@ -44,10 +44,14 @@ export const HomeHero = () => {
 
   const scrollToNextSection = () => {
     const sections = document.querySelectorAll('.snap-start');
-    if (sections.length > 1) {
-      sections[1].scrollIntoView({ behavior: 'smooth' });
+    const target = Array.from(sections).find((s) =>
+      s.textContent?.includes('How it works')
+    );
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
 
   return (
     <section className="h-screen snap-start relative flex overflow-hidden bg-[#0a0a0a]">
