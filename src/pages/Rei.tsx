@@ -283,18 +283,33 @@ export default function Rei() {
         ),
       },
       {
-        selector: '[data-tour="askrei-chat-input"]',
-        title: 'How to chat with Rei',
-        placement: 'top',
-        cardWidth: 360,
+        selector: '[data-tour="askrei-presets"]',
+        title: 'Quick suggestion buttons',
+        placement: 'bottom',
+        cardWidth: 340,
         onEnter: () => setActiveTab('askrei'),
         body: (
           <div>
             <p style={{ margin: 0 }}>
-              Type a message in the <strong style={{ color: '#f0ede8' }}>box at the bottom</strong> and hit
+              Tap any of these <strong style={{ color: '#f0ede8' }}>suggestion buttons</strong> to send a ready‑made
+              request to Rei — like finding bounties, checking your points, or sharing a bounty you found.
+            </p>
+          </div>
+        ),
+      },
+      {
+        selector: '[data-tour="askrei-chat-input"]',
+        title: 'Type your own message',
+        placement: 'top',
+        cardWidth: 360,
+        highlightPadding: 2,
+        onEnter: () => setActiveTab('askrei'),
+        body: (
+          <div>
+            <p style={{ margin: 0 }}>
+              Type anything you want in the <strong style={{ color: '#f0ede8' }}>box at the bottom</strong> and hit
               <strong style={{ color: '#f0ede8' }}> send</strong>. Tap the <strong style={{ color: '#f0ede8' }}>?</strong> button
-              for quick command ideas, or click any of the <strong style={{ color: '#f0ede8' }}>preset buttons</strong> at the
-              top of the chat to get started fast.
+              on the left for more command ideas.
             </p>
           </div>
         ),

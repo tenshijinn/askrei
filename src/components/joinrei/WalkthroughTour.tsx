@@ -105,8 +105,9 @@ export function WalkthroughTour({ steps, open, onClose }: Props) {
   };
   const prev = () => { if (currentIdx > 0) setIndex(currentIdx - 1); };
 
+  const pad = resolvedStep.highlightPadding ?? PAD;
   const hr = rect
-    ? { top: rect.top - PAD, left: rect.left - PAD, width: rect.width + PAD * 2, height: rect.height + PAD * 2 }
+    ? { top: rect.top - pad, left: rect.left - pad, width: rect.width + pad * 2, height: rect.height + pad * 2 }
     : null;
 
   let cardTop = 24, cardLeft = 24;
