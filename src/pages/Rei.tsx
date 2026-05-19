@@ -326,12 +326,14 @@ export default function Rei() {
                   {analysis.key_strengths?.length > 0 && <div><div className="rei-section-label">Key Strengths</div><div className="space-y-1.5">{analysis.key_strengths.map((strength: string, idx: number) => <div key={idx} className="flex items-start gap-2" style={{ fontSize: '13px', color: '#a09e9a' }}><CheckCircle2 className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" style={{ color: '#e8c4b8' }} /><span>{strength}</span></div>)}</div></div>}
                 </div>}
                 <button onClick={() => setIsEditMode(true)} className="btn-manga btn-manga-outline w-full" style={{ borderRadius: '28px', padding: '11px 22px', fontSize: '13px', cursor: 'pointer' }}>Edit Profile</button>
+                <button onClick={walkthrough.replay} className="w-full" style={{ background: 'none', border: 'none', color: '#a09e9a', fontSize: '12px', textDecoration: 'underline', textUnderlineOffset: 3, cursor: 'pointer', paddingTop: 4 }}>Replay walkthrough</button>
               </div>
             </div>
           )}
           {activeTab === 'askrei' && <div className="overflow-y-auto h-full scrollbar-hide"><div className="max-w-4xl mx-auto px-4 pb-20" style={{ borderLeft: '0.5px solid hsla(0,0%,100%,0.08)', borderRight: '0.5px solid hsla(0,0%,100%,0.08)', minHeight: '100%' }}><ReiChatbot walletAddress={registrationData.wallet_address} userMode="talent" twitterHandle={twitterUser?.handle} /></div></div>}
           {activeTab === 'post' && <div className="overflow-y-auto h-full scrollbar-hide"><div className="max-w-4xl mx-auto px-4 pb-20"><PostToRei /></div></div>}
         </div>
+        <WalkthroughTour steps={tourSteps} open={walkthrough.open} onClose={walkthrough.markSeen} />
       </div>
     );
   }
