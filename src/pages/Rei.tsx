@@ -260,7 +260,10 @@ export default function Rei() {
   };
 
   const hasValidAudio = audioBlob || (useExistingTranscript && registrationData?.file_path);
-  const canSubmit = hasValidAudio && publicKey && consent && selectedRoles.length > 0 && twitterUser;
+  // In edit mode, the wallet stored on the profile counts as already connected.
+  const effectiveWallet = publicKey?.toString() || (isEditMode ? registrationData?.wallet_address : null);
+  const hasWallet = !!effectiveWallet;
+  const canSubmit = hasValidAudio && hasWallet && consent && selectedRoles.length > 0 && twitterUser;
 
   const handleLogout = () => {
     setTwitterUser(null); setRegistrationData(null); setIsSuccess(false); setStep(1); setAuthMode(null); setNoAccountFound(false); setActiveTab('profile');
