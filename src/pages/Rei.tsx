@@ -60,6 +60,7 @@ export default function Rei() {
   const [analysisStage, setAnalysisStage] = useState<AnalysisStage>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [uploadPercent, setUploadPercent] = useState(0);
+  const walkthrough = useFirstTimeWalkthrough(twitterUser?.x_user_id);
 
   useEffect(() => {
     const restoreTwitterState = async () => {
