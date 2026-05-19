@@ -16,6 +16,7 @@ import { ReiEarningsHub } from '@/components/ReiEarningsHub';
 import { Progress } from '@/components/ui/progress';
 import { ReiAnalysisOverlay, type AnalysisStage } from '@/components/ReiAnalysisOverlay';
 import { WalkthroughTour, type TourStep } from '@/components/joinrei/WalkthroughTour';
+import { WalkthroughVideoCard } from '@/components/joinrei/WalkthroughVideoCard';
 import { useFirstTimeWalkthrough } from '@/hooks/useFirstTimeWalkthrough';
 
 interface TwitterUser { x_user_id: string; handle: string; display_name: string; profile_image_url?: string; verified: boolean; }
