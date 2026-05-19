@@ -7,6 +7,7 @@ export interface TourStep {
   placement?: 'top' | 'bottom' | 'left' | 'right';
   onEnter?: () => void;
   cardWidth?: number;
+  highlightPadding?: number;
 }
 
 interface Props {

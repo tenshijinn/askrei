@@ -212,7 +212,7 @@ const ReiChatbot = ({ walletAddress, userMode, twitterHandle }: ReiChatbotProps)
           <>
             <div className="chat-line"><span className="chat-ts">[--:--:--]</span><span className="chat-handle handle-sys">* system</span><span className="chat-msg msg-sys">session started. select a command or type a message.</span></div>
             <div className="line-gap" /><div className="term-divider" /><div className="line-gap" />
-            <div className="flex flex-wrap gap-2 px-2">{getWelcomePresets(userMode).map((preset, idx) => <PresetButton key={idx} text={preset} onClick={() => handlePresetSelect(preset)} />)}</div>
+            <div data-tour="askrei-presets" className="flex flex-wrap gap-2 px-2">{getWelcomePresets(userMode).map((preset, idx) => <PresetButton key={idx} text={preset} onClick={() => handlePresetSelect(preset)} />)}</div>
           </>
         )}
         {messages.map((message, index) => renderMessage(message, index))}
