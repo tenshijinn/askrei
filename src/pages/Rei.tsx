@@ -368,7 +368,7 @@ export default function Rei() {
           {activeTab === 'profile' && (
             <div className="overflow-y-auto h-full scrollbar-hide">
               <div className="max-w-4xl mx-auto px-4 pb-20 space-y-4" style={{ marginTop: '8px' }}>
-                <div className="rei-surface" style={{ padding: '24px' }}>
+                <div data-tour="profile-card" className="rei-surface" style={{ padding: '24px' }}>
                   <div className="flex items-start gap-4">
                     {twitterUser?.profile_image_url && <img src={twitterUser.profile_image_url} alt={twitterUser.handle} className="h-14 w-14 rounded-full flex-shrink-0" />}
                     <div style={{ flex: 1, minWidth: 0 }}>
