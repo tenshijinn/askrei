@@ -1,10 +1,12 @@
-import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 export interface TourStep {
   selector: string;
   title: string;
-  body: string;
+  body: ReactNode;
   placement?: 'top' | 'bottom' | 'left' | 'right';
+  onEnter?: () => void;
+  cardWidth?: number;
 }
 
 interface Props {
@@ -16,7 +18,7 @@ interface Props {
 interface Rect { top: number; left: number; width: number; height: number; }
 
 const PAD = 8;
-const CARD_W = 320;
+const DEFAULT_CARD_W = 320;
 const CARD_GAP = 14;
 
 function findTarget(selector: string): HTMLElement | null {
@@ -30,8 +32,6 @@ export function WalkthroughTour({ steps, open, onClose }: Props) {
 
   useEffect(() => { if (open) setIndex(0); }, [open]);
 
-  const step = steps[index];
-
   // Resolve the first reachable step starting at `index`.
   const resolvedStep = useMemo(() => {
     if (!open) return null;
@@ -39,6 +39,17 @@ export function WalkthroughTour({ steps, open, onClose }: Props) {
       if (findTarget(steps[i].selector)) return { ...steps[i], _i: i };
     }
     return null;
+  }, [open, index, steps]);
+
+  // Fire onEnter when the active step's index changes
+  const lastEnteredRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (!open) { lastEnteredRef.current = null; return; }
+    const step = steps[index];
+    if (step?.onEnter && lastEnteredRef.current !== index) {
+      lastEnteredRef.current = index;
+      step.onEnter();
+    }
   }, [open, index, steps]);
 
   useLayoutEffect(() => {
@@ -53,10 +64,11 @@ export function WalkthroughTour({ steps, open, onClose }: Props) {
     };
     measure();
     const t = setTimeout(measure, 350);
+    const t2 = setTimeout(measure, 800);
     window.addEventListener('resize', measure);
     window.addEventListener('scroll', measure, true);
     return () => {
-      clearTimeout(t);
+      clearTimeout(t); clearTimeout(t2);
       window.removeEventListener('resize', measure);
       window.removeEventListener('scroll', measure, true);
     };
@@ -76,7 +88,6 @@ export function WalkthroughTour({ steps, open, onClose }: Props) {
 
   if (!open) return null;
 
-  // If no step is reachable, just close.
   if (!resolvedStep) {
     onClose();
     return null;
@@ -85,6 +96,7 @@ export function WalkthroughTour({ steps, open, onClose }: Props) {
   const total = steps.length;
   const currentIdx = resolvedStep._i;
   const isLast = currentIdx >= total - 1;
+  const CARD_W = resolvedStep.cardWidth ?? DEFAULT_CARD_W;
 
   const next = () => {
     if (isLast) onClose();
@@ -92,41 +104,37 @@ export function WalkthroughTour({ steps, open, onClose }: Props) {
   };
   const prev = () => { if (currentIdx > 0) setIndex(currentIdx - 1); };
 
-  // Highlight rect (padded)
   const hr = rect
     ? { top: rect.top - PAD, left: rect.left - PAD, width: rect.width + PAD * 2, height: rect.height + PAD * 2 }
     : null;
 
-  // Card placement
   let cardTop = 24, cardLeft = 24;
   if (hr) {
     const placement = resolvedStep.placement
-      ?? (hr.top + hr.height + CARD_GAP + 180 < viewport.h ? 'bottom' : 'top');
+      ?? (hr.top + hr.height + CARD_GAP + 220 < viewport.h ? 'bottom' : 'top');
     if (placement === 'bottom') {
       cardTop = hr.top + hr.height + CARD_GAP;
       cardLeft = Math.min(Math.max(hr.left + hr.width / 2 - CARD_W / 2, 12), viewport.w - CARD_W - 12);
     } else if (placement === 'top') {
-      cardTop = Math.max(hr.top - CARD_GAP - 160, 12);
+      cardTop = Math.max(hr.top - CARD_GAP - 220, 12);
       cardLeft = Math.min(Math.max(hr.left + hr.width / 2 - CARD_W / 2, 12), viewport.w - CARD_W - 12);
     } else if (placement === 'right') {
-      cardTop = Math.max(hr.top + hr.height / 2 - 80, 12);
+      cardTop = Math.max(hr.top + hr.height / 2 - 100, 12);
       cardLeft = Math.min(hr.left + hr.width + CARD_GAP, viewport.w - CARD_W - 12);
     } else {
-      cardTop = Math.max(hr.top + hr.height / 2 - 80, 12);
+      cardTop = Math.max(hr.top + hr.height / 2 - 100, 12);
       cardLeft = Math.max(hr.left - CARD_GAP - CARD_W, 12);
     }
   }
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 2147483600 }}>
-      {/* Backdrop with cut-out via 4 panels */}
       {hr ? (
         <>
           <div onClick={onClose} style={panelStyle(0, 0, '100%', hr.top)} />
           <div onClick={onClose} style={panelStyle(0, hr.top, hr.left, hr.height)} />
           <div onClick={onClose} style={panelStyle(hr.left + hr.width, hr.top, `calc(100% - ${hr.left + hr.width}px)`, hr.height)} />
           <div onClick={onClose} style={panelStyle(0, hr.top + hr.height, '100%', `calc(100% - ${hr.top + hr.height}px)`)} />
-          {/* Highlight ring */}
           <div style={{
             position: 'fixed', top: hr.top, left: hr.left, width: hr.width, height: hr.height,
             borderRadius: 14, boxShadow: '0 0 0 2px #ed565a, 0 0 0 6px rgba(237,86,90,0.25)',
@@ -137,7 +145,6 @@ export function WalkthroughTour({ steps, open, onClose }: Props) {
         <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.7)' }} />
       )}
 
-      {/* Card */}
       <div
         role="dialog"
         aria-label="Walkthrough"
@@ -147,6 +154,7 @@ export function WalkthroughTour({ steps, open, onClose }: Props) {
           border: '0.5px solid hsla(0,0%,100%,0.12)',
           borderRadius: 14, padding: 18, boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
           fontFamily: "'SF Mono', 'Consolas', monospace",
+          maxHeight: 'calc(100vh - 32px)', overflowY: 'auto',
         }}
         onClick={(e) => e.stopPropagation()}
       >

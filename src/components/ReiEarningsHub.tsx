@@ -63,7 +63,7 @@ export function ReiEarningsHub({ registrationWallet, connectedWallet, xUserId }:
   const shareNative = async () => { if (navigator.share) { try { await navigator.share({ title: 'Join Rei', text: 'Join me on Rei!', url: referralUrl }); } catch { /* cancelled */ } } else { copyToClipboard(); } };
 
   return (
-    <div className={`fixed top-2 left-4 md:top-20 z-[60] transition-all duration-300 ease-out ${isExpanded ? 'w-72' : 'w-40'}`} style={{ background: 'rgba(20,20,20,0.92)', backdropFilter: 'blur(12px)', border: '0.5px solid hsla(0,0%,100%,0.08)', borderRadius: '20px', ...(isAnimating ? { borderColor: 'hsla(18,52%,82%,0.3)', transform: 'scale(1.02)' } : {}) }}>
+    <div id="rei-earnings-hub" className={`fixed top-2 left-4 md:top-20 z-[60] transition-all duration-300 ease-out ${isExpanded ? 'w-72' : 'w-40'}`} style={{ background: 'rgba(20,20,20,0.92)', backdropFilter: 'blur(12px)', border: '0.5px solid hsla(0,0%,100%,0.08)', borderRadius: '20px', ...(isAnimating ? { borderColor: 'hsla(18,52%,82%,0.3)', transform: 'scale(1.02)' } : {}) }}>
       <button onClick={() => setIsExpanded(!isExpanded)} className="w-full p-3 flex items-center justify-between transition-colors" style={{ borderRadius: '20px' }}>
         <div className="flex items-center gap-2">
           <div className="h-7 w-7 rounded-full flex items-center justify-center" style={{ background: 'hsla(18,52%,82%,0.12)' }}><Coins className="h-3.5 w-3.5" style={{ color: '#e8c4b8' }} /></div>
