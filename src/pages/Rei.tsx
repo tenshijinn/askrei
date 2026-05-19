@@ -370,18 +370,11 @@ export default function Rei() {
       },
       {
         selector: '[data-tour="edit-profile"]',
-        title: 'Edit your profile',
+        title: walkthroughCopy.editProfile.title,
         placement: 'top',
         cardWidth: 360,
         onEnter: () => setActiveTab('profile'),
-        body: (
-          <p style={{ margin: 0 }}>
-            Click <strong style={{ color: '#f0ede8' }}>Edit Profile</strong> to record a new voice intro, change your role tags,
-            add a portfolio link, or update your wallet. You can also tap
-            <strong style={{ color: '#f0ede8' }}> Re-analyze</strong> to have Rei look at your profile again — no need to
-            record again.
-          </p>
-        ),
+        body: walkthroughCopy.editProfile.body,
       },
       {
         selector: '#rei-earnings-hub',
