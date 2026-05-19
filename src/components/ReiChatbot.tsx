@@ -224,7 +224,7 @@ const ReiChatbot = ({ walletAddress, userMode, twitterHandle }: ReiChatbotProps)
         )}
         <div ref={messagesEndRef} />
       </div>
-      <div className="input-row" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50 }}>
+      <div data-tour="askrei-chat-input" className="input-row" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50 }}>
         <div className="input-row-inner">
           <button onClick={() => setShowQuickActions(!showQuickActions)} className="send-btn" style={{ fontSize: '12px', padding: '4px 8px' }}>?</button>
           <div className="input-field-wrap">

@@ -275,16 +275,33 @@ export default function Rei() {
             videoSrc="/walkthrough/rei-find-bounties.mp4"
             text={
               <p style={{ margin: 0 }}>
-                Use the <strong style={{ color: '#f0ede8' }}>preset buttons</strong> for quick commands, or type your own in the
-                <strong style={{ color: '#f0ede8' }}> message field</strong> at the bottom. Rei matches you to live bounties, gigs, and tasks based on your profile.
+                Tell Rei what you want to work on. Just <strong style={{ color: '#f0ede8' }}>type your request</strong> — like
+                "find me a Solana bounty" — and Rei looks at your profile and sends back jobs, bounties, and tasks that fit you.
               </p>
             }
           />
         ),
       },
       {
+        selector: '[data-tour="askrei-chat-input"]',
+        title: 'How to chat with Rei',
+        placement: 'top',
+        cardWidth: 360,
+        onEnter: () => setActiveTab('askrei'),
+        body: (
+          <div>
+            <p style={{ margin: 0 }}>
+              Type a message in the <strong style={{ color: '#f0ede8' }}>box at the bottom</strong> and hit
+              <strong style={{ color: '#f0ede8' }}> send</strong>. Tap the <strong style={{ color: '#f0ede8' }}>?</strong> button
+              for quick command ideas, or click any of the <strong style={{ color: '#f0ede8' }}>preset buttons</strong> at the
+              top of the chat to get started fast.
+            </p>
+          </div>
+        ),
+      },
+      {
         selector: '[data-tour="promote"]',
-        title: 'Promote — post an opportunity',
+        title: 'Promote — Post a Bounty',
         placement: 'bottom',
         cardWidth: 680,
         onEnter: () => setActiveTab('post'),
@@ -294,10 +311,12 @@ export default function Rei() {
             text={
               <div>
                 <p style={{ margin: 0 }}>
-                  Submit a <strong style={{ color: '#f0ede8' }}>gig, bounty, or task</strong>. Fill in title, description, role tags, reward, and an optional link — Rei matches it to the right contributors.
+                  Got work you need help with? Post a <strong style={{ color: '#f0ede8' }}>bounty</strong> here. Add a title,
+                  a short description, role tags, and the reward. Rei will share it with the right people.
                 </p>
                 <p style={{ margin: '8px 0 0', fontSize: 11, color: '#5c5a57' }}>
-                  Submission fee: <span style={{ color: '#e8c4b8', fontWeight: 600 }}>$5 in SOL</span> · paid via Solana Pay or x402, verified on-chain.
+                  Posting costs <span style={{ color: '#e8c4b8', fontWeight: 600 }}>$5 in SOL</span>. You can pay with Solana
+                  Pay or x402, and the payment is checked on-chain.
                 </p>
               </div>
             }
@@ -307,21 +326,53 @@ export default function Rei() {
       {
         selector: '[data-tour="profile"]',
         title: 'Your profile',
-        body: 'Edit your transcript, roles, and wallet anytime here.',
         placement: 'bottom',
-        onEnter: () => setActiveTab('askrei'),
+        cardWidth: 320,
+        onEnter: () => setActiveTab('profile'),
+        body: 'Click here to open your profile page. This is where you can see what Rei knows about you.',
+      },
+      {
+        selector: '[data-tour="profile-card"]',
+        title: 'What your profile shows',
+        placement: 'bottom',
+        cardWidth: 360,
+        onEnter: () => setActiveTab('profile'),
+        body: (
+          <p style={{ margin: 0 }}>
+            Your profile shows your <strong style={{ color: '#f0ede8' }}>name</strong>, <strong style={{ color: '#f0ede8' }}>X handle</strong>,
+            <strong style={{ color: '#f0ede8' }}> role tags</strong>, your <strong style={{ color: '#f0ede8' }}>profile score</strong>,
+            and your top <strong style={{ color: '#f0ede8' }}>skills</strong>. Rei uses all of this to find work that fits you.
+          </p>
+        ),
+      },
+      {
+        selector: '[data-tour="edit-profile"]',
+        title: 'Edit your profile',
+        placement: 'top',
+        cardWidth: 360,
+        onEnter: () => setActiveTab('profile'),
+        body: (
+          <p style={{ margin: 0 }}>
+            Click <strong style={{ color: '#f0ede8' }}>Edit Profile</strong> to record a new voice intro, change your role tags,
+            add a portfolio link, or update your wallet. You can also tap
+            <strong style={{ color: '#f0ede8' }}> Re-analyze</strong> to have Rei look at your profile again — no need to
+            record again.
+          </p>
+        ),
       },
       {
         selector: '#rei-earnings-hub',
         title: 'Earnings hub',
         placement: 'right',
-        cardWidth: 640,
+        cardWidth: 380,
         body: (
           <WalkthroughVideoCard
+            layout="stacked"
             videoSrc="/walkthrough/rei-points.mp4"
             text={
               <p style={{ margin: 0 }}>
-                Track <strong style={{ color: '#f0ede8' }}>points</strong>, payouts, NFT rewards, and your referral link from completed work — all in one hub.
+                See your <strong style={{ color: '#f0ede8' }}>points</strong>, <strong style={{ color: '#f0ede8' }}>payouts</strong>,
+                NFT rewards, and your referral link — all in one place.
               </p>
             }
           />
@@ -330,8 +381,9 @@ export default function Rei() {
       {
         selector: '[data-tour="logout"]',
         title: 'Sign out',
-        body: 'Log out securely. Your X identity and wallet stay linked for next time.',
         placement: 'bottom',
+        cardWidth: 320,
+        body: 'Click here to log out. Your X account and wallet stay linked, so signing back in is quick.',
       },
     ];
     return (
@@ -368,7 +420,7 @@ export default function Rei() {
           {activeTab === 'profile' && (
             <div className="overflow-y-auto h-full scrollbar-hide">
               <div className="max-w-4xl mx-auto px-4 pb-20 space-y-4" style={{ marginTop: '8px' }}>
-                <div className="rei-surface" style={{ padding: '24px' }}>
+                <div data-tour="profile-card" className="rei-surface" style={{ padding: '24px' }}>
                   <div className="flex items-start gap-4">
                     {twitterUser?.profile_image_url && <img src={twitterUser.profile_image_url} alt={twitterUser.handle} className="h-14 w-14 rounded-full flex-shrink-0" />}
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -388,7 +440,7 @@ export default function Rei() {
                   {analysis.category_scores && <div className="grid grid-cols-2 gap-3 mb-5">{Object.entries(analysis.category_scores).map(([category, score]: [string, any]) => <div key={category} className="rei-stat-card" style={{ padding: '12px' }}><div className="flex justify-between items-center mb-2"><span style={{ fontSize: '11px', textTransform: 'capitalize', color: '#5c5a57', letterSpacing: '0.04em' }}>{category.replace('_', ' ')}</span><span style={{ fontSize: '13px', fontWeight: 500, color: '#f0ede8' }}>{score}/25</span></div><Progress value={(score / 25) * 100} className="h-1.5" /></div>)}</div>}
                   {analysis.key_strengths?.length > 0 && <div><div className="rei-section-label">Key Strengths</div><div className="space-y-1.5">{analysis.key_strengths.map((strength: string, idx: number) => <div key={idx} className="flex items-start gap-2" style={{ fontSize: '13px', color: '#a09e9a' }}><CheckCircle2 className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" style={{ color: '#e8c4b8' }} /><span>{strength}</span></div>)}</div></div>}
                 </div>}
-                <button onClick={() => setIsEditMode(true)} className="btn-manga btn-manga-outline w-full" style={{ borderRadius: '28px', padding: '11px 22px', fontSize: '13px', cursor: 'pointer' }}>Edit Profile</button>
+                <button data-tour="edit-profile" onClick={() => setIsEditMode(true)} className="btn-manga btn-manga-outline w-full" style={{ borderRadius: '28px', padding: '11px 22px', fontSize: '13px', cursor: 'pointer' }}>Edit Profile</button>
                 <button onClick={walkthrough.replay} className="w-full" style={{ background: 'none', border: 'none', color: '#a09e9a', fontSize: '12px', textDecoration: 'underline', textUnderlineOffset: 3, cursor: 'pointer', paddingTop: 4 }}>Replay walkthrough</button>
               </div>
             </div>
