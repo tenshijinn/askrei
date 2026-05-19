@@ -576,6 +576,18 @@ export default function Rei() {
       </div>
       <div className="hidden md:block w-1/2 min-h-screen relative"><img src={reiSplit} alt="Rei" className="absolute inset-0 w-full h-full object-cover" /></div>
       <ReiAnalysisOverlay stage={analysisStage} uploadPercent={uploadPercent} errorMessage={analysisError} onClose={closeAnalysisOverlay} onRetry={handleSubmit} />
+      <WalkthroughTour
+        open={registrationWalkthrough.open}
+        onClose={registrationWalkthrough.markSeen}
+        steps={[
+          { selector: '[data-tour="reg-wallet"]', title: walkthroughCopy.wallet.title, body: walkthroughCopy.wallet.body, placement: 'right', cardWidth: 340 },
+          { selector: '[data-tour="reg-voice"]', title: walkthroughCopy.voiceIntro.title, body: walkthroughCopy.voiceIntro.body, placement: 'right', cardWidth: 340 },
+          { selector: '[data-tour="reg-portfolio"]', title: walkthroughCopy.portfolio.title, body: walkthroughCopy.portfolio.body, placement: 'right', cardWidth: 340 },
+          { selector: '[data-tour="reg-roles"]', title: walkthroughCopy.roleTags.title, body: walkthroughCopy.roleTags.body, placement: 'right', cardWidth: 340 },
+          ...(isEditMode ? [{ selector: '[data-tour="reg-submit"]', title: walkthroughCopy.reanalyze.title, body: walkthroughCopy.reanalyze.body, placement: 'top' as const, cardWidth: 340 }] : []),
+          { selector: '[data-tour="reg-submit"]', title: walkthroughCopy.submit.title, body: walkthroughCopy.submit.body, placement: 'top', cardWidth: 340 },
+        ]}
+      />
     </div>
   );
 }
