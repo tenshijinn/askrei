@@ -275,16 +275,33 @@ export default function Rei() {
             videoSrc="/walkthrough/rei-find-bounties.mp4"
             text={
               <p style={{ margin: 0 }}>
-                Use the <strong style={{ color: '#f0ede8' }}>preset buttons</strong> for quick commands, or type your own in the
-                <strong style={{ color: '#f0ede8' }}> message field</strong> at the bottom. Rei matches you to live bounties, gigs, and tasks based on your profile.
+                Tell Rei what you want to work on. Just <strong style={{ color: '#f0ede8' }}>type your request</strong> — like
+                "find me a Solana bounty" — and Rei looks at your profile and sends back jobs, bounties, and tasks that fit you.
               </p>
             }
           />
         ),
       },
       {
+        selector: '[data-tour="askrei-chat-input"]',
+        title: 'How to chat with Rei',
+        placement: 'top',
+        cardWidth: 360,
+        onEnter: () => setActiveTab('askrei'),
+        body: (
+          <div>
+            <p style={{ margin: 0 }}>
+              Type a message in the <strong style={{ color: '#f0ede8' }}>box at the bottom</strong> and hit
+              <strong style={{ color: '#f0ede8' }}> send</strong>. Tap the <strong style={{ color: '#f0ede8' }}>?</strong> button
+              for quick command ideas, or click any of the <strong style={{ color: '#f0ede8' }}>preset buttons</strong> at the
+              top of the chat to get started fast.
+            </p>
+          </div>
+        ),
+      },
+      {
         selector: '[data-tour="promote"]',
-        title: 'Promote — post an opportunity',
+        title: 'Promote — Post a Bounty',
         placement: 'bottom',
         cardWidth: 680,
         onEnter: () => setActiveTab('post'),
@@ -294,10 +311,12 @@ export default function Rei() {
             text={
               <div>
                 <p style={{ margin: 0 }}>
-                  Submit a <strong style={{ color: '#f0ede8' }}>gig, bounty, or task</strong>. Fill in title, description, role tags, reward, and an optional link — Rei matches it to the right contributors.
+                  Got work you need help with? Post a <strong style={{ color: '#f0ede8' }}>bounty</strong> here. Add a title,
+                  a short description, role tags, and the reward. Rei will share it with the right people.
                 </p>
                 <p style={{ margin: '8px 0 0', fontSize: 11, color: '#5c5a57' }}>
-                  Submission fee: <span style={{ color: '#e8c4b8', fontWeight: 600 }}>$5 in SOL</span> · paid via Solana Pay or x402, verified on-chain.
+                  Posting costs <span style={{ color: '#e8c4b8', fontWeight: 600 }}>$5 in SOL</span>. You can pay with Solana
+                  Pay or x402, and the payment is checked on-chain.
                 </p>
               </div>
             }
@@ -307,21 +326,53 @@ export default function Rei() {
       {
         selector: '[data-tour="profile"]',
         title: 'Your profile',
-        body: 'Edit your transcript, roles, and wallet anytime here.',
         placement: 'bottom',
-        onEnter: () => setActiveTab('askrei'),
+        cardWidth: 320,
+        onEnter: () => setActiveTab('profile'),
+        body: 'Click here to open your profile page. This is where you can see what Rei knows about you.',
+      },
+      {
+        selector: '[data-tour="profile-card"]',
+        title: 'What your profile shows',
+        placement: 'bottom',
+        cardWidth: 360,
+        onEnter: () => setActiveTab('profile'),
+        body: (
+          <p style={{ margin: 0 }}>
+            Your profile shows your <strong style={{ color: '#f0ede8' }}>name</strong>, <strong style={{ color: '#f0ede8' }}>X handle</strong>,
+            <strong style={{ color: '#f0ede8' }}> role tags</strong>, your <strong style={{ color: '#f0ede8' }}>profile score</strong>,
+            and your top <strong style={{ color: '#f0ede8' }}>skills</strong>. Rei uses all of this to find work that fits you.
+          </p>
+        ),
+      },
+      {
+        selector: '[data-tour="edit-profile"]',
+        title: 'Edit your profile',
+        placement: 'top',
+        cardWidth: 360,
+        onEnter: () => setActiveTab('profile'),
+        body: (
+          <p style={{ margin: 0 }}>
+            Click <strong style={{ color: '#f0ede8' }}>Edit Profile</strong> to record a new voice intro, change your role tags,
+            add a portfolio link, or update your wallet. You can also tap
+            <strong style={{ color: '#f0ede8' }}> Re-analyze</strong> to have Rei look at your profile again — no need to
+            record again.
+          </p>
+        ),
       },
       {
         selector: '#rei-earnings-hub',
         title: 'Earnings hub',
         placement: 'right',
-        cardWidth: 640,
+        cardWidth: 380,
         body: (
           <WalkthroughVideoCard
+            layout="stacked"
             videoSrc="/walkthrough/rei-points.mp4"
             text={
               <p style={{ margin: 0 }}>
-                Track <strong style={{ color: '#f0ede8' }}>points</strong>, payouts, NFT rewards, and your referral link from completed work — all in one hub.
+                See your <strong style={{ color: '#f0ede8' }}>points</strong>, <strong style={{ color: '#f0ede8' }}>payouts</strong>,
+                NFT rewards, and your referral link — all in one place.
               </p>
             }
           />
@@ -330,8 +381,9 @@ export default function Rei() {
       {
         selector: '[data-tour="logout"]',
         title: 'Sign out',
-        body: 'Log out securely. Your X identity and wallet stay linked for next time.',
         placement: 'bottom',
+        cardWidth: 320,
+        body: 'Click here to log out. Your X account and wallet stay linked, so signing back in is quick.',
       },
     ];
     return (
