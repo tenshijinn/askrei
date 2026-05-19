@@ -176,7 +176,8 @@ export default function Rei() {
 
   const handleSubmit = async () => {
     const hasValidAudio = audioBlob || (useExistingTranscript && registrationData?.file_path);
-    if (!hasValidAudio || !publicKey || !consent || !twitterUser) return;
+    const walletAddress = publicKey?.toString() || (isEditMode ? registrationData?.wallet_address : null);
+    if (!hasValidAudio || !walletAddress || !consent || !twitterUser) return;
     setIsSubmitting(true);
     setAnalysisError(null);
     setUploadPercent(0);
