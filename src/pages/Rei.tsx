@@ -268,48 +268,40 @@ export default function Rei() {
         selector: '[data-tour="askrei"]',
         title: 'AskRei — chat with Rei',
         placement: 'bottom',
-        cardWidth: 360,
+        cardWidth: 680,
         onEnter: () => setActiveTab('askrei'),
         body: (
-          <div>
-            <p style={{ margin: 0 }}>
-              Use the <strong style={{ color: '#f0ede8' }}>preset buttons</strong> for quick commands, or type your own in the
-              <strong style={{ color: '#f0ede8' }}> message field</strong> at the bottom. Rei matches you to live bounties, gigs, and tasks based on your profile.
-            </p>
-            <div style={{ marginTop: 12, padding: 12, borderRadius: 10, border: '0.5px solid hsla(18,52%,82%,0.25)', background: 'rgba(232,196,184,0.06)' }}>
-              <div style={{ fontSize: 10, color: '#e8c4b8', letterSpacing: '0.1em', marginBottom: 6 }}>EXAMPLE · MATCHED BOUNTY</div>
-              <div style={{ color: '#f0ede8', fontSize: 12.5, fontWeight: 500, marginBottom: 4 }}>Solana smart contract audit</div>
-              <div style={{ color: '#a09e9a', fontSize: 11, lineHeight: 1.5, marginBottom: 8 }}>Matched to your <em>dev · web3</em> skills. Reward 500 USDC · 7 days left.</div>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 999, background: '#1e1e1e', color: '#a09e9a', border: '0.5px solid hsla(0,0%,100%,0.12)' }}>Solidity</span>
-                <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 999, background: '#1e1e1e', color: '#a09e9a', border: '0.5px solid hsla(0,0%,100%,0.12)' }}>Audit</span>
-                <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 999, background: 'rgba(237,86,90,0.15)', color: '#ed565a', border: '0.5px solid rgba(237,86,90,0.4)' }}>Apply</span>
-              </div>
-            </div>
-          </div>
+          <WalkthroughVideoCard
+            videoSrc="/walkthrough/rei-find-bounties.mp4"
+            text={
+              <p style={{ margin: 0 }}>
+                Use the <strong style={{ color: '#f0ede8' }}>preset buttons</strong> for quick commands, or type your own in the
+                <strong style={{ color: '#f0ede8' }}> message field</strong> at the bottom. Rei matches you to live bounties, gigs, and tasks based on your profile.
+              </p>
+            }
+          />
         ),
       },
       {
         selector: '[data-tour="promote"]',
         title: 'Promote — post an opportunity',
         placement: 'bottom',
-        cardWidth: 340,
+        cardWidth: 680,
         onEnter: () => setActiveTab('post'),
         body: (
-          <div>
-            <p style={{ margin: 0 }}>
-              Submit a <strong style={{ color: '#f0ede8' }}>gig, bounty, or task</strong>. Fill in title, description, role tags, reward, and an optional link — Rei matches it to the right contributors.
-            </p>
-            <div style={{ marginTop: 10, padding: 10, borderRadius: 10, border: '0.5px solid hsla(0,0%,100%,0.1)', background: '#1a1a1a' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                <div style={{ fontSize: 11, color: '#a09e9a' }}>Submission fee</div>
-                <div style={{ fontSize: 12, color: '#e8c4b8', fontWeight: 600 }}>$5 in SOL</div>
+          <WalkthroughVideoCard
+            videoSrc="/walkthrough/rei-promote-bounties.mp4"
+            text={
+              <div>
+                <p style={{ margin: 0 }}>
+                  Submit a <strong style={{ color: '#f0ede8' }}>gig, bounty, or task</strong>. Fill in title, description, role tags, reward, and an optional link — Rei matches it to the right contributors.
+                </p>
+                <p style={{ margin: '8px 0 0', fontSize: 11, color: '#5c5a57' }}>
+                  Submission fee: <span style={{ color: '#e8c4b8', fontWeight: 600 }}>$5 in SOL</span> · paid via Solana Pay or x402, verified on-chain.
+                </p>
               </div>
-              <div style={{ fontSize: 10.5, color: '#5c5a57', marginTop: 6, lineHeight: 1.5 }}>
-                Pay with Solana Pay or x402. Payment is verified on-chain before your post goes live.
-              </div>
-            </div>
-          </div>
+            }
+          />
         ),
       },
       {
@@ -322,8 +314,18 @@ export default function Rei() {
       {
         selector: '#rei-earnings-hub',
         title: 'Earnings hub',
-        body: 'Track points, payouts, NFT rewards, and your referral link from completed work.',
         placement: 'right',
+        cardWidth: 640,
+        body: (
+          <WalkthroughVideoCard
+            videoSrc="/walkthrough/rei-points.mp4"
+            text={
+              <p style={{ margin: 0 }}>
+                Track <strong style={{ color: '#f0ede8' }}>points</strong>, payouts, NFT rewards, and your referral link from completed work — all in one hub.
+              </p>
+            }
+          />
+        ),
       },
       {
         selector: '[data-tour="logout"]',
