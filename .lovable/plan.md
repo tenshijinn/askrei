@@ -1,51 +1,32 @@
-# First-Time User Walkthrough
+# Walkthrough refinements
 
-Add an interactive coach-mark tour that auto-starts the first time a user reaches the logged-in `/rei` view (after X login + wallet connect + registration). Returning users do not see it again. They can skip at any time, replay later from the profile menu.
+## Changes
 
-## UX
+### 1. Split the AskRei step into two
 
-Five-step spotlight tour using floating tooltip cards anchored to real UI elements. Each step dims the rest of the page, highlights one target with a soft ring (`#ed565a`), and shows a small card with: step counter (1/5), title, 1–2 sentence description, "Skip tour" link, "Back"/"Next" buttons. Final step uses "Done".
+Replace the single AskRei tab step with two focused steps that match the screenshots:
 
-Steps target the existing logged-in chrome on `/rei`:
+- **Step A — Suggestion buttons**: highlights the row of preset buttons ("find bounties matching my skills", "show available tasks and quests", etc.) at the top of the chat. Card explains the shortcuts in plain language.
+- **Step B — Typing bar**: highlights only the bottom input field (the "@user > type a message..." bar). Card explains typing free‑form requests and hitting send.
 
-1. **AskRei tab** — "Chat with Rei to find bounties, gigs, and tasks matched to your skills."
-2. **Promote tab** — "Submit a campaign or opportunity for Rei to match to the right contributors ($5 SOL)."
-3. **Profile button** (top-right avatar) — "Edit your transcript, roles, and wallet anytime here."
-4. **Earnings hub** (top bar `ReiEarningsHub`) — "Track points, payouts, and NFT rewards from completed work."
-5. **Logout** — "Sign out securely. Your X identity and wallet stay linked."
+The existing "AskRei — chat with Rei" video card stays as the intro step (highlighting the AskRei tab itself). After it, the tour drills into the two interface pieces.
 
-Behavior:
-- Auto-starts ~600ms after the logged-in view mounts for first-timers.
-- Scrolls target into view; repositions on resize.
-- `Esc` and outside-click on the backdrop = skip.
-- Skipping or completing both mark the tour as seen.
-- A "Replay walkthrough" item is added to the profile tab (or a small `?` button next to Logout) so users can re-trigger it.
+### 2. Tighten the red highlight around the typing field
 
-## Persistence
+The highlight currently uses a fixed 8px outer padding for every step, which makes the input bar look loose. Add a per‑step `highlightPadding` option to the tour and use a small value (≈2px) for the typing‑bar step so the red ring hugs the field like the reference screenshot.
 
-Per-user flag stored in `localStorage` keyed by X user id:
-`rei_walkthrough_completed:<x_user_id> = "true"`.
+### 3. Compress the walkthrough videos
 
-No DB changes — keeps it lightweight and avoids RLS work. (If cross-device persistence is wanted later, we can add a `walkthrough_completed_at` column to the registration row; out of scope for v1.)
+Re‑encode the three MP4s in `public/walkthrough/` with ffmpeg (H.264, CRF ~28, preset slow, scaled to 720p max, audio stripped) to cut filesize meaningfully while keeping visible quality. Originals are moved to `public/walkthrough/originals/` as backups before the new files overwrite the live paths.
 
-## Technical details
+Current sizes:
+- rei-find-bounties.mp4 — 871K
+- rei-points.mp4 — 155K
+- rei-promote-bounties.mp4 — 2.7M (biggest win here)
 
-- New component `src/components/joinrei/WalkthroughTour.tsx`:
-  - Props: `steps: { selector: string; title: string; body: string; placement?: 'bottom'|'top'|'left'|'right' }[]`, `open`, `onClose`, `storageKey`.
-  - Uses `getBoundingClientRect()` on the target + a fixed-position overlay with an SVG mask (or 4 dimmed divs around the target rect) to create the spotlight.
-  - Tooltip card uses existing `rei-surface` / `btn-manga` styling so it matches the manga terminal aesthetic (accent `#ed565a`).
-  - Re-measures on `resize`, `scroll`, and step change. Falls back gracefully if a target is missing (skips that step).
-- New hook `src/hooks/useFirstTimeWalkthrough.ts`:
-  - Reads `rei_walkthrough_completed:<id>` from `localStorage`.
-  - Exposes `{ shouldShow, markSeen, replay }`.
-- Wire-up in `src/pages/Rei.tsx`:
-  - Add `data-tour="askrei" | "promote" | "profile" | "earnings" | "logout"` attributes on the existing buttons in the logged-in header/tabs (no visual change).
-  - Mount `<WalkthroughTour>` inside the `isSuccess && registrationData && !isEditMode` branch, gated by the hook.
-  - Add a small "Replay walkthrough" trigger (text button) in the profile tab area.
-- No new dependencies. No backend changes. No design-token changes — reuse existing `rei-surface`, `btn-manga`, `btn-manga-primary`, and accent color.
+## Technical notes
 
-## Out of scope
-
-- Multi-page tours (only the `/rei` logged-in view).
-- Server-side persistence / analytics events for tour progress.
-- Walkthroughs for `/`, `/joinrei`, `/agents`.
+- Add a `data-tour="askrei-presets"` attribute to the preset-button row in `src/components/ReiChatbot.tsx` (line 215 wrapper div).
+- In `src/components/joinrei/WalkthroughTour.tsx`: extend `TourStep` with `highlightPadding?: number` and replace the hard‑coded `PAD` constant in the highlight rect math with `resolvedStep.highlightPadding ?? 8`.
+- In `src/pages/Rei.tsx` `tourSteps`: insert a new step targeting `[data-tour="askrei-presets"]` (placement: bottom, narrow card) before the typing‑bar step, and set `highlightPadding: 2` on the `[data-tour="askrei-chat-input"]` step.
+- Compression command per file: `ffmpeg -i input.mp4 -vf "scale='min(1280,iw)':-2" -c:v libx264 -preset slow -crf 28 -an -movflags +faststart output.mp4`. Run via `code--exec`, verify each new file is smaller and plays, then swap in place (originals copied to `public/walkthrough/originals/` first).
