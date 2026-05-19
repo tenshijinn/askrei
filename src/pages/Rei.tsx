@@ -524,16 +524,26 @@ export default function Rei() {
                 )}
               </div>
               {twitterUser && (
-                <div className={step !== 2 && connected ? 'opacity-40' : ''}>
+                <div data-tour="reg-wallet" className={step !== 2 && hasWallet ? 'opacity-40' : ''}>
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="h-7 w-7 rounded-full flex items-center justify-center" style={{ background: connected ? 'hsla(18,52%,82%,0.12)' : '#1e1e1e', fontSize: '12px', color: connected ? '#e8c4b8' : '#5c5a57', border: '0.5px solid hsla(0,0%,100%,0.08)' }}>{connected ? <Check className="h-3.5 w-3.5" /> : '2'}</div>
-                    <span style={{ fontSize: '14px', fontWeight: 500, color: '#f0ede8' }}>Connect Solana Wallet</span>
+                    <div className="h-7 w-7 rounded-full flex items-center justify-center" style={{ background: hasWallet ? 'hsla(18,52%,82%,0.12)' : '#1e1e1e', fontSize: '12px', color: hasWallet ? '#e8c4b8' : '#5c5a57', border: '0.5px solid hsla(0,0%,100%,0.08)' }}>{hasWallet ? <Check className="h-3.5 w-3.5" /> : '2'}</div>
+                    <span style={{ fontSize: '14px', fontWeight: 500, color: '#f0ede8' }}>{isEditMode && registrationData?.wallet_address && !showWalletChange ? 'Solana Wallet' : 'Connect Solana Wallet'}</span>
                   </div>
-                  <WalletMultiButton className="!w-full !h-11 !bg-[#f0ede8] !text-[#0a0a0a] hover:!opacity-80 !rounded-[28px] !font-sans !text-sm !font-medium" />
-                  {connected && publicKey && <div className="rei-surface-2 mt-3" style={{ padding: '14px' }}><p style={{ fontSize: '11px', color: '#5c5a57', marginBottom: '4px' }}>Connected Wallet</p><p style={{ fontSize: '11px', fontFamily: "'SF Mono', 'Consolas', monospace", color: '#a09e9a', wordBreak: 'break-all' }}>{publicKey.toString()}</p></div>}
+                  {isEditMode && registrationData?.wallet_address && !showWalletChange ? (
+                    <div className="rei-surface-2" style={{ padding: '14px' }}>
+                      <p style={{ fontSize: '11px', color: '#5c5a57', marginBottom: '4px' }}>Linked Wallet</p>
+                      <p style={{ fontSize: '11px', fontFamily: "'SF Mono', 'Consolas', monospace", color: '#a09e9a', wordBreak: 'break-all', marginBottom: '10px' }}>{publicKey?.toString() || registrationData.wallet_address}</p>
+                      <button onClick={() => setShowWalletChange(true)} style={{ fontSize: '11px', color: '#e8c4b8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px', padding: 0 }}>Change wallet</button>
+                    </div>
+                  ) : (
+                    <>
+                      <WalletMultiButton className="!w-full !h-11 !bg-[#f0ede8] !text-[#0a0a0a] hover:!opacity-80 !rounded-[28px] !font-sans !text-sm !font-medium" />
+                      {connected && publicKey && <div className="rei-surface-2 mt-3" style={{ padding: '14px' }}><p style={{ fontSize: '11px', color: '#5c5a57', marginBottom: '4px' }}>Connected Wallet</p><p style={{ fontSize: '11px', fontFamily: "'SF Mono', 'Consolas', monospace", color: '#a09e9a', wordBreak: 'break-all' }}>{publicKey.toString()}</p></div>}
+                    </>
+                  )}
                 </div>
               )}
-              {twitterUser && connected && (!isSuccess || isEditMode) && (
+              {twitterUser && hasWallet && (!isSuccess || isEditMode) && (
                 <div>
                   <div className="flex items-center gap-3 mb-4">
                     <div className="h-7 w-7 rounded-full flex items-center justify-center" style={{ background: '#1e1e1e', fontSize: '12px', color: '#5c5a57', border: '0.5px solid hsla(0,0%,100%,0.08)' }}>3</div>
@@ -547,13 +557,13 @@ export default function Rei() {
                         <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={useExistingTranscript} onChange={(e) => { setUseExistingTranscript(e.target.checked); if (e.target.checked) setAudioBlob(null); }} style={{ accentColor: '#e8c4b8' }} /><span style={{ fontSize: '13px', color: '#a09e9a' }}>Use existing introduction</span></label>
                       </div>
                     )}
-                    {!useExistingTranscript && <div><div className="rei-section-label">{isEditMode ? 'Record New Introduction' : 'Record Your Introduction'}</div><AudioRecorder onAudioReady={handleAudioReady} maxDurationSeconds={60} /></div>}
-                    <div><div className="rei-section-label">Portfolio URL (Optional)</div><input type="url" placeholder="https://..." value={portfolioUrl} onChange={(e) => setPortfolioUrl(e.target.value)} className="rei-field" /></div>
-                    <div><div className="rei-section-label">Role Tags *</div><div className="flex flex-wrap gap-2">{ROLE_OPTIONS.map((role) => <button key={role.value} onClick={() => toggleRole(role.value)} className="rei-chip" style={{ background: selectedRoles.includes(role.value) ? 'hsla(18,52%,82%,0.12)' : '#1e1e1e', borderColor: selectedRoles.includes(role.value) ? 'hsla(18,52%,82%,0.22)' : 'hsla(0,0%,100%,0.18)', color: selectedRoles.includes(role.value) ? '#e8c4b8' : '#a09e9a' }}>{selectedRoles.includes(role.value) && <span className="rei-chip-dot" />}{role.label}</button>)}</div></div>
+                    {!useExistingTranscript && <div data-tour="reg-voice"><div className="rei-section-label">{isEditMode ? 'Record New Introduction' : 'Record Your Introduction'}</div><AudioRecorder onAudioReady={handleAudioReady} maxDurationSeconds={60} /></div>}
+                    <div data-tour="reg-portfolio"><div className="rei-section-label">Portfolio URL (Optional)</div><input type="url" placeholder="https://..." value={portfolioUrl} onChange={(e) => setPortfolioUrl(e.target.value)} className="rei-field" /></div>
+                    <div data-tour="reg-roles"><div className="rei-section-label">Role Tags *</div><div className="flex flex-wrap gap-2">{ROLE_OPTIONS.map((role) => <button key={role.value} onClick={() => toggleRole(role.value)} className="rei-chip" style={{ background: selectedRoles.includes(role.value) ? 'hsla(18,52%,82%,0.12)' : '#1e1e1e', borderColor: selectedRoles.includes(role.value) ? 'hsla(18,52%,82%,0.22)' : 'hsla(0,0%,100%,0.18)', color: selectedRoles.includes(role.value) ? '#e8c4b8' : '#a09e9a' }}>{selectedRoles.includes(role.value) && <span className="rei-chip-dot" />}{role.label}</button>)}</div></div>
                     <div className="rei-surface-2" style={{ padding: '14px' }}><label className="flex items-start gap-2 cursor-pointer"><input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ accentColor: '#e8c4b8', marginTop: '2px' }} /><span style={{ fontSize: '13px', color: '#a09e9a' }}>I consent to data storage *</span></label></div>
                     <div className="flex gap-2">
-                      {isEditMode && <button onClick={() => { setIsEditMode(false); setAudioBlob(null); setUseExistingTranscript(false); }} className="btn-manga btn-manga-outline flex-1" style={{ borderRadius: '28px', padding: '11px 22px', cursor: 'pointer' }}>Cancel</button>}
-                      <button onClick={handleSubmit} disabled={!canSubmit || isSubmitting} className="btn-manga btn-manga-primary flex-1" style={{ borderRadius: '28px', padding: '11px 22px', cursor: canSubmit && !isSubmitting ? 'pointer' : 'not-allowed', opacity: canSubmit && !isSubmitting ? 1 : 0.4 }}>
+                      {isEditMode && <button onClick={() => { setIsEditMode(false); setAudioBlob(null); setUseExistingTranscript(false); setShowWalletChange(false); }} className="btn-manga btn-manga-outline flex-1" style={{ borderRadius: '28px', padding: '11px 22px', cursor: 'pointer' }}>Cancel</button>}
+                      <button data-tour="reg-submit" onClick={handleSubmit} disabled={!canSubmit || isSubmitting} className="btn-manga btn-manga-primary flex-1" style={{ borderRadius: '28px', padding: '11px 22px', cursor: canSubmit && !isSubmitting ? 'pointer' : 'not-allowed', opacity: canSubmit && !isSubmitting ? 1 : 0.4 }}>
                         {isSubmitting ? (useExistingTranscript ? 'Re-analyzing...' : 'Submitting...') : useExistingTranscript ? 'Re-analyze Profile' : (isEditMode ? 'Update Profile' : 'Register')}
                       </button>
                     </div>
