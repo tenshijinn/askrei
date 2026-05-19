@@ -63,6 +63,7 @@ export default function Rei() {
   const [analysisStage, setAnalysisStage] = useState<AnalysisStage>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [uploadPercent, setUploadPercent] = useState(0);
+  const [showWalletChange, setShowWalletChange] = useState(false);
   const walkthrough = useFirstTimeWalkthrough(twitterUser?.x_user_id);
   // Mini tour for the signup screen — only fires while signed into X
   // but not yet registered (or while editing — different localStorage key).
