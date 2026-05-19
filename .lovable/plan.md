@@ -1,32 +1,87 @@
-# Walkthrough refinements
+# Registration walkthrough + edit-profile wallet bug
 
-## Changes
+Two things:
 
-### 1. Split the AskRei step into two
+1. Add a small, scoped walkthrough for first-time users on the signup screen, sharing content with the post-signup tour so they never drift out of sync.
+2. Fix the "Edit Profile → wallet button does nothing" issue.
 
-Replace the single AskRei tab step with two focused steps that match the screenshots:
+---
 
-- **Step A — Suggestion buttons**: highlights the row of preset buttons ("find bounties matching my skills", "show available tasks and quests", etc.) at the top of the chat. Card explains the shortcuts in plain language.
-- **Step B — Typing bar**: highlights only the bottom input field (the "@user > type a message..." bar). Card explains typing free‑form requests and hitting send.
+## 1. Shared walkthrough content
 
-The existing "AskRei — chat with Rei" video card stays as the intro step (highlighting the AskRei tab itself). After it, the tour drills into the two interface pieces.
+### Problem
+The current tour only runs after registration succeeds. We want a second, smaller tour that runs *during* signup, but its card copy should always match the equivalent step in the logged-in tour — so editing one place updates both.
 
-### 2. Tighten the red highlight around the typing field
+### Approach: one source of truth for step copy
 
-The highlight currently uses a fixed 8px outer padding for every step, which makes the input bar look loose. Add a per‑step `highlightPadding` option to the tour and use a small value (≈2px) for the typing‑bar step so the red ring hugs the field like the reference screenshot.
+Create `src/components/joinrei/walkthroughContent.tsx`. This is a plain TS module that exports the titles + body JSX for every conceptual step that exists in both flows. Examples:
 
-### 3. Compress the walkthrough videos
+```ts
+export const walkthroughCopy = {
+  voiceIntro:   { title: 'Record your voice intro', body: <>...</> },
+  roleTags:     { title: 'Pick your role tags',     body: <>...</> },
+  portfolio:    { title: 'Add a portfolio link',    body: <>...</> },
+  wallet:       { title: 'Connect your wallet',     body: <>...</> },
+  submit:       { title: 'Submit your details',     body: <>...</> },
+  reanalyze:    { title: 'Re-analyze your profile', body: <>...</> }, // edit-only
+};
+```
 
-Re‑encode the three MP4s in `public/walkthrough/` with ffmpeg (H.264, CRF ~28, preset slow, scaled to 720p max, audio stripped) to cut filesize meaningfully while keeping visible quality. Originals are moved to `public/walkthrough/originals/` as backups before the new files overwrite the live paths.
+Both tours import from this file. The post-signup "Edit profile" step and the registration-screen steps reference the same `walkthroughCopy.*` entries, so a copy change ripples to both automatically.
 
-Current sizes:
-- rei-find-bounties.mp4 — 871K
-- rei-points.mp4 — 155K
-- rei-promote-bounties.mp4 — 2.7M (biggest win here)
+### Registration tour
 
-## Technical notes
+- New hook `useRegistrationWalkthrough` modeled on `useFirstTimeWalkthrough` but with its own localStorage key (`rei_registration_walkthrough_completed:<x_user_id>`), gated on `twitterUser?.x_user_id && !isSuccess` (only fires for signed-in-to-X but not-yet-registered users).
+- Mount a second `<WalkthroughTour>` inside the LOGIN / REGISTRATION VIEW branch of `Rei.tsx` (around line 472), with steps pointing only at elements that exist on that screen:
+  - `[data-tour="reg-voice"]` → AudioRecorder block
+  - `[data-tour="reg-portfolio"]` → portfolio URL input
+  - `[data-tour="reg-roles"]` → role tag chips
+  - `[data-tour="reg-wallet"]` → WalletMultiButton
+  - `[data-tour="reg-submit"]` → Submit/Register button
+- Add the matching `data-tour` attributes to those elements in `Rei.tsx` (lines 526, 544–547, 550).
+- Because `WalkthroughTour`'s Next button is spotlight-only (no router pushes), there's zero risk of the user being moved into protected post-registration UI.
 
-- Add a `data-tour="askrei-presets"` attribute to the preset-button row in `src/components/ReiChatbot.tsx` (line 215 wrapper div).
-- In `src/components/joinrei/WalkthroughTour.tsx`: extend `TourStep` with `highlightPadding?: number` and replace the hard‑coded `PAD` constant in the highlight rect math with `resolvedStep.highlightPadding ?? 8`.
-- In `src/pages/Rei.tsx` `tourSteps`: insert a new step targeting `[data-tour="askrei-presets"]` (placement: bottom, narrow card) before the typing‑bar step, and set `highlightPadding: 2` on the `[data-tour="askrei-chat-input"]` step.
-- Compression command per file: `ffmpeg -i input.mp4 -vf "scale='min(1280,iw)':-2" -c:v libx264 -preset slow -crf 28 -an -movflags +faststart output.mp4`. Run via `code--exec`, verify each new file is smaller and plays, then swap in place (originals copied to `public/walkthrough/originals/` first).
+### Logged-in tour
+- Replace the inline JSX in the existing "Edit profile" / "Profile card" steps with references to `walkthroughCopy`, so they share the registration copy where it overlaps.
+
+---
+
+## 2. Edit Profile wallet bug
+
+### Symptom
+After clicking **Edit Profile**, the user lands on what looks like the login page, the Twitter session is fine, but clicking the wallet button does nothing.
+
+### Likely cause
+`isEditMode = true` re-renders the registration view (`Rei.tsx` line 264 guard flips to false). That view shows:
+- Step 1: Twitter (already done, shown collapsed) ✅
+- Step 2: `WalletMultiButton` — only enabled if `twitterUser && !connected`.
+
+If the wallet adapter's `connected` state is `false` at this moment (Solana wallet auto-connect didn't re-hydrate), the user sees the connect button. The "nothing happens" is most likely one of:
+
+a. The Solana `WalletModalProvider` is mounted in a parent that unmounts/remounts on the view switch, so the modal opens off-screen or never mounts.
+b. A z-index conflict — modal opens behind the page.
+c. Twitter callback handler is interfering, or `WalletMultiButton` click is being swallowed by an overlay.
+
+### Investigation steps (during build)
+1. Check where `WalletProvider`/`WalletModalProvider` is mounted (`src/components/WalletProvider.tsx`, `App.tsx`) — confirm it wraps both views consistently.
+2. Add a console log to `WalletMultiButton`'s wrapper or use the wallet adapter's `setVisible` hook directly to confirm the modal opens.
+3. Check for fixed-position overlays in edit view (the in-progress walkthrough or any leftover backdrop) that might intercept clicks.
+
+### Fix
+Most likely we need to ensure that on `Edit Profile` click, we don't actually need the user to re-connect: `registrationData.wallet_address` is already known. Two options:
+
+- **Option A (preferred):** Skip the wallet step in edit mode. Treat the stored `wallet_address` as authoritative, only show the WalletMultiButton if the user explicitly wants to change wallets (a "Change wallet" link). The Update Profile call already accepts the wallet address as a string.
+- **Option B:** Keep the current flow but fix the modal mounting so clicking actually opens it.
+
+Plan implements **Option A**, plus a small "Change wallet" affordance, and as a side-effect also fixes the "nothing happens" symptom because no modal is required to proceed.
+
+---
+
+## Files touched
+
+- `src/components/joinrei/walkthroughContent.tsx` (new)
+- `src/hooks/useRegistrationWalkthrough.ts` (new, mirrors `useFirstTimeWalkthrough`)
+- `src/pages/Rei.tsx` — add `data-tour` attrs on registration view, mount second tour, refactor edit-mode wallet step, import shared copy
+- (Logged-in tour steps already in `Rei.tsx` get refactored to use `walkthroughCopy`)
+
+No backend, schema, or RLS changes.
