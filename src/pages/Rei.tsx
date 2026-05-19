@@ -18,6 +18,8 @@ import { ReiAnalysisOverlay, type AnalysisStage } from '@/components/ReiAnalysis
 import { WalkthroughTour, type TourStep } from '@/components/joinrei/WalkthroughTour';
 import { WalkthroughVideoCard } from '@/components/joinrei/WalkthroughVideoCard';
 import { useFirstTimeWalkthrough } from '@/hooks/useFirstTimeWalkthrough';
+import { useRegistrationWalkthrough } from '@/hooks/useRegistrationWalkthrough';
+import { walkthroughCopy } from '@/components/joinrei/walkthroughContent';
 
 interface TwitterUser { x_user_id: string; handle: string; display_name: string; profile_image_url?: string; verified: boolean; }
 interface VerificationStatus { bluechip_verified: boolean; verification_type: string | null; }
