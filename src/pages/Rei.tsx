@@ -15,6 +15,8 @@ import { useNavigate } from 'react-router-dom';
 import { ReiEarningsHub } from '@/components/ReiEarningsHub';
 import { Progress } from '@/components/ui/progress';
 import { ReiAnalysisOverlay, type AnalysisStage } from '@/components/ReiAnalysisOverlay';
+import { WalkthroughTour, type TourStep } from '@/components/joinrei/WalkthroughTour';
+import { useFirstTimeWalkthrough } from '@/hooks/useFirstTimeWalkthrough';
 
 interface TwitterUser { x_user_id: string; handle: string; display_name: string; profile_image_url?: string; verified: boolean; }
 interface VerificationStatus { bluechip_verified: boolean; verification_type: string | null; }
@@ -58,6 +60,7 @@ export default function Rei() {
   const [analysisStage, setAnalysisStage] = useState<AnalysisStage>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [uploadPercent, setUploadPercent] = useState(0);
+  const walkthrough = useFirstTimeWalkthrough(twitterUser?.x_user_id);
 
   useEffect(() => {
     const restoreTwitterState = async () => {
@@ -259,21 +262,32 @@ export default function Rei() {
   // ==================== LOGGED IN VIEW ====================
   if (isSuccess && registrationData && !isEditMode) {
     const analysis = registrationData.profile_analysis as any;
+    const tourSteps: TourStep[] = [
+      { selector: '[data-tour="askrei"]', title: 'AskRei', body: 'Chat with Rei to find bounties, gigs, and tasks matched to your skills.', placement: 'bottom' },
+      { selector: '[data-tour="promote"]', title: 'Promote', body: 'Submit a campaign or opportunity for Rei to match to the right contributors ($5 SOL).', placement: 'bottom' },
+      { selector: '[data-tour="profile"]', title: 'Your profile', body: 'Edit your transcript, roles, and wallet anytime here.', placement: 'bottom' },
+      { selector: '[data-tour="earnings"]', title: 'Earnings hub', body: 'Track points, payouts, and NFT rewards from completed work.', placement: 'bottom' },
+      { selector: '[data-tour="logout"]', title: 'Sign out', body: 'Log out securely. Your X identity and wallet stay linked for next time.', placement: 'bottom' },
+    ];
     return (
       <div className="rei-theme flex flex-col h-screen overflow-hidden" style={{ background: '#0a0a0a' }}>
-        {(registrationData?.wallet_address || publicKey) && <ReiEarningsHub registrationWallet={registrationData?.wallet_address} connectedWallet={publicKey?.toString()} xUserId={twitterUser?.x_user_id} />}
+        {(registrationData?.wallet_address || publicKey) && (
+          <div data-tour="earnings">
+            <ReiEarningsHub registrationWallet={registrationData?.wallet_address} connectedWallet={publicKey?.toString()} xUserId={twitterUser?.x_user_id} />
+          </div>
+        )}
         <div className="fixed top-0 left-0 right-0 z-50" style={{ background: '#0a0a0a', borderBottom: '0.5px solid hsla(0,0%,100%,0.08)' }}>
           <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
             <img src={reiLogo} alt="REI" className="h-10 w-auto" style={{ opacity: 0.95 }} />
             <div className="flex items-center gap-2 justify-end">
-              <button onClick={() => setActiveTab('profile')} className={activeTab === 'profile' ? 'btn-manga btn-manga-primary' : 'rei-chip'} style={{ padding: twitterUser?.profile_image_url ? '3px' : '5px 10px', fontSize: '11px', display: 'flex', alignItems: 'center', justifyContent: 'center', ...(activeTab === 'profile' ? { borderRadius: '28px', background: '#f0ede8', color: '#0a0a0a', border: 'none' } : {}) }} title="Profile">
+              <button data-tour="profile" onClick={() => setActiveTab('profile')} className={activeTab === 'profile' ? 'btn-manga btn-manga-primary' : 'rei-chip'} style={{ padding: twitterUser?.profile_image_url ? '3px' : '5px 10px', fontSize: '11px', display: 'flex', alignItems: 'center', justifyContent: 'center', ...(activeTab === 'profile' ? { borderRadius: '28px', background: '#f0ede8', color: '#0a0a0a', border: 'none' } : {}) }} title="Profile">
                 {twitterUser?.profile_image_url ? (
                   <img src={twitterUser.profile_image_url} alt={twitterUser.handle || 'Profile'} style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover', display: 'block', boxShadow: activeTab === 'profile' ? '0 0 0 1.5px #0a0a0a' : 'none' }} />
                 ) : (
                   <UserCircle style={{ width: '14px', height: '14px' }} />
                 )}
               </button>
-              <button onClick={handleLogout} className="rei-chip" style={{ padding: '5px 12px', fontSize: '11px' }}><LogOut style={{ width: '12px', height: '12px', color: '#a09e9a' }} />Logout</button>
+              <button data-tour="logout" onClick={handleLogout} className="rei-chip" style={{ padding: '5px 12px', fontSize: '11px' }}><LogOut style={{ width: '12px', height: '12px', color: '#a09e9a' }} />Logout</button>
             </div>
           </div>
         </div>
@@ -281,7 +295,7 @@ export default function Rei() {
           <div className="max-w-4xl mx-auto">
             <div className="flex gap-2 mt-4 mb-4">
               {[{ key: 'askrei' as const, label: 'AskRei' }, { key: 'post' as const, label: 'Promote' }].map(tab => (
-                <button key={tab.key} onClick={() => setActiveTab(tab.key)} className={activeTab === tab.key ? 'btn-manga btn-manga-primary' : 'rei-chip'} style={{ padding: '7px 18px', fontSize: '12px', fontFamily: "'SF Mono', 'Consolas', monospace", ...(activeTab === tab.key ? { borderRadius: '28px', background: '#f0ede8', color: '#0a0a0a', border: 'none', fontWeight: 500 } : {}) }}>{tab.label}</button>
+                <button key={tab.key} data-tour={tab.key === 'post' ? 'promote' : 'askrei'} onClick={() => setActiveTab(tab.key)} className={activeTab === tab.key ? 'btn-manga btn-manga-primary' : 'rei-chip'} style={{ padding: '7px 18px', fontSize: '12px', fontFamily: "'SF Mono', 'Consolas', monospace", ...(activeTab === tab.key ? { borderRadius: '28px', background: '#f0ede8', color: '#0a0a0a', border: 'none', fontWeight: 500 } : {}) }}>{tab.label}</button>
               ))}
               {['Post Tasks', 'Post Gigs'].map(label => (<button key={label} disabled className="rei-chip" style={{ padding: '7px 18px', fontSize: '12px', fontFamily: "'SF Mono', 'Consolas', monospace", opacity: 0.35, cursor: 'not-allowed' }} title="Coming soon">{label}</button>))}
             </div>
@@ -312,12 +326,14 @@ export default function Rei() {
                   {analysis.key_strengths?.length > 0 && <div><div className="rei-section-label">Key Strengths</div><div className="space-y-1.5">{analysis.key_strengths.map((strength: string, idx: number) => <div key={idx} className="flex items-start gap-2" style={{ fontSize: '13px', color: '#a09e9a' }}><CheckCircle2 className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" style={{ color: '#e8c4b8' }} /><span>{strength}</span></div>)}</div></div>}
                 </div>}
                 <button onClick={() => setIsEditMode(true)} className="btn-manga btn-manga-outline w-full" style={{ borderRadius: '28px', padding: '11px 22px', fontSize: '13px', cursor: 'pointer' }}>Edit Profile</button>
+                <button onClick={walkthrough.replay} className="w-full" style={{ background: 'none', border: 'none', color: '#a09e9a', fontSize: '12px', textDecoration: 'underline', textUnderlineOffset: 3, cursor: 'pointer', paddingTop: 4 }}>Replay walkthrough</button>
               </div>
             </div>
           )}
           {activeTab === 'askrei' && <div className="overflow-y-auto h-full scrollbar-hide"><div className="max-w-4xl mx-auto px-4 pb-20" style={{ borderLeft: '0.5px solid hsla(0,0%,100%,0.08)', borderRight: '0.5px solid hsla(0,0%,100%,0.08)', minHeight: '100%' }}><ReiChatbot walletAddress={registrationData.wallet_address} userMode="talent" twitterHandle={twitterUser?.handle} /></div></div>}
           {activeTab === 'post' && <div className="overflow-y-auto h-full scrollbar-hide"><div className="max-w-4xl mx-auto px-4 pb-20"><PostToRei /></div></div>}
         </div>
+        <WalkthroughTour steps={tourSteps} open={walkthrough.open} onClose={walkthrough.markSeen} />
       </div>
     );
   }
