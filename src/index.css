@@ -256,13 +256,22 @@
 }
 .pulse-glow { animation: reiPulseGlow 2.4s ease-in-out infinite; color: hsl(var(--primary)); }
 
-/* Ensure Solana wallet modal always sits above walkthrough/spotlight overlays.
-   Overlay must stay BELOW modal content or it intercepts clicks on wallet rows. */
-.wallet-adapter-modal-overlay {
-  z-index: 2147483646 !important;
-}
-.wallet-adapter-modal,
-.wallet-adapter-modal-container {
+/* Ensure Solana wallet modal always sits above walkthrough/spotlight overlays,
+   and that the internal backdrop stays behind the clickable wallet list. */
+.wallet-adapter-modal {
   z-index: 2147483647 !important;
+  pointer-events: auto !important;
+}
+.wallet-adapter-modal-overlay {
+  z-index: 0 !important;
+}
+.wallet-adapter-modal-container {
+  position: relative !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+}
+.wallet-adapter-modal-wrapper {
+  position: relative !important;
+  z-index: 2 !important;
   pointer-events: auto !important;
 }
