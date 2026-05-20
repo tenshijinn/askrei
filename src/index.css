@@ -255,3 +255,9 @@
   }
 }
 .pulse-glow { animation: reiPulseGlow 2.4s ease-in-out infinite; color: hsl(var(--primary)); }
+
+/* Ensure Solana wallet modal always sits above walkthrough/spotlight overlays */
+.wallet-adapter-modal-overlay,
+.wallet-adapter-modal {
+  z-index: 2147483647 !important;
+}
