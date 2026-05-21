@@ -52,13 +52,20 @@ function checkAuth(req: Request, url: URL): Response | null {
     console.error("[zernio-events] ZERNIO_WEBHOOK_SECRET is not configured");
     return json({ error: "Server misconfigured" }, 500);
   }
-  const provided =
-    req.headers.get("x-webhook-secret") ??
-    req.headers.get("x-zernio-signature") ??
-    req.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ??
-    url.searchParams.get("secret") ??
-    "";
+  const carriers: Array<[string, string | null]> = [
+    ["x-webhook-secret", req.headers.get("x-webhook-secret")],
+    ["x-zernio-signature", req.headers.get("x-zernio-signature")],
+    ["x-api-key", req.headers.get("x-api-key")],
+    ["authorization", req.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ?? null],
+    ["?secret", url.searchParams.get("secret")],
+  ];
+  const found = carriers.find(([, v]) => v && v.length > 0);
+  const provided = found?.[1] ?? "";
   if (!timingSafeEqual(provided, WEBHOOK_SECRET)) {
+    const present = carriers.filter(([, v]) => !!v).map(([k]) => k);
+    console.warn(
+      `[zernio-events] Unauthorized ${req.method} ${url.pathname} carriers_present=[${present.join(",")}] used=${found?.[0] ?? "none"} provided_len=${provided.length} expected_len=${WEBHOOK_SECRET.length}`,
+    );
     return json({ error: "Unauthorized" }, 401);
   }
   return null;
@@ -72,6 +79,12 @@ Deno.serve(async (req) => {
   const url = new URL(req.url);
   const path = url.pathname.replace(/\/+$/, "");
   const isAck = path.endsWith("/ack");
+  const isHealth = path.endsWith("/health");
+
+  // Unauthenticated health probe so callers can confirm reachability.
+  if (req.method === "GET" && isHealth) {
+    return json({ ok: true, fn: "zernio-events", ts: new Date().toISOString() });
+  }
 
   const authErr = checkAuth(req, url);
   if (authErr) return authErr;
