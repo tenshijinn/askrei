@@ -1,47 +1,58 @@
-# Fix x402 SOL price inaccuracy
+# Hermes ↔ Rei: Event Fetch API
 
-## Problem
+Hermes needs a way to pull `zernio_webhook_events` from Rei. Plan: add a second edge function (`zernio-events`) that Hermes polls, plus a small DB helper for clean extraction. Keep the existing `zernio-webhook` ingest endpoint unchanged.
 
-The $5 charge was converted using a SOL price of **$86.27/SOL**, producing 0.057958 SOL. The math is correct ($5 / $86.27 ≈ 0.0580), so the bug is the **price source**, not the conversion. Real SOL price is significantly higher, so the user is being undercharged (or, in a spike, overcharged).
+## What gets built
 
-Root cause is in `supabase/functions/x402-create-payment/index.ts`:
+1. **Edge function `zernio-events`** (`verify_jwt = false`, secret-auth)
+   - `GET /functions/v1/zernio-events?since=<ISO timestamp>&limit=100&event_type=comment.received&unprocessed=true`
+   - Auth: same `ZERNIO_WEBHOOK_SECRET` via `x-webhook-secret` header (or `Authorization: Bearer <secret>`, or `?secret=`)
+   - Returns normalized rows + a `next_since` cursor for the next poll
+   - `POST /functions/v1/zernio-events/ack` with `{ ids: [...], error?: string }` to mark events `processed = true` (or set `processing_error`)
 
-- The only price oracle is **CoinGecko's free public endpoint**, which is frequently rate-limited, cached, or returns stale values on Supabase Edge runtimes.
-- The sanity check accepts any price between `$10` and `$1000`, so an obviously wrong $86 slips through.
-- The fallback when all retries fail is a **hardcoded $100**, which is also wrong and silently miscalculates real money.
+2. **DB helper view `public.zernio_webhook_events_normalized`**
+   - Pulls common fields out of `payload` JSONB so Hermes does not have to guess shapes:
+     - `comment_text` ← `payload.text` / `payload.body` / `payload.data.text` / `payload.data.body`
+     - `author_handle` ← existing `x_handle` fallback to `payload.author.username` etc.
+     - `author_user_id` ← existing `x_user_id` fallback chain
+     - `in_reply_to_tweet_id` ← `payload.in_reply_to_status_id_str` / `payload.data.tweet_id` / `payload.postId` / `payload.object_id`
+     - `event_external_id` ← existing `external_id`
+   - Read by service role only (function uses service role key)
 
-The same single-source pattern would silently misprice every future payment.
+3. **Index** on `(received_at, event_type) WHERE processed = false` for fast polling.
 
-## Fix
+## Answers for Hermes
 
-Replace the single CoinGecko call with a **multi-source price oracle** that prefers on-chain / professional feeds and only falls back to CoinGecko. Refuse to create the payment if no source returns a trustworthy price — never fall back to a hardcoded constant for real charges.
+1. **Fetch method:** Poll `GET /functions/v1/zernio-events?since=<ts>`. Realtime is available as an option but polling every 2–5 min is the recommended default.
+2. **Auth:** Same `ZERNIO_WEBHOOK_SECRET`, sent as `x-webhook-secret` header (or `Authorization: Bearer`). No Supabase anon/service key needed — the function holds the service role internally.
+3. **Event structure (response):**
+   ```json
+   {
+     "events": [
+       {
+         "id": "uuid",
+         "event_external_id": "1234567890",
+         "event_type": "comment.received",
+         "received_at": "2026-05-21T18:30:00Z",
+         "author_handle": "someuser",
+         "author_user_id": "987654",
+         "in_reply_to_tweet_id": "1111111111",
+         "comment_text": "great post!",
+         "payload": { /* full original */ }
+       }
+     ],
+     "next_since": "2026-05-21T18:30:00Z",
+     "count": 1
+   }
+   ```
+   Dedupe on `id` (UUID) or `event_external_id`.
+4. **Helpers:** The `zernio_webhook_events_normalized` view does the extraction. Also `POST /ack` to flip `processed = true` so Hermes does not re-handle events.
+5. **Rate limits:** No app-level limits; Supabase edge functions handle the load. Poll every 2–5 min, `limit ≤ 500` per call. Use `unprocessed=true` to keep payloads small.
+6. **Test event:** After deploy, you (or I) can `POST` a sample `comment.received` payload to `zernio-webhook` and then `GET` it back through `zernio-events` to confirm the shape.
 
-### Price sources (in order)
+## Technical details
 
-1. **Jupiter Price API v2** (`https://api.jup.ag/price/v2?ids=So11111111111111111111111111111111111111112`) — fast, free, aggregated DEX price, no key.
-2. **Pyth Hermes** (`https://hermes.pyth.network/v2/updates/price/latest?ids[]=<SOL/USD feed id>`) — on-chain oracle, no key.
-3. **CoinGecko** — current behavior, last resort.
-
-For each source: 5s timeout, parse, validate. Use the **median** of whichever sources responded successfully (at least 1). If 2+ sources disagree by more than ~3%, log a warning and use the median anyway.
-
-### Sanity check
-
-- Reject any single source price outside a wide safety band (e.g. `$20`–`$2000`) — wide enough to survive real market moves, narrow enough to catch obvious garbage like an $86 stale value when the real price is far higher. Tune later if needed.
-- If **no** source produced a valid price, return HTTP 503 with a clear error so the client shows "price feed unavailable, try again" rather than silently charging the wrong amount.
-
-### Other small cleanups
-
-- Log which source(s) succeeded and the chosen price for auditability.
-- Keep all existing schema / transaction / DB code unchanged.
-
-## Files touched
-
-- `supabase/functions/x402-create-payment/index.ts` — replace the CoinGecko-only block (lines ~46–117) with the multi-source fetcher; remove the hardcoded `$100` fallback; surface a clean error on total failure.
-
-No frontend, schema, or other edge function changes needed. `x402-verify-payment` already verifies the stored `solAmount`, so the corrected price flows through automatically.
-
-## Out of scope
-
-- Caching SOL price across requests (can add later if rate limits bite).
-- Switching the charge unit away from SOL.
-- Touching other payment flows (Solana Pay QR, Stripe).
+- New file: `supabase/functions/zernio-events/index.ts` (handles `GET /` and `POST /ack`, shares the `timingSafeEqual` secret check pattern from `zernio-webhook`).
+- New migration: create view + index, grant select on view to `service_role`.
+- `supabase/config.toml`: add `[functions.zernio-events]` with `verify_jwt = false`.
+- No changes to existing `zernio-webhook` function or `zernio_webhook_events` table schema.
