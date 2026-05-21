@@ -1186,6 +1186,51 @@ export type Database = {
         }
         Relationships: []
       }
+      zernio_webhook_events_normalized: {
+        Row: {
+          author_handle: string | null
+          author_user_id: string | null
+          comment_text: string | null
+          event_external_id: string | null
+          event_type: string | null
+          id: string | null
+          in_reply_to_tweet_id: string | null
+          payload: Json | null
+          processed: boolean | null
+          processing_error: string | null
+          received_at: string | null
+          source: string | null
+        }
+        Insert: {
+          author_handle?: never
+          author_user_id?: never
+          comment_text?: never
+          event_external_id?: string | null
+          event_type?: string | null
+          id?: string | null
+          in_reply_to_tweet_id?: never
+          payload?: Json | null
+          processed?: boolean | null
+          processing_error?: string | null
+          received_at?: string | null
+          source?: string | null
+        }
+        Update: {
+          author_handle?: never
+          author_user_id?: never
+          comment_text?: never
+          event_external_id?: string | null
+          event_type?: string | null
+          id?: string | null
+          in_reply_to_tweet_id?: never
+          payload?: Json | null
+          processed?: boolean | null
+          processing_error?: string | null
+          received_at?: string | null
+          source?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
