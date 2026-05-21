@@ -1,0 +1,1 @@
+ALTER VIEW public.zernio_webhook_events_normalized SET (security_invoker = true);
