@@ -107,95 +107,21 @@ serve(async (req) => {
     const tokenMint = 'SOL';
     const tokenAmount = transferAmount;
     
-    // SOL transfer - get SOL price from CoinGecko with retry and timeout
-    console.log('[verify-solana-pay] Fetching SOL price from CoinGecko...');
-    let solPrice = 0;
-    let lastError = '';
-    const maxRetries = 3;
-    const timeout = 10000; // 10 seconds
-    
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        console.log(`[verify-solana-pay] Attempt ${attempt}/${maxRetries}: CoinGecko request started`);
-        const startTime = Date.now();
-        
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeout);
-        
-        const priceResponse = await fetch(
-          'https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd',
-          { 
-            headers: { 'Accept': 'application/json' },
-            signal: controller.signal
-          }
-        );
-        clearTimeout(timeoutId);
-        
-        const responseTime = Date.now() - startTime;
-        
-        if (!priceResponse.ok) {
-          if (priceResponse.status === 429) {
-            lastError = 'Rate limited by CoinGecko';
-            console.log(`[verify-solana-pay] Attempt ${attempt}/${maxRetries}: ${lastError}`);
-          } else if (priceResponse.status === 503 || priceResponse.status === 502) {
-            lastError = 'CoinGecko service unavailable';
-            console.log(`[verify-solana-pay] Attempt ${attempt}/${maxRetries}: ${lastError}`);
-          } else {
-            lastError = `HTTP ${priceResponse.status}: ${priceResponse.statusText}`;
-            console.log(`[verify-solana-pay] Attempt ${attempt}/${maxRetries}: Failed - ${lastError}`);
-          }
-          
-          if (attempt < maxRetries) {
-            await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-          }
-          continue;
-        }
-        
-        const priceData = await priceResponse.json();
-        solPrice = priceData?.solana?.usd || 0;
-        
-        if (solPrice > 0 && solPrice >= 10 && solPrice <= 1000) {
-          console.log(`[verify-solana-pay] Attempt ${attempt}/${maxRetries}: Success - SOL price $${solPrice} (response time: ${responseTime}ms)`);
-          break;
-        } else {
-          lastError = `Invalid price data: ${solPrice}`;
-          console.log(`[verify-solana-pay] Attempt ${attempt}/${maxRetries}: ${lastError}`);
-          if (attempt < maxRetries) {
-            await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-          }
-        }
-      } catch (error: any) {
-        if (error.name === 'AbortError') {
-          lastError = 'Request timed out';
-          console.log(`[verify-solana-pay] Attempt ${attempt}/${maxRetries}: ${lastError}`);
-        } else {
-          lastError = error.message || 'Network error';
-          console.log(`[verify-solana-pay] Attempt ${attempt}/${maxRetries}: ${lastError}`);
-        }
-        
-        if (attempt < maxRetries) {
-          await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-        }
-      }
-    }
-
-    if (solPrice === 0 || solPrice < 10 || solPrice > 1000) {
-      console.log('[verify-solana-pay] Failed to fetch SOL price after all retries. Last error:', lastError);
-      
-      let userMessage = 'Unable to verify payment price. ';
-      if (lastError.includes('Rate limited')) {
-        userMessage += 'Price service is rate limited. Please try again in a moment.';
-      } else if (lastError.includes('unavailable') || lastError.includes('502') || lastError.includes('503')) {
-        userMessage += 'Price service is temporarily unavailable. Please try again.';
-      } else if (lastError.includes('timeout')) {
-        userMessage += 'Price service timed out. Please try again.';
-      } else {
-        userMessage += 'Please try again in a moment.';
-      }
-      
+    // SOL transfer - fetch SOL price from multi-source oracle (Jupiter + Pyth + CoinGecko)
+    console.log('[verify-solana-pay] Fetching SOL price from multi-source oracle...');
+    let solPrice: number;
+    try {
+      const { fetchSolPriceUsd } = await import('../_shared/sol-price.ts');
+      const result = await fetchSolPriceUsd('[verify-solana-pay]');
+      solPrice = result.price;
+    } catch (err: any) {
+      console.log('[verify-solana-pay] Price oracle failure:', err.message);
       return new Response(
-        JSON.stringify({ verified: false, error: userMessage }),
-        { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({
+          verified: false,
+          error: 'Unable to verify payment price right now. Please try again in a moment.',
+        }),
+        { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
     }
 

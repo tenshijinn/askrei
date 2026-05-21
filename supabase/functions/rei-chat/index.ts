@@ -1525,80 +1525,23 @@ async function executeTool(toolName: string, args: any, supabase: any) {
       const usdAmount = 5; // $5 USD
       const recipient = '5JXJQSFZMxiQNmG4nx3bs2FnoZZsgz6kpVrNDxfBjb1s';
       
-      // Fetch current SOL price in USD with retry logic
+      // Fetch current SOL price in USD from multi-source oracle (Jupiter + Pyth + CoinGecko)
       console.log(`[generate_solana_pay_qr] Fetching SOL price for $${usdAmount} USD...`);
-      let solPriceUsd = 0;
-      const maxRetries = 3;
-      const timeout = 10000; // 10 seconds
-      const fallbackPrice = 100;
-      
-      for (let attempt = 1; attempt <= maxRetries; attempt++) {
-        try {
-          console.log(`[generate_solana_pay_qr] Attempt ${attempt}/${maxRetries}: CoinGecko request started`);
-          const startTime = Date.now();
-          
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), timeout);
-          
-          const priceResponse = await fetch(
-            'https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd',
-            { 
-              headers: { 'Accept': 'application/json' },
-              signal: controller.signal
-            }
-          );
-          clearTimeout(timeoutId);
-          
-          const responseTime = Date.now() - startTime;
-          
-          if (!priceResponse.ok) {
-            console.log(`[generate_solana_pay_qr] Attempt ${attempt}/${maxRetries}: Failed - HTTP ${priceResponse.status} ${priceResponse.statusText}`);
-            
-            if (priceResponse.status === 429) {
-              console.log('[generate_solana_pay_qr] Rate limited by CoinGecko');
-            } else if (priceResponse.status === 503 || priceResponse.status === 502) {
-              console.log('[generate_solana_pay_qr] CoinGecko service unavailable');
-            }
-            
-            if (attempt < maxRetries) {
-              await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-            }
-            continue;
-          }
-          
-          const priceData = await priceResponse.json();
-          solPriceUsd = priceData?.solana?.usd || 0;
-          
-          if (solPriceUsd > 0 && solPriceUsd >= 10 && solPriceUsd <= 1000) {
-            console.log(`[generate_solana_pay_qr] Attempt ${attempt}/${maxRetries}: Success - SOL price $${solPriceUsd} (response time: ${responseTime}ms)`);
-            break;
-          } else {
-            console.log(`[generate_solana_pay_qr] Attempt ${attempt}/${maxRetries}: Invalid price data: ${solPriceUsd}`);
-            if (attempt < maxRetries) {
-              await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-            }
-          }
-        } catch (error: any) {
-          if (error.name === 'AbortError') {
-            console.log(`[generate_solana_pay_qr] Attempt ${attempt}/${maxRetries}: Request timed out`);
-          } else {
-            console.log(`[generate_solana_pay_qr] Attempt ${attempt}/${maxRetries}: Network error - ${error.message}`);
-          }
-          
-          if (attempt < maxRetries) {
-            await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-          }
-        }
+      let solPriceUsd: number;
+      try {
+        const { fetchSolPriceUsd } = await import('../_shared/sol-price.ts');
+        const result = await fetchSolPriceUsd('[generate_solana_pay_qr]');
+        solPriceUsd = result.price;
+      } catch (err: any) {
+        console.error('[generate_solana_pay_qr] Price oracle failure:', err.message);
+        return {
+          success: false,
+          error: 'Unable to fetch a trustworthy SOL price right now. Please try again in a moment.',
+        };
       }
-      
-      // Use fallback price if all retries failed
-      if (solPriceUsd === 0 || solPriceUsd < 10 || solPriceUsd > 1000) {
-        console.log(`[generate_solana_pay_qr] All retries exhausted. Using fallback price $${fallbackPrice}`);
-        solPriceUsd = fallbackPrice;
-      }
-      
+
       const solAmount = usdAmount / solPriceUsd;
-      console.log(`[generate_solana_pay_qr] Converted $${usdAmount} USD to ${solAmount} SOL${solPriceUsd === fallbackPrice ? ' (FALLBACK PRICE)' : ''}`)
+      console.log(`[generate_solana_pay_qr] Converted $${usdAmount} USD to ${solAmount} SOL at $${solPriceUsd}/SOL`);
       
       // Create Solana Pay URL (accepts SOL by default)
       // Note: Wallet apps can send SPL tokens instead if they support it
