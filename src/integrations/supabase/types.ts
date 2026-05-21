@@ -1034,6 +1034,45 @@ export type Database = {
         }
         Relationships: []
       }
+      zernio_webhook_events: {
+        Row: {
+          event_type: string | null
+          external_id: string | null
+          id: string
+          payload: Json
+          processed: boolean
+          processing_error: string | null
+          received_at: string
+          source: string
+          x_handle: string | null
+          x_user_id: string | null
+        }
+        Insert: {
+          event_type?: string | null
+          external_id?: string | null
+          id?: string
+          payload: Json
+          processed?: boolean
+          processing_error?: string | null
+          received_at?: string
+          source?: string
+          x_handle?: string | null
+          x_user_id?: string | null
+        }
+        Update: {
+          event_type?: string | null
+          external_id?: string | null
+          id?: string
+          payload?: Json
+          processed?: boolean
+          processing_error?: string | null
+          received_at?: string
+          source?: string
+          x_handle?: string | null
+          x_user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       v_public_jobs: {
