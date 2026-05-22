@@ -1,6 +1,7 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
 import { ParallaxWrapper } from './ParallaxWrapper';
-import splitImage from '@/assets/joinrei/agent-chatbot-split.png';
+import agentImage from '@/assets/joinrei/ai-agent.png';
+import appMockup from '@/assets/joinrei/app-mockup.png';
 import reiLogo from '@/assets/joinrei/rei-logo.png';
 
 interface AgentChatbotSplitProps {
@@ -32,7 +33,7 @@ export const AgentChatbotSplit = ({ variant }: AgentChatbotSplitProps) => {
   return (
     <section className="min-h-screen snap-start relative flex flex-col md:flex-row overflow-hidden">
       {/* LEFT — AGENT (cream) */}
-      <div className="relative w-full md:w-1/2 h-[50vh] md:h-screen bg-[#f5f0e6] overflow-hidden flex flex-col p-8 lg:p-12 xl:p-16">
+      <div className="relative w-full md:w-1/2 h-[50vh] md:h-screen bg-[#faf1e1] overflow-hidden flex flex-col p-8 lg:p-12 xl:p-16">
         <ScrollFadeIn>
           <h2 className="text-[#181818] text-[2.5rem] md:text-[3rem] lg:text-[3.5rem]" style={bankGothicStyle}>
             Agent
@@ -42,10 +43,9 @@ export const AgentChatbotSplit = ({ variant }: AgentChatbotSplitProps) => {
         <div className="absolute inset-0 pointer-events-none">
           <ParallaxWrapper speed={0.15} className="absolute inset-0 flex items-center justify-center">
             <img
-              src={splitImage}
+              src={agentImage}
               alt="Rei agent figure"
-              className="h-[90%] w-full object-cover object-left"
-              style={{ objectPosition: '25% center', clipPath: 'inset(0 50% 0 0)' }}
+              className="h-[95%] w-auto object-contain"
             />
           </ParallaxWrapper>
         </div>
@@ -53,7 +53,7 @@ export const AgentChatbotSplit = ({ variant }: AgentChatbotSplitProps) => {
         <div className="mt-auto relative z-10 max-w-md">
           <ScrollFadeIn delay={200}>
             <div className="inline-block bg-[#181818] px-3 py-1 mb-3">
-              <span className="font-mono text-xs text-[#f5f0e6]">𝕏 @AskRei_</span>
+              <span className="font-mono text-xs text-[#faf1e1]">𝕏 @AskRei_</span>
             </div>
             <p className="font-mono text-sm md:text-base text-[#181818] leading-relaxed">
               {copy.agent}
@@ -79,44 +79,12 @@ export const AgentChatbotSplit = ({ variant }: AgentChatbotSplitProps) => {
         </ScrollFadeIn>
 
         <div className="absolute inset-0 pointer-events-none">
-          <ParallaxWrapper speed={-0.12} className="absolute right-0 top-1/2 -translate-y-1/2 w-[70%]">
-            <div className="relative">
-              <div
-                className="absolute inset-0 border border-[#ed565a]/30 rounded-2xl bg-[#181818]/60 backdrop-blur-sm"
-                style={{ transform: 'translate(20px, 20px) rotate(2deg)' }}
-              />
-              <div
-                className="absolute inset-0 border border-[#ed565a]/40 rounded-2xl bg-[#181818]/80 backdrop-blur-sm"
-                style={{ transform: 'translate(10px, 10px) rotate(1deg)' }}
-              />
-              <div className="relative border border-[#ed565a]/60 rounded-2xl bg-[#1a1a1a] p-5 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-[#ed565a] font-bold text-lg">Bounties</h3>
-                  <div className="flex gap-2 text-[#ed565a]/60 text-xs">⚙</div>
-                </div>
-                <p className="text-[#ed565a]/70 text-xs font-mono">
-                  Rei: Here's what I found for you
-                </p>
-                {[
-                  { name: 'Galxe Quest', desc: 'Community activation campaign', pay: '0.5 SOL' },
-                  { name: 'QuestN Bounty', desc: 'Design social media assets', pay: '1.2 SOL' },
-                  { name: 'Superteam Earn', desc: 'Contribute to ecosystem', pay: '25 USDC' },
-                ].map((b) => (
-                  <div
-                    key={b.name}
-                    className="flex items-center justify-between border border-[#ed565a]/30 rounded-lg p-3 bg-[#0f0f0f]"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[#ed565a] text-sm font-bold truncate">{b.name}</p>
-                      <p className="text-[#ed565a]/60 text-[10px] font-mono truncate">{b.desc}</p>
-                    </div>
-                    <span className="text-[#ed565a] text-xs font-mono ml-2 whitespace-nowrap">
-                      {b.pay}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+          <ParallaxWrapper speed={-0.12} className="absolute inset-0 flex items-center justify-center">
+            <img
+              src={appMockup}
+              alt="Rei chatbot bounties app mockup"
+              className="h-[90%] w-auto object-contain"
+            />
           </ParallaxWrapper>
         </div>
 
