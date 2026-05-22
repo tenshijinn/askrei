@@ -29,7 +29,7 @@ export const HomeAgentChatbot = () => {
             <ScrollFadeIn>
               <div className="flex flex-col gap-3 items-start">
                 <LogoBox dark>
-                  <img src={reiLogo} alt="Rei" className="w-7 h-7 object-contain" />
+                  <img src={reiLogo} alt="Rei" className="w-full h-full object-contain" />
                 </LogoBox>
                 <h2 className="text-xs md:text-sm font-bold" style={bankGothic}>
                   Agent
