@@ -12,7 +12,7 @@ const bankGothic = {
 
 const LogoBox = ({ children, dark = false }: { children: React.ReactNode; dark?: boolean }) => (
   <div
-    className="w-14 h-14 md:w-16 md:h-16 border border-current/40 flex items-center justify-center shrink-0"
+    className="w-14 h-14 md:w-16 md:h-16 border border-current/40 flex items-center justify-center shrink-0 p-1.5"
     style={dark ? { backgroundColor: '#181818' } : undefined}
   >
     {children}
