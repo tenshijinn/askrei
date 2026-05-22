@@ -41,11 +41,11 @@ export const AgentChatbotSplit = ({ variant }: AgentChatbotSplitProps) => {
         </ScrollFadeIn>
 
         <div className="absolute inset-0 pointer-events-none">
-          <ParallaxWrapper speed={0.15} className="absolute inset-0 flex items-center justify-center">
+          <ParallaxWrapper speed={0.15} className="absolute inset-0">
             <img
               src={agentImage}
               alt="Rei agent figure"
-              className="h-[95%] w-auto object-contain"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[85%] w-auto object-contain"
             />
           </ParallaxWrapper>
         </div>
@@ -65,25 +65,17 @@ export const AgentChatbotSplit = ({ variant }: AgentChatbotSplitProps) => {
       {/* RIGHT — CHATBOT (black) */}
       <div className="relative w-full md:w-1/2 h-[50vh] md:h-screen bg-[#0a0a0a] overflow-hidden flex flex-col p-8 lg:p-12 xl:p-16">
         <ScrollFadeIn>
-          <div className="leading-none">
-            <h2 className="text-primary text-[2.5rem] md:text-[3rem] lg:text-[3.5rem]" style={bankGothicStyle}>
-              Chatbot
-            </h2>
-            <h2
-              className="text-primary/30 text-[2.5rem] md:text-[3rem] lg:text-[3.5rem] mt-3"
-              style={bankGothicStyle}
-            >
-              Chatbot
-            </h2>
-          </div>
+          <h2 className="text-primary text-[2.5rem] md:text-[3rem] lg:text-[3.5rem]" style={bankGothicStyle}>
+            Chatbot
+          </h2>
         </ScrollFadeIn>
 
         <div className="absolute inset-0 pointer-events-none">
-          <ParallaxWrapper speed={-0.12} className="absolute inset-0 flex items-center justify-center">
+          <ParallaxWrapper speed={-0.12} className="absolute inset-0">
             <img
               src={appMockup}
               alt="Rei chatbot bounties app mockup"
-              className="h-[90%] w-auto object-contain"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[80%] w-auto object-contain"
             />
           </ParallaxWrapper>
         </div>
