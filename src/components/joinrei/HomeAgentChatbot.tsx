@@ -67,11 +67,8 @@ export const HomeAgentChatbot = () => {
               </div>
             </ScrollFadeIn>
             <ScrollFadeIn delay={150}>
-              <div className="font-mono text-[0.7rem] md:text-xs text-cream/80 leading-relaxed max-w-[14rem] space-y-1 mt-2">
-                <p>&gt; Just ask: "bounties this week paying over $100."</p>
-                <p>&gt; Rei replies in seconds with matched, ranked quests.</p>
-                <p>&gt; Tap a card → claim → start earning SOL.</p>
-                <p>&gt; Your personal bounty concierge, always on.</p>
+              <div className="font-mono text-[0.7rem] md:text-xs text-cream/80 leading-relaxed max-w-[14rem] mt-2">
+                <p>&gt; Ask anything, get ranked bounty matches in seconds, claim instantly, earn SOL—your personal concierge.</p>
               </div>
             </ScrollFadeIn>
           </div>
