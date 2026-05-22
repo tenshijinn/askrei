@@ -7,7 +7,6 @@ import { JoinReiReferral } from '@/components/joinrei/JoinReiReferral';
 import { JoinReiPricing } from '@/components/joinrei/JoinReiPricing';
 import { JoinReiFlowDiagram } from '@/components/joinrei/JoinReiFlowDiagram';
 import { LogoBar } from '@/components/joinrei/LogoBar';
-import { AgentChatbotSplit } from '@/components/joinrei/AgentChatbotSplit';
 
 const JoinReiOriginal = () => {
   return (
@@ -19,7 +18,6 @@ const JoinReiOriginal = () => {
       <JoinReiAggregation />
       <JoinReiDemoSection />
       <JoinReiFlowDiagram />
-      <AgentChatbotSplit variant="project" />
       <JoinReiReferral />
       <JoinReiPricing />
     </div>

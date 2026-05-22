@@ -5,7 +5,6 @@ import { HomeDemoSection } from '@/components/joinrei/HomeDemoSection';
 import { HomeChatDemo } from '@/components/joinrei/HomeChatDemo';
 import { HomeReferral } from '@/components/joinrei/HomeReferral';
 import { LogoBar } from '@/components/joinrei/LogoBar';
-import { AgentChatbotSplit } from '@/components/joinrei/AgentChatbotSplit';
 
 const JoinRei = () => {
   return (
@@ -16,7 +15,6 @@ const JoinRei = () => {
       <HomeValueProp />
       <HomeAggregation />
       <HomeDemoSection />
-      <AgentChatbotSplit variant="hunter" />
       <HomeReferral />
     </div>
   );
