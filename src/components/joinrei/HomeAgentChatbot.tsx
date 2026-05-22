@@ -57,7 +57,7 @@ export const HomeAgentChatbot = () => {
             <ScrollFadeIn>
               <div className="flex flex-col gap-3 items-start">
                 <LogoBox>
-                  <svg viewBox="0 0 24 24" className="w-7 h-7 fill-current" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" className="w-full h-full fill-current" aria-hidden="true">
                     <path d="M18.244 2H21.5l-7.5 8.57L23 22h-6.844l-5.36-6.99L4.6 22H1.34l8.02-9.17L1 2h7.02l4.84 6.4L18.24 2zm-2.4 18h1.9L7.27 4H5.25l10.59 16z"/>
                   </svg>
                 </LogoBox>
