@@ -37,11 +37,8 @@ export const HomeAgentChatbot = () => {
               </div>
             </ScrollFadeIn>
             <ScrollFadeIn delay={150}>
-              <div className="font-mono text-[0.7rem] md:text-xs text-[#0a0a0a]/80 leading-relaxed max-w-[14rem] space-y-1 mt-2">
-                <p>&gt; Autonomous worker scanning Galxe, QuestN & Superteam 24/7.</p>
-                <p>&gt; Filters bounties by your skills, wallet & reputation.</p>
-                <p>&gt; Surfaces only the gigs that actually pay.</p>
-                <p>&gt; Zero scrolling. Pure earn signal.</p>
+              <div className="font-mono text-[0.7rem] md:text-xs text-[#0a0a0a]/80 leading-relaxed max-w-[14rem] mt-2">
+                <p>&gt; Autonomous AI agent scanning crypto bounty platforms 24/7, filtering by skills, surfacing only paid gigs.</p>
               </div>
             </ScrollFadeIn>
           </div>
