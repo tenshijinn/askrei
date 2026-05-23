@@ -90,7 +90,7 @@ export const JoinReiFlowDiagram = () => {
     >
       {/* Section title — absolutely positioned top-left so the diagram can sit at the same top edge */}
       <div className="absolute top-6 left-8 z-20 max-w-[40%]">
-        <h2 className="parallax-title text-xl md:text-2xl lg:text-3xl font-light text-left leading-[1.15]">
+        <h2 className="text-xl md:text-2xl lg:text-3xl font-light text-left leading-[1.15]">
           <span style={{ color: "#FFD700" }} className="block">Rocket Reach</span>
           <span style={{ color: "#e8c4b8" }} className="block">Reach up to 350 million</span>
           <span style={{ color: "#e8c4b8" }} className="block">Telegram Users With</span>
