@@ -90,7 +90,7 @@ export const JoinReiChatDemo = () => {
     <section className="min-h-screen snap-start relative flex items-center justify-center overflow-hidden bg-[#0a0a0a] py-20">
       <div className="container mx-auto px-8 lg:px-16">
         <ScrollFadeIn>
-          <h2 className="bank-gothic-title text-3xl md:text-4xl lg:text-5xl font-light text-primary text-center mb-12">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-primary text-center mb-12">
             How it works
           </h2>
         </ScrollFadeIn>
