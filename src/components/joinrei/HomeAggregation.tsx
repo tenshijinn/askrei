@@ -23,7 +23,7 @@ export const HomeAggregation = () => {
     <section className="min-h-screen snap-start relative flex items-center justify-center overflow-hidden bg-black py-10">
       <div className="container mx-auto px-8 lg:px-16 flex flex-col h-full justify-center">
         <ScrollFadeIn>
-          <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary text-center leading-tight mb-6">
+          <h2 className="bank-gothic-title text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary text-center leading-tight mb-6">
             Find Tasks from Across{' '}
             <span 
               className={`inline-block transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}
