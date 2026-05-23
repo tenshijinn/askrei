@@ -62,7 +62,7 @@ export const HomeHero = () => {
             style={{
               fontFamily: '"Bank Gothic", "Bank Gothic Medium BT", "Copperplate Gothic Bold", "Trade Gothic", "Arial Black", sans-serif',
               letterSpacing: '0.222em',
-              lineHeight: 0.76,
+              lineHeight: 1.16,
               textTransform: 'uppercase',
             }}
           >
