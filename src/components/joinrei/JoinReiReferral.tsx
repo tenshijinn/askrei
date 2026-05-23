@@ -8,7 +8,7 @@ export const JoinReiReferral = () => {
     <section className="h-screen snap-start relative flex overflow-hidden bg-[#0a0a0a]">
       <div className="w-full lg:w-[45%] h-full flex flex-col justify-center items-center p-8 lg:p-12 xl:p-16 relative z-10">
         <ScrollFadeIn>
-          <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light leading-[1.2] text-center mb-12 font-bank-gothic">
+          <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light leading-[1.2] text-center mb-12">
             <span className="text-cream">Users Earn </span>
             <span className="text-primary">Solana</span>
             <span className="text-cream"> for Referring </span>

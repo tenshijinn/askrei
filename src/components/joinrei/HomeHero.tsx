@@ -58,13 +58,14 @@ export const HomeHero = () => {
       <div className="w-full lg:w-[45%] h-full flex flex-col justify-between p-8 lg:p-12 xl:p-16 relative z-10">
         <div className="pt-2">
           <h1
-            className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] text-primary font-bank-gothic"
+            className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] text-primary"
             style={{
-              letterSpacing: '0',
+              fontFamily: '"Bank Gothic", "Bank Gothic Medium BT", "Copperplate Gothic Bold", "Trade Gothic", "Arial Black", sans-serif',
+              letterSpacing: '0.222em',
               lineHeight: 1.16,
+              textTransform: 'uppercase',
             }}
           >
-
             A Thousand Unicorn Bounties
             <br />
             in Your Chat

@@ -24,14 +24,6 @@
   font-display: swap;
 }
 
-.font-bank-gothic {
-  font-family: 'Bank Gothic', 'Bank Gothic Medium BT', 'Copperplate Gothic Bold', 'Trade Gothic', 'Arial Black', sans-serif;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-
-
-
 @layer base {
   :root {
     --background: 0 0% 4%;

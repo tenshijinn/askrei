@@ -8,7 +8,7 @@ export const JoinReiAggregation = () => {
     <section className="min-h-screen snap-start relative flex items-start justify-center overflow-hidden bg-black py-12">
       <div className="container mx-auto px-8 lg:px-16 flex flex-col h-full justify-start">
         <ScrollFadeIn>
-          <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary text-center leading-tight mb-6 font-bank-gothic">
+          <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary text-center leading-tight mb-6">
             Get Task Talent from Cross-Chains,<br />
             Cross Platforms, Cross Communities
           </h2>
