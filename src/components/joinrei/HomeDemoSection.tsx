@@ -469,7 +469,7 @@ export const HomeDemoSection = () => {
     >
       <div className="container mx-auto px-8 lg:px-16">
         <ScrollFadeIn>
-          <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary text-center mb-16">
+          <h2 className="parallax-title text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary text-center mb-16">
             How to Use
           </h2>
         </ScrollFadeIn>
