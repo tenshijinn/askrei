@@ -16,7 +16,7 @@ export const HomeValueProp = () => {
 
         <div className="space-y-6 order-2 px-8 lg:px-16">
           <ScrollFadeIn>
-            <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.2]">
+            <h2 className="parallax-title text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.2]">
               Earn Points & Rewards
             </h2>
           </ScrollFadeIn>

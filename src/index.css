@@ -24,6 +24,14 @@
   font-display: swap;
 }
 
+.parallax-title {
+  font-family: 'Bank Gothic', 'Bank Gothic Medium BT', 'Copperplate Gothic Bold', 'Trade Gothic', 'Arial Black', sans-serif;
+  letter-spacing: 0 !important;
+  line-height: 1.16 !important;
+  text-transform: uppercase;
+}
+
+
 @layer base {
   :root {
     --background: 0 0% 4%;
