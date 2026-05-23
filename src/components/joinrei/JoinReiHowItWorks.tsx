@@ -16,7 +16,7 @@ export const JoinReiHowItWorks = () => {
     <section id="how-to-use" className="min-h-screen snap-start relative flex items-center justify-center overflow-hidden bg-[#0a0a0a] py-20">
       <div className="container mx-auto px-8 lg:px-16">
         <ScrollFadeIn>
-          <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary text-center mb-16">
+          <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary text-center mb-16 font-bank-gothic">
             How to Use
           </h2>
         </ScrollFadeIn>
