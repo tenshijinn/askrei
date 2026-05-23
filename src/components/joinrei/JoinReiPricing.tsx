@@ -120,7 +120,7 @@ export const JoinReiPricing = () => {
     <section className="min-h-screen snap-start relative flex items-center justify-center overflow-hidden bg-[#0a0a0a] py-20">
       <div className="container mx-auto px-4 lg:px-8">
         <ScrollFadeIn>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-primary text-center mb-12">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-primary text-center mb-12 font-bank-gothic">
             Packages
           </h2>
         </ScrollFadeIn>
