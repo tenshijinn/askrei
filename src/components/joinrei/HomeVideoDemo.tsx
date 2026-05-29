@@ -8,20 +8,31 @@ export const HomeVideoDemo = () => {
           See Rei in Action
         </h2>
       </ScrollFadeIn>
-      <ScrollFadeIn delay={150}>
+      <ScrollFadeIn delay={150} className="w-full">
         <div
           className="relative w-full max-w-5xl mx-auto"
           style={{ paddingTop: '56.25%' }}
         >
           <iframe
-            src="https://www.canva.com/design/DAHKI5RMgpk/JhCwsjTLamgO1GiW_YOtcQ/view?embed"
-            allow="fullscreen"
+            src="https://www.canva.com/design/DAHKI5RMgpk/JhCwsjTLamgO1GiW_YOtcQ/watch?embed"
+            allow="fullscreen; autoplay"
             allowFullScreen
             loading="lazy"
             title="Rei demo"
-            className="absolute inset-0 w-full h-full border-0 rounded-lg shadow-2xl"
+            className="absolute inset-0 w-full h-full border-0 rounded-lg shadow-2xl bg-black"
           />
         </div>
+        <p className="text-cream/60 text-sm text-center mt-4">
+          Trouble viewing?{' '}
+          <a
+            href="https://www.canva.com/design/DAHKI5RMgpk/JhCwsjTLamgO1GiW_YOtcQ/watch"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-cream"
+          >
+            Open the demo on Canva
+          </a>
+        </p>
       </ScrollFadeIn>
     </section>
   );
