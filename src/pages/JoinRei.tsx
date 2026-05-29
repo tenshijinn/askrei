@@ -14,6 +14,7 @@ const JoinRei = () => {
       <HomeHero />
       <LogoBar />
       <HomeChatDemo />
+      <HomeVideoDemo />
       <HomeValueProp />
       <HomeAggregation />
       <HomeDemoSection />
