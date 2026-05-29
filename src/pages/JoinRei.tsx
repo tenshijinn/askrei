@@ -5,7 +5,6 @@ import { HomeDemoSection } from '@/components/joinrei/HomeDemoSection';
 import { HomeChatDemo } from '@/components/joinrei/HomeChatDemo';
 import { HomeReferral } from '@/components/joinrei/HomeReferral';
 import { HomeAgentChatbot } from '@/components/joinrei/HomeAgentChatbot';
-import { HomeVideoDemo } from '@/components/joinrei/HomeVideoDemo';
 import { LogoBar } from '@/components/joinrei/LogoBar';
 
 const JoinRei = () => {
@@ -17,7 +16,6 @@ const JoinRei = () => {
       <HomeValueProp />
       <HomeAggregation />
       <HomeDemoSection />
-      <HomeVideoDemo />
       <HomeAgentChatbot />
       <HomeReferral />
     </div>
