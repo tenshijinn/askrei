@@ -130,6 +130,20 @@ export interface SolPriceResult {
  * Throws if fewer than 1 source succeeds or no source returns a sane price.
  */
 export async function fetchSolPriceUsd(logPrefix = "[sol-price]"): Promise<SolPriceResult> {
+  // Primary: Moralis. If it returns a sane price, use it directly.
+  try {
+    const moralisPrice = await fetchMoralis();
+    if (moralisPrice >= MIN_SANE_PRICE && moralisPrice <= MAX_SANE_PRICE) {
+      console.log(`${logPrefix} moralis (primary): $${moralisPrice}`);
+      const src: Source = { name: "moralis", price: moralisPrice };
+      return { price: moralisPrice, sources: [src], median: moralisPrice };
+    }
+    console.warn(`${logPrefix} moralis: out-of-band price $${moralisPrice} — falling back`);
+  } catch (err) {
+    console.warn(`${logPrefix} moralis (primary) failed, falling back:`, (err as Error)?.message ?? err);
+  }
+
+  // Fallbacks: Jupiter + Pyth + CoinGecko (median of sane responses).
   const fetchers: Array<{ name: string; fn: () => Promise<number> }> = [
     { name: "jupiter", fn: fetchJupiter },
     { name: "pyth", fn: fetchPyth },
