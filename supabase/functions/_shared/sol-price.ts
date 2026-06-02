@@ -22,6 +22,31 @@ async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
   }
 }
 
+async function fetchMoralis(): Promise<number> {
+  const apiKey = Deno.env.get("MORALIS_API_KEY");
+  if (!apiKey) throw new Error("MORALIS_API_KEY not configured");
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const res = await fetch(
+      "https://solana-gateway.moralis.io/token/mainnet/So11111111111111111111111111111111111111112/price",
+      {
+        headers: { Accept: "application/json", "X-API-Key": apiKey },
+        signal: ctrl.signal,
+      },
+    );
+    if (!res.ok) throw new Error(`Moralis HTTP ${res.status}`);
+    const data = await res.json();
+    const price = Number(data?.usdPrice ?? data?.nativePrice?.value);
+    if (!Number.isFinite(price) || price <= 0) {
+      throw new Error("Moralis returned invalid price");
+    }
+    return price;
+  } finally {
+    clearTimeout(t);
+  }
+}
+
 async function fetchJupiter(): Promise<number> {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
