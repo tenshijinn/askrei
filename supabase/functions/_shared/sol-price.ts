@@ -1,7 +1,7 @@
 // Multi-source SOL/USD price oracle.
-// Queries Jupiter, Pyth, and CoinGecko in parallel and returns the median of
-// the successful, sane responses. Throws if no source returns a trustworthy
-// price — never falls back to a hardcoded constant.
+// Tries Moralis first (primary). If Moralis returns a sane price, returns it.
+// Otherwise falls back to the median of Jupiter, Pyth, and CoinGecko.
+// Throws only if every source fails — never falls back to a hardcoded constant.
 
 const PYTH_SOL_USD_FEED =
   "ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d";
