@@ -170,7 +170,7 @@ export async function fetchSolPriceUsd(logPrefix = "[sol-price]"): Promise<SolPr
 
   if (sources.length === 0) {
     throw new Error(
-      "Unable to fetch a trustworthy SOL price from any oracle (Jupiter, Pyth, CoinGecko).",
+      "Unable to fetch a trustworthy SOL price from any oracle (Moralis, Jupiter, Pyth, CoinGecko).",
     );
   }
 
