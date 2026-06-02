@@ -1,7 +1,7 @@
 // Multi-source SOL/USD price oracle.
-// Queries Jupiter, Pyth, and CoinGecko in parallel and returns the median of
-// the successful, sane responses. Throws if no source returns a trustworthy
-// price — never falls back to a hardcoded constant.
+// Tries Moralis first (primary). If Moralis returns a sane price, returns it.
+// Otherwise falls back to the median of Jupiter, Pyth, and CoinGecko.
+// Throws only if every source fails — never falls back to a hardcoded constant.
 
 const PYTH_SOL_USD_FEED =
   "ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d";
@@ -17,6 +17,31 @@ async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
   const t = setTimeout(() => ctrl.abort(), ms);
   try {
     return await p;
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+async function fetchMoralis(): Promise<number> {
+  const apiKey = Deno.env.get("MORALIS_API_KEY");
+  if (!apiKey) throw new Error("MORALIS_API_KEY not configured");
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const res = await fetch(
+      "https://solana-gateway.moralis.io/token/mainnet/So11111111111111111111111111111111111111112/price",
+      {
+        headers: { Accept: "application/json", "X-API-Key": apiKey },
+        signal: ctrl.signal,
+      },
+    );
+    if (!res.ok) throw new Error(`Moralis HTTP ${res.status}`);
+    const data = await res.json();
+    const price = Number(data?.usdPrice ?? data?.nativePrice?.value);
+    if (!Number.isFinite(price) || price <= 0) {
+      throw new Error("Moralis returned invalid price");
+    }
+    return price;
   } finally {
     clearTimeout(t);
   }
@@ -105,6 +130,20 @@ export interface SolPriceResult {
  * Throws if fewer than 1 source succeeds or no source returns a sane price.
  */
 export async function fetchSolPriceUsd(logPrefix = "[sol-price]"): Promise<SolPriceResult> {
+  // Primary: Moralis. If it returns a sane price, use it directly.
+  try {
+    const moralisPrice = await fetchMoralis();
+    if (moralisPrice >= MIN_SANE_PRICE && moralisPrice <= MAX_SANE_PRICE) {
+      console.log(`${logPrefix} moralis (primary): $${moralisPrice}`);
+      const src: Source = { name: "moralis", price: moralisPrice };
+      return { price: moralisPrice, sources: [src], median: moralisPrice };
+    }
+    console.warn(`${logPrefix} moralis: out-of-band price $${moralisPrice} — falling back`);
+  } catch (err) {
+    console.warn(`${logPrefix} moralis (primary) failed, falling back:`, (err as Error)?.message ?? err);
+  }
+
+  // Fallbacks: Jupiter + Pyth + CoinGecko (median of sane responses).
   const fetchers: Array<{ name: string; fn: () => Promise<number> }> = [
     { name: "jupiter", fn: fetchJupiter },
     { name: "pyth", fn: fetchPyth },
@@ -131,7 +170,7 @@ export async function fetchSolPriceUsd(logPrefix = "[sol-price]"): Promise<SolPr
 
   if (sources.length === 0) {
     throw new Error(
-      "Unable to fetch a trustworthy SOL price from any oracle (Jupiter, Pyth, CoinGecko).",
+      "Unable to fetch a trustworthy SOL price from any oracle (Moralis, Jupiter, Pyth, CoinGecko).",
     );
   }
 
