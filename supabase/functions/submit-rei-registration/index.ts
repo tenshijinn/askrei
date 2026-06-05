@@ -209,6 +209,18 @@ Deno.serve(async (req) => {
 
     if (error) {
       console.error('Database error:', error);
+      // Friendly message for the wallet-already-linked case (unique violation on wallet_address)
+      const code = (error as any).code;
+      const msg = (error as any).message || '';
+      if (code === '23505' && /wallet_address/i.test(msg)) {
+        return new Response(
+          JSON.stringify({
+            error: 'This wallet is already linked to another Rei account. Please connect a different wallet, or sign in with the X account that originally registered it.',
+            code: 'WALLET_ALREADY_LINKED',
+          }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
       throw error;
     }
 
