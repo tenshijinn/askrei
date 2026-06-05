@@ -48,6 +48,7 @@ Deno.serve(async (req) => {
       mode: isRecurring ? "subscription" : "payment",
       ui_mode: "embedded",
       return_url: body.returnUrl,
+      managed_payments: { enabled: true },
       ...(body.customerEmail && { customer_email: body.customerEmail }),
       ...(body.metadata && {
         metadata: body.metadata,
