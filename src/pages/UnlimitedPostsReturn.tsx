@@ -28,22 +28,44 @@ export default function UnlimitedPostsReturn() {
   const [portalLoading, setPortalLoading] = useState(false);
   const [pollAttempts, setPollAttempts] = useState(0);
 
-  // Poll for the campaign_subscription row created by the webhook
+  // Resolve the actual subscription id for *this* checkout session, then
+  // poll campaign_subscriptions filtered by that subscription_id. Avoids
+  // showing the most recently inserted campaign (which may be someone
+  // else's) while the webhook is still in flight.
   useEffect(() => {
+    if (!sessionId) {
+      setLoading(false);
+      return;
+    }
     let cancelled = false;
     let attempt = 0;
+    let resolvedSubId: string | null = null;
+
+    const resolveSubId = async () => {
+      if (resolvedSubId) return resolvedSubId;
+      try {
+        const { data } = await supabase.functions.invoke("get-checkout-session", {
+          body: { sessionId, environment: getStripeEnvironment() },
+        });
+        resolvedSubId = data?.subscriptionId ?? null;
+      } catch {
+        // ignore — we'll retry on the next poll tick
+      }
+      return resolvedSubId;
+    };
 
     const fetchCampaign = async () => {
+      const subId = await resolveSubId();
+      if (!subId) return false;
       const { data } = await supabase
         .from("campaign_subscriptions")
         .select(
           "id, project_name, project_link, status, tasks_imported_count, scrape_count, last_scraped_at, expires_at, customer_email, stripe_subscription_id"
         )
-        .order("created_at", { ascending: false })
-        .limit(1)
+        .eq("stripe_subscription_id", subId)
         .maybeSingle();
 
-      if (cancelled) return;
+      if (cancelled) return true;
       if (data) {
         setCampaign(data as CampaignStats);
         setLoading(false);
@@ -56,7 +78,7 @@ export default function UnlimitedPostsReturn() {
       const found = await fetchCampaign();
       attempt += 1;
       setPollAttempts(attempt);
-      if (!found && attempt < 8 && !cancelled) {
+      if (!found && attempt < 10 && !cancelled) {
         setTimeout(poll, 2000);
       } else if (!found) {
         setLoading(false);

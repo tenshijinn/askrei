@@ -15,6 +15,12 @@ verify_jwt = false
 [functions.create-portal-session]
 verify_jwt = false
 
+[functions.get-checkout-session]
+verify_jwt = false
+
+[functions.lookup-customer-portal]
+verify_jwt = false
+
 [functions.public-feed]
 verify_jwt = false
 

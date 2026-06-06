@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, MessageSquare, Zap, Database, Upload, ArrowDown, Loader2, Check } from "lucide-react";
+import { ArrowLeft, MessageSquare, Zap, Database, Upload, ArrowDown, Loader2, Check, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { getStripeEnvironment } from "@/lib/stripe";
 
 type Interval = "monthly" | "yearly";
 const PRICE_IDS: Record<Interval, string> = {
@@ -23,6 +24,8 @@ export default function UnlimitedPosts() {
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [manageEmail, setManageEmail] = useState("");
+  const [manageLoading, setManageLoading] = useState(false);
   const [interval, setInterval] = useState<Interval>(() => {
     if (typeof window === "undefined") return "monthly";
     return new URLSearchParams(window.location.search).get("interval") === "yearly" ? "yearly" : "monthly";
@@ -286,14 +289,78 @@ export default function UnlimitedPosts() {
                   priceId={PRICE_IDS[checkoutMeta.interval]}
                   customerEmail={checkoutMeta.customerEmail}
                   metadata={checkoutMeta.metadata}
+                  onAlreadySubscribed={() => {
+                    toast.info("You already have an active subscription. Opening the management portal...");
+                    setManageEmail(checkoutMeta.customerEmail);
+                    setCheckoutMeta(null);
+                    openManagePortal(checkoutMeta.customerEmail);
+                  }}
                 />
               </div>
             )}
           </div>
         </div>
+
+        {/* Manage existing subscription */}
+        <div className="max-w-6xl mx-auto mt-10">
+          <div className="rei-surface p-6 lg:p-8">
+            <div className="flex items-center gap-2 mb-2">
+              <Settings className="h-4 w-4 text-primary" />
+              <h3 className="text-sm text-cream font-light">Manage an existing subscription</h3>
+            </div>
+            <p className="text-[11px] text-cream/50 mb-4">
+              Enter the email you subscribed with to open the secure customer portal — update payment method, change plan, or cancel.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input
+                value={manageEmail}
+                onChange={(e) => setManageEmail(e.target.value)}
+                placeholder="you@yourproject.com"
+                type="email"
+                className="rei-field flex-1"
+              />
+              <button
+                onClick={() => openManagePortal(manageEmail)}
+                disabled={manageLoading || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(manageEmail)}
+                className="btn-manga px-5 py-3 rounded-full text-xs uppercase tracking-wider disabled:opacity-40"
+              >
+                {manageLoading ? (
+                  <span className="flex items-center gap-2"><Loader2 className="h-3 w-3 animate-spin" /> Opening...</span>
+                ) : (
+                  "Open portal"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   );
+
+  async function openManagePortal(targetEmail: string) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(targetEmail)) {
+      toast.error("Enter a valid email");
+      return;
+    }
+    setManageLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("lookup-customer-portal", {
+        body: {
+          email: targetEmail,
+          returnUrl: window.location.href,
+          environment: getStripeEnvironment(),
+        },
+      });
+      if (error || !data?.url) {
+        throw new Error(data?.error || error?.message || "No subscription found for that email.");
+      }
+      window.open(data.url, "_blank", "noopener,noreferrer");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not open portal");
+    } finally {
+      setManageLoading(false);
+    }
+  }
 }
 
 function FlowBox({
