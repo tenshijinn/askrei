@@ -136,13 +136,17 @@ async function upsertSubscription(sub: any, env: StripeEnv) {
     { onConflict: "stripe_subscription_id" }
   );
 
-  // Update campaign_subscriptions expiry
+  // Update campaign_subscriptions expiry.
+  // Dunning policy: keep the campaign "active" while Stripe is retrying
+  // (past_due) so syncing doesn't stop mid-billing-cycle. Stripe finalises
+  // failed renewals as canceled/unpaid — those flip status here.
   if (md.product_id === "unlimited_posts" && periodEnd) {
+    const keepActive = ["active", "trialing", "past_due"].includes(sub.status);
     await supabase
       .from("campaign_subscriptions")
       .update({
         expires_at: new Date(periodEnd * 1000).toISOString(),
-        status: sub.status === "active" || sub.status === "trialing" ? "active" : sub.status,
+        status: keepActive ? "active" : sub.status,
       })
       .eq("stripe_subscription_id", sub.id);
   }
