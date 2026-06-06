@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { ScrollFadeIn } from './ScrollFadeIn';
 import { Check } from 'lucide-react';
 import solanaBadges from '@/assets/joinrei/solana-badges.png';
-import iconRocket from '@/assets/pricing-rocket.png';
 import iconDIY from '@/assets/pricing-diy.png';
 import iconAutomated from '@/assets/pricing-automated.png';
 
@@ -13,6 +12,12 @@ interface PricingPoint {
   period: string;
   perDay: string | null;
   saveNote: string | null;
+}
+
+interface Usp {
+  summary: string;
+  detail: string;
+  worth: string;
 }
 
 interface PricingTier {
@@ -28,36 +33,10 @@ interface PricingTier {
   showSolanaBadges?: boolean;
   positioning: string;
   totalValue: string;
-  usps: { feature: string; worth: string }[];
+  usps: Usp[];
 }
 
 const pricingTiers: PricingTier[] = [
-  {
-    name: 'Rocket Reach Community Growth Engine',
-    nameAccent: null,
-    leverage: 'x100 Leverage User Growth',
-    subtitle: '1 Promotion Campaign',
-    prices: {
-      monthly: { price: '$2,500', period: 'Per Campaign', perDay: null, saveNote: null },
-    },
-    hasToggle: false,
-    icon: iconRocket,
-    premium: true,
-    bookCall: true,
-    positioning: 'Paid amplification for launches, campaigns, and time-sensitive pushes.',
-    totalValue: '~$4,900',
-    usps: [
-      { feature: 'Guaranteed paid reach (defined wallet/contributor impressions)', worth: '$2,000' },
-      { feature: 'Promoted placement across Rei discovery surfaces', worth: '$800' },
-      { feature: 'Skill-matched contributors (wallet + declared skills)', worth: '$300' },
-      { feature: 'Visibility on Galxe, Zealy, QuestN, TaskOn, Layer3', worth: '$600' },
-      { feature: 'Expanded cross-chain reach', worth: '$400' },
-      { feature: 'Time-boxed amplification (ideal for launches)', worth: '$250' },
-      { feature: 'Campaign-level reporting', worth: '$200' },
-      { feature: 'Optional message framing support', worth: '$150' },
-      { feature: 'Priority routing during campaign window', worth: '$200' },
-    ],
-  },
   {
     name: 'DIY Community Growth Engine',
     nameAccent: null,
@@ -74,14 +53,14 @@ const pricingTiers: PricingTier[] = [
     positioning: 'One-off task amplification to relevant Web3 contributors.',
     totalValue: '~$685',
     usps: [
-      { feature: 'Skill-matched contributors (wallet + declared skills)', worth: '$120' },
-      { feature: 'Cross-platform task discovery', worth: '$90' },
-      { feature: 'Visibility to contributors on Galxe, Zealy, QuestN, TaskOn, Layer3', worth: '$150' },
-      { feature: 'Discovery beyond your own community', worth: '$75' },
-      { feature: 'Cross-chain reach (Solana, Ethereum, Polygon, Arbitrum, Base)', worth: '$100' },
-      { feature: 'AI-filtered relevance', worth: '$60' },
-      { feature: 'No contributor onboarding required', worth: '$40' },
-      { feature: 'Traffic routed back to original task platform', worth: '$50' },
+      { summary: 'Skill-matched contributors', detail: 'Matched by wallet history + declared skills so your task lands in front of the right people.', worth: '$120' },
+      { summary: 'Cross-platform task discovery', detail: 'Your post is discoverable across every quest platform Rei aggregates.', worth: '$90' },
+      { summary: 'Visibility across quest platforms', detail: 'Reach contributors on Galxe, Zealy, QuestN, TaskOn, and Layer3.', worth: '$150' },
+      { summary: 'Discovery beyond your own community', detail: 'Tap into Rei contributors who would never have found you otherwise.', worth: '$75' },
+      { summary: 'Cross-chain reach', detail: 'Solana, Ethereum, Polygon, Arbitrum, and Base contributors all included.', worth: '$100' },
+      { summary: 'AI-filtered relevance', detail: 'Rei filters out farmers and surfaces contributors who actually fit your task.', worth: '$60' },
+      { summary: 'No contributor onboarding required', detail: 'Contributors keep using their existing quest platforms — no signup friction.', worth: '$40' },
+      { summary: 'Traffic routed back to original platform', detail: 'All clicks land on your original task URL — your funnel stays intact.', worth: '$50' },
     ],
   },
   {
@@ -100,15 +79,15 @@ const pricingTiers: PricingTier[] = [
     positioning: 'Always-on distribution for teams running continuous tasks.',
     totalValue: '~$2,010',
     usps: [
-      { feature: 'Auto-sync & re-sync of campaign tasks (Galxe, Zealy, QuestN, TaskOn, Layer3, custom)', worth: '$400' },
-      { feature: 'API ingestion — drop a link, Rei keeps it fresh', worth: '$250' },
-      { feature: 'Auto-categorisation by skill, chain & payout type', worth: '$220' },
-      { feature: 'Continuous matching to skill-aligned wallets via AskRei + Agent Rei', worth: '$300' },
-      { feature: 'Cross-chain reach (Solana, Ethereum, Polygon, Arbitrum, Base)', worth: '$200' },
-      { feature: 'Reduced contributor overlap & priority freshness', worth: '$180' },
-      { feature: 'Performance insights — tasks indexed, sync cycles, last sync', worth: '$150' },
-      { feature: 'Monthly or yearly billing — yearly saves 15.9%', worth: '$120' },
-      { feature: 'Lower effective cost per task', worth: '$90' },
+      { summary: 'Auto-sync of campaign tasks', detail: 'Continuous sync across Galxe, Zealy, QuestN, TaskOn, Layer3 and custom sources.', worth: '$400' },
+      { summary: 'API ingestion', detail: 'Drop a link — Rei keeps the task fresh and re-indexed automatically.', worth: '$250' },
+      { summary: 'Auto-categorisation', detail: 'Tasks are tagged by skill, chain, and payout type so matching stays sharp.', worth: '$220' },
+      { summary: 'Continuous skill-matched distribution', detail: 'Always-on matching to skill-aligned wallets through AskRei + Agent Rei.', worth: '$300' },
+      { summary: 'Cross-chain reach', detail: 'Solana, Ethereum, Polygon, Arbitrum, and Base contributors all included.', worth: '$200' },
+      { summary: 'Reduced contributor overlap', detail: 'Priority freshness rotation ensures the same contributors are not spammed.', worth: '$180' },
+      { summary: 'Performance insights', detail: 'See tasks indexed, sync cycles, and last sync timestamps in real time.', worth: '$150' },
+      { summary: 'Monthly or yearly billing', detail: 'Switch any time — yearly plan saves 15.9% vs monthly.', worth: '$120' },
+      { summary: 'Lower effective cost per task', detail: 'Unlimited posting drives your per-task amplification cost toward zero.', worth: '$90' },
     ],
   },
 ];
@@ -125,12 +104,11 @@ export const JoinReiPricing = () => {
           </h2>
         </ScrollFadeIn>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto items-stretch">
+        <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto items-stretch">
           {pricingTiers.map((tier, index) => {
             const isPremium = tier.premium;
             const isAutomated = tier.nameAccent === 'Automated';
             const isUnlimited = isAutomated;
-            const isRocketReach = tier.name === 'Rocket Reach';
 
             const interval: Interval = intervals[index] ?? 'monthly';
             const activePrice =
@@ -147,7 +125,7 @@ export const JoinReiPricing = () => {
                       : 'border-white/10 bg-[#141414] hover:shadow-white/5'
                   }`}
                 >
-                  {/* ── HEADER ─────────────────────────────────────────────── */}
+                  {/* HEADER */}
                   <div className="p-6 pb-5">
                     <div className="flex items-start gap-3 mb-5">
                       <div className="flex-shrink-0">
@@ -174,7 +152,6 @@ export const JoinReiPricing = () => {
                       </div>
                     </div>
 
-                    {/* Toggle (or spacer) — fixed height to keep prices aligned */}
                     {tier.hasToggle && tier.prices.yearly ? (
                       <div className="inline-grid grid-cols-2 gap-1 p-1 rounded-full border border-white/10 bg-[#0f0f0f] mb-4">
                         {(['monthly', 'yearly'] as Interval[]).map((opt) => {
@@ -209,7 +186,6 @@ export const JoinReiPricing = () => {
                       <div aria-hidden className="mb-4 h-[30px]" />
                     )}
 
-                    {/* Price */}
                     <div className="flex items-baseline gap-2 mb-1">
                       <span
                         className={`text-4xl font-light font-mono ${isPremium ? 'text-amber-500' : 'text-cream'}`}
@@ -237,14 +213,8 @@ export const JoinReiPricing = () => {
                           : 'btn-manga btn-manga-primary'
                       }`}
                       onClick={() => {
-                        if (isRocketReach) {
-                          window.location.href = '/rocket-reach';
-                        } else if (isUnlimited) {
-                          if (interval === 'yearly') {
-                            window.location.href = '/unlimited-posts?interval=yearly';
-                          } else {
-                            window.location.href = '/rocket-reach';
-                          }
+                        if (isUnlimited) {
+                          window.location.href = `/unlimited-posts?interval=${interval}`;
                         } else if (tier.bookCall) {
                           window.open('https://calendly.com/wayneanthonyd-thepipegdao/join-rei', '_blank');
                         } else {
@@ -252,7 +222,7 @@ export const JoinReiPricing = () => {
                         }
                       }}
                     >
-                      {isRocketReach ? 'Launch Campaign' : isUnlimited ? 'Start Subscription' : 'Get Started'}
+                      {isUnlimited ? 'Start Subscription' : 'Get Started'}
                     </button>
 
                     {tier.showSolanaBadges && (
@@ -262,25 +232,37 @@ export const JoinReiPricing = () => {
                     )}
                   </div>
 
-                  {/* ── FEATURES ───────────────────────────────────────────── */}
+                  {/* FEATURES */}
                   <div className="border-t border-white/5 p-6 flex-1 flex flex-col">
                     <p className="text-[10px] uppercase tracking-[0.15em] font-mono text-cream/50 mb-1">
                       {tier.subtitle}
                     </p>
                     <p className="text-[11px] text-cream/60 font-mono mb-4">What's included</p>
 
-                    <div className="space-y-3 flex-1">
+                    <div className="space-y-2 flex-1">
                       {tier.usps.map((usp, uspIndex) => (
-                        <div key={uspIndex} className="flex items-start gap-2.5">
-                          <Check
-                            className={`h-3.5 w-3.5 mt-0.5 flex-shrink-0 ${
-                              isPremium ? 'text-amber-500' : 'text-primary'
-                            }`}
-                          />
-                          <span className="text-cream/85 text-xs font-mono leading-relaxed flex-1">
-                            {usp.feature}
-                          </span>
-                          <span className="text-[10px] font-mono text-cream/40 flex-shrink-0">{usp.worth}</span>
+                        <div
+                          key={uspIndex}
+                          className="group rounded-md -mx-2 px-2 py-1 hover:bg-white/[0.03] transition-colors cursor-default"
+                        >
+                          <div className="flex items-start gap-2.5">
+                            <Check
+                              className={`h-3.5 w-3.5 mt-0.5 flex-shrink-0 ${
+                                isPremium ? 'text-amber-500' : 'text-primary'
+                              }`}
+                            />
+                            <span className="text-cream/85 text-xs font-mono leading-relaxed flex-1">
+                              {usp.summary}
+                            </span>
+                            <span className="text-[10px] font-mono text-cream/40 flex-shrink-0">{usp.worth}</span>
+                          </div>
+                          <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-[grid-template-rows] duration-300 ease-out">
+                            <div className="overflow-hidden">
+                              <p className="pl-6 pr-2 pt-1 text-[10.5px] font-mono text-cream/60 leading-relaxed">
+                                {usp.detail}
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
