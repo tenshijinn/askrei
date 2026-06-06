@@ -10,7 +10,6 @@ import JoinReiOriginal from "./pages/JoinReiOriginal";
 import Rei from "./pages/Rei";
 import Agents from "./pages/Agents";
 import AdminMockups from "./pages/AdminMockups";
-import RocketReach from "./pages/RocketReach";
 import UnlimitedPosts from "./pages/UnlimitedPosts";
 import UnlimitedPostsReturn from "./pages/UnlimitedPostsReturn";
 import ReferralRedirect from "./pages/ReferralRedirect";
@@ -32,7 +31,6 @@ const App = () => (
               <Route path="/rei" element={<Rei />} />
               <Route path="/agents" element={<Agents />} />
               <Route path="/admin/mockups" element={<AdminMockups />} />
-              <Route path="/rocket-reach" element={<RocketReach />} />
               <Route path="/unlimited-posts" element={<UnlimitedPosts />} />
               <Route path="/unlimited-posts/return" element={<UnlimitedPostsReturn />} />
               <Route path="/r/:code" element={<ReferralRedirect />} />
