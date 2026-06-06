@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, MessageSquare, Zap, Database, Upload, ArrowDown, Loader2, Check } from "lucide-react";
+import { ArrowLeft, MessageSquare, Zap, Database, Upload, ArrowDown, Loader2, Check, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { getStripeEnvironment } from "@/lib/stripe";
 
 type Interval = "monthly" | "yearly";
 const PRICE_IDS: Record<Interval, string> = {
@@ -23,6 +24,8 @@ export default function UnlimitedPosts() {
   const [screenshot, setScreenshot] = useState<File | null>(null);
   const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [manageEmail, setManageEmail] = useState("");
+  const [manageLoading, setManageLoading] = useState(false);
   const [interval, setInterval] = useState<Interval>(() => {
     if (typeof window === "undefined") return "monthly";
     return new URLSearchParams(window.location.search).get("interval") === "yearly" ? "yearly" : "monthly";
