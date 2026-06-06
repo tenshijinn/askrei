@@ -8,9 +8,10 @@ interface Props {
   customerEmail?: string;
   metadata?: Record<string, string>;
   returnUrl?: string;
+  onAlreadySubscribed?: () => void;
 }
 
-export function StripeEmbeddedCheckout({ priceId, customerEmail, metadata, returnUrl }: Props) {
+export function StripeEmbeddedCheckout({ priceId, customerEmail, metadata, returnUrl, onAlreadySubscribed }: Props) {
   const checkoutOptions = useMemo(
     () => ({
       fetchClientSecret: async () => {
@@ -23,6 +24,10 @@ export function StripeEmbeddedCheckout({ priceId, customerEmail, metadata, retur
             environment: getStripeEnvironment(),
           },
         });
+        if (data?.error === "already_subscribed") {
+          onAlreadySubscribed?.();
+          throw new Error(data.message || "Already subscribed");
+        }
         if (error || !data?.clientSecret) {
           throw new Error(error?.message || data?.error || "Failed to create checkout session");
         }
