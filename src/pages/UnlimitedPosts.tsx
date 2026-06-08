@@ -362,23 +362,3 @@ export default function UnlimitedPosts() {
   }
 }
 
-function FlowBox({
-  label,
-  icon,
-  small,
-}: {
-  label: string;
-  icon?: React.ReactNode;
-  small?: boolean;
-}) {
-  return (
-    <div
-      className={`w-full ${small ? "" : "max-w-md"} rounded-xl border border-white/15 bg-[#141414] flex flex-col items-center justify-center text-cream ${
-        small ? "py-6 gap-2" : "py-5"
-      }`}
-    >
-      {icon}
-      <span className={small ? "text-sm" : "text-base"}>{label}</span>
-    </div>
-  );
-}
