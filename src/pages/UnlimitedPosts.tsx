@@ -122,24 +122,22 @@ export default function UnlimitedPosts() {
         <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
           {/* How it works */}
           <div className="rei-surface p-6 lg:p-10">
-            <h2 className="text-xl text-cream text-center mb-10 font-light">How It Works</h2>
-            <div className="flex flex-col items-center gap-1">
-              <FlowBox label="Link + Screenshot" />
-              <ArrowDown className="h-5 w-5 text-blue-400/70 my-1" />
-              <FlowBox label="Rei Database" icon={<Database className="h-4 w-4 text-cream/60" />} />
-              <ArrowDown className="h-5 w-5 text-blue-400/70 my-1" />
-              <div className="grid grid-cols-2 gap-4 w-full max-w-md">
-                <FlowBox label="Rei Chatbot" icon={<MessageSquare className="h-5 w-5 text-cream/70" />} small />
-                <FlowBox label="Rei AI Agent" icon={<Zap className="h-5 w-5 text-cream/70" />} small />
-              </div>
+            <h2 className="text-xl text-cream text-center mb-6 font-light">How It Works</h2>
+            <div className="flex justify-center">
+              <img
+                src={flowImage.url}
+                alt="Unlimited Posts flow: Submit bounty URL, Rei database syncs, then matches to Rei Chatbot and Rei AI Agent"
+                className="max-h-[420px] w-auto object-contain"
+              />
             </div>
-            <div className="mt-10 space-y-3 text-xs text-cream/60 leading-relaxed">
-              <p>• Drop a link to your active campaign (Galxe, Zealy, QuestN, TaskOn, Layer3, custom).</p>
-              <p>• Rei keeps your campaign in sync automatically for the duration of your subscription.</p>
-              <p>• Every new task is auto-indexed and surfaced to skill-matched contributors via AskRei + Agent Rei.</p>
-              <p>• Subscription renews monthly or yearly via Stripe. Cancel anytime — sync stops at period end.</p>
-            </div>
+            <ol className="mt-8 space-y-2 text-xs text-cream/60 leading-relaxed list-decimal list-inside">
+              <li>Drop a link to your active campaign.</li>
+              <li>Rei keeps it auto-synced for your whole subscription.</li>
+              <li>New tasks surface to matched contributors via AskRei + Agent Rei.</li>
+              <li>Renews monthly or yearly via Stripe — cancel anytime.</li>
+            </ol>
           </div>
+
 
           {/* Form / checkout */}
           <div className="rei-surface p-6 lg:p-8">
