@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, MessageSquare, Zap, Database, Upload, ArrowDown, Loader2, Check, Settings } from "lucide-react";
+import { ArrowLeft, Upload, Loader2, Check, Settings } from "lucide-react";
+import flowImage from "@/assets/unlimited-posts-flow.png.asset.json";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
