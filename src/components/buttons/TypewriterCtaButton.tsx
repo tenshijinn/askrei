@@ -81,18 +81,15 @@ export const TypewriterCtaButton = ({
     if (running || disabled) return;
     setRunning(true);
     clear();
-    // Fire the action after a brief flash. We do NOT revert running state
-    // beforehand — if the action navigates away the component unmounts.
-    // If it doesn't navigate, runningMs is the safety fallback.
-    setTimeout(() => {
-      onClick?.();
-      // Safety reset for non-navigating actions (e.g. a modal open)
-      setTimeout(() => {
-        setRunning(false);
-        setPrefixText(prefix);
-        setSuffixText(suffix ?? '');
-      }, 400);
-    }, runningMs);
+    // Fire the action almost immediately so navigation can take over,
+    // but the visible "> running…" state persists for the full runningMs
+    // (default 6s) in case the action doesn't navigate away.
+    timers.current.push(setTimeout(() => { onClick?.(); }, 120));
+    timers.current.push(setTimeout(() => {
+      setRunning(false);
+      setPrefixText(prefix);
+      setSuffixText(suffix ?? '');
+    }, runningMs));
   };
 
   if (running) {
