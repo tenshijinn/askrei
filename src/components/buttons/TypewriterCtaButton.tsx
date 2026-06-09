@@ -15,13 +15,16 @@ interface Props {
   style?: CSSProperties;
   /** ms each char takes to type on hover */
   speed?: number;
-  /** ms the "> running…" flash lasts before onClick fires */
+  /** ms the "> running…" state is shown before onClick fires */
   runningMs?: number;
 }
 
 /**
  * btn-manga style button that retypes its label on hover (pure-JS typewriter)
- * and briefly shows "> running…" on click before invoking onClick.
+ * and shows "> running…▍" on click before invoking onClick.
+ * Once clicked the label stays in running state — the page usually navigates
+ * away before it ever reverts. If no navigation happens, it falls back after
+ * runningMs so the user isn't stuck.
  * Preserves an optional icon + inline badge between prefix and suffix.
  */
 export const TypewriterCtaButton = ({
@@ -34,7 +37,7 @@ export const TypewriterCtaButton = ({
   className = 'btn-manga btn-manga-primary',
   style,
   speed = 28,
-  runningMs = 250,
+  runningMs = 1200,
 }: Props) => {
   const [prefixText, setPrefixText] = useState(prefix);
   const [suffixText, setSuffixText] = useState(suffix ?? '');
@@ -78,11 +81,17 @@ export const TypewriterCtaButton = ({
     if (running || disabled) return;
     setRunning(true);
     clear();
+    // Fire the action after a brief flash. We do NOT revert running state
+    // beforehand — if the action navigates away the component unmounts.
+    // If it doesn't navigate, runningMs is the safety fallback.
     setTimeout(() => {
-      setRunning(false);
-      setPrefixText(prefix);
-      setSuffixText(suffix ?? '');
       onClick?.();
+      // Safety reset for non-navigating actions (e.g. a modal open)
+      setTimeout(() => {
+        setRunning(false);
+        setPrefixText(prefix);
+        setSuffixText(suffix ?? '');
+      }, 400);
     }, runningMs);
   };
 
@@ -94,7 +103,10 @@ export const TypewriterCtaButton = ({
         style={style}
         onClick={(e) => e.preventDefault()}
       >
-        <span style={{ fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace' }}>{'> running…'}</span>
+        <span className="animate-pulse" style={{ fontFamily: 'ui-monospace, "SF Mono", Menlo, monospace' }}>
+          {'> running…'}
+          <span className="inline-block w-[1ch] animate-pulse">▍</span>
+        </span>
       </button>
     );
   }
