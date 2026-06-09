@@ -18,6 +18,7 @@ import { ReiAnalysisOverlay, type AnalysisStage } from '@/components/ReiAnalysis
 import { WalkthroughTour, type TourStep } from '@/components/joinrei/WalkthroughTour';
 import { WalkthroughVideoCard } from '@/components/joinrei/WalkthroughVideoCard';
 import { useFirstTimeWalkthrough } from '@/hooks/useFirstTimeWalkthrough';
+import { TypewriterCtaButton } from '@/components/buttons/TypewriterCtaButton';
 import { useRegistrationWalkthrough } from '@/hooks/useRegistrationWalkthrough';
 import { walkthroughCopy } from '@/components/joinrei/walkthroughContent';
 
