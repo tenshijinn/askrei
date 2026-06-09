@@ -494,7 +494,16 @@ export default function Rei() {
                         <h4 style={{ fontSize: '24px', fontWeight: 300, color: '#f0ede8', letterSpacing: '-0.025em' }}>Sign Up</h4>
                         <p style={{ fontSize: '13px', color: '#5c5a57' }}>Create a new profile on Rei</p>
                         <RequirementText />
-                        <button onClick={() => handleTwitterLogin('signup')} disabled={isProcessingCallback} className="btn-manga btn-manga-primary w-full flex items-center justify-center gap-1.5" style={{ borderRadius: '28px', padding: '11px 22px', cursor: isProcessingCallback ? 'wait' : 'pointer' }}><Twitter style={{ width: '16px', height: '16px' }} /><span>Sign up with</span><img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} /><span>Twitter</span></button>
+                        <TypewriterCtaButton
+                          onClick={() => handleTwitterLogin('signup')}
+                          disabled={isProcessingCallback}
+                          className="btn-manga btn-manga-primary w-full flex items-center justify-center gap-1.5"
+                          style={{ borderRadius: '28px', padding: '11px 22px', cursor: isProcessingCallback ? 'wait' : 'pointer' }}
+                          icon={<Twitter style={{ width: '16px', height: '16px' }} />}
+                          prefix="Sign up with"
+                          badge={<img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} />}
+                          suffix="Twitter"
+                        />
                         <FollowChecklist verified={verifiedCheck} follow={followCheck} />
                       </div>
                       <p className="text-center" style={{ fontSize: '13px', color: '#5c5a57' }}>Already have an account?{' '}<button onClick={() => setShowSignUp(false)} style={{ fontWeight: 500, color: '#f0ede8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign in</button></p>
