@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   LineChart,
   Line,
@@ -9,193 +9,140 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
-import { ArrowRight, ChevronDown } from 'lucide-react';
+import { ArrowRight, ChevronDown, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 /**
- * Bounty Promotions analytics section for the Account page.
- *
- * NOTE: Real click-tracking on promoted campaigns isn't wired up yet —
- * `campaign_subscriptions` is admin-readable only and has no per-click table.
- * This component renders the section with sample campaigns so the design lands;
- * swap `SAMPLE_CAMPAIGNS` for a live query + a `campaign_clicks` aggregate
- * when tracking is in place.
+ * Live Bounty Promotions analytics for the Account page.
+ * Scoped to the logged-in user via x_user_id / wallet_address.
  */
 
-type Status = 'Active' | 'Completed';
+type Status = 'Active' | 'Completed' | 'Canceled' | 'Past Due';
+type Range = 'all' | '30d' | '7d';
+const RANGE_LABEL: Record<Range, string> = {
+  all: 'All Time',
+  '30d': 'Last 30 Days',
+  '7d': 'Last 7 Days',
+};
+const RANGE_DAYS: Record<Range, number | null> = { all: null, '30d': 30, '7d': 7 };
 
-interface Campaign {
+interface ClickRow {
+  campaign_subscription_id: string;
+  click_date: string;
+  ip_hash: string | null;
+}
+
+interface CampaignRow {
+  id: string;
+  project_name: string;
+  project_link: string;
+  short_code: string | null;
+  status: string;
+  created_at: string;
+  expires_at: string | null;
+}
+
+interface CampaignView {
   id: string;
   name: string;
-  source: string;
-  promotedOn: string; // display date
   status: Status;
-  iconBg: string;
-  icon: React.ReactNode;
+  promotedOn: string;
+  projectLink: string;
+  shortCode: string | null;
   totalClicks: number;
   uniqueClicks: number;
-  ctr: number; // percent
+  ctr: number;
   series: { date: string; clicks: number }[];
 }
 
-const SolanaMark = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>
-    <defs>
-      <linearGradient id="sol-g" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stopColor="#9945FF" />
-        <stop offset="100%" stopColor="#14F195" />
-      </linearGradient>
-    </defs>
-    <path
-      fill="url(#sol-g)"
-      d="M5 7.6c.1-.1.3-.2.5-.2h12.8c.3 0 .5.3.3.6L17 9.7c-.1.1-.3.2-.5.2H3.7c-.3 0-.5-.3-.3-.6L5 7.6Zm0 8.8c.1-.1.3-.2.5-.2h12.8c.3 0 .5.3.3.6L17 18.5c-.1.1-.3.2-.5.2H3.7c-.3 0-.5-.3-.3-.6L5 16.4Zm12-4.4c-.1-.1-.3-.2-.5-.2H3.7c-.3 0-.5.3-.3.6L5 14.1c.1.1.3.2.5.2h12.8c.3 0 .5-.3.3-.6L17 12Z"
-    />
-  </svg>
-);
-
-const JupiterMark = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>
-    <circle cx="12" cy="12" r="10" fill="#0a1f1a" />
-    <path d="M5 14c3-4 6-4 9 0s3 4 5 0" stroke="#22c55e" strokeWidth="2.2" fill="none" strokeLinecap="round" />
-    <path d="M5 10c3-4 6-4 9 0s3 4 5 0" stroke="#84cc16" strokeWidth="2.2" fill="none" strokeLinecap="round" opacity="0.7" />
-  </svg>
-);
-
-const SAMPLE_CAMPAIGNS: Campaign[] = [
-  {
-    id: 'solana-saga-arubaito',
-    name: 'Solana Saga X ARUBAITO',
-    source: 'Superteam',
-    promotedOn: '12 Apr 2024',
-    status: 'Completed',
-    iconBg: 'rgba(153,69,255,0.14)',
-    icon: <SolanaMark />,
-    totalClicks: 12845,
-    uniqueClicks: 7213,
-    ctr: 8.42,
-    series: [
-      { date: 'Apr 12', clicks: 820 },
-      { date: 'Apr 13', clicks: 2310 },
-      { date: 'Apr 14', clicks: 1180 },
-      { date: 'Apr 15', clicks: 640 },
-      { date: 'Apr 16', clicks: 1420 },
-      { date: 'Apr 17', clicks: 1240 },
-      { date: 'Apr 18', clicks: 1100 },
-      { date: 'Apr 19', clicks: 520 },
-    ],
-  },
-  {
-    id: 'jupiter-planetary',
-    name: 'Jupiter Planetary Quest',
-    source: 'Layer3',
-    promotedOn: '28 Mar 2024',
-    status: 'Completed',
-    iconBg: 'rgba(34,197,94,0.14)',
-    icon: <JupiterMark />,
-    totalClicks: 9432,
-    uniqueClicks: 5602,
-    ctr: 7.21,
-    series: [
-      { date: 'Mar 28', clicks: 720 },
-      { date: 'Mar 29', clicks: 1510 },
-      { date: 'Mar 30', clicks: 760 },
-      { date: 'Mar 31', clicks: 1320 },
-      { date: 'Apr 01', clicks: 680 },
-      { date: 'Apr 02', clicks: 1010 },
-      { date: 'Apr 03', clicks: 420 },
-      { date: 'Apr 04', clicks: 160 },
-    ],
-  },
-];
-
-type Range = 'all' | '30d' | '7d';
-const RANGE_LABEL: Record<Range, string> = { all: 'All Time', '30d': 'Last 30 Days', '7d': 'Last 7 Days' };
-
-const StatusPill = ({ status }: { status: Status }) => (
-  <span
-    className="rei-chip"
-    style={{
-      padding: '2px 8px',
-      fontSize: '9px',
-      letterSpacing: '0.04em',
-      color: status === 'Active' ? '#a8e6b8' : '#e8c4b8',
-      borderColor:
-        status === 'Active' ? 'hsla(140,52%,72%,0.3)' : 'hsla(18,52%,82%,0.3)',
-      background: '#1e1e1e',
-    }}
-  >
-    {status}
-  </span>
-);
-
 const numFmt = (n: number) => n.toLocaleString();
 
-const ChartCard = ({ campaign }: { campaign: Campaign }) => (
+const statusFor = (raw: string, expires: string | null): Status => {
+  if (raw === 'canceled') return 'Canceled';
+  if (raw === 'past_due') return 'Past Due';
+  if (raw === 'active' || raw === 'trialing') {
+    if (expires && new Date(expires) < new Date()) return 'Completed';
+    return 'Active';
+  }
+  return 'Completed';
+};
+
+const statusColors = (s: Status) => {
+  if (s === 'Active') return { color: '#a8e6b8', border: 'hsla(140,52%,72%,0.3)' };
+  if (s === 'Past Due') return { color: '#e8d4b8', border: 'hsla(40,52%,72%,0.3)' };
+  if (s === 'Canceled') return { color: '#e8a8a8', border: 'hsla(0,52%,72%,0.3)' };
+  return { color: '#e8c4b8', border: 'hsla(18,52%,82%,0.3)' };
+};
+
+const StatusPill = ({ status }: { status: Status }) => {
+  const c = statusColors(status);
+  return (
+    <span
+      className="rei-chip"
+      style={{
+        padding: '2px 8px',
+        fontSize: '9px',
+        letterSpacing: '0.04em',
+        color: c.color,
+        borderColor: c.border,
+        background: '#1e1e1e',
+      }}
+    >
+      {status}
+    </span>
+  );
+};
+
+const ChartCard = ({ campaign }: { campaign: CampaignView }) => (
   <div className="rei-surface" style={{ padding: '20px', minHeight: 320 }}>
     <h4 style={{ fontSize: '15px', fontWeight: 500, color: '#f0ede8', margin: 0 }}>Clickthroughs Over Time</h4>
     <p style={{ fontSize: '11px', color: '#5c5a57', margin: '2px 0 12px' }}>Daily Clicks</p>
     <div style={{ width: '100%', height: 240 }}>
-      <ResponsiveContainer>
-        <LineChart data={campaign.series} margin={{ top: 6, right: 12, left: -10, bottom: 0 }}>
-          <CartesianGrid stroke="hsla(0,0%,100%,0.06)" strokeDasharray="3 5" vertical={false} />
-          <XAxis
-            dataKey="date"
-            stroke="#5c5a57"
-            tick={{ fontSize: 10, fill: '#5c5a57' }}
-            tickLine={false}
-            axisLine={false}
-          />
-          <YAxis
-            stroke="#5c5a57"
-            tick={{ fontSize: 10, fill: '#5c5a57' }}
-            tickLine={false}
-            axisLine={false}
-            tickFormatter={(v) => (v >= 1000 ? `${v / 1000}K` : `${v}`)}
-          />
-          <Tooltip
-            contentStyle={{
-              background: '#141414',
-              border: '0.5px solid hsla(0,0%,100%,0.12)',
-              borderRadius: 10,
-              fontSize: 12,
-              color: '#f0ede8',
-            }}
-            cursor={{ stroke: 'hsla(18,52%,82%,0.25)', strokeWidth: 1 }}
-          />
-          <Legend wrapperStyle={{ fontSize: 11, color: '#a09e9a' }} iconType="plainline" />
-          <Line
-            type="monotone"
-            dataKey="clicks"
-            name="Clicks"
-            stroke="#e8c4b8"
-            strokeWidth={2}
-            dot={false}
-            activeDot={{ r: 4, fill: '#e8c4b8' }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+      {campaign.series.length === 0 ? (
+        <div className="flex items-center justify-center h-full" style={{ color: '#5c5a57', fontSize: 12 }}>
+          No clicks yet in this range
+        </div>
+      ) : (
+        <ResponsiveContainer>
+          <LineChart data={campaign.series} margin={{ top: 6, right: 12, left: -10, bottom: 0 }}>
+            <CartesianGrid stroke="hsla(0,0%,100%,0.06)" strokeDasharray="3 5" vertical={false} />
+            <XAxis dataKey="date" stroke="#5c5a57" tick={{ fontSize: 10, fill: '#5c5a57' }} tickLine={false} axisLine={false} />
+            <YAxis
+              stroke="#5c5a57"
+              tick={{ fontSize: 10, fill: '#5c5a57' }}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(v) => (v >= 1000 ? `${v / 1000}K` : `${v}`)}
+              allowDecimals={false}
+            />
+            <Tooltip
+              contentStyle={{ background: '#141414', border: '0.5px solid hsla(0,0%,100%,0.12)', borderRadius: 10, fontSize: 12, color: '#f0ede8' }}
+              cursor={{ stroke: 'hsla(18,52%,82%,0.25)', strokeWidth: 1 }}
+            />
+            <Legend wrapperStyle={{ fontSize: 11, color: '#a09e9a' }} iconType="plainline" />
+            <Line type="monotone" dataKey="clicks" name="Clicks" stroke="#e8c4b8" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: '#e8c4b8' }} />
+          </LineChart>
+        </ResponsiveContainer>
+      )}
     </div>
   </div>
 );
 
-const CampaignInfoCard = ({ campaign }: { campaign: Campaign }) => (
+const CampaignInfoCard = ({ campaign }: { campaign: CampaignView }) => (
   <div className="rei-surface" style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
     <div className="flex items-start gap-3">
       <div
         className="flex items-center justify-center flex-shrink-0"
-        style={{ width: 44, height: 44, borderRadius: '50%', background: campaign.iconBg }}
+        style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(232,196,184,0.14)', color: '#e8c4b8', fontWeight: 600 }}
       >
-        {campaign.icon}
+        {campaign.name.slice(0, 1).toUpperCase()}
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div className="flex items-center gap-2 flex-wrap">
-          <h3 style={{ fontSize: '15px', fontWeight: 500, color: '#f0ede8', margin: 0, letterSpacing: '-0.01em' }}>
-            {campaign.name}
-          </h3>
+          <h3 style={{ fontSize: '15px', fontWeight: 500, color: '#f0ede8', margin: 0, letterSpacing: '-0.01em' }}>{campaign.name}</h3>
           <StatusPill status={campaign.status} />
         </div>
-        <p style={{ fontSize: '12px', color: '#5c5a57', margin: '4px 0 0' }}>
-          Promoted on {campaign.promotedOn} · {campaign.source}
-        </p>
+        <p style={{ fontSize: '12px', color: '#5c5a57', margin: '4px 0 0' }}>Promoted on {campaign.promotedOn}</p>
       </div>
     </div>
 
@@ -225,21 +172,123 @@ const CampaignInfoCard = ({ campaign }: { campaign: Campaign }) => (
       </div>
     </div>
 
-    <button
-      type="button"
+    <a
+      href={campaign.projectLink || '#'}
+      target="_blank"
+      rel="noreferrer noopener"
       className="rei-stat-card flex items-center justify-between"
-      style={{ padding: '14px 18px', cursor: 'pointer', fontSize: 13, color: '#f0ede8', textAlign: 'left' }}
+      style={{ padding: '14px 18px', cursor: 'pointer', fontSize: 13, color: '#f0ede8', textAlign: 'left', textDecoration: 'none' }}
     >
       <span>View Campaign</span>
       <ArrowRight className="h-4 w-4" style={{ color: '#a09e9a' }} />
-    </button>
+    </a>
   </div>
 );
 
-export const BountyPromotions = () => {
+interface Props {
+  xUserId?: string | null;
+  walletAddress?: string | null;
+}
+
+export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
   const [range, setRange] = useState<Range>('all');
   const [open, setOpen] = useState(false);
-  const campaigns = useMemo(() => SAMPLE_CAMPAIGNS, []);
+  const [loading, setLoading] = useState(true);
+  const [campaigns, setCampaigns] = useState<CampaignRow[]>([]);
+  const [clicks, setClicks] = useState<ClickRow[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      if (!xUserId && !walletAddress) {
+        setLoading(false);
+        setCampaigns([]);
+        setClicks([]);
+        return;
+      }
+      setLoading(true);
+      setError(null);
+      try {
+        const filters: string[] = [];
+        if (xUserId) filters.push(`x_user_id.eq.${xUserId}`);
+        if (walletAddress) filters.push(`wallet_address.eq.${walletAddress}`);
+        const { data: camps, error: campErr } = await supabase
+          .from('campaign_subscriptions')
+          .select('id, project_name, project_link, short_code, status, created_at, expires_at')
+          .or(filters.join(','))
+          .order('created_at', { ascending: false });
+        if (campErr) throw campErr;
+        if (cancelled) return;
+        setCampaigns(camps || []);
+
+        const ids = (camps || []).map((c) => c.id);
+        if (ids.length === 0) {
+          setClicks([]);
+        } else {
+          const { data: ck, error: ckErr } = await supabase
+            .from('campaign_clicks')
+            .select('campaign_subscription_id, click_date, ip_hash')
+            .in('campaign_subscription_id', ids);
+          if (ckErr) throw ckErr;
+          if (!cancelled) setClicks(ck || []);
+        }
+      } catch (e) {
+        if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load promotions');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [xUserId, walletAddress]);
+
+  const views = useMemo<CampaignView[]>(() => {
+    const days = RANGE_DAYS[range];
+    const cutoff = days ? new Date(Date.now() - days * 24 * 60 * 60 * 1000) : null;
+    return campaigns.map((c) => {
+      const myClicks = clicks.filter((k) => {
+        if (k.campaign_subscription_id !== c.id) return false;
+        if (!cutoff) return true;
+        return new Date(k.click_date) >= cutoff;
+      });
+      const totalClicks = myClicks.length;
+      const uniqueClicks = new Set(myClicks.map((k) => k.ip_hash || '')).size;
+      const ctr = totalClicks ? (uniqueClicks / totalClicks) * 100 : 0;
+
+      // Build daily buckets
+      const byDay = new Map<string, number>();
+      for (const k of myClicks) {
+        byDay.set(k.click_date, (byDay.get(k.click_date) || 0) + 1);
+      }
+      const series = Array.from(byDay.entries())
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([date, count]) => ({
+          date: new Date(date).toLocaleDateString(undefined, { month: 'short', day: '2-digit' }),
+          clicks: count,
+        }));
+
+      const status = statusFor(c.status, c.expires_at);
+      return {
+        id: c.id,
+        name: c.project_name,
+        status,
+        promotedOn: new Date(c.created_at).toLocaleDateString(undefined, {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        }),
+        projectLink: c.project_link,
+        shortCode: c.short_code,
+        totalClicks,
+        uniqueClicks,
+        ctr,
+        series,
+      };
+    });
+  }, [campaigns, clicks, range]);
 
   return (
     <div className="rei-surface" style={{ padding: '24px' }}>
@@ -265,20 +314,16 @@ export const BountyPromotions = () => {
           {open && (
             <div
               className="rei-surface"
-              style={{
-                position: 'absolute',
-                top: 'calc(100% + 6px)',
-                right: 0,
-                padding: 4,
-                minWidth: 140,
-                zIndex: 30,
-              }}
+              style={{ position: 'absolute', top: 'calc(100% + 6px)', right: 0, padding: 4, minWidth: 140, zIndex: 30 }}
             >
               {(Object.keys(RANGE_LABEL) as Range[]).map((r) => (
                 <button
                   key={r}
                   type="button"
-                  onClick={() => { setRange(r); setOpen(false); }}
+                  onClick={() => {
+                    setRange(r);
+                    setOpen(false);
+                  }}
                   style={{
                     display: 'block',
                     width: '100%',
@@ -300,18 +345,48 @@ export const BountyPromotions = () => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
-        {campaigns.map((c) => (
-          <div key={c.id} className="grid gap-4" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.6fr)' }}>
-            <CampaignInfoCard campaign={c} />
-            <ChartCard campaign={c} />
-          </div>
-        ))}
-      </div>
+      {loading && (
+        <div className="flex items-center gap-2 py-8 justify-center" style={{ color: '#5c5a57', fontSize: 12 }}>
+          <Loader2 className="h-4 w-4 animate-spin" /> Loading promotions…
+        </div>
+      )}
+
+      {!loading && error && (
+        <div className="rei-stat-card" style={{ padding: 16, color: '#e8a8a8', fontSize: 12 }}>{error}</div>
+      )}
+
+      {!loading && !error && views.length === 0 && (
+        <div
+          className="rei-stat-card flex flex-col items-center text-center"
+          style={{ padding: '32px 24px', gap: 8 }}
+        >
+          <p style={{ fontSize: 14, color: '#f0ede8', margin: 0 }}>No bounty promotions yet</p>
+          <p style={{ fontSize: 12, color: '#5c5a57', margin: 0 }}>
+            Promote a bounty through Rei and you'll see live clickthrough analytics here.
+          </p>
+          <a
+            href="/unlimited-posts"
+            style={{ marginTop: 8, fontSize: 12, color: '#e8c4b8', textDecoration: 'underline' }}
+          >
+            Promote a bounty →
+          </a>
+        </div>
+      )}
+
+      {!loading && !error && views.length > 0 && (
+        <div className="flex flex-col gap-4">
+          {views.map((c) => (
+            <div key={c.id} className="grid gap-4 bp-row" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.6fr)' }}>
+              <CampaignInfoCard campaign={c} />
+              <ChartCard campaign={c} />
+            </div>
+          ))}
+        </div>
+      )}
 
       <style>{`
         @media (max-width: 860px) {
-          .rei-surface > .grid[style*="1.6fr"] { grid-template-columns: 1fr !important; }
+          .bp-row { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>
