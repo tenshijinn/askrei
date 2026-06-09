@@ -492,9 +492,9 @@ export default function Rei() {
                       <div className="space-y-3">
                         <h4 style={{ fontSize: '24px', fontWeight: 300, color: '#f0ede8', letterSpacing: '-0.025em' }}>Sign Up</h4>
                         <p style={{ fontSize: '13px', color: '#5c5a57' }}>Create a new profile on Rei</p>
+                        <RequirementText />
                         <button onClick={() => handleTwitterLogin('signup')} disabled={isProcessingCallback} className="btn-manga btn-manga-primary w-full flex items-center justify-center gap-1.5" style={{ borderRadius: '28px', padding: '11px 22px', cursor: isProcessingCallback ? 'wait' : 'pointer' }}><Twitter style={{ width: '16px', height: '16px' }} /><span>Sign up with</span><img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} /><span>Twitter</span></button>
                         <FollowChecklist verified={verifiedCheck} follow={followCheck} />
-                        <p style={{ fontSize: '11px', color: '#5c5a57', lineHeight: 1.5 }}>You must have a <strong style={{ color: '#f0ede8' }}>Verified</strong> X (Twitter) account and be following <strong style={{ color: '#f0ede8' }}>@askrei_</strong> to continue.</p>
                       </div>
                       <p className="text-center" style={{ fontSize: '13px', color: '#5c5a57' }}>Already have an account?{' '}<button onClick={() => setShowSignUp(false)} style={{ fontWeight: 500, color: '#f0ede8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign in</button></p>
                       {noAccountFound && <div className="rei-surface-2 flex items-center gap-3" style={{ padding: '14px', borderColor: 'hsla(0,63%,55%,0.3)' }}><AlertCircle className="h-4 w-4" style={{ color: '#ef4444' }} /><span style={{ fontSize: '13px', color: '#ef4444' }}>No existing account found. Please sign up.</span></div>}
@@ -504,9 +504,9 @@ export default function Rei() {
                       <div className="space-y-3">
                         <h4 style={{ fontSize: '24px', fontWeight: 300, color: '#f0ede8', letterSpacing: '-0.025em' }}>Sign In</h4>
                         <p style={{ fontSize: '13px', color: '#5c5a57' }}>Access your existing profile on Rei</p>
+                        <RequirementText />
                         <button onClick={() => handleTwitterLogin('signin')} disabled={isProcessingCallback} className="btn-manga btn-manga-outline w-full flex items-center justify-center gap-1.5" style={{ borderRadius: '28px', padding: '11px 22px', cursor: isProcessingCallback ? 'wait' : 'pointer' }}><Twitter style={{ width: '16px', height: '16px' }} /><span>Sign in with</span><img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} /><span>Twitter</span></button>
                         <FollowChecklist verified={verifiedCheck} follow={followCheck} />
-                        <p style={{ fontSize: '11px', color: '#5c5a57', lineHeight: 1.5 }}>You must have a <strong style={{ color: '#f0ede8' }}>Verified</strong> X (Twitter) account and be following <strong style={{ color: '#f0ede8' }}>@askrei_</strong> to continue.</p>
                       </div>
                       <p className="text-center" style={{ fontSize: '13px', color: '#5c5a57' }}>Don't have an account?{' '}<button onClick={() => setShowSignUp(true)} style={{ fontWeight: 500, color: '#f0ede8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign up</button></p>
                       {noAccountFound && <div className="rei-surface-2 flex items-center gap-3" style={{ padding: '14px', borderColor: 'hsla(0,63%,55%,0.3)' }}><AlertCircle className="h-4 w-4" style={{ color: '#ef4444' }} /><span style={{ fontSize: '13px', color: '#ef4444' }}>No existing account found. Please sign up.</span></div>}
@@ -615,5 +615,29 @@ function FollowChecklist({ verified, follow }: { verified: CheckUIState; follow:
       <ChecklistRow state={verified} label="Checking for Verified Twitter" />
       <ChecklistRow state={follow} label="Checking Follows @askrei_" />
     </div>
+  );
+}
+
+function RequirementText() {
+  return (
+    <p style={{ fontSize: '11px', color: '#5c5a57', lineHeight: 1.5 }}>
+      You must have a <strong style={{ color: '#f0ede8' }}>Verified</strong>{' '}
+      <img src={xVerifiedBadge} alt="" style={{ width: '12px', height: '12px', display: 'inline-block', verticalAlign: '-2px', margin: '0 2px' }} />
+      X (Twitter) account and{' '}
+      <span className="group relative inline-block align-baseline">
+        <span className="transition-opacity group-hover:opacity-0" style={{ fontWeight: 700, color: '#ed565a' }}>follow @askrei_</span>
+        <a
+          href="https://twitter.com/intent/follow?screen_name=askrei_"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute left-0 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100"
+          style={{ background: '#ed565a', color: '#0a0a0a', padding: '2px 8px', borderRadius: '999px', fontWeight: 600, fontSize: '11px', textDecoration: 'none', lineHeight: 1.2 }}
+        >
+          <XIcon style={{ width: '10px', height: '10px' }} />
+          Follow @AskRei_
+        </a>
+      </span>
+      {' '}to continue.
+    </p>
   );
 }
