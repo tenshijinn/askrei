@@ -492,9 +492,9 @@ export default function Rei() {
                       <div className="space-y-3">
                         <h4 style={{ fontSize: '24px', fontWeight: 300, color: '#f0ede8', letterSpacing: '-0.025em' }}>Sign Up</h4>
                         <p style={{ fontSize: '13px', color: '#5c5a57' }}>Create a new profile on Rei</p>
+                        <RequirementText />
                         <button onClick={() => handleTwitterLogin('signup')} disabled={isProcessingCallback} className="btn-manga btn-manga-primary w-full flex items-center justify-center gap-1.5" style={{ borderRadius: '28px', padding: '11px 22px', cursor: isProcessingCallback ? 'wait' : 'pointer' }}><Twitter style={{ width: '16px', height: '16px' }} /><span>Sign up with</span><img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} /><span>Twitter</span></button>
                         <FollowChecklist verified={verifiedCheck} follow={followCheck} />
-                        <p style={{ fontSize: '11px', color: '#5c5a57', lineHeight: 1.5 }}>You must have a <strong style={{ color: '#f0ede8' }}>Verified</strong> X (Twitter) account and be following <strong style={{ color: '#f0ede8' }}>@askrei_</strong> to continue.</p>
                       </div>
                       <p className="text-center" style={{ fontSize: '13px', color: '#5c5a57' }}>Already have an account?{' '}<button onClick={() => setShowSignUp(false)} style={{ fontWeight: 500, color: '#f0ede8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign in</button></p>
                       {noAccountFound && <div className="rei-surface-2 flex items-center gap-3" style={{ padding: '14px', borderColor: 'hsla(0,63%,55%,0.3)' }}><AlertCircle className="h-4 w-4" style={{ color: '#ef4444' }} /><span style={{ fontSize: '13px', color: '#ef4444' }}>No existing account found. Please sign up.</span></div>}
