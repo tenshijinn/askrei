@@ -58,6 +58,13 @@ export default function UnlimitedPosts() {
     /^https?:\/\/.+/.test(projectLink) &&
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
+  const generateShortCode = (len = 8) => {
+    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+    const arr = new Uint32Array(len);
+    crypto.getRandomValues(arr);
+    return Array.from(arr, (n) => alphabet[n % alphabet.length]).join("");
+  };
+
   const startSubscription = async () => {
     if (!isValid) return;
     setIsUploading(true);
@@ -79,6 +86,30 @@ export default function UnlimitedPosts() {
         screenshotUrl = signed.signedUrl;
       }
 
+      // Capture buyer identity so the promotion can be linked to their Rei account.
+      let xUserId: string | undefined;
+      let walletAddress: string | undefined;
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const claims = session?.user?.user_metadata as Record<string, unknown> | undefined;
+        if (claims) {
+          if (typeof claims.x_user_id === "string") xUserId = claims.x_user_id;
+          if (typeof claims.wallet_address === "string") walletAddress = claims.wallet_address;
+        }
+        if (xUserId && !walletAddress) {
+          const { data: reg } = await supabase
+            .from("rei_registry")
+            .select("wallet_address")
+            .eq("x_user_id", xUserId)
+            .maybeSingle();
+          if (reg?.wallet_address) walletAddress = reg.wallet_address;
+        }
+      } catch {
+        // identity is optional; continue without it
+      }
+
+      const shortCode = generateShortCode();
+
       setCheckoutMeta({
         customerEmail: email,
         interval,
@@ -87,6 +118,9 @@ export default function UnlimitedPosts() {
           project_name: projectName,
           project_link: projectLink,
           billing_interval: interval,
+          short_code: shortCode,
+          ...(xUserId ? { x_user_id: xUserId } : {}),
+          ...(walletAddress ? { wallet_address: walletAddress } : {}),
           ...(screenshotUrl ? { screenshot_url: screenshotUrl } : {}),
           customer_email: email,
         },

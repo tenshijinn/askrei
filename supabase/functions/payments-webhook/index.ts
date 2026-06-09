@@ -96,6 +96,9 @@ async function handleCheckoutCompleted(session: any, env: StripeEnv) {
         project_link: md.project_link || "",
         screenshot_url: md.screenshot_url || null,
         status: "active",
+        short_code: md.short_code || null,
+        x_user_id: md.x_user_id || null,
+        wallet_address: md.wallet_address || null,
       },
       { onConflict: "stripe_subscription_id" }
     );
