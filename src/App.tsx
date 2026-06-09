@@ -13,6 +13,7 @@ import AdminMockups from "./pages/AdminMockups";
 import UnlimitedPosts from "./pages/UnlimitedPosts";
 import UnlimitedPostsReturn from "./pages/UnlimitedPostsReturn";
 import ReferralRedirect from "./pages/ReferralRedirect";
+import CampaignRedirect from "./pages/CampaignRedirect";
 import ButtonLab from "./pages/ButtonLab";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +36,7 @@ const App = () => (
               <Route path="/unlimited-posts" element={<UnlimitedPosts />} />
               <Route path="/unlimited-posts/return" element={<UnlimitedPostsReturn />} />
               <Route path="/r/:code" element={<ReferralRedirect />} />
+              <Route path="/c/:code" element={<CampaignRedirect />} />
               <Route path="/button-lab" element={<ButtonLab />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
