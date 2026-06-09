@@ -37,7 +37,7 @@ export const TypewriterCtaButton = ({
   className = 'btn-manga btn-manga-primary',
   style,
   speed = 28,
-  runningMs = 1200,
+  runningMs = 6000,
 }: Props) => {
   const [prefixText, setPrefixText] = useState(prefix);
   const [suffixText, setSuffixText] = useState(suffix ?? '');
