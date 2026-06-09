@@ -130,6 +130,59 @@ export type Database = {
           },
         ]
       }
+      campaign_clicks: {
+        Row: {
+          campaign_subscription_id: string
+          click_date: string
+          clicked_at: string
+          created_at: string
+          id: string
+          ip_hash: string | null
+          is_unique: boolean
+          points_awarded: boolean
+          referrer: string | null
+          session_id: string | null
+          short_code: string
+          user_agent_hash: string | null
+        }
+        Insert: {
+          campaign_subscription_id: string
+          click_date?: string
+          clicked_at?: string
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          is_unique?: boolean
+          points_awarded?: boolean
+          referrer?: string | null
+          session_id?: string | null
+          short_code: string
+          user_agent_hash?: string | null
+        }
+        Update: {
+          campaign_subscription_id?: string
+          click_date?: string
+          clicked_at?: string
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          is_unique?: boolean
+          points_awarded?: boolean
+          referrer?: string | null
+          session_id?: string | null
+          short_code?: string
+          user_agent_hash?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_clicks_campaign_subscription_id_fkey"
+            columns: ["campaign_subscription_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaign_subscriptions: {
         Row: {
           created_at: string
@@ -142,10 +195,13 @@ export type Database = {
           project_name: string
           scrape_count: number | null
           screenshot_url: string | null
+          short_code: string | null
           status: string
           stripe_subscription_id: string
           tasks_imported_count: number | null
           updated_at: string
+          wallet_address: string | null
+          x_user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -158,10 +214,13 @@ export type Database = {
           project_name: string
           scrape_count?: number | null
           screenshot_url?: string | null
+          short_code?: string | null
           status?: string
           stripe_subscription_id: string
           tasks_imported_count?: number | null
           updated_at?: string
+          wallet_address?: string | null
+          x_user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -174,10 +233,13 @@ export type Database = {
           project_name?: string
           scrape_count?: number | null
           screenshot_url?: string | null
+          short_code?: string | null
           status?: string
           stripe_subscription_id?: string
           tasks_imported_count?: number | null
           updated_at?: string
+          wallet_address?: string | null
+          x_user_id?: string | null
         }
         Relationships: []
       }

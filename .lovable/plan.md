@@ -1,71 +1,70 @@
-# Terminal-style animated buttons — sandbox demo
+## Goal
 
-Build a single internal demo page at **`/button-lab`** that renders 4 sample buttons side-by-side, each labeled with the technique it uses, so you can pick a winner before we roll it out to a real page.
+Make Bounty Promotions a real, user-scoped analytics section: link each promotion to the buyer's Rei identity, track every click on the promoted link, award points for promoting, and render live charts in the Account page.
 
-All 4 share the same click behavior: on click, the label briefly becomes `> running…` (≈250ms) and *then* navigates / fires the action. All 4 use the existing `btn-manga btn-manga-primary` shell so colors, border, and font stay on-brand.
+## 1. Schema changes (migration)
 
-## The 4 samples
+**`campaign_subscriptions`** — add user identity (nullable so historic rows aren't broken):
+- `x_user_id text`
+- `wallet_address text`
+- `short_code text unique` — short slug used in `/c/:code` tracking URL (generated at checkout)
+- index on `(x_user_id)` and `(wallet_address)`
+- RLS: add policy `Users can view their own promotions` using `x_user_id = current x identity` (read via existing pattern — `rei_registry` join on `auth.uid()`).
 
-```text
-┌──────────────────────────────────────────────────────────────────┐
-│  Button Lab  /  hover each, then click                           │
-├──────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  [ Promote Task ▍ ]      ← 1. Typewriter (CSS/JS, no deps)       │
-│  Label: "Typewriter — pure JS"                                   │
-│                                                                  │
-│  [ P#o@oZ&te T*sk ]      ← 2. Glitch / scramble (pure JS)        │
-│  Label: "Scramble — pure JS"                                     │
-│                                                                  │
-│  [ Promote Task ░░░ ]    ← 3. Lottie overlay (caret+scanline)    │
-│  Label: "Lottie overlay — lottie-react + .json"                  │
-│                                                                  │
-│  [ ▶▶▶▶▶▶▶▶▶▶▶ ]         ← 4. Full Lottie label                  │
-│  Label: "Full Lottie label — .json animation as text"            │
-│                                                                  │
-└──────────────────────────────────────────────────────────────────┘
-```
+**`campaign_clicks`** (new):
+- `campaign_subscription_id uuid references campaign_subscriptions(id) on delete cascade`
+- `short_code text not null`
+- `ip_hash text`, `user_agent_hash text`, `referrer text`, `session_id uuid`
+- `click_date date`, `clicked_at timestamptz default now()`
+- `is_unique boolean` (first time this `ip_hash` hits this campaign within window)
+- `points_awarded boolean default false`
+- GRANTs: `SELECT` to `authenticated` (scoped by RLS), `ALL` to `service_role`. No `anon`.
+- RLS: owners can `SELECT` their campaign's clicks (join through `campaign_subscriptions`).
+- Indexes: `(campaign_subscription_id, click_date)`, `(short_code)`, `(ip_hash, campaign_subscription_id)`.
 
-### 1. Typewriter — pure JS
-- Hover: clears the label, re-types char by char (~30ms/char), blinking `▍` caret stays at the end.
-- Click: replaces with `> running…` + blinking caret for 250ms, then fires action.
-- No dependencies. Lightest, most "terminal".
+**Points config**: 1 point per unique click on a promoted campaign (mirrors referral clicks). Hourly rate limit per IP. Idempotent via `(short_code, ip_hash, click_date)` unique constraint.
 
-### 2. Glitch / scramble — pure JS
-- Hover: each character cycles through random glyphs `!<>-_\/[]{}—=+*^?#` then settles on the real char (Matrix-style, ~600ms total).
-- Click: same `> running…` flash → navigate.
-- No dependencies.
+## 2. Checkout wiring
 
-### 3. Lottie overlay — `lottie-react` + small `.json` files
-- Static label, but a Lottie **caret blink** sits to the right and a **scanline sweep** Lottie plays across the button on hover.
-- Click: Lottie **loader dots** play inside the button for 250ms → navigate.
-- Adds `lottie-react` (~50KB) + 3 small `.json` files (caret, scanline, loader). I'll generate the JSON inline (they're tiny, hand-authored shape layers — no external sourcing needed).
+**`create-checkout` edge function** — when starting a promotion checkout:
+- Accept `x_user_id` and `wallet_address` in body; pass them through Stripe `metadata`.
+- Generate a `short_code` (8-char base62) and pass via metadata.
 
-### 4. Full Lottie label — entire text is a Lottie animation
-- The label "Promote Task" is itself a pre-rendered Lottie that types itself in on hover and shows a running state on click.
-- Adds `lottie-react` + one larger `.json` per unique button label. Highest fidelity, heaviest to author and maintain (every new label = new Lottie file).
+**`payments-webhook`** — on `checkout.session.completed` for promotion products:
+- Persist `x_user_id`, `wallet_address`, `short_code` into the new `campaign_subscriptions` columns.
+- Replace any rendered project link in the user's promo material with `https://rei.chat/c/<short_code>`.
 
-## How to evaluate
+## 3. Tracking endpoint
 
-Open `/button-lab`, hover each, click each. Tell me which you want and I'll:
-- Remove the lab page.
-- Apply the winning effect to whichever button set you choose (e.g. just the primary CTAs on `/rei`, or all `btn-manga` site-wide).
+**New edge function `track-campaign-click`** (public, `verify_jwt = false`):
+- Route: invoked from `/c/:code` page (SPA) which immediately calls the function then `window.location.replace(project_link)`.
+- Logic mirrors `track-referral-click`: hash IP/UA, dedupe per IP per day, rate-limit, insert row, mark `is_unique`, on unique award **1 point** via `increment_user_points` to the promoter's wallet, write a `points_transactions` row with `transaction_type='promotion_click'`.
+- Returns `{ redirect: project_link }`.
 
-## Files to add (build phase)
+**New route `/c/:code`** (`src/pages/CampaignRedirect.tsx`) — fires the function then redirects. Mirrors `ReferralRedirect.tsx`.
 
-- `src/pages/ButtonLab.tsx` — the demo page with the 4 samples + labels.
-- `src/components/buttons/TypewriterButton.tsx`
-- `src/components/buttons/ScrambleButton.tsx`
-- `src/components/buttons/LottieOverlayButton.tsx` + `src/assets/lottie/caret.json`, `scanline.json`, `loader-dots.json`
-- `src/components/buttons/FullLottieLabelButton.tsx` + `src/assets/lottie/promote-task-label.json`
-- `src/App.tsx` — add `/button-lab` route (unlinked from nav; you reach it by URL only).
-- `package.json` — add `lottie-react` (used by samples 3 & 4 only).
+## 4. UI: live Bounty Promotions
 
-Nothing on `/rei`, `/joinrei`, `/`, `/unlimited-posts`, or `/agents` changes in this phase.
+Rewrite `src/components/rei/BountyPromotions.tsx` to query live data:
+- Load the logged-in user's `x_user_id`/`wallet_address` from `rei_registry`.
+- Query `campaign_subscriptions` filtered by that identity.
+- For each campaign, aggregate `campaign_clicks` for the selected range (All / 30d / 7d): `total`, `unique` (distinct `ip_hash`), `series` (daily buckets), `ctr = unique/total*100`.
+- Loading skeletons, empty state ("You haven't promoted any bounties yet — promote one to see analytics here"), error toast.
+- Keep current visual design (status pill, stat card, line chart, range selector).
 
-## Technical notes
+## 5. Backfill / migration notes
 
-- Click delay is implemented with `setTimeout(navigate, 250)` so the terminal flash is visible without feeling sluggish.
-- All animations respect `prefers-reduced-motion` (fallback to instant label, no flash).
-- Lottie JSON for samples 3 & 4 is committed in `src/assets/lottie/` as plain JSON (not externalized to CDN — they're small and parsed at build time).
-- Existing `.btn-manga` CSS in `src/index.css` is untouched; the sample components wrap it.
+Existing `campaign_subscriptions` rows have no user link and no `short_code`, so they won't appear in any user's panel and won't have click data. Acceptable — tracking starts now. If the user wants, we can add an admin tool later to manually attach an `x_user_id` to legacy rows.
+
+## Technical summary
+
+- 1 migration (2 tables touched, 1 new table, RLS + GRANTs).
+- 1 new edge function (`track-campaign-click`) + config block.
+- Edits to `create-checkout` and `payments-webhook`.
+- New page `CampaignRedirect.tsx` + route in `App.tsx`.
+- Rewrite of `BountyPromotions.tsx` for live data.
+- Points: 1 per unique click, recorded in existing `user_points` + `points_transactions`.
+
+## Open question
+
+OK to set **1 point per unique click on a promoted campaign** (same as referral clicks)? If you'd prefer a different value (e.g. 2 or 5), say so and I'll use that.
