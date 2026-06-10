@@ -418,6 +418,7 @@ export default function Rei() {
           <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
             <img src={reiLogo} alt="REI" className="h-10 w-auto" style={{ opacity: 0.95 }} />
             <div className="flex items-center gap-2 justify-end">
+              <NotificationsBellButton />
               <button data-tour="profile" onClick={() => setActiveTab('profile')} className={activeTab === 'profile' ? 'btn-manga btn-manga-primary' : 'rei-chip'} style={{ padding: twitterUser?.profile_image_url ? '3px' : '5px 10px', fontSize: '11px', display: 'flex', alignItems: 'center', justifyContent: 'center', ...(activeTab === 'profile' ? { borderRadius: '28px', background: '#f0ede8', color: '#0a0a0a', border: 'none' } : {}) }} title="Profile">
                 {twitterUser?.profile_image_url ? (
                   <img src={twitterUser.profile_image_url} alt={twitterUser.handle || 'Profile'} style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover', display: 'block', boxShadow: activeTab === 'profile' ? '0 0 0 1.5px #0a0a0a' : 'none' }} />
