@@ -98,7 +98,7 @@ export const NotificationsBellButton = () => {
             </button>
           </div>
           <p style={{ fontSize: '13px', color: '#f0ede8', lineHeight: 1.45, marginBottom: '6px', fontWeight: 700 }}>
-            Never Miss High Paying Crypto Bounties Again
+            Never Miss High Paying Bounties Again
           </p>
           <p style={{ fontSize: '12px', color: '#a09e9a', lineHeight: 1.5, marginBottom: '6px' }}>
             Opt-in to bounty notifications on X (Twitter) with the highest paying bounties weekly.
