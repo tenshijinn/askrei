@@ -6,7 +6,7 @@ interface TaskPreviewCardProps {
 }
 
 export const TaskPreviewCard = ({ taskId }: TaskPreviewCardProps) => {
-  const { data, loading } = useTaskPreview(taskId);
+  const { data, loading, uniqueVisits } = useTaskPreview(taskId);
 
   if (loading && !data) {
     return (
@@ -123,10 +123,18 @@ export const TaskPreviewCard = ({ taskId }: TaskPreviewCardProps) => {
               color: "hsla(18,52%,82%,0.7)",
               display: "inline-flex",
               alignItems: "center",
-              gap: 4,
+              gap: 6,
             }}
           >
-            Open <ExternalLink style={{ width: 10, height: 10 }} />
+            {uniqueVisits !== null && uniqueVisits > 0 && (
+              <>
+                <span>{uniqueVisits.toLocaleString()} Visits</span>
+                <span style={{ color: "hsla(18,52%,82%,0.3)" }}>|</span>
+              </>
+            )}
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
+              Open <ExternalLink style={{ width: 10, height: 10 }} />
+            </span>
           </span>
         </div>
       </div>

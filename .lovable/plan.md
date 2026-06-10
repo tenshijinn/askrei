@@ -1,35 +1,27 @@
-## Plan
+## 1. Redirect loading screen
 
-1. **Fix the visible “Failed to load promotions” state**
-   - Update the account-page promotions component so load errors no longer render as a red failure message.
-   - For empty/no-access/no-promotions states, show the friendly “No bounty promotions yet” empty state for all users.
-   - Keep real errors logged for debugging.
+Update `src/pages/CampaignRedirect.tsx`:
+- Replace text with `> redirecting to bounty...`
+- Remove the secondary "Recording click…" line
+- Add a terminal-style animated loading bar beneath the heading (ASCII block characters filling left-to-right via a CSS keyframe, e.g. `[████░░░░░░]` cycling, monospace, accent color `#ed565a`)
+- Error state unchanged
 
-2. **Fix the backend access rule causing the failure**
-   - Replace the `campaign_subscriptions` and `campaign_clicks` policies that depend on custom JWT fields (`x_user_id`, `wallet_address`).
-   - Use the existing `rei_registry` identity records instead, matching the logged-in auth user to their registered X identity/wallet.
-   - Add the missing Data API grants for `campaign_subscriptions`, `campaign_clicks`, `tasks`, and `rei_registry` so the app can actually read them.
+## 2. "# Visits" on bounty cards
 
-3. **Assign API/RSS bounties to @wayneanthonyd**
-   - Add a `source` field to `campaign_subscriptions` and a tracked-promotion reference on `tasks` if needed.
-   - Backfill every existing aggregated/API/RSS bounty into a Wayne-owned promotion record.
-   - Generate a unique short tracking code for each one.
-   - Attach each task to its Wayne promotion record.
+Goal: show unique-click count next to the "Open" link on each bounty card (the `TaskPreviewCard`), formatted as `12 Visits  |  Open ↗`.
 
-4. **Automatically track future API/RSS bounties**
-   - Add a database trigger so any future non-user bounty added through existing import/sync means automatically creates or reuses a Wayne-owned promotion record.
-   - This excludes bounties submitted by other users.
+### Data
+- `tasks.tracking_short_code` → `campaign_subscriptions.short_code` → `campaign_clicks` rows
+- Unique visits = `COUNT(DISTINCT ip_hash)` for that subscription
 
-5. **Wrap API/RSS bounty links through Rei tracking**
-   - Update bounty card components so aggregated/API/RSS bounty “view/apply” links use `/c/<short_code>` when available.
-   - Keep the original external link as a fallback if no tracking code exists.
+### Implementation
+- Extend `useTaskPreview` hook to also return `unique_visits` (number | null). When the task has a `tracking_short_code` + `campaign_subscription_id`, run a second lightweight query against `campaign_clicks` filtered by that subscription id and compute the distinct `ip_hash` count client-side (small volume; existing RLS already allows SELECT).
+- In `src/components/chat/TaskPreviewCard.tsx`, in the bottom-right row replace the lone "Open" with:
+  - `{visits} Visits` (only when `unique_visits > 0`)
+  - a thin separator `|` in muted cream
+  - existing `Open ↗`
+- Style matches screenshot: 11px, `hsla(18,52%,82%,0.7)`, separator at 0.3 opacity.
 
-6. **Keep rewards fair**
-   - Update the campaign click tracking function so aggregated/platform-owned promotions record click analytics but do **not** award user reward points.
-   - User-paid promotions keep their normal points/rewards behavior.
-
-## Technical notes
-
-- The current failure is not just an empty-state issue: the policies still reference custom JWT claims that are not present in normal logged-in sessions.
-- The database currently shows aggregated tasks exist, but none are linked to campaign subscriptions yet.
-- The implementation will use a migration for policy/schema/trigger changes, then code edits after the migration is approved and types regenerate.
+### Out of scope
+- No backend/RLS/schema changes (data + grants already in place from previous migration).
+- No changes to BountyPromotions analytics page.

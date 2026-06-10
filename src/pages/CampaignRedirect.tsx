@@ -36,11 +36,41 @@ export default function CampaignRedirect() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-cream font-mono flex items-center justify-center px-6">
-      <div className="text-center space-y-3">
+      <div className="text-center space-y-3" style={{ minWidth: 280 }}>
         {!error ? (
           <>
-            <div className="text-primary text-sm tracking-widest">{"> redirecting…"}</div>
-            <div className="text-cream/40 text-[11px]">Recording click and forwarding you to the campaign.</div>
+            <div className="text-primary text-sm tracking-widest">{"> redirecting to bounty..."}</div>
+            <div
+              aria-hidden
+              style={{
+                fontFamily: "'SF Mono', 'Consolas', monospace",
+                fontSize: 13,
+                color: "#ed565a",
+                letterSpacing: "0.1em",
+                userSelect: "none",
+              }}
+            >
+              <span>[</span>
+              <span
+                style={{
+                  display: "inline-block",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  verticalAlign: "bottom",
+                  animation: "rei-loadbar 1.4s steps(20, end) infinite",
+                  width: "12ch",
+                }}
+              >
+                ████████████████████
+              </span>
+              <span>]</span>
+            </div>
+            <style>{`
+              @keyframes rei-loadbar {
+                0%   { width: 0ch; }
+                100% { width: 12ch; }
+              }
+            `}</style>
           </>
         ) : (
           <>
