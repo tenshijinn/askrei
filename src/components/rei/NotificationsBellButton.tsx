@@ -95,7 +95,7 @@ export const NotificationsBellButton = () => {
             Never miss the highest paying bounties in crypto.
           </p>
           <p style={{ fontSize: '12px', color: '#a09e9a', lineHeight: 1.5, marginBottom: '12px' }}>
-            Opt-in to bounty notifications on X (Twitter). DM Rei with <span style={{ color: '#f0ede8', fontFamily: "'SF Mono', 'Consolas', monospace" }}>"Start"</span> to get the top 3 paying bounties every Sunday.
+            Opt-in to bounty notifications on X (Twitter). DM Rei with <span style={{ color: '#f0ede8', fontFamily: "'SF Mono', 'Consolas', monospace" }}>/start</span> to get the top 3 paying bounties every Sunday. Send <span style={{ color: '#f0ede8', fontFamily: "'SF Mono', 'Consolas', monospace" }}>/stop</span> anytime to unsubscribe.
           </p>
           <a
             href={TWITTER_URL}
