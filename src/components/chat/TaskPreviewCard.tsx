@@ -25,13 +25,13 @@ export const TaskPreviewCard = ({ taskId }: TaskPreviewCardProps) => {
   if (!data) return null;
 
   const href = data.tracking_short_code ? `/c/${data.tracking_short_code}` : data.link;
-  const isTracked = !!data.tracking_short_code;
 
   return (
     <a
       href={href}
-      target={isTracked ? undefined : "_blank"}
-      rel={isTracked ? undefined : "noopener noreferrer"}
+      target="_blank"
+      rel="noopener noreferrer"
+
 
       style={{
         display: "flex",
