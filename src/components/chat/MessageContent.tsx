@@ -27,7 +27,12 @@ export const MessageContent = ({ content }: MessageContentProps) => {
   // Also detect rei.chat/task/<id> URLs but keep the URL visible.
   for (const m of content.matchAll(TASK_URL_RE)) collect(m[1]);
   // Tidy: collapse stray double spaces left behind by stripped markers.
-  cleanContent = cleanContent.replace(/[ \t]{2,}/g, " ").replace(/ \n/g, "\n");
+  cleanContent = cleanContent
+    .replace(/[ \t]{2,}/g, " ")
+    .replace(/ \n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/\s+$/, "");
+
 
   const parseContent = (text: string) => {
     const elements: (string | JSX.Element)[] = [];
