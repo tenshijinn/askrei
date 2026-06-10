@@ -38,9 +38,10 @@ serve(async (req) => {
 
     const { data: campaign, error: campErr } = await supabase
       .from("campaign_subscriptions")
-      .select("id, project_link, wallet_address, x_user_id, status, short_code")
+      .select("id, project_link, wallet_address, x_user_id, status, short_code, source")
       .eq("short_code", shortCode)
       .maybeSingle();
+
 
     if (campErr || !campaign) {
       return new Response(JSON.stringify({ error: "Unknown campaign" }), {
@@ -104,7 +105,9 @@ serve(async (req) => {
     }
 
     // Award 1 point per unique click to promoter's wallet (if known).
-    if (inserted && isUnique && campaign.wallet_address) {
+    // Skip points for aggregated/platform-owned promotions — analytics still recorded.
+    const isAggregated = typeof campaign.source === "string" && campaign.source.startsWith("aggregated:");
+    if (inserted && isUnique && campaign.wallet_address && !isAggregated) {
       const { error: pointsErr } = await supabase.rpc("increment_user_points", {
         p_wallet_address: campaign.wallet_address,
         p_points: POINTS_PER_UNIQUE_CLICK,
@@ -118,6 +121,7 @@ serve(async (req) => {
         transaction_type: "promotion_click",
       });
     }
+
 
     return new Response(
       JSON.stringify({
