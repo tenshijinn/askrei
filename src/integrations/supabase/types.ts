@@ -196,6 +196,7 @@ export type Database = {
           scrape_count: number | null
           screenshot_url: string | null
           short_code: string | null
+          source: string | null
           status: string
           stripe_subscription_id: string
           tasks_imported_count: number | null
@@ -215,6 +216,7 @@ export type Database = {
           scrape_count?: number | null
           screenshot_url?: string | null
           short_code?: string | null
+          source?: string | null
           status?: string
           stripe_subscription_id: string
           tasks_imported_count?: number | null
@@ -234,6 +236,7 @@ export type Database = {
           scrape_count?: number | null
           screenshot_url?: string | null
           short_code?: string | null
+          source?: string | null
           status?: string
           stripe_subscription_id?: string
           tasks_imported_count?: number | null
@@ -881,6 +884,7 @@ export type Database = {
           source: string | null
           status: string | null
           title: string
+          tracking_short_code: string | null
           updated_at: string | null
         }
         Insert: {
@@ -903,6 +907,7 @@ export type Database = {
           source?: string | null
           status?: string | null
           title: string
+          tracking_short_code?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -925,6 +930,7 @@ export type Database = {
           source?: string | null
           status?: string | null
           title?: string
+          tracking_short_code?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -1212,6 +1218,7 @@ export type Database = {
           skill_category_ids: string[] | null
           source: string | null
           title: string | null
+          tracking_short_code: string | null
           updated_at: string | null
         }
         Insert: {
@@ -1228,6 +1235,7 @@ export type Database = {
           skill_category_ids?: string[] | null
           source?: string | null
           title?: string | null
+          tracking_short_code?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -1244,6 +1252,7 @@ export type Database = {
           skill_category_ids?: string[] | null
           source?: string | null
           title?: string | null
+          tracking_short_code?: string | null
           updated_at?: string | null
         }
         Relationships: []
@@ -1295,6 +1304,7 @@ export type Database = {
       }
     }
     Functions: {
+      generate_campaign_short_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

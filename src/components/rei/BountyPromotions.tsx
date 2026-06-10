@@ -234,10 +234,16 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
           if (!cancelled) setClicks(ck || []);
         }
       } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load promotions');
+        if (!cancelled) {
+          console.warn('[BountyPromotions] load failed; showing empty state:', e);
+          setCampaigns([]);
+          setClicks([]);
+          setError(null);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
+
     }
     load();
     return () => {

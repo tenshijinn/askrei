@@ -9,7 +9,9 @@ export interface TaskPreview {
   og_image: string | null;
   link: string;
   opportunity_type: string | null;
+  tracking_short_code: string | null;
 }
+
 
 const TTL_MS = 60 * 60 * 1000; // 1 hour
 const STORAGE_PREFIX = "rei_task_preview_";
@@ -45,10 +47,11 @@ async function fetchTask(id: string): Promise<TaskPreview | null> {
   const promise = (async () => {
     const { data, error } = await supabase
       .from("tasks")
-      .select("id, title, company_name, compensation, og_image, link, opportunity_type")
+      .select("id, title, company_name, compensation, og_image, link, opportunity_type, tracking_short_code")
       .eq("id", id)
       .eq("status", "active")
       .maybeSingle();
+
     if (error || !data) return null;
     writeCache(id, data as TaskPreview);
     return data as TaskPreview;

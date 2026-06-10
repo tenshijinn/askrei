@@ -24,11 +24,15 @@ export const TaskPreviewCard = ({ taskId }: TaskPreviewCardProps) => {
 
   if (!data) return null;
 
+  const href = data.tracking_short_code ? `/c/${data.tracking_short_code}` : data.link;
+
   return (
     <a
-      href={data.link}
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
+
+
       style={{
         display: "flex",
         gap: 12,
