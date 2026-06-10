@@ -5,7 +5,7 @@ interface MessageContentProps {
   content: string;
 }
 
-const TASK_MARKER_RE = /\[\[rei-task:([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\]\]/gi;
+const TASK_MARKER_RE = /[ \t]*\[\[rei-task:([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\]\][ \t]*\n?/gi;
 const TASK_URL_RE = /https?:\/\/(?:www\.)?rei\.chat\/task\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/gi;
 
 export const MessageContent = ({ content }: MessageContentProps) => {
@@ -23,10 +23,16 @@ export const MessageContent = ({ content }: MessageContentProps) => {
     collect(id);
     return "";
   });
+
   // Also detect rei.chat/task/<id> URLs but keep the URL visible.
   for (const m of content.matchAll(TASK_URL_RE)) collect(m[1]);
   // Tidy: collapse stray double spaces left behind by stripped markers.
-  cleanContent = cleanContent.replace(/[ \t]{2,}/g, " ").replace(/ \n/g, "\n");
+  cleanContent = cleanContent
+    .replace(/[ \t]{2,}/g, " ")
+    .replace(/ \n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/\s+$/, "");
+
 
   const parseContent = (text: string) => {
     const elements: (string | JSX.Element)[] = [];
