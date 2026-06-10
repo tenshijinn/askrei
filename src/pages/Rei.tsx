@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Check, Twitter, Shield, AlertCircle, Info, Sparkles, Briefcase, CheckCircle2, Edit2, LogOut, UserCircle, Loader2, X as XIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ReiEarningsHub } from '@/components/ReiEarningsHub';
+import { NotificationsBellButton } from '@/components/rei/NotificationsBellButton';
 import { Progress } from '@/components/ui/progress';
 import { ReiAnalysisOverlay, type AnalysisStage } from '@/components/ReiAnalysisOverlay';
 import { WalkthroughTour, type TourStep } from '@/components/joinrei/WalkthroughTour';
