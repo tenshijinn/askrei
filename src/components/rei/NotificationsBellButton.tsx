@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { Bell, X } from 'lucide-react';
 
-const TWITTER_URL = 'https://x.com/AskRei_';
+// One-line swap: when you have @AskRei_'s numeric Twitter user ID, set it here
+// and the CTA becomes a direct DM-compose link with "/start" prefilled.
+// Lookup once at https://tweeterid.com or via any X API call.
+const ASKREI_RECIPIENT_ID: string | null = null;
+const TWITTER_URL = ASKREI_RECIPIENT_ID
+  ? `https://x.com/messages/compose?recipient_id=${ASKREI_RECIPIENT_ID}&text=${encodeURIComponent('/start')}`
+  : 'https://x.com/AskRei_';
 
 export const NotificationsBellButton = () => {
   const [open, setOpen] = useState(false);
@@ -91,12 +97,16 @@ export const NotificationsBellButton = () => {
               <X style={{ width: 12, height: 12 }} />
             </button>
           </div>
-          <p style={{ fontSize: '13px', color: '#f0ede8', lineHeight: 1.45, marginBottom: '6px' }}>
-            Never miss the highest paying bounties in crypto.
+          <p style={{ fontSize: '13px', color: '#f0ede8', lineHeight: 1.45, marginBottom: '6px', fontWeight: 700 }}>
+            Never Miss High Paying Crypto Bounties Again
           </p>
-          <p style={{ fontSize: '12px', color: '#a09e9a', lineHeight: 1.5, marginBottom: '12px' }}>
-            Opt-in to bounty notifications on X (Twitter). DM Rei with <span style={{ color: '#f0ede8', fontFamily: "'SF Mono', 'Consolas', monospace" }}>/start</span> to get the top 3 paying bounties every Sunday. Send <span style={{ color: '#f0ede8', fontFamily: "'SF Mono', 'Consolas', monospace" }}>/stop</span> anytime to unsubscribe.
+          <p style={{ fontSize: '12px', color: '#a09e9a', lineHeight: 1.5, marginBottom: '6px' }}>
+            Opt-in to bounty notifications on X (Twitter) with the highest paying bounties weekly.
           </p>
+          <ul style={{ fontSize: '12px', color: '#a09e9a', lineHeight: 1.5, marginBottom: '12px', paddingLeft: '18px', listStyle: 'disc' }}>
+            <li>DM her <strong style={{ color: '#f0ede8', fontFamily: "'SF Mono', 'Consolas', monospace", fontWeight: 700 }}>/start</strong> to get start notifications.</li>
+            <li>DM her <strong style={{ color: '#f0ede8', fontFamily: "'SF Mono', 'Consolas', monospace", fontWeight: 700 }}>/stop</strong> to stop notifications.</li>
+          </ul>
           <a
             href={TWITTER_URL}
             target="_blank"
