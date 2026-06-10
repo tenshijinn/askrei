@@ -4,7 +4,7 @@ import { Bell, X } from 'lucide-react';
 // One-line swap: when you have @AskRei_'s numeric Twitter user ID, set it here
 // and the CTA becomes a direct DM-compose link with "/start" prefilled.
 // Lookup once at https://tweeterid.com or via any X API call.
-const ASKREI_RECIPIENT_ID: string | null = null;
+const ASKREI_RECIPIENT_ID: string | null = '1796358502933200896';
 const TWITTER_URL = ASKREI_RECIPIENT_ID
   ? `https://x.com/messages/compose?recipient_id=${ASKREI_RECIPIENT_ID}&text=${encodeURIComponent('/start')}`
   : 'https://x.com/AskRei_';
@@ -98,7 +98,7 @@ export const NotificationsBellButton = () => {
             </button>
           </div>
           <p style={{ fontSize: '13px', color: '#f0ede8', lineHeight: 1.45, marginBottom: '6px', fontWeight: 700 }}>
-            Never Miss High Paying Crypto Bounties Again
+            Never Miss High Paying Bounties Again
           </p>
           <p style={{ fontSize: '12px', color: '#a09e9a', lineHeight: 1.5, marginBottom: '6px' }}>
             Opt-in to bounty notifications on X (Twitter) with the highest paying bounties weekly.
