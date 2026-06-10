@@ -15,7 +15,10 @@ export interface TaskPreview {
 
 const TTL_MS = 60 * 60 * 1000; // 1 hour
 const STORAGE_PREFIX = "rei_task_preview_";
+const VISITS_PREFIX = "rei_task_visits_";
+const VISITS_TTL_MS = 5 * 60 * 1000; // 5 minutes
 const inFlight = new Map<string, Promise<TaskPreview | null>>();
+const visitsInFlight = new Map<string, Promise<number | null>>();
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -42,6 +45,29 @@ function writeCache(id: string, data: TaskPreview) {
   }
 }
 
+function readVisitsCache(code: string): number | null {
+  try {
+    const raw = localStorage.getItem(VISITS_PREFIX + code);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { count: number; fetchedAt: number };
+    if (Date.now() - parsed.fetchedAt > VISITS_TTL_MS) return null;
+    return parsed.count;
+  } catch {
+    return null;
+  }
+}
+
+function writeVisitsCache(code: string, count: number) {
+  try {
+    localStorage.setItem(
+      VISITS_PREFIX + code,
+      JSON.stringify({ count, fetchedAt: Date.now() })
+    );
+  } catch {
+    /* ignore */
+  }
+}
+
 async function fetchTask(id: string): Promise<TaskPreview | null> {
   if (inFlight.has(id)) return inFlight.get(id)!;
   const promise = (async () => {
@@ -64,21 +90,51 @@ async function fetchTask(id: string): Promise<TaskPreview | null> {
   }
 }
 
+async function fetchUniqueVisits(shortCode: string): Promise<number | null> {
+  if (visitsInFlight.has(shortCode)) return visitsInFlight.get(shortCode)!;
+  const promise = (async () => {
+    try {
+      const { data: sub, error: subErr } = await supabase
+        .from("campaign_subscriptions")
+        .select("id")
+        .eq("short_code", shortCode)
+        .maybeSingle();
+      if (subErr || !sub) return null;
+      const { data: clicks, error: clickErr } = await supabase
+        .from("campaign_clicks")
+        .select("ip_hash")
+        .eq("campaign_subscription_id", sub.id);
+      if (clickErr || !clicks) return null;
+      const unique = new Set(clicks.map((c) => c.ip_hash || "")).size;
+      writeVisitsCache(shortCode, unique);
+      return unique;
+    } catch {
+      return null;
+    }
+  })();
+  visitsInFlight.set(shortCode, promise);
+  try {
+    return await promise;
+  } finally {
+    visitsInFlight.delete(shortCode);
+  }
+}
+
 export function useTaskPreview(taskId: string | null) {
   const [data, setData] = useState<TaskPreview | null>(() =>
     taskId && UUID_RE.test(taskId) ? readCache(taskId) : null
   );
   const [loading, setLoading] = useState(false);
+  const [uniqueVisits, setUniqueVisits] = useState<number | null>(null);
 
   useEffect(() => {
     if (!taskId || !UUID_RE.test(taskId)) return;
     const cached = readCache(taskId);
     if (cached) {
       setData(cached);
-      return;
     }
     let cancelled = false;
-    setLoading(true);
+    if (!cached) setLoading(true);
     fetchTask(taskId)
       .then((res) => {
         if (!cancelled) setData(res);
@@ -91,5 +147,22 @@ export function useTaskPreview(taskId: string | null) {
     };
   }, [taskId]);
 
-  return { data, loading };
+  useEffect(() => {
+    const code = data?.tracking_short_code;
+    if (!code) {
+      setUniqueVisits(null);
+      return;
+    }
+    const cached = readVisitsCache(code);
+    if (cached !== null) setUniqueVisits(cached);
+    let cancelled = false;
+    fetchUniqueVisits(code).then((n) => {
+      if (!cancelled && n !== null) setUniqueVisits(n);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [data?.tracking_short_code]);
+
+  return { data, loading, uniqueVisits };
 }
