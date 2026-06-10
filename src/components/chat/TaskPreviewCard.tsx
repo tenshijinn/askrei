@@ -6,7 +6,7 @@ interface TaskPreviewCardProps {
 }
 
 export const TaskPreviewCard = ({ taskId }: TaskPreviewCardProps) => {
-  const { data, loading } = useTaskPreview(taskId);
+  const { data, loading, uniqueVisits } = useTaskPreview(taskId);
 
   if (loading && !data) {
     return (
