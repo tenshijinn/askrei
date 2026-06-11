@@ -345,6 +345,7 @@ const LeftTrackController = ({ sectionRef }: { sectionRef: React.RefObject<HTMLD
     if (!section) return;
     const track = section.querySelector<HTMLDivElement>('#scroll-left-track');
     if (!track) return;
+    const scroller = getScrollParent(section);
 
     let raf: number | null = null;
     const update = () => {
@@ -361,13 +362,14 @@ const LeftTrackController = ({ sectionRef }: { sectionRef: React.RefObject<HTMLD
       if (raf == null) raf = requestAnimationFrame(update);
     };
     update();
-    window.addEventListener('scroll', onScroll, { passive: true });
+    scroller.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
     return () => {
-      window.removeEventListener('scroll', onScroll);
+      scroller.removeEventListener('scroll', onScroll as EventListener);
       window.removeEventListener('resize', onScroll);
       if (raf) cancelAnimationFrame(raf);
     };
   }, [sectionRef]);
   return null;
 };
+
