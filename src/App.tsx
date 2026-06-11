@@ -29,8 +29,8 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<JoinRei />} />
-              <Route path="/v2" element={<JoinReiV2 />} />
+              <Route path="/" element={<JoinReiV2 />} />
+              <Route path="/v1" element={<JoinRei />} />
               <Route path="/joinrei" element={<JoinReiOriginal />} />
               <Route path="/rei" element={<Rei />} />
               <Route path="/agents" element={<Agents />} />
