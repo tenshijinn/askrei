@@ -160,9 +160,8 @@ export const ScrollVideoHero = () => {
             />
           </div>
 
-          <div className="absolute top-4 left-4 z-30 bg-[#0a0a0a] p-2">
-            <img src={reiLogo} alt="Rei AI" className="h-12 lg:h-16 w-auto block" />
-          </div>
+
+
         </div>
 
         {/* RIGHT — sticky scrubbing video */}
