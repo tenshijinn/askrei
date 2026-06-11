@@ -1,36 +1,55 @@
-# Notifications Bell — Deep-link + Copy Update
+# Fix scroll-scrubbed video on Chrome / Brave
 
-## 1. Deep-link to @AskRei_ DM
+## Root cause
+Chromium can only paint a video frame by decoding forward from the nearest keyframe. `public/scroll-rei.mp4` was encoded with a standard GOP (one keyframe every ~2s), so when `ScrollVideoHero` sets `video.currentTime` on every scroll tick, Chromium stalls or refuses to update the canvas. Safari tolerates sparse keyframes, which is why it looks fine there.
 
-X/Twitter deep-link options (this is an X platform limitation, not ours):
+A secondary issue: Chromium often needs the video to have been "played" once and to be `+moov`-at-front (faststart) before `currentTime` writes paint reliably.
 
-- `https://x.com/messages/compose?recipient_id={NUMERIC_ID}&text=/start` — opens the compose-DM screen with `/start` prefilled. **Requires the numeric Twitter user ID** of @AskRei_ (not the handle). Works on web and mobile X app.
-- `https://x.com/AskRei_` — opens the profile only. No way to land directly in the DM thread or prefill text using just the handle.
+## Changes
 
-There is no public X URL that accepts a handle AND prefills DM text. So:
+### 1. Re-encode `public/scroll-rei.mp4` for frame-accurate seeking
+Re-encode the source `scroll-rei.mp4` with every frame as a keyframe and faststart, while keeping the file small:
 
-- **If you can provide @AskRei_'s numeric user ID** (one-time lookup; you can grab it from tweeterid.com or any X API call), I'll hardcode it as `ASKREI_RECIPIENT_ID` in `NotificationsBellButton.tsx` and switch the CTA to the compose URL with `text=/start` prefilled.
-- **If not**, the CTA stays pointed at `https://x.com/AskRei_` (profile), and the dropdown copy tells the user to hit the Message button and send `/start`.
+```bash
+ffmpeg -i public/scroll-rei.mp4 \
+  -an \
+  -vf "scale=-2:720,fps=24" \
+  -c:v libx264 -profile:v high -pix_fmt yuv420p \
+  -x264-params "keyint=1:min-keyint=1:scenecut=0" \
+  -crf 24 -preset slow \
+  -movflags +faststart \
+  public/scroll-rei.mp4.tmp && mv public/scroll-rei.mp4.tmp public/scroll-rei.mp4
+```
 
-I'll structure the component so swapping in the numeric ID later is a one-line change.
+All-intra (`keyint=1`) makes the file 3–6× larger per second than a normal GOP, but at 720p24 + crf 24 the existing ~15 s clip should still land around 3–6 MB. If size becomes a problem we fall back to `keyint=2` (every other frame a keyframe) which Chromium still scrubs acceptably.
 
-## 2. Dropdown copy update in `src/components/rei/NotificationsBellButton.tsx`
+Also produce a WebM/VP9 sibling for browsers that prefer it — VP9 seeks faster in Chromium:
 
-Replace the current headline + body block with:
+```bash
+ffmpeg -i public/scroll-rei.mp4 \
+  -an -vf "scale=-2:720,fps=24" \
+  -c:v libvpx-vp9 -b:v 0 -crf 32 \
+  -g 1 -keyint_min 1 \
+  -row-mt 1 -tile-columns 2 \
+  public/scroll-rei.webm
+```
 
-- Headline (bold, same 13px size, `#f0ede8`):
-  **Never Miss High Paying Crypto Bounties Again**
+### 2. Harden `ScrollVideoHero.tsx`
+- Add a `<source>` for both `webm` and `mp4` (webm first) so Chromium picks the VP9 build.
+- After `loadedmetadata`, call `video.play().then(() => video.pause())` to prime the decoder. This is the single most common fix for "Chromium won't paint after `currentTime =`".
+- Use `requestVideoFrameCallback` when available to know when a seeked frame has actually been painted, and only schedule the next seek after that — eliminates the cascading-seek stall in Chromium.
+- Keep the existing smoothing (`diff * 0.5`) but cap the per-tick delta to ~1/24 s so we never ask Chromium to jump more than a frame between paints.
 
-- Body paragraph (12px, `#a09e9a`):
-  Opt-in to bounty notifications on X (Twitter) with the highest paying bounties weekly.
+### 3. No layout / content changes
+Only the video file and the player effect change. The split-panel layout, snap markers, and left-track controller stay exactly as they are.
 
-- Bulleted list below the paragraph (12px, `#a09e9a`, monospace inline for the commands):
-  - DM her **`/start`** to get start notifications.
-  - DM her **`/stop`** to stop notifications.
+## Technical notes
+- All-intra h.264 (`keyint=1`) is the industry-standard fix for scroll-scrubbed video. It's what Apple's product pages use.
+- `+faststart` moves the `moov` atom to the front so playback / seeks start before the whole file downloads.
+- `requestVideoFrameCallback` is supported in Chrome 83+, Brave, Edge; Safari has it behind a flag but our existing rAF path still works there.
+- No new dependencies, no backend changes.
 
-Styling: bullets rendered as a `<ul>` with `listStyle: disc`, `paddingLeft: 18px`, `marginTop: 8px`, tight `lineHeight: 1.5`. `/start` and `/stop` keep the existing monospace + lighter color treatment, wrapped in `<strong>`.
-
-CTA button label stays `DM @AskRei_ on X`. Only the `href` changes if you provide the numeric ID.
-
-## Out of scope
-No backend, no opt-in storage, no cron — Hermes still handles all listening/state.
+## Verification
+1. Hard-reload `/` in Chrome and Brave, scroll through the hero, confirm the video tracks the scroll position smoothly in both directions.
+2. Confirm Safari still works.
+3. Check `public/scroll-rei.mp4` and `.webm` sizes are reasonable (< ~8 MB combined).
