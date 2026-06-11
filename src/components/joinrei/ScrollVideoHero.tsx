@@ -101,6 +101,7 @@ export const ScrollVideoHero = () => {
     const section = sectionRef.current;
     const video = videoRef.current;
     if (!section || !video) return;
+    const scroller = getScrollParent(section);
 
     let duration = isNaN(video.duration) ? 0 : video.duration;
     const onMeta = () => {
@@ -116,7 +117,6 @@ export const ScrollVideoHero = () => {
       const target = targetTimeRef.current;
       const diff = target - cur;
       if (Math.abs(diff) < 0.005) return;
-      // tighter lerp for snappier response; with all-I-frame encoding scrubbing is cheap
       const next = cur + diff * 0.5;
       try {
         v.currentTime = next;
@@ -136,10 +136,10 @@ export const ScrollVideoHero = () => {
     };
 
     onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
+    scroller.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
     return () => {
-      window.removeEventListener('scroll', onScroll);
+      scroller.removeEventListener('scroll', onScroll as EventListener);
       window.removeEventListener('resize', onScroll);
       video.removeEventListener('loadedmetadata', onMeta);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -148,6 +148,11 @@ export const ScrollVideoHero = () => {
 
   return (
     <section ref={sectionRef} className="relative bg-[#0a0a0a]" style={{ height: '300vh' }}>
+      {/* snap markers — one per parallax stage */}
+      <div className="absolute left-0 w-px h-px snap-start pointer-events-none" style={{ top: 0 }} />
+      <div className="absolute left-0 w-px h-px snap-start pointer-events-none" style={{ top: '100vh' }} />
+      <div className="absolute left-0 w-px h-px snap-start pointer-events-none" style={{ top: '200vh' }} />
+
       <div className="sticky top-0 h-screen w-full grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
         {/* LEFT — track that translates with scroll */}
         <div className="relative h-screen overflow-hidden">
@@ -159,9 +164,6 @@ export const ScrollVideoHero = () => {
               taskIndex={taskIndex}
             />
           </div>
-
-
-
         </div>
 
         {/* RIGHT — sticky scrubbing video */}
@@ -198,6 +200,17 @@ export const ScrollVideoHero = () => {
     </section>
   );
 };
+
+const getScrollParent = (el: HTMLElement): HTMLElement | Window => {
+  let node: HTMLElement | null = el.parentElement;
+  while (node) {
+    const style = getComputedStyle(node);
+    if (/(auto|scroll|overlay)/.test(style.overflowY)) return node;
+    node = node.parentElement;
+  }
+  return window;
+};
+
 
 
 const LeftPanelTrack = ({
