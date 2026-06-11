@@ -1,18 +1,20 @@
 import { ScrollVideoHero } from '@/components/joinrei/ScrollVideoHero';
+import { HomeValueProp } from '@/components/joinrei/HomeValueProp';
 import { HomeAggregation } from '@/components/joinrei/HomeAggregation';
 import { HomeDemoSection } from '@/components/joinrei/HomeDemoSection';
 import { HomeReferral } from '@/components/joinrei/HomeReferral';
 import { HomeAgentChatbot } from '@/components/joinrei/HomeAgentChatbot';
-import { LogoBar } from '@/components/joinrei/LogoBar';
 
 const JoinReiV2 = () => {
   return (
     <div className="rei-theme bg-[#0a0a0a]">
-      {/* Combined scrollable left + sticky scrubbing video on right */}
+      {/* Combined: left scrolls through hero → logos → how-it-works; right is sticky scrubbing video */}
       <ScrollVideoHero />
 
-      {/* Remaining sections — full width, unchanged */}
-      <LogoBar />
+      {/* Earn Points & Rewards — own full-width parallax */}
+      <HomeValueProp />
+
+      {/* Remaining sections — unchanged */}
       <HomeAggregation />
       <HomeDemoSection />
       <HomeAgentChatbot />
