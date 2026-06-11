@@ -226,8 +226,9 @@ const LeftPanelTrack = ({
 }) => (
   <div className="flex flex-col text-primary">
     {/* Block 1: Hero — top content, bottom buttons (matches / home) */}
-    <div className="h-screen w-full flex flex-col justify-between p-8 lg:p-12 xl:p-16">
-      <div className="pt-2">
+    <div className="h-screen w-full flex flex-col justify-between p-6 sm:p-8 lg:p-12 xl:p-16">
+      {/* DESKTOP (lg+) — original layout */}
+      <div className="hidden lg:block pt-2">
         <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
           A Thousand Unicorn Bounties
           <br />
@@ -251,7 +252,43 @@ const LeftPanelTrack = ({
         </div>
       </div>
 
-      <div className="flex items-center gap-6 flex-wrap">
+      {/* MOBILE / TABLET — image as background with overlay card */}
+      <div className="lg:hidden relative flex-1 min-h-0 overflow-hidden rounded-3xl">
+        <img
+          src={reiHero}
+          alt="Rei AI Agent"
+          className="absolute inset-0 w-full h-full object-cover object-center"
+        />
+        <div className="absolute inset-x-3 bottom-3 sm:inset-x-4 sm:bottom-4 rounded-2xl bg-[#0a0a0a]/95 border border-primary/15 p-4 sm:p-5">
+          <h1 className="text-[1.5rem] sm:text-[1.75rem] font-light text-primary leading-[1.1] tracking-tight">
+            A Thousand Unicorn Bounties in Your Chat
+          </h1>
+          <p className="mt-3 text-[12px] sm:text-sm text-primary/70 font-mono leading-relaxed">
+            Rei AI matches crypto{' '}
+            <span className={`transition-opacity duration-300 font-bold text-primary ${taskFade ? 'opacity-100' : 'opacity-0'}`}>
+              {rotatingTaskWords[taskIndex]}
+            </span>{' '}
+            from{' '}
+            <span className={`transition-opacity duration-300 font-bold text-primary ${fade ? 'opacity-100' : 'opacity-0'}`}>
+              {rotatingPlatforms[wordIndex]}
+            </span>{' '}
+            to your <strong className="font-bold text-primary">skills</strong>
+          </p>
+          <div className="mt-3 flex flex-nowrap gap-1.5 overflow-hidden">
+            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+              Discover Projects
+            </span>
+            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+              Earn Crypto
+            </span>
+            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+              Earn Points
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-4 sm:gap-6 flex-wrap pt-4 lg:pt-0">
         <button
           className="btn-manga"
           style={{ backgroundColor: '#ed565a', borderColor: '#ed565a', color: '#181818' }}
