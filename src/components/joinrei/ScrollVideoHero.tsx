@@ -8,7 +8,6 @@ import ignyte from '@/assets/joinrei/logo-bar-ignyte.png';
 import solanaFoundation from '@/assets/joinrei/logo-bar-solana-foundation.png';
 import colossium from '@/assets/joinrei/logo-bar-colossium.png';
 
-const SCROLL_VIDEO_URL = '/scroll-rei.mp4';
 const SCROLL_FRAME_COUNT = 61;
 const getScrollFrameSrc = (index: number) =>
   `/scroll-rei-frames/frame-${String(index + 1).padStart(3, '0')}.jpg`;
