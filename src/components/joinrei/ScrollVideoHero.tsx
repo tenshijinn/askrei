@@ -261,10 +261,15 @@ const LeftPanelTrack = ({
         </button>
         <button
           className="btn-manga btn-manga-outline"
-          onClick={() => window.scrollBy({ top: window.innerHeight * 2, behavior: 'smooth' })}
+          onClick={() => {
+            const scroller = document.querySelector('.snap-y') as HTMLElement | null;
+            const target = (scroller?.clientHeight ?? window.innerHeight) * 2;
+            (scroller ?? window).scrollBy({ top: target, behavior: 'smooth' });
+          }}
         >
           How it Works
         </button>
+
       </div>
     </div>
 
