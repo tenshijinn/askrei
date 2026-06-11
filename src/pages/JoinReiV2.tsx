@@ -7,14 +7,9 @@ import { HomeAgentChatbot } from '@/components/joinrei/HomeAgentChatbot';
 
 const JoinReiV2 = () => {
   return (
-    <div className="rei-theme bg-[#0a0a0a]">
-      {/* Combined: left scrolls through hero → logos → how-it-works; right is sticky scrubbing video */}
+    <div className="rei-theme h-screen overflow-y-scroll snap-y snap-mandatory scrollbar-hide bg-[#0a0a0a]">
       <ScrollVideoHero />
-
-      {/* Earn Points & Rewards — own full-width parallax */}
       <HomeValueProp />
-
-      {/* Remaining sections — unchanged */}
       <HomeAggregation />
       <HomeDemoSection />
       <HomeAgentChatbot />
