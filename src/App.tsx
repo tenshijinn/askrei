@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { WalletProvider } from "@/components/WalletProvider";
 import { EVMWalletProvider } from "@/components/EVMWalletProvider";
 import JoinRei from "./pages/JoinRei";
+import JoinReiV2 from "./pages/JoinReiV2";
 import JoinReiOriginal from "./pages/JoinReiOriginal";
 import Rei from "./pages/Rei";
 import Agents from "./pages/Agents";
@@ -29,6 +30,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<JoinRei />} />
+              <Route path="/v2" element={<JoinReiV2 />} />
               <Route path="/joinrei" element={<JoinReiOriginal />} />
               <Route path="/rei" element={<Rei />} />
               <Route path="/agents" element={<Agents />} />
