@@ -160,9 +160,8 @@ export const ScrollVideoHero = () => {
             />
           </div>
 
-          <div className="absolute top-4 left-4 z-30 bg-[#0a0a0a] p-2">
-            <img src={reiLogo} alt="Rei AI" className="h-12 lg:h-16 w-auto block" />
-          </div>
+
+
         </div>
 
         {/* RIGHT — sticky scrubbing video */}
@@ -176,6 +175,9 @@ export const ScrollVideoHero = () => {
             disablePictureInPicture
             className="absolute inset-0 w-full h-full object-cover"
           />
+          <div className="absolute top-4 right-4 z-30 bg-[#0a0a0a] p-2">
+            <img src={reiLogo} alt="Rei AI" className="h-12 lg:h-16 w-auto block" />
+          </div>
           <div className="absolute bottom-6 right-6 z-20">
             <a
               href="https://arena.colosseum.org/projects/explore/rei"
@@ -197,6 +199,7 @@ export const ScrollVideoHero = () => {
   );
 };
 
+
 const LeftPanelTrack = ({
   fade,
   taskFade,
@@ -209,38 +212,33 @@ const LeftPanelTrack = ({
   taskIndex: number;
 }) => (
   <div className="flex flex-col text-primary">
-    {/* Block 1: Hero */}
-    <div className="h-screen w-full flex flex-col justify-center px-8 lg:px-12 xl:px-16">
-      <h1 className="text-[1.75rem] md:text-[2rem] lg:text-[2.25rem] xl:text-[2.5rem] font-light text-primary leading-[1.15] tracking-tight">
-        A Thousand Unicorn Bounties
-        <br />
-        in Your Chat
-      </h1>
-      <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed">
-        Rei AI matches crypto{' '}
-        <span
-          className={`transition-opacity duration-300 font-bold text-primary ${
-            taskFade ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          {rotatingTaskWords[taskIndex]}
-        </span>{' '}
-        from{' '}
-        <span
-          className={`transition-opacity duration-300 font-bold text-primary ${
-            fade ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
-          {rotatingPlatforms[wordIndex]}
-        </span>{' '}
-        to your <strong className="font-bold text-primary">skills</strong>
-      </p>
-      <div className="mt-4 flex flex-wrap gap-2">
-        <SimplePill label="Discover Projects" />
-        <SimplePill label="Earn Crypto" />
-        <SimplePill label="Earn Points" />
+    {/* Block 1: Hero — top content, bottom buttons (matches / home) */}
+    <div className="h-screen w-full flex flex-col justify-between p-8 lg:p-12 xl:p-16">
+      <div className="pt-2">
+        <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
+          A Thousand Unicorn Bounties
+          <br />
+          in Your Chat
+        </h1>
+        <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed">
+          Rei AI matches crypto{' '}
+          <span className={`transition-opacity duration-300 font-bold text-primary ${taskFade ? 'opacity-100' : 'opacity-0'}`}>
+            {rotatingTaskWords[taskIndex]}
+          </span>{' '}
+          from{' '}
+          <span className={`transition-opacity duration-300 font-bold text-primary ${fade ? 'opacity-100' : 'opacity-0'}`}>
+            {rotatingPlatforms[wordIndex]}
+          </span>{' '}
+          to your <strong className="font-bold text-primary">skills</strong>
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <SimplePill label="Discover Projects" />
+          <SimplePill label="Earn Crypto" />
+          <SimplePill label="Earn Points" />
+        </div>
       </div>
-      <div className="mt-8 flex items-center gap-4 flex-wrap">
+
+      <div className="flex items-center gap-6 flex-wrap">
         <button
           className="btn-manga"
           style={{ backgroundColor: '#ed565a', borderColor: '#ed565a', color: '#181818' }}
@@ -248,15 +246,21 @@ const LeftPanelTrack = ({
         >
           Start Now
         </button>
+        <button
+          className="btn-manga btn-manga-outline"
+          onClick={() => window.scrollBy({ top: window.innerHeight * 2, behavior: 'smooth' })}
+        >
+          How it Works
+        </button>
       </div>
     </div>
 
-    {/* Block 2: Logo bar (compressed) */}
-    <div className="h-screen w-full flex flex-col justify-center px-8 lg:px-12 xl:px-16">
-      <h2 className="text-xs font-mono text-primary/50 tracking-widest uppercase mb-8">
+    {/* Block 2: Logo bar — centered */}
+    <div className="h-screen w-full flex flex-col justify-center items-center px-8 lg:px-12 xl:px-16">
+      <h2 className="text-xs font-mono text-primary/50 tracking-widest uppercase mb-10 text-center">
         Backed by
       </h2>
-      <div className="flex flex-col gap-8 items-start">
+      <div className="flex flex-col gap-10 items-center justify-center w-full">
         <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer" className="opacity-90 hover:opacity-100 transition-opacity">
           <img src={arubaito} alt="Arubaito" className="h-12 lg:h-14 w-auto object-contain" />
         </a>
@@ -268,12 +272,12 @@ const LeftPanelTrack = ({
       </div>
     </div>
 
-    {/* Block 3: How it works — all 4 frames */}
-    <div className="h-screen w-full flex flex-col justify-center px-8 lg:px-12 xl:px-16">
-      <h2 className="text-[1.5rem] md:text-[1.75rem] lg:text-[2rem] font-light text-primary leading-tight mb-4">
+    {/* Block 3: How it works — centered */}
+    <div className="h-screen w-full flex flex-col justify-center items-center px-8 lg:px-12 xl:px-16">
+      <h2 className="text-[1.5rem] md:text-[1.75rem] lg:text-[2rem] font-light text-primary leading-tight mb-4 text-center">
         How it works
       </h2>
-      <div className="flex flex-col gap-2.5 max-w-md">
+      <div className="flex flex-col gap-2.5 w-full max-w-md mx-auto">
         <MiniFrame
           title="One feed. Every platform."
           extra={
@@ -307,13 +311,14 @@ const LeftPanelTrack = ({
         </MiniFrame>
       </div>
       <button
-        className="btn-manga btn-manga-primary px-6 py-2 mt-4 self-start"
+        className="btn-manga btn-manga-primary px-6 py-2 mt-4"
         onClick={() => (window.location.href = '/rei')}
       >
         Signup
       </button>
     </div>
   </div>
+
 );
 
 const LeftTrackController = ({ sectionRef }: { sectionRef: React.RefObject<HTMLDivElement> }) => {
