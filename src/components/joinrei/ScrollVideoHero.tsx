@@ -105,24 +105,59 @@ export const ScrollVideoHero = () => {
     const scroller = getScrollParent(section);
 
     let duration = isNaN(video.duration) ? 0 : video.duration;
+    let seeking = false;
+    const FRAME = 1 / 24; // assume ~24fps source
+
+    // Prime Chromium's decoder: assigning currentTime before the video has
+    // been played once often fails to paint. A muted play()+pause() round-trip
+    // fixes it across Chrome/Brave/Edge.
+    const prime = () => {
+      const p = video.play();
+      if (p && typeof p.then === 'function') {
+        p.then(() => video.pause()).catch(() => {});
+      }
+    };
     const onMeta = () => {
       duration = video.duration;
+      prime();
     };
     video.addEventListener('loadedmetadata', onMeta);
+    if (video.readyState >= 1) onMeta();
 
-    const tick = () => {
+    const seekNext = () => {
       const v = videoRef.current;
-      rafRef.current = null;
-      if (!v || !duration) return;
+      if (!v || !duration) {
+        seeking = false;
+        return;
+      }
       const cur = v.currentTime;
       const target = targetTimeRef.current;
       const diff = target - cur;
-      if (Math.abs(diff) < 0.005) return;
-      const next = cur + diff * 0.5;
+      if (Math.abs(diff) < 0.005) {
+        seeking = false;
+        return;
+      }
+      // Cap per-step delta to ~1 frame so Chromium never has to jump far.
+      const step = Math.max(-FRAME, Math.min(FRAME, diff));
+      seeking = true;
       try {
-        v.currentTime = next;
-      } catch {}
-      rafRef.current = requestAnimationFrame(tick);
+        v.currentTime = Math.max(0, Math.min(duration - 0.01, cur + step));
+      } catch {
+        seeking = false;
+      }
+    };
+
+    const onSeeked = () => {
+      seeking = false;
+      // Continue stepping toward the target on the next frame.
+      if (rafRef.current == null) rafRef.current = requestAnimationFrame(tick);
+    };
+    video.addEventListener('seeked', onSeeked);
+
+    const tick = () => {
+      rafRef.current = null;
+      if (seeking) return; // wait for 'seeked' to chain the next step
+      seekNext();
     };
 
     const onScroll = () => {
@@ -133,7 +168,9 @@ export const ScrollVideoHero = () => {
       const progress = total > 0 ? scrolled / total : 0;
       if (!duration) return;
       targetTimeRef.current = Math.min(duration - 0.05, progress * duration);
-      if (rafRef.current == null) rafRef.current = requestAnimationFrame(tick);
+      if (rafRef.current == null && !seeking) {
+        rafRef.current = requestAnimationFrame(tick);
+      }
     };
 
     onScroll();
@@ -143,6 +180,7 @@ export const ScrollVideoHero = () => {
       scroller.removeEventListener('scroll', onScroll as EventListener);
       window.removeEventListener('resize', onScroll);
       video.removeEventListener('loadedmetadata', onMeta);
+      video.removeEventListener('seeked', onSeeked);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, []);
