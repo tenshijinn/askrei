@@ -9,6 +9,9 @@ import solanaFoundation from '@/assets/joinrei/logo-bar-solana-foundation.png';
 import colossium from '@/assets/joinrei/logo-bar-colossium.png';
 
 const SCROLL_VIDEO_URL = '/scroll-rei.mp4';
+const SCROLL_FRAME_COUNT = 61;
+const getScrollFrameSrc = (index: number) =>
+  `/scroll-rei-frames/frame-${String(index + 1).padStart(3, '0')}.jpg`;
 
 const rotatingPlatforms = ['Galxe', 'QuestN', 'TaskOn', 'Zealy', 'Layer3', 'Crew3', 'RabbitHole'];
 const rotatingTaskWords = ['Tasks', 'Bounties', 'Quests'];
@@ -67,13 +70,13 @@ const MiniFrame = ({
 
 export const ScrollVideoHero = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const rafRef = useRef<number | null>(null);
-  const targetTimeRef = useRef(0);
+  const frameRef = useRef(0);
   const [wordIndex, setWordIndex] = useState(0);
   const [taskIndex, setTaskIndex] = useState(0);
   const [fade, setFade] = useState(true);
   const [taskFade, setTaskFade] = useState(true);
+  const [frameIndex, setFrameIndex] = useState(0);
 
   useEffect(() => {
     const i = setInterval(() => {
@@ -97,80 +100,32 @@ export const ScrollVideoHero = () => {
     return () => clearInterval(i);
   }, []);
 
-  // Scrub video based on scroll progress through section
+  // Scrub through exported video frames. Chromium can stall on currentTime
+  // scrubbing, while frame images stay perfectly tied to scroll progress.
   useEffect(() => {
     const section = sectionRef.current;
-    const video = videoRef.current;
-    if (!section || !video) return;
+    if (!section) return;
     const scroller = getScrollParent(section);
-
-    let duration = isNaN(video.duration) ? 0 : video.duration;
-    let seeking = false;
-    const FRAME = 1 / 24; // assume ~24fps source
-
-    // Prime Chromium's decoder: assigning currentTime before the video has
-    // been played once often fails to paint. A muted play()+pause() round-trip
-    // fixes it across Chrome/Brave/Edge.
-    const prime = () => {
-      const p = video.play();
-      if (p && typeof p.then === 'function') {
-        p.then(() => video.pause()).catch(() => {});
-      }
-    };
-    const onMeta = () => {
-      duration = video.duration;
-      prime();
-    };
-    video.addEventListener('loadedmetadata', onMeta);
-    if (video.readyState >= 1) onMeta();
-
-    const seekNext = () => {
-      const v = videoRef.current;
-      if (!v || !duration) {
-        seeking = false;
-        return;
-      }
-      const cur = v.currentTime;
-      const target = targetTimeRef.current;
-      const diff = target - cur;
-      if (Math.abs(diff) < 0.005) {
-        seeking = false;
-        return;
-      }
-      // Cap per-step delta to ~1 frame so Chromium never has to jump far.
-      const step = Math.max(-FRAME, Math.min(FRAME, diff));
-      seeking = true;
-      try {
-        v.currentTime = Math.max(0, Math.min(duration - 0.01, cur + step));
-      } catch {
-        seeking = false;
-      }
-    };
-
-    const onSeeked = () => {
-      seeking = false;
-      // Continue stepping toward the target on the next frame.
-      if (rafRef.current == null) rafRef.current = requestAnimationFrame(tick);
-    };
-    video.addEventListener('seeked', onSeeked);
 
     const tick = () => {
       rafRef.current = null;
-      if (seeking) return; // wait for 'seeked' to chain the next step
-      seekNext();
-    };
-
-    const onScroll = () => {
       const rect = section.getBoundingClientRect();
       const vh = window.innerHeight;
       const total = rect.height - vh;
       const scrolled = Math.min(Math.max(-rect.top, 0), total);
       const progress = total > 0 ? scrolled / total : 0;
-      if (!duration) return;
-      targetTimeRef.current = Math.min(duration - 0.05, progress * duration);
-      if (rafRef.current == null && !seeking) {
-        rafRef.current = requestAnimationFrame(tick);
+      const nextFrame = Math.min(
+        SCROLL_FRAME_COUNT - 1,
+        Math.max(0, Math.round(progress * (SCROLL_FRAME_COUNT - 1)))
+      );
+      if (nextFrame !== frameRef.current) {
+        frameRef.current = nextFrame;
+        setFrameIndex(nextFrame);
       }
+    };
+
+    const onScroll = () => {
+      if (rafRef.current == null) rafRef.current = requestAnimationFrame(tick);
     };
 
     onScroll();
@@ -179,11 +134,18 @@ export const ScrollVideoHero = () => {
     return () => {
       scroller.removeEventListener('scroll', onScroll as EventListener);
       window.removeEventListener('resize', onScroll);
-      video.removeEventListener('loadedmetadata', onMeta);
-      video.removeEventListener('seeked', onSeeked);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    const preloadWindow = 8;
+    for (let i = 1; i <= preloadWindow; i += 1) {
+      const next = Math.min(SCROLL_FRAME_COUNT - 1, frameIndex + i);
+      const img = new Image();
+      img.src = getScrollFrameSrc(next);
+    }
+  }, [frameIndex]);
 
   return (
     <section ref={sectionRef} className="relative bg-[#0a0a0a]" style={{ height: '300vh' }}>
@@ -207,13 +169,9 @@ export const ScrollVideoHero = () => {
 
         {/* RIGHT — sticky scrubbing video */}
         <div className="relative h-screen bg-black hidden lg:block">
-          <video
-            ref={videoRef}
-            src={SCROLL_VIDEO_URL}
-            muted
-            playsInline
-            preload="auto"
-            disablePictureInPicture
+          <img
+            src={getScrollFrameSrc(frameIndex)}
+            alt="Rei scroll animation"
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute top-4 right-4 z-30 bg-[#0a0a0a] p-2">
