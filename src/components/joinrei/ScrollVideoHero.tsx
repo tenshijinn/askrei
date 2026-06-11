@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import reiLogo from '@/assets/joinrei/rei-logo.png';
+import reiHero from '@/assets/joinrei/rei-hero.png';
 import colosseumLogo from '@/assets/joinrei/colosseum-logo.png';
 import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
 import arubaito from '@/assets/joinrei/logo-bar-arubaito.png';
