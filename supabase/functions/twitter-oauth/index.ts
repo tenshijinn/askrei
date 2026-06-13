@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
       const codeVerifier = generateCodeVerifier();
       const codeChallenge = await generateCodeChallenge(codeVerifier);
       
-      const authUrl = new URL('https://twitter.com/i/oauth2/authorize');
+      const authUrl = new URL('https://x.com/i/oauth2/authorize');
       authUrl.searchParams.set('response_type', 'code');
       authUrl.searchParams.set('client_id', clientId);
       authUrl.searchParams.set('redirect_uri', redirectUri);
@@ -72,7 +72,7 @@ Deno.serve(async (req) => {
       console.log('Exchanging code for token...');
 
       // Exchange code for access token
-      const tokenResponse = await fetch('https://api.twitter.com/2/oauth2/token', {
+      const tokenResponse = await fetch('https://api.x.com/2/oauth2/token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -96,7 +96,7 @@ Deno.serve(async (req) => {
       console.log('Token received successfully');
 
       // Get user info (include verified_type for X Premium / Blue checkmark)
-      const userResponse = await fetch('https://api.twitter.com/2/users/me?user.fields=profile_image_url,verified,verified_type', {
+      const userResponse = await fetch('https://api.x.com/2/users/me?user.fields=profile_image_url,verified,verified_type', {
         headers: {
           'Authorization': `Bearer ${tokenData.access_token}`,
         },
