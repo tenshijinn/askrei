@@ -59,7 +59,7 @@ export function ReiEarningsHub({ registrationWallet, connectedWallet, xUserId }:
   if ((!primaryWallet && !xUserId) || (pointsLoading && !pointsData)) return null;
 
   const copyToClipboard = async () => { try { await navigator.clipboard.writeText(referralUrl); setCopied(true); toast.success('Link copied!'); setTimeout(() => setCopied(false), 2000); } catch { toast.error('Failed to copy'); } };
-  const shareToTwitter = () => { const text = `Join me on Rei and discover web3 opportunities!`; window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(referralUrl)}`, '_blank'); };
+  const shareToTwitter = () => { const text = `Join me on Rei and discover web3 opportunities!`; window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(referralUrl)}`, '_blank'); };
   const shareNative = async () => { if (navigator.share) { try { await navigator.share({ title: 'Join Rei', text: 'Join me on Rei!', url: referralUrl }); } catch { /* cancelled */ } } else { copyToClipboard(); } };
 
   return (

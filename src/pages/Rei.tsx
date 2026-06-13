@@ -650,7 +650,7 @@ function RequirementText() {
       <span className="group relative inline-block align-baseline">
         <span className="transition-opacity group-hover:opacity-0" style={{ fontWeight: 700, color: '#ed565a' }}>follow @askrei_</span>
         <a
-          href="https://twitter.com/intent/follow?screen_name=askrei_"
+          href="https://x.com/intent/follow?screen_name=askrei_"
           target="_blank"
           rel="noopener noreferrer"
           className="absolute left-0 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100"
