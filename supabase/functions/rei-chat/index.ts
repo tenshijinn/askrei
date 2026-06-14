@@ -1119,11 +1119,13 @@ async function executeTool(toolName: string, args: any, supabase: any) {
         return { error: 'Talent profile not found. Please register first.' };
       }
       
-      // Get all active tasks
+      // Get all active tasks (hide bounties older than 30 days from user-facing search)
+      const cutoff30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
       const { data: tasks, error } = await supabase
         .from('tasks')
         .select('*')
         .eq('status', 'active')
+        .gte('created_at', cutoff30d)
         .order('created_at', { ascending: false })
         .limit(30);
       
