@@ -65,11 +65,12 @@ export const PostToRei = () => {
     if (!publicKey) { toast.error('Please connect your wallet first'); return; }
     setIsGeneratingPayment(true);
     try {
-      const solPriceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
-      const solPriceData = await solPriceResponse.json();
-      const solPrice = solPriceData.solana.usd;
+      const { data: priceData, error: priceError } = await supabase.functions.invoke('get-sol-price');
+      if (priceError || !priceData?.price) throw new Error(priceData?.error || 'Unable to fetch SOL price');
+      const solPrice = Number(priceData.price);
       const usdAmount = 5;
       const solAmount = usdAmount / solPrice;
+      console.log(`[PostToRei] $${usdAmount} USD = ${solAmount} SOL at $${solPrice}/SOL`);
       const { Keypair } = await import('@solana/web3.js');
       const keypair = Keypair.generate();
       const reference = keypair.publicKey.toString();
@@ -81,7 +82,7 @@ export const PostToRei = () => {
       const qrCodeUrl = await QRCode.toDataURL(paymentUrl, { width: 400, margin: 2, color: { dark: '#0a0a0a', light: '#e8c4b8' } });
       setPaymentData({ qrCodeUrl, reference, paymentUrl, amount: usdAmount, solAmount, recipient });
       setShowPaymentMethod(true);
-    } catch (error) { console.error('Payment generation error:', error); toast.error('Failed to generate payment'); }
+    } catch (error) { console.error('Payment generation error:', error); toast.error(error instanceof Error ? error.message : 'Failed to generate payment'); }
     finally { setIsGeneratingPayment(false); }
   };
 
