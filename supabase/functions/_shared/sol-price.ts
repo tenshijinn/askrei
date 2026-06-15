@@ -6,8 +6,8 @@
 const PYTH_SOL_USD_FEED =
   "ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d";
 
-const MIN_SANE_PRICE = 80;   // hard floor (USD)
-const MAX_SANE_PRICE = 1000; // hard ceiling (USD)
+const MIN_SANE_PRICE = 20;   // hard floor (USD)
+const MAX_SANE_PRICE = 2000; // hard ceiling (USD)
 const FETCH_TIMEOUT_MS = 5000;
 const MORALIS_CROSSCHECK_MAX_SPREAD = 0.05; // 5% — discard Moralis if it disagrees with Jupiter by more
 
@@ -53,14 +53,13 @@ async function fetchJupiter(): Promise<number> {
   const t = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
   try {
     const res = await fetch(
-      "https://api.jup.ag/price/v2?ids=So11111111111111111111111111111111111111112",
+      "https://lite-api.jup.ag/price/v3?ids=So11111111111111111111111111111111111111112",
       { headers: { Accept: "application/json" }, signal: ctrl.signal },
     );
     if (!res.ok) throw new Error(`Jupiter HTTP ${res.status}`);
     const data = await res.json();
-    const priceStr =
-      data?.data?.["So11111111111111111111111111111111111111112"]?.price;
-    const price = Number(priceStr);
+    const entry = data?.["So11111111111111111111111111111111111111112"];
+    const price = Number(entry?.usdPrice ?? entry?.price);
     if (!Number.isFinite(price) || price <= 0) {
       throw new Error("Jupiter returned invalid price");
     }
