@@ -6,9 +6,10 @@
 const PYTH_SOL_USD_FEED =
   "ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d";
 
-const MIN_SANE_PRICE = 20;   // hard floor (USD)
-const MAX_SANE_PRICE = 2000; // hard ceiling (USD)
+const MIN_SANE_PRICE = 80;   // hard floor (USD)
+const MAX_SANE_PRICE = 1000; // hard ceiling (USD)
 const FETCH_TIMEOUT_MS = 5000;
+const MORALIS_CROSSCHECK_MAX_SPREAD = 0.05; // 5% — discard Moralis if it disagrees with Jupiter by more
 
 type Source = { name: string; price: number };
 
@@ -130,17 +131,31 @@ export interface SolPriceResult {
  * Throws if fewer than 1 source succeeds or no source returns a sane price.
  */
 export async function fetchSolPriceUsd(logPrefix = "[sol-price]"): Promise<SolPriceResult> {
-  // Primary: Moralis. If it returns a sane price, use it directly.
-  try {
-    const moralisPrice = await fetchMoralis();
-    if (moralisPrice >= MIN_SANE_PRICE && moralisPrice <= MAX_SANE_PRICE) {
-      console.log(`${logPrefix} moralis (primary): $${moralisPrice}`);
-      const src: Source = { name: "moralis", price: moralisPrice };
-      return { price: moralisPrice, sources: [src], median: moralisPrice };
+  // Primary: Moralis, cross-checked against Jupiter to catch single-source bad prints.
+  const [moralisRes, jupiterRes] = await Promise.allSettled([fetchMoralis(), fetchJupiter()]);
+
+  if (moralisRes.status === "fulfilled") {
+    const mp = moralisRes.value;
+    if (mp >= MIN_SANE_PRICE && mp <= MAX_SANE_PRICE) {
+      if (jupiterRes.status === "fulfilled") {
+        const jp = jupiterRes.value;
+        const spread = Math.abs(mp - jp) / Math.max(mp, jp);
+        if (spread <= MORALIS_CROSSCHECK_MAX_SPREAD) {
+          console.log(`${logPrefix} moralis (primary): $${mp} — jupiter cross-check $${jp}, spread ${(spread * 100).toFixed(2)}% — USING moralis`);
+          const src: Source = { name: "moralis", price: mp };
+          return { price: mp, sources: [src, { name: "jupiter", price: jp }], median: mp };
+        }
+        console.warn(`${logPrefix} moralis $${mp} vs jupiter $${jp} spread ${(spread * 100).toFixed(2)}% > ${MORALIS_CROSSCHECK_MAX_SPREAD * 100}% — discarding moralis, falling back`);
+      } else {
+        console.log(`${logPrefix} moralis (primary, no jupiter cross-check available): $${mp} — USING moralis`);
+        const src: Source = { name: "moralis", price: mp };
+        return { price: mp, sources: [src], median: mp };
+      }
+    } else {
+      console.warn(`${logPrefix} moralis: out-of-band price $${mp} — falling back`);
     }
-    console.warn(`${logPrefix} moralis: out-of-band price $${moralisPrice} — falling back`);
-  } catch (err) {
-    console.warn(`${logPrefix} moralis (primary) failed, falling back:`, (err as Error)?.message ?? err);
+  } else {
+    console.warn(`${logPrefix} moralis (primary) failed, falling back:`, (moralisRes.reason as Error)?.message ?? moralisRes.reason);
   }
 
   // Fallbacks: Jupiter + Pyth + CoinGecko (median of sane responses).
