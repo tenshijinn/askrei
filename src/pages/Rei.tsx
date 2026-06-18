@@ -263,7 +263,7 @@ export default function Rei() {
   };
 
   // ==================== LOGGED IN VIEW ====================
-  if (isSuccess && registrationData && !isEditMode) {
+  if (isSuccess && registrationData && !isEditMode && (initialFollowing || profileActivated)) {
     const analysis = registrationData.profile_analysis as any;
     const tourSteps: TourStep[] = [
       {
@@ -519,7 +519,7 @@ export default function Rei() {
                       {noAccountFound && <div className="rei-surface-2 flex items-center gap-3" style={{ padding: '14px', borderColor: 'hsla(0,63%,55%,0.3)' }}><AlertCircle className="h-4 w-4" style={{ color: '#ef4444' }} /><span style={{ fontSize: '13px', color: '#ef4444' }}>No existing account found. Please sign up.</span></div>}
                     </div>
                   )
-                ) : !profileActivated && !registrationData ? (
+                ) : !profileActivated && !initialFollowing ? (
                   <ActivateReiProfileCard
                     xUserId={twitterUser.x_user_id}
                     initialFollowing={initialFollowing}
