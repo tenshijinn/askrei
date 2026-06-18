@@ -11,7 +11,7 @@ interface Props {
 }
 
 const ASKREI_HANDLE = 'AskRei_';
-const POLL_INTERVAL_MS = 1500;
+const POLL_INTERVAL_MS = 4000;
 const POLL_TIMEOUT_MS = 60_000;
 
 export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onComplete }: Props) {
