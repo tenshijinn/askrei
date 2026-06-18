@@ -48,7 +48,7 @@ export default function Rei() {
   const [user, setUser] = useState<User | null>(null);
   const [authMode, setAuthMode] = useState<'signin' | 'signup' | null>(null);
   const [noAccountFound, setNoAccountFound] = useState(false);
-  const [showSignUp, setShowSignUp] = useState(false);
+  const [showSignUp, setShowSignUp] = useState(true);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [portfolioUrl, setPortfolioUrl] = useState('');
   const [selectedRoles, setSelectedRoles] = useState<RoleTag[]>([]);
