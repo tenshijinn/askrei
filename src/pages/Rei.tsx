@@ -638,27 +638,3 @@ function FollowChecklist({ verified, follow }: { verified: CheckUIState; follow:
     </div>
   );
 }
-
-function RequirementText() {
-  return (
-    <p style={{ fontSize: '11px', color: '#5c5a57', lineHeight: 1.5 }}>
-      You must have a <strong style={{ color: '#f0ede8' }}>Verified</strong>{' '}
-      <img src={xVerifiedBadge} alt="" style={{ width: '12px', height: '12px', display: 'inline-block', verticalAlign: '-2px', margin: '0 2px' }} />
-      X account and{' '}
-      <span className="group relative inline-block align-baseline">
-        <span className="transition-opacity group-hover:opacity-0" style={{ fontWeight: 700, color: '#ed565a' }}>follow @askrei_</span>
-        <a
-          href="https://x.com/intent/follow?screen_name=askrei_"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="absolute left-0 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100"
-          style={{ background: '#ed565a', color: '#0a0a0a', padding: '2px 8px', borderRadius: '999px', fontWeight: 600, fontSize: '11px', textDecoration: 'none', lineHeight: 1.2 }}
-        >
-          <XIcon style={{ width: '10px', height: '10px' }} />
-          Follow @AskRei_
-        </a>
-      </span>
-      {' '}to continue.
-    </p>
-  );
-}
