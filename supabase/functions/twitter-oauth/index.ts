@@ -235,9 +235,10 @@ async function checkFollowsAskrei(
   supabase: ReturnType<typeof import('https://esm.sh/@supabase/supabase-js@2.75.1').createClient>,
   sourceUserId: string,
   _userAccessToken: string,
+  forceFresh = false,
 ): Promise<boolean> {
-  // 1. Check cache
-  try {
+  // 1. Check cache (skipped when forceFresh)
+  if (!forceFresh) try {
     const { data: cached } = await supabase
       .from('x_follow_checks')
       .select('follows_askrei, checked_at')
