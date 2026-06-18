@@ -45,6 +45,8 @@ export default function Rei() {
   type CheckState = 'idle' | 'pending' | 'ok' | 'fail';
   const [verifiedCheck, setVerifiedCheck] = useState<CheckState>('idle');
   const [followCheck, setFollowCheck] = useState<CheckState>('idle');
+  const [profileActivated, setProfileActivated] = useState(false);
+  const [initialFollowing, setInitialFollowing] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [authMode, setAuthMode] = useState<'signin' | 'signup' | null>(null);
