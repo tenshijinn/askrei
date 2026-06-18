@@ -20,13 +20,16 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
   );
   const [unlockState, setUnlockState] = useState<'pending' | 'unlocking' | 'done'>('pending');
   const [stalled, setStalled] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(Math.round(POLL_TIMEOUT_MS / 1000));
   const pollRef = useRef<number | null>(null);
   const timeoutRef = useRef<number | null>(null);
+  const countdownRef = useRef<number | null>(null);
   const completedRef = useRef(false);
 
   const clearTimers = () => {
     if (pollRef.current) { window.clearInterval(pollRef.current); pollRef.current = null; }
     if (timeoutRef.current) { window.clearTimeout(timeoutRef.current); timeoutRef.current = null; }
+    if (countdownRef.current) { window.clearInterval(countdownRef.current); countdownRef.current = null; }
   };
 
   useEffect(() => () => clearTimers(), []);
@@ -53,6 +56,10 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
   const startPolling = () => {
     clearTimers();
     setStalled(false);
+    setSecondsLeft(Math.round(POLL_TIMEOUT_MS / 1000));
+    countdownRef.current = window.setInterval(() => {
+      setSecondsLeft((s) => (s > 0 ? s - 1 : 0));
+    }, 1000);
     pollRef.current = window.setInterval(async () => {
       try {
         const { data, error } = await supabase.functions.invoke('twitter-oauth', {
@@ -73,6 +80,7 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
 
     timeoutRef.current = window.setTimeout(() => {
       if (pollRef.current) { window.clearInterval(pollRef.current); pollRef.current = null; }
+      if (countdownRef.current) { window.clearInterval(countdownRef.current); countdownRef.current = null; }
       setStalled(true);
     }, POLL_TIMEOUT_MS);
   };
