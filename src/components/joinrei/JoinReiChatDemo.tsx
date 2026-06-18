@@ -131,7 +131,7 @@ export const JoinReiChatDemo = () => {
             delay={200}
             extra={<SinglePill><VerifiedLoginPill /><ProofOfTalentPill /></SinglePill>}
           >
-            Wallet activity + Twitter Blue support engaged users,{' '}
+            Wallet activity + X Premium support engaged users,{' '}
             <strong className="text-cream font-semibold">not JEETs or farmers</strong>.
           </Frame>
 
