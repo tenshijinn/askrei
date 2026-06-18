@@ -126,7 +126,7 @@ export default function Rei() {
       if (error) throw error;
       sessionStorage.setItem('twitter_code_verifier_rei', data.codeVerifier);
       window.location.href = data.authUrl;
-    } catch (error) { toast({ title: 'Error', description: 'Failed to initiate Twitter login', variant: 'destructive' }); }
+    } catch (error) { toast({ title: 'Error', description: 'Failed to initiate X login', variant: 'destructive' }); }
   };
 
   const handleTwitterCallback = async (code: string) => {
@@ -147,7 +147,7 @@ export default function Rei() {
 
       if (!isVerifiedAccount) {
         setFollowCheck('fail');
-        toast({ title: 'Verified Account Required', description: 'Only verified X (Twitter) accounts with a checkmark can continue.', variant: 'destructive' });
+        toast({ title: 'Verified Account Required', description: 'Only verified X accounts with a checkmark can continue.', variant: 'destructive' });
         setIsProcessingCallback(false);
         return;
       }
@@ -156,7 +156,7 @@ export default function Rei() {
       setFollowCheck(followsAskrei ? 'ok' : 'fail');
 
       if (!followsAskrei) {
-        toast({ title: 'Follow @askrei_ to continue', description: 'You must follow @askrei_ on X (Twitter) before signing in.', variant: 'destructive' });
+        toast({ title: 'Follow @askrei_ to continue', description: 'You must follow @askrei_ on X before signing in.', variant: 'destructive' });
         setIsProcessingCallback(false);
         return;
       }
@@ -170,7 +170,7 @@ export default function Rei() {
     } catch (error) {
       setVerifiedCheck((s) => (s === 'pending' ? 'fail' : s));
       setFollowCheck((s) => (s === 'pending' ? 'fail' : s));
-      toast({ title: 'Error', description: 'Failed to complete Twitter login', variant: 'destructive' });
+      toast({ title: 'Error', description: 'Failed to complete X login', variant: 'destructive' });
     }
     finally { setIsProcessingCallback(false); }
   };
@@ -506,7 +506,7 @@ export default function Rei() {
                           icon={<Twitter style={{ width: '16px', height: '16px' }} />}
                           prefix="Sign up with"
                           badge={<img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} />}
-                          suffix="Twitter"
+                          suffix="X"
                         />
                         <FollowChecklist verified={verifiedCheck} follow={followCheck} />
                       </div>
@@ -527,7 +527,7 @@ export default function Rei() {
                           icon={<Twitter style={{ width: '16px', height: '16px' }} />}
                           prefix="Sign in with"
                           badge={<img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} />}
-                          suffix="Twitter"
+                          suffix="X"
                         />
                         <FollowChecklist verified={verifiedCheck} follow={followCheck} />
                       </div>
@@ -635,7 +635,7 @@ function FollowChecklist({ verified, follow }: { verified: CheckUIState; follow:
   if (verified === 'idle' && follow === 'idle') return null;
   return (
     <div className="rei-surface-2 space-y-1.5" style={{ padding: '10px 14px' }}>
-      <ChecklistRow state={verified} label="Checking for Verified Twitter" />
+      <ChecklistRow state={verified} label="Checking for Verified X" />
       <ChecklistRow state={follow} label="Checking Follows @askrei_" />
     </div>
   );
@@ -646,7 +646,7 @@ function RequirementText() {
     <p style={{ fontSize: '11px', color: '#5c5a57', lineHeight: 1.5 }}>
       You must have a <strong style={{ color: '#f0ede8' }}>Verified</strong>{' '}
       <img src={xVerifiedBadge} alt="" style={{ width: '12px', height: '12px', display: 'inline-block', verticalAlign: '-2px', margin: '0 2px' }} />
-      X (Twitter) account and{' '}
+      X account and{' '}
       <span className="group relative inline-block align-baseline">
         <span className="transition-opacity group-hover:opacity-0" style={{ fontWeight: 700, color: '#ed565a' }}>follow @askrei_</span>
         <a

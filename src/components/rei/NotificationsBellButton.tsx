@@ -101,7 +101,7 @@ export const NotificationsBellButton = () => {
             Never Miss High Paying Bounties Again
           </p>
           <p style={{ fontSize: '12px', color: '#a09e9a', lineHeight: 1.5, marginBottom: '6px' }}>
-            Opt-in to bounty notifications on X (Twitter) with the highest paying bounties weekly.
+            Opt-in to bounty notifications on X with the highest paying bounties weekly.
           </p>
           <ul style={{ fontSize: '12px', color: '#a09e9a', lineHeight: 1.5, marginBottom: '12px', paddingLeft: '18px', listStyle: 'disc' }}>
             <li>DM her <strong style={{ color: '#f0ede8', fontFamily: "'SF Mono', 'Consolas', monospace", fontWeight: 700 }}>/start</strong> to get start notifications.</li>
