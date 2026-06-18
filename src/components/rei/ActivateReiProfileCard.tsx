@@ -81,6 +81,8 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
     timeoutRef.current = window.setTimeout(() => {
       if (pollRef.current) { window.clearInterval(pollRef.current); pollRef.current = null; }
       if (countdownRef.current) { window.clearInterval(countdownRef.current); countdownRef.current = null; }
+      setSecondsLeft(0);
+      setFollowState('idle');
       setStalled(true);
     }, POLL_TIMEOUT_MS);
   };

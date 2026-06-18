@@ -476,7 +476,7 @@ export default function Rei() {
           </div>
           <div className="w-full max-w-2xl rei-surface">
             <div className="space-y-6">
-              <div className={step !== 1 && twitterUser ? 'opacity-40' : ''}>
+              <div className={step !== 1 && twitterUser && (profileActivated || initialFollowing) ? 'opacity-40' : ''}>
                 {!twitterUser ? (
                   showSignUp ? (
                     <div className="space-y-6">
