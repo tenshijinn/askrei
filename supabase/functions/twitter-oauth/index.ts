@@ -37,7 +37,21 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     const body = await req.json();
-    const { code, action, redirectUri, codeVerifier, skipWhitelistCheck } = body;
+    const { code, action, redirectUri, codeVerifier, skipWhitelistCheck, x_user_id } = body;
+
+    if (action === 'checkFollow') {
+      if (!x_user_id || typeof x_user_id !== 'string') {
+        return new Response(
+          JSON.stringify({ error: 'x_user_id required' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      const follows = await checkFollowsAskrei(supabase, x_user_id, '', true);
+      return new Response(
+        JSON.stringify({ follows_askrei: follows }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     if (action === 'getAuthUrl') {
       const clientId = Deno.env.get('TWITTER_CLIENT_ID')!;
@@ -221,9 +235,10 @@ async function checkFollowsAskrei(
   supabase: ReturnType<typeof import('https://esm.sh/@supabase/supabase-js@2.75.1').createClient>,
   sourceUserId: string,
   _userAccessToken: string,
+  forceFresh = false,
 ): Promise<boolean> {
-  // 1. Check cache
-  try {
+  // 1. Check cache (skipped when forceFresh)
+  if (!forceFresh) try {
     const { data: cached } = await supabase
       .from('x_follow_checks')
       .select('follows_askrei, checked_at')

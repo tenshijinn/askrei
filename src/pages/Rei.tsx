@@ -23,6 +23,7 @@ import { TypewriterCtaButton } from '@/components/buttons/TypewriterCtaButton';
 import { useRegistrationWalkthrough } from '@/hooks/useRegistrationWalkthrough';
 import { walkthroughCopy } from '@/components/joinrei/walkthroughContent';
 import { BountyPromotions } from '@/components/rei/BountyPromotions';
+import { ActivateReiProfileCard } from '@/components/rei/ActivateReiProfileCard';
 
 interface TwitterUser { x_user_id: string; handle: string; display_name: string; profile_image_url?: string; verified: boolean; }
 interface VerificationStatus { bluechip_verified: boolean; verification_type: string | null; }
@@ -44,6 +45,8 @@ export default function Rei() {
   type CheckState = 'idle' | 'pending' | 'ok' | 'fail';
   const [verifiedCheck, setVerifiedCheck] = useState<CheckState>('idle');
   const [followCheck, setFollowCheck] = useState<CheckState>('idle');
+  const [profileActivated, setProfileActivated] = useState(false);
+  const [initialFollowing, setInitialFollowing] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [authMode, setAuthMode] = useState<'signin' | 'signup' | null>(null);
@@ -131,45 +134,28 @@ export default function Rei() {
 
   const handleTwitterCallback = async (code: string) => {
     setIsProcessingCallback(true);
-    setVerifiedCheck('pending');
-    setFollowCheck('pending');
     try {
       const storedVerifier = sessionStorage.getItem('twitter_code_verifier_rei'); sessionStorage.removeItem('twitter_code_verifier_rei');
       const redirectUri = `${window.location.origin}/rei`;
       const { data, error } = await supabase.functions.invoke('twitter-oauth', { body: { action: 'exchangeToken', code, codeVerifier: storedVerifier, redirectUri } });
-      if (error) {
-        setVerifiedCheck('fail'); setFollowCheck('fail');
-        throw error;
-      }
+      if (error) throw error;
 
       const isVerifiedAccount = !!(data?.verified_account ?? data?.user?.verified);
-      setVerifiedCheck(isVerifiedAccount ? 'ok' : 'fail');
-
       if (!isVerifiedAccount) {
-        setFollowCheck('fail');
-        toast({ title: 'Verified Account Required', description: 'Only verified X accounts with a checkmark can continue.', variant: 'destructive' });
+        toast({ title: 'Verified X account required', description: 'Only verified X accounts can continue.', variant: 'destructive' });
         setIsProcessingCallback(false);
         return;
       }
 
       const followsAskrei = !!data?.follows_askrei;
-      setFollowCheck(followsAskrei ? 'ok' : 'fail');
-
-      if (!followsAskrei) {
-        toast({ title: 'Follow @askrei_ to continue', description: 'You must follow @askrei_ on X before signing in.', variant: 'destructive' });
-        setIsProcessingCallback(false);
-        return;
-      }
-
+      setInitialFollowing(followsAskrei);
+      setProfileActivated(false);
       setTwitterUser(data.user);
       setVerificationStatus({ bluechip_verified: data.bluechip_verified, verification_type: data.verification_type });
       localStorage.setItem('rei_twitter_user', JSON.stringify(data.user));
       localStorage.setItem('rei_verification_status', JSON.stringify({ bluechip_verified: data.bluechip_verified, verification_type: data.verification_type }));
       window.history.replaceState({}, '', '/rei');
-      toast({ title: 'Identity Verified!', description: `Welcome, @${data.user.handle}!` });
     } catch (error) {
-      setVerifiedCheck((s) => (s === 'pending' ? 'fail' : s));
-      setFollowCheck((s) => (s === 'pending' ? 'fail' : s));
       toast({ title: 'Error', description: 'Failed to complete X login', variant: 'destructive' });
     }
     finally { setIsProcessingCallback(false); }
@@ -533,6 +519,12 @@ export default function Rei() {
                       {noAccountFound && <div className="rei-surface-2 flex items-center gap-3" style={{ padding: '14px', borderColor: 'hsla(0,63%,55%,0.3)' }}><AlertCircle className="h-4 w-4" style={{ color: '#ef4444' }} /><span style={{ fontSize: '13px', color: '#ef4444' }}>No existing account found. Please sign up.</span></div>}
                     </div>
                   )
+                ) : !profileActivated && !registrationData ? (
+                  <ActivateReiProfileCard
+                    xUserId={twitterUser.x_user_id}
+                    initialFollowing={initialFollowing}
+                    onComplete={() => setProfileActivated(true)}
+                  />
                 ) : (
                   <div className="space-y-3">
                     <div className="rei-surface-2 flex items-center gap-3" style={{ padding: '14px' }}>
@@ -544,7 +536,7 @@ export default function Rei() {
                   </div>
                 )}
               </div>
-              {twitterUser && (
+              {twitterUser && (profileActivated || registrationData) && (
                 <div data-tour="reg-wallet" className={step !== 2 && hasWallet ? 'opacity-40' : ''}>
                   <div className="flex items-center gap-3 mb-4">
                     <div className="h-7 w-7 rounded-full flex items-center justify-center" style={{ background: hasWallet ? 'hsla(18,52%,82%,0.12)' : '#1e1e1e', fontSize: '12px', color: hasWallet ? '#e8c4b8' : '#5c5a57', border: '0.5px solid hsla(0,0%,100%,0.08)' }}>{hasWallet ? <Check className="h-3.5 w-3.5" /> : '2'}</div>
