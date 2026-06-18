@@ -11,7 +11,7 @@ interface Props {
 }
 
 const ASKREI_HANDLE = 'AskRei_';
-const POLL_INTERVAL_MS = 1500;
+const POLL_INTERVAL_MS = 4000;
 const POLL_TIMEOUT_MS = 60_000;
 
 export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onComplete }: Props) {
@@ -20,13 +20,16 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
   );
   const [unlockState, setUnlockState] = useState<'pending' | 'unlocking' | 'done'>('pending');
   const [stalled, setStalled] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(Math.round(POLL_TIMEOUT_MS / 1000));
   const pollRef = useRef<number | null>(null);
   const timeoutRef = useRef<number | null>(null);
+  const countdownRef = useRef<number | null>(null);
   const completedRef = useRef(false);
 
   const clearTimers = () => {
     if (pollRef.current) { window.clearInterval(pollRef.current); pollRef.current = null; }
     if (timeoutRef.current) { window.clearTimeout(timeoutRef.current); timeoutRef.current = null; }
+    if (countdownRef.current) { window.clearInterval(countdownRef.current); countdownRef.current = null; }
   };
 
   useEffect(() => () => clearTimers(), []);
@@ -53,6 +56,10 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
   const startPolling = () => {
     clearTimers();
     setStalled(false);
+    setSecondsLeft(Math.round(POLL_TIMEOUT_MS / 1000));
+    countdownRef.current = window.setInterval(() => {
+      setSecondsLeft((s) => (s > 0 ? s - 1 : 0));
+    }, 1000);
     pollRef.current = window.setInterval(async () => {
       try {
         const { data, error } = await supabase.functions.invoke('twitter-oauth', {
@@ -73,6 +80,7 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
 
     timeoutRef.current = window.setTimeout(() => {
       if (pollRef.current) { window.clearInterval(pollRef.current); pollRef.current = null; }
+      if (countdownRef.current) { window.clearInterval(countdownRef.current); countdownRef.current = null; }
       setStalled(true);
     }, POLL_TIMEOUT_MS);
   };
@@ -150,14 +158,14 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
               followState === 'done'
                 ? 'Connected'
                 : followState === 'checking'
-                ? 'Checking…'
+                ? `Checking… auto-stops in ${secondsLeft}s`
                 : 'Stay connected for updates and announcements.'
             }
             right={
               followState === 'done' ? (
                 <RightCircle status="done" />
               ) : followState === 'checking' ? (
-                <CheckingPill />
+                <CheckingPill secondsLeft={secondsLeft} />
               ) : (
                 <FollowButton onClick={handleFollowClick} />
               )
@@ -288,30 +296,53 @@ function RightCircle({ status }: { status: 'done' | 'checking' | 'pending' }) {
 
 function FollowButton({ onClick }: { onClick: () => void }) {
   return (
-    <button
-      onClick={onClick}
-      className="flex items-center gap-1.5"
-      style={{
-        background: 'transparent',
-        border: '1px solid hsla(0,0%,100%,0.22)',
-        borderRadius: '8px',
-        padding: '7px 14px',
-        color: '#f0ede8',
-        fontSize: '12px',
-        fontWeight: 500,
-        cursor: 'pointer',
-        transition: 'border-color 160ms ease, background 160ms ease',
-      }}
-      onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'hsla(18,52%,82%,0.5)'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'hsla(0,0%,100%,0.22)'; }}
-    >
-      <XGlyph />
-      <span>Follow</span>
-    </button>
+    <>
+      <style>{`
+        @keyframes rei-heartbeat {
+          0%, 28%, 70%, 100% {
+            background: hsla(18,52%,82%,0.04);
+            box-shadow: 0 0 0 0 hsla(18,52%,82%,0);
+            border-color: hsla(18,52%,82%,0.3);
+          }
+          14% {
+            background: hsla(18,52%,82%,0.22);
+            box-shadow: 0 0 0 6px hsla(18,52%,82%,0.10);
+            border-color: hsla(18,52%,82%,0.65);
+          }
+          42% {
+            background: hsla(18,52%,82%,0.12);
+            box-shadow: 0 0 0 10px hsla(18,52%,82%,0);
+            border-color: hsla(18,52%,82%,0.4);
+          }
+        }
+        .rei-follow-pulse { animation: rei-heartbeat 1.6s ease-in-out infinite; }
+        .rei-follow-pulse:hover, .rei-follow-pulse:focus-visible {
+          animation-play-state: paused;
+          background: hsla(18,52%,82%,0.22) !important;
+          border-color: hsla(18,52%,82%,0.65) !important;
+        }
+      `}</style>
+      <button
+        onClick={onClick}
+        className="rei-follow-pulse flex items-center gap-1.5"
+        style={{
+          border: '1px solid hsla(18,52%,82%,0.3)',
+          borderRadius: '8px',
+          padding: '7px 14px',
+          color: '#f0ede8',
+          fontSize: '12px',
+          fontWeight: 500,
+          cursor: 'pointer',
+        }}
+      >
+        <XGlyph />
+        <span>Follow</span>
+      </button>
+    </>
   );
 }
 
-function CheckingPill() {
+function CheckingPill({ secondsLeft }: { secondsLeft: number }) {
   return (
     <div
       className="flex items-center gap-1.5"
@@ -326,7 +357,7 @@ function CheckingPill() {
       }}
     >
       <Loader2 className="h-3 w-3 animate-spin" />
-      <span>Checking…</span>
+      <span>Checking… {secondsLeft}s</span>
     </div>
   );
 }
