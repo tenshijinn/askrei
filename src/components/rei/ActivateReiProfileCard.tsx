@@ -158,14 +158,14 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
               followState === 'done'
                 ? 'Connected'
                 : followState === 'checking'
-                ? 'Checking…'
+                ? `Checking… auto-stops in ${secondsLeft}s`
                 : 'Stay connected for updates and announcements.'
             }
             right={
               followState === 'done' ? (
                 <RightCircle status="done" />
               ) : followState === 'checking' ? (
-                <CheckingPill />
+                <CheckingPill secondsLeft={secondsLeft} />
               ) : (
                 <FollowButton onClick={handleFollowClick} />
               )
