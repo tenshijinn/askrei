@@ -296,30 +296,53 @@ function RightCircle({ status }: { status: 'done' | 'checking' | 'pending' }) {
 
 function FollowButton({ onClick }: { onClick: () => void }) {
   return (
-    <button
-      onClick={onClick}
-      className="flex items-center gap-1.5"
-      style={{
-        background: 'transparent',
-        border: '1px solid hsla(0,0%,100%,0.22)',
-        borderRadius: '8px',
-        padding: '7px 14px',
-        color: '#f0ede8',
-        fontSize: '12px',
-        fontWeight: 500,
-        cursor: 'pointer',
-        transition: 'border-color 160ms ease, background 160ms ease',
-      }}
-      onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'hsla(18,52%,82%,0.5)'; }}
-      onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'hsla(0,0%,100%,0.22)'; }}
-    >
-      <XGlyph />
-      <span>Follow</span>
-    </button>
+    <>
+      <style>{`
+        @keyframes rei-heartbeat {
+          0%, 28%, 70%, 100% {
+            background: hsla(18,52%,82%,0.04);
+            box-shadow: 0 0 0 0 hsla(18,52%,82%,0);
+            border-color: hsla(18,52%,82%,0.3);
+          }
+          14% {
+            background: hsla(18,52%,82%,0.22);
+            box-shadow: 0 0 0 6px hsla(18,52%,82%,0.10);
+            border-color: hsla(18,52%,82%,0.65);
+          }
+          42% {
+            background: hsla(18,52%,82%,0.12);
+            box-shadow: 0 0 0 10px hsla(18,52%,82%,0);
+            border-color: hsla(18,52%,82%,0.4);
+          }
+        }
+        .rei-follow-pulse { animation: rei-heartbeat 1.6s ease-in-out infinite; }
+        .rei-follow-pulse:hover, .rei-follow-pulse:focus-visible {
+          animation-play-state: paused;
+          background: hsla(18,52%,82%,0.22) !important;
+          border-color: hsla(18,52%,82%,0.65) !important;
+        }
+      `}</style>
+      <button
+        onClick={onClick}
+        className="rei-follow-pulse flex items-center gap-1.5"
+        style={{
+          border: '1px solid hsla(18,52%,82%,0.3)',
+          borderRadius: '8px',
+          padding: '7px 14px',
+          color: '#f0ede8',
+          fontSize: '12px',
+          fontWeight: 500,
+          cursor: 'pointer',
+        }}
+      >
+        <XGlyph />
+        <span>Follow</span>
+      </button>
+    </>
   );
 }
 
-function CheckingPill() {
+function CheckingPill({ secondsLeft }: { secondsLeft: number }) {
   return (
     <div
       className="flex items-center gap-1.5"
@@ -334,7 +357,7 @@ function CheckingPill() {
       }}
     >
       <Loader2 className="h-3 w-3 animate-spin" />
-      <span>Checking…</span>
+      <span>Checking… {secondsLeft}s</span>
     </div>
   );
 }
