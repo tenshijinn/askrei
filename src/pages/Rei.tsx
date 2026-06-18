@@ -23,6 +23,7 @@ import { TypewriterCtaButton } from '@/components/buttons/TypewriterCtaButton';
 import { useRegistrationWalkthrough } from '@/hooks/useRegistrationWalkthrough';
 import { walkthroughCopy } from '@/components/joinrei/walkthroughContent';
 import { BountyPromotions } from '@/components/rei/BountyPromotions';
+import { ActivateReiProfileCard } from '@/components/rei/ActivateReiProfileCard';
 
 interface TwitterUser { x_user_id: string; handle: string; display_name: string; profile_image_url?: string; verified: boolean; }
 interface VerificationStatus { bluechip_verified: boolean; verification_type: string | null; }
