@@ -517,7 +517,6 @@ export default function Rei() {
                       <div className="space-y-3">
                         <h4 style={{ fontSize: '24px', fontWeight: 300, color: '#f0ede8', letterSpacing: '-0.025em' }}>Sign In</h4>
                         <p style={{ fontSize: '13px', color: '#5c5a57' }}>Access your existing profile on Rei</p>
-                        <RequirementText />
                         <TypewriterCtaButton
                           onClick={() => handleTwitterLogin('signin')}
                           disabled={isProcessingCallback}
