@@ -229,12 +229,12 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
 
       {stalled && unlockState !== 'done' && (
         <p className="text-center" style={{ fontSize: '12px', color: '#5c5a57' }}>
-          Still waiting… make sure you followed @AskRei_.{' '}
+          Didn't catch the follow yet — give it a moment, or{' '}
           <button
             onClick={handleCheckAgain}
             style={{ background: 'none', border: 'none', color: '#e8c4b8', textDecoration: 'underline', textUnderlineOffset: '3px', cursor: 'pointer', padding: 0, fontSize: '12px' }}
           >
-            Check again
+            Re-check
           </button>
         </p>
       )}
@@ -346,7 +346,7 @@ function FollowButton({ onClick }: { onClick: () => void }) {
         }}
       >
         <XGlyph />
-        <span>Follow</span>
+        <span>Follow & Activate</span>
       </button>
     </>
   );
