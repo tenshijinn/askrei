@@ -149,19 +149,27 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
             index={1}
             status="done"
             title="Verified X account"
-            subtitle="Done"
+            subtitle="Verified — bounty posters trust you instantly"
             right={<RightCircle status="done" />}
           />
           <StepRow
             index={2}
             status={step2Status}
-            title="Follow @askrei_ on X"
+            title="Activate AI Agent"
             subtitle={
-              followState === 'done'
-                ? 'Connected'
-                : followState === 'checking'
-                ? `Checking… auto-stops in ${secondsLeft}s`
-                : 'Stay connected for updates and announcements.'
+              followState === 'done' ? (
+                'Agent active — bounties incoming'
+              ) : followState === 'checking' ? (
+                `Connecting your agent… auto-stops in ${secondsLeft}s`
+              ) : (
+                <ul style={{ margin: 0, padding: '0 0 0 14px', listStyle: 'disc', color: '#a09e9a' }}>
+                  <li>Get highest-pay bounties to DM{' '}<span style={{ color: '#5c5a57' }}>[opt-in only]</span></li>
+                  <li style={{ marginTop: '2px' }}>
+                    Your personal bounty agent — just tag{' '}
+                    <span style={{ color: '#f0ede8' }}>@AskRei_</span>, she replies
+                  </li>
+                </ul>
+              )
             }
             right={
               followState === 'done' ? (
@@ -179,10 +187,10 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
             title="Unlock your portal"
             subtitle={
               unlockState === 'done'
-                ? 'Ready'
+                ? 'Ready — welcome in'
                 : unlockState === 'unlocking'
-                ? 'Unlocking…'
-                : 'Pending'
+                ? 'Unlocking your portal…'
+                : 'Your Proof-of-Talent dashboard, ready in seconds'
             }
             right={
               unlockState === 'done'
