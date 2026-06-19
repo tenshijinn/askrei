@@ -149,19 +149,27 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
             index={1}
             status="done"
             title="Verified X account"
-            subtitle="Done"
+            subtitle="Verified — bounty posters trust you instantly"
             right={<RightCircle status="done" />}
           />
           <StepRow
             index={2}
             status={step2Status}
-            title="Follow @askrei_ on X"
+            title="Activate AI Agent"
             subtitle={
-              followState === 'done'
-                ? 'Connected'
-                : followState === 'checking'
-                ? `Checking… auto-stops in ${secondsLeft}s`
-                : 'Stay connected for updates and announcements.'
+              followState === 'done' ? (
+                'Agent active — bounties incoming'
+              ) : followState === 'checking' ? (
+                `Connecting your agent… auto-stops in ${secondsLeft}s`
+              ) : (
+                <ul style={{ margin: 0, padding: '0 0 0 14px', listStyle: 'disc', color: '#a09e9a' }}>
+                  <li>Get highest-pay bounties to DM{' '}<span style={{ color: '#5c5a57' }}>[opt-in only]</span></li>
+                  <li style={{ marginTop: '2px' }}>
+                    Your personal bounty agent — just tag{' '}
+                    <span style={{ color: '#f0ede8' }}>@AskRei_</span>, she replies
+                  </li>
+                </ul>
+              )
             }
             right={
               followState === 'done' ? (
@@ -179,10 +187,10 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
             title="Unlock your portal"
             subtitle={
               unlockState === 'done'
-                ? 'Ready'
+                ? 'Ready — welcome in'
                 : unlockState === 'unlocking'
-                ? 'Unlocking…'
-                : 'Pending'
+                ? 'Unlocking your portal…'
+                : 'Your Proof-of-Talent dashboard, ready in seconds'
             }
             right={
               unlockState === 'done'
@@ -221,12 +229,12 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
 
       {stalled && unlockState !== 'done' && (
         <p className="text-center" style={{ fontSize: '12px', color: '#5c5a57' }}>
-          Still waiting… make sure you followed @AskRei_.{' '}
+          Didn't catch the follow yet — give it a moment, or{' '}
           <button
             onClick={handleCheckAgain}
             style={{ background: 'none', border: 'none', color: '#e8c4b8', textDecoration: 'underline', textUnderlineOffset: '3px', cursor: 'pointer', padding: 0, fontSize: '12px' }}
           >
-            Check again
+            Re-check
           </button>
         </p>
       )}
@@ -236,7 +244,7 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
 
 function StepRow({
   index, status, title, subtitle, right,
-}: { index: number; status: StepStatus; title: string; subtitle: string; right: React.ReactNode }) {
+}: { index: number; status: StepStatus; title: string; subtitle: React.ReactNode; right: React.ReactNode }) {
   const isDone = status === 'done';
   const isActive = status === 'active' || status === 'checking' || status === 'unlocking';
   return (
@@ -262,7 +270,7 @@ function StepRow({
       </div>
       <div className="flex-1 min-w-0">
         <p style={{ fontSize: '14px', fontWeight: 500, color: '#f0ede8', margin: 0 }}>{title}</p>
-        <p style={{ fontSize: '12px', color: '#5c5a57', marginTop: '2px' }}>{subtitle}</p>
+        <div style={{ fontSize: '12px', color: '#5c5a57', marginTop: '2px' }}>{subtitle}</div>
       </div>
       <div className="flex-shrink-0">{right}</div>
     </div>
@@ -338,7 +346,7 @@ function FollowButton({ onClick }: { onClick: () => void }) {
         }}
       >
         <XGlyph />
-        <span>Follow</span>
+        <span>Follow & Activate</span>
       </button>
     </>
   );
