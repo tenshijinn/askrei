@@ -244,7 +244,7 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
 
 function StepRow({
   index, status, title, subtitle, right,
-}: { index: number; status: StepStatus; title: string; subtitle: string; right: React.ReactNode }) {
+}: { index: number; status: StepStatus; title: string; subtitle: React.ReactNode; right: React.ReactNode }) {
   const isDone = status === 'done';
   const isActive = status === 'active' || status === 'checking' || status === 'unlocking';
   return (
@@ -270,7 +270,7 @@ function StepRow({
       </div>
       <div className="flex-1 min-w-0">
         <p style={{ fontSize: '14px', fontWeight: 500, color: '#f0ede8', margin: 0 }}>{title}</p>
-        <p style={{ fontSize: '12px', color: '#5c5a57', marginTop: '2px' }}>{subtitle}</p>
+        <div style={{ fontSize: '12px', color: '#5c5a57', marginTop: '2px' }}>{subtitle}</div>
       </div>
       <div className="flex-shrink-0">{right}</div>
     </div>
