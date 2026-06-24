@@ -181,6 +181,13 @@ export type Database = {
             referencedRelation: "campaign_subscriptions"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "campaign_clicks_campaign_subscription_id_fkey"
+            columns: ["campaign_subscription_id"]
+            isOneToOne: false
+            referencedRelation: "v_public_campaign_subscriptions"
+            referencedColumns: ["id"]
+          },
         ]
       }
       campaign_subscriptions: {
@@ -941,6 +948,13 @@ export type Database = {
             referencedRelation: "campaign_subscriptions"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "tasks_campaign_subscription_id_fkey"
+            columns: ["campaign_subscription_id"]
+            isOneToOne: false
+            referencedRelation: "v_public_campaign_subscriptions"
+            referencedColumns: ["id"]
+          },
         ]
       }
       twitter_whitelist: {
@@ -1143,6 +1157,54 @@ export type Database = {
       }
     }
     Views: {
+      v_public_campaign_subscriptions: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          id: string | null
+          last_scraped_at: string | null
+          project_link: string | null
+          project_name: string | null
+          scrape_count: number | null
+          screenshot_url: string | null
+          short_code: string | null
+          source: string | null
+          status: string | null
+          tasks_imported_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string | null
+          last_scraped_at?: string | null
+          project_link?: string | null
+          project_name?: string | null
+          scrape_count?: number | null
+          screenshot_url?: string | null
+          short_code?: string | null
+          source?: string | null
+          status?: string | null
+          tasks_imported_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string | null
+          last_scraped_at?: string | null
+          project_link?: string | null
+          project_name?: string | null
+          scrape_count?: number | null
+          screenshot_url?: string | null
+          short_code?: string | null
+          source?: string | null
+          status?: string | null
+          tasks_imported_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       v_public_jobs: {
         Row: {
           apply_url: string | null
