@@ -162,13 +162,26 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
               ) : followState === 'checking' ? (
                 `Connecting your agent… auto-stops in ${secondsLeft}s`
               ) : (
-                <ul style={{ margin: 0, padding: '0 0 0 14px', listStyle: 'disc', color: '#a09e9a' }}>
-                  <li>Get highest-pay bounties to DM{' '}<span style={{ color: '#5c5a57' }}>[opt-in only]</span></li>
-                  <li style={{ marginTop: '2px' }}>
-                    Your personal bounty agent — just tag{' '}
-                    <span style={{ color: '#f0ede8' }}>@AskRei_</span>, she replies
-                  </li>
-                </ul>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '6px' }}>
+                  <MarqueeRow
+                    label="Activate for Rewards:"
+                    items={['$SOL', 'Monke NFTs', '$USDG', 'Y00T NFTs', 'DeGods NFTs', 'Rei Points']}
+                    duration={24}
+                  />
+                  <MarqueeRow
+                    label="Activate for Functions:"
+                    items={[
+                      "Get Highest Paid Bounties DM'd [Opt-In]",
+                      'Market Analysis',
+                      'Daily Bounty Posts',
+                      'Just tag @AskRei_ to ask bounty questions tailored to you',
+                    ]}
+                    duration={34}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px' }}>
+                    <FollowButton onClick={handleFollowClick} />
+                  </div>
+                </div>
               )
             }
             right={
@@ -177,7 +190,7 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
               ) : followState === 'checking' ? (
                 <CheckingPill secondsLeft={secondsLeft} />
               ) : (
-                <FollowButton onClick={handleFollowClick} />
+                <RightCircle status="pending" />
               )
             }
           />
@@ -346,7 +359,7 @@ function FollowButton({ onClick }: { onClick: () => void }) {
         }}
       >
         <XGlyph />
-        <span>Follow & Activate</span>
+        <span>Follow to Activate</span>
       </button>
     </>
   );
@@ -377,5 +390,75 @@ function XGlyph() {
     <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
       <path d="M18.244 2H21l-6.52 7.45L22 22h-6.797l-4.77-6.21L4.8 22H2.04l6.98-7.98L2 2h6.91l4.3 5.69L18.244 2Zm-2.38 18h1.76L7.22 4H5.36L15.864 20Z" />
     </svg>
+  );
+}
+
+function MarqueeRow({ label, items, duration }: { label: string; items: string[]; duration: number }) {
+  const text = items.join('  |  ');
+  const renderItem = (key: string) => (
+    <span key={key} style={{ paddingRight: '32px' }}>
+      {text.split('@AskRei_').map((chunk, i, arr) => (
+        <span key={i}>
+          {chunk}
+          {i < arr.length - 1 && <span style={{ color: '#f0ede8' }}>@AskRei_</span>}
+        </span>
+      ))}
+    </span>
+  );
+  return (
+    <>
+      <style>{`
+        @keyframes rei-marquee {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+        .rei-marquee-track { animation: rei-marquee linear infinite; }
+        .rei-marquee-pill:hover .rei-marquee-track { animation-play-state: paused; }
+      `}</style>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <span
+          style={{
+            fontSize: '11px',
+            color: '#5c5a57',
+            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+          }}
+        >
+          {label}
+        </span>
+        <div
+          className="rei-marquee-pill"
+          style={{
+            flex: 1,
+            minWidth: 0,
+            border: '1px solid hsla(0,0%,100%,0.12)',
+            borderRadius: '999px',
+            padding: '5px 12px',
+            background: 'hsla(0,0%,100%,0.02)',
+            overflow: 'hidden',
+            WebkitMaskImage:
+              'linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%)',
+            maskImage:
+              'linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%)',
+          }}
+        >
+          <div
+            className="rei-marquee-track"
+            style={{
+              display: 'inline-flex',
+              whiteSpace: 'nowrap',
+              fontSize: '12px',
+              color: '#a09e9a',
+              animationDuration: `${duration}s`,
+              willChange: 'transform',
+            }}
+          >
+            {renderItem('a')}
+            {renderItem('b')}
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
