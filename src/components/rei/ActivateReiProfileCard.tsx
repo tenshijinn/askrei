@@ -392,3 +392,73 @@ function XGlyph() {
     </svg>
   );
 }
+
+function MarqueeRow({ label, items, duration }: { label: string; items: string[]; duration: number }) {
+  const text = items.join('  |  ');
+  const renderItem = (key: string) => (
+    <span key={key} style={{ paddingRight: '32px' }}>
+      {text.split('@AskRei_').map((chunk, i, arr) => (
+        <span key={i}>
+          {chunk}
+          {i < arr.length - 1 && <span style={{ color: '#f0ede8' }}>@AskRei_</span>}
+        </span>
+      ))}
+    </span>
+  );
+  return (
+    <>
+      <style>{`
+        @keyframes rei-marquee {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+        .rei-marquee-track { animation: rei-marquee linear infinite; }
+        .rei-marquee-pill:hover .rei-marquee-track { animation-play-state: paused; }
+      `}</style>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <span
+          style={{
+            fontSize: '11px',
+            color: '#5c5a57',
+            fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+          }}
+        >
+          {label}
+        </span>
+        <div
+          className="rei-marquee-pill"
+          style={{
+            flex: 1,
+            minWidth: 0,
+            border: '1px solid hsla(0,0%,100%,0.12)',
+            borderRadius: '999px',
+            padding: '5px 12px',
+            background: 'hsla(0,0%,100%,0.02)',
+            overflow: 'hidden',
+            WebkitMaskImage:
+              'linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%)',
+            maskImage:
+              'linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%)',
+          }}
+        >
+          <div
+            className="rei-marquee-track"
+            style={{
+              display: 'inline-flex',
+              whiteSpace: 'nowrap',
+              fontSize: '12px',
+              color: '#a09e9a',
+              animationDuration: `${duration}s`,
+              willChange: 'transform',
+            }}
+          >
+            {renderItem('a')}
+            {renderItem('b')}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
