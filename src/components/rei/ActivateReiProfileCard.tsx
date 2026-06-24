@@ -359,7 +359,7 @@ function FollowButton({ onClick }: { onClick: () => void }) {
         }}
       >
         <XGlyph />
-        <span>Follow & Activate</span>
+        <span>Follow to Activate</span>
       </button>
     </>
   );
