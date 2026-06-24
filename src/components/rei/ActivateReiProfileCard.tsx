@@ -394,13 +394,19 @@ function XGlyph() {
 }
 
 function MarqueeRow({ label, items, duration }: { label: string; items: string[]; duration: number }) {
-  const text = items.join('  |  ');
   const renderItem = (key: string) => (
-    <span key={key} style={{ paddingRight: '32px' }}>
-      {text.split('@AskRei_').map((chunk, i, arr) => (
-        <span key={i}>
-          {chunk}
-          {i < arr.length - 1 && <span style={{ color: '#f0ede8' }}>@AskRei_</span>}
+    <span key={key} style={{ display: 'inline-flex', whiteSpace: 'nowrap' }}>
+      {items.map((item, i) => (
+        <span key={i} style={{ display: 'inline-flex', whiteSpace: 'nowrap' }}>
+          <span>
+            {item.split('@AskRei_').map((chunk, j, arr) => (
+              <span key={j}>
+                {chunk}
+                {j < arr.length - 1 && <span style={{ color: '#f0ede8' }}>@AskRei_</span>}
+              </span>
+            ))}
+          </span>
+          <span style={{ color: '#e8c4b8', padding: '0 12px' }}>|</span>
         </span>
       ))}
     </span>
@@ -437,10 +443,6 @@ function MarqueeRow({ label, items, duration }: { label: string; items: string[]
             padding: '5px 12px',
             background: 'hsla(0,0%,100%,0.02)',
             overflow: 'hidden',
-            WebkitMaskImage:
-              'linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%)',
-            maskImage:
-              'linear-gradient(90deg, transparent 0, #000 8%, #000 92%, transparent 100%)',
           }}
         >
           <div
@@ -462,3 +464,4 @@ function MarqueeRow({ label, items, duration }: { label: string; items: string[]
     </>
   );
 }
+
