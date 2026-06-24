@@ -15,7 +15,6 @@ interface CampaignStats {
   scrape_count: number | null;
   last_scraped_at: string | null;
   expires_at: string | null;
-  customer_email: string;
   stripe_subscription_id: string;
 }
 
