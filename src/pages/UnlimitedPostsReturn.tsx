@@ -15,7 +15,6 @@ interface CampaignStats {
   scrape_count: number | null;
   last_scraped_at: string | null;
   expires_at: string | null;
-  customer_email: string;
   stripe_subscription_id: string;
 }
 
@@ -41,41 +40,29 @@ export default function UnlimitedPostsReturn() {
     let attempt = 0;
     let resolvedSubId: string | null = null;
 
-    const resolveSubId = async () => {
-      if (resolvedSubId) return resolvedSubId;
+    const fetchCheckout = async () => {
       try {
         const { data } = await supabase.functions.invoke("get-checkout-session", {
           body: { sessionId, environment: getStripeEnvironment() },
         });
-        resolvedSubId = data?.subscriptionId ?? null;
+        resolvedSubId = data?.subscriptionId ?? resolvedSubId;
+        if (data?.campaign && resolvedSubId) {
+          if (cancelled) return true;
+          setCampaign({
+            ...(data.campaign as Omit<CampaignStats, "stripe_subscription_id">),
+            stripe_subscription_id: resolvedSubId,
+          });
+          setLoading(false);
+          return true;
+        }
       } catch {
-        // ignore — we'll retry on the next poll tick
-      }
-      return resolvedSubId;
-    };
-
-    const fetchCampaign = async () => {
-      const subId = await resolveSubId();
-      if (!subId) return false;
-      const { data } = await supabase
-        .from("campaign_subscriptions")
-        .select(
-          "id, project_name, project_link, status, tasks_imported_count, scrape_count, last_scraped_at, expires_at, customer_email, stripe_subscription_id"
-        )
-        .eq("stripe_subscription_id", subId)
-        .maybeSingle();
-
-      if (cancelled) return true;
-      if (data) {
-        setCampaign(data as CampaignStats);
-        setLoading(false);
-        return true;
+        // ignore — retry on next tick
       }
       return false;
     };
 
     const poll = async () => {
-      const found = await fetchCampaign();
+      const found = await fetchCheckout();
       attempt += 1;
       setPollAttempts(attempt);
       if (!found && attempt < 10 && !cancelled) {
@@ -98,7 +85,6 @@ export default function UnlimitedPostsReturn() {
       const { data, error } = await supabase.functions.invoke("create-portal-session", {
         body: {
           stripeSubscriptionId: campaign.stripe_subscription_id,
-          customerEmail: campaign.customer_email,
           returnUrl: window.location.href,
           environment: getStripeEnvironment(),
         },

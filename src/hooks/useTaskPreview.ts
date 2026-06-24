@@ -95,7 +95,7 @@ async function fetchUniqueVisits(shortCode: string): Promise<number | null> {
   const promise = (async () => {
     try {
       const { data: sub, error: subErr } = await supabase
-        .from("campaign_subscriptions")
+        .from("v_public_campaign_subscriptions")
         .select("id")
         .eq("short_code", shortCode)
         .maybeSingle();
