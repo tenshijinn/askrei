@@ -162,13 +162,26 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
               ) : followState === 'checking' ? (
                 `Connecting your agent… auto-stops in ${secondsLeft}s`
               ) : (
-                <ul style={{ margin: 0, padding: '0 0 0 14px', listStyle: 'disc', color: '#a09e9a' }}>
-                  <li>Get highest-pay bounties to DM{' '}<span style={{ color: '#5c5a57' }}>[opt-in only]</span></li>
-                  <li style={{ marginTop: '2px' }}>
-                    Your personal bounty agent — just tag{' '}
-                    <span style={{ color: '#f0ede8' }}>@AskRei_</span>, she replies
-                  </li>
-                </ul>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '6px' }}>
+                  <MarqueeRow
+                    label="Activate for Rewards:"
+                    items={['$SOL', 'Monke NFTs', '$USDG', 'Y00T NFTs', 'DeGods NFTs', 'Rei Points']}
+                    duration={24}
+                  />
+                  <MarqueeRow
+                    label="Activate for Functions:"
+                    items={[
+                      "Get Highest Paid Bounties DM'd [Opt-In]",
+                      'Market Analysis',
+                      'Daily Bounty Posts',
+                      'Just tag @AskRei_ to ask bounty questions tailored to you',
+                    ]}
+                    duration={34}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px' }}>
+                    <FollowButton onClick={handleFollowClick} />
+                  </div>
+                </div>
               )
             }
             right={
@@ -177,7 +190,7 @@ export function ActivateReiProfileCard({ xUserId, initialFollowing = false, onCo
               ) : followState === 'checking' ? (
                 <CheckingPill secondsLeft={secondsLeft} />
               ) : (
-                <FollowButton onClick={handleFollowClick} />
+                <RightCircle status="pending" />
               )
             }
           />
