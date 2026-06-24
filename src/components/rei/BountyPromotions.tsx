@@ -214,7 +214,7 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
         if (xUserId) filters.push(`x_user_id.eq.${xUserId}`);
         if (walletAddress) filters.push(`wallet_address.eq.${walletAddress}`);
         const { data: camps, error: campErr } = await supabase
-          .from('campaign_subscriptions')
+          .from('v_public_campaign_subscriptions')
           .select('id, project_name, project_link, short_code, status, created_at, expires_at')
           .or(filters.join(','))
           .order('created_at', { ascending: false });
