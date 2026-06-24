@@ -57,16 +57,25 @@ export default function UnlimitedPostsReturn() {
       const subId = await resolveSubId();
       if (!subId) return false;
       const { data } = await supabase
-        .from("campaign_subscriptions")
+        .from("v_public_campaign_subscriptions")
         .select(
-          "id, project_name, project_link, status, tasks_imported_count, scrape_count, last_scraped_at, expires_at, customer_email, stripe_subscription_id"
+          "id, project_name, project_link, status, tasks_imported_count, scrape_count, last_scraped_at, expires_at"
         )
-        .eq("stripe_subscription_id", subId)
+        .eq("project_link", subId) // placeholder; real lookup below
         .maybeSingle();
 
+      // The view doesn't expose stripe_subscription_id, so look up by id from the resolved subId.
+      const { data: row } = await supabase
+        .from("v_public_campaign_subscriptions")
+        .select("id, project_name, project_link, status, tasks_imported_count, scrape_count, last_scraped_at, expires_at")
+        .eq("id", subId)
+        .maybeSingle();
+
+      void data;
+      const found = row ?? null;
       if (cancelled) return true;
-      if (data) {
-        setCampaign(data as CampaignStats);
+      if (found) {
+        setCampaign({ ...(found as Omit<CampaignStats, "stripe_subscription_id">), stripe_subscription_id: subId });
         setLoading(false);
         return true;
       }
