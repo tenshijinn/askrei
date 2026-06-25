@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import reiLogo from '@/assets/joinrei/rei-logo.png';
 import reiHero from '@/assets/joinrei/rei-hero.png';
 import colosseumLogo from '@/assets/joinrei/colosseum-logo.png';
@@ -11,6 +12,47 @@ import colossium from '@/assets/joinrei/logo-bar-colossium.png';
 const SCROLL_FRAME_COUNT = 60;
 const getScrollFrameSrc = (index: number) =>
   `/scroll-rei-frames/frame-${String(index + 1).padStart(3, '0')}.jpg`;
+
+const BOUNTY_COUNT_KEY = 'rei_bounty_count_v1';
+const BOUNTY_COUNT_TTL = 4 * 60 * 60 * 1000; // 4h
+
+const useBountyCount = () => {
+  const [count, setCount] = useState<number | null>(() => {
+    try {
+      const raw = localStorage.getItem(BOUNTY_COUNT_KEY);
+      if (!raw) return null;
+      const p = JSON.parse(raw);
+      if (Date.now() - p.t > BOUNTY_COUNT_TTL) return p.c ?? null;
+      return p.c;
+    } catch { return null; }
+  });
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(BOUNTY_COUNT_KEY);
+      if (raw) {
+        const p = JSON.parse(raw);
+        if (Date.now() - p.t < BOUNTY_COUNT_TTL) return;
+      }
+    } catch {}
+    supabase.from('tasks').select('*', { count: 'exact', head: true }).then(({ count: c }) => {
+      if (typeof c === 'number') {
+        setCount(c);
+        try { localStorage.setItem(BOUNTY_COUNT_KEY, JSON.stringify({ c, t: Date.now() })); } catch {}
+      }
+    });
+  }, []);
+  return count;
+};
+
+const BountyCountLabel = () => {
+  const count = useBountyCount();
+  return (
+    <p className="text-[11px] md:text-xs font-mono text-primary/60 mb-2">
+      {(count ?? 0).toLocaleString()} bounties delivered to date.
+    </p>
+  );
+};
+
 
 
 const SimplePill = ({ label }: { label: string }) => (
@@ -182,13 +224,14 @@ const LeftPanelTrack = () => (
     <div className="h-screen w-full flex flex-col justify-between p-6 sm:p-8 lg:p-12 xl:p-16">
       {/* DESKTOP (lg+) — original layout */}
       <div className="hidden lg:block pt-2">
+        <BountyCountLabel />
         <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
           Discover Profitable Crypto Bounties Consistently,
           <br />
-          Before Everyone Else.
+          Before Everyone Else. Get a 1000 Bounties in your Chat
         </h1>
         <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed">
-          Get a 1000 Bounties in your Chat
+          <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities. <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms. <strong className="text-primary font-semibold">Rei</strong> finds and organizes bounties, quests, testnets and airdrops in <strong className="text-primary font-semibold">one AI-powered feed</strong>.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <SimplePill label="Early Discovery" />
@@ -210,11 +253,12 @@ const LeftPanelTrack = () => (
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
         <div className="absolute inset-x-3 bottom-3 sm:inset-x-4 sm:bottom-4 rounded-2xl bg-[#0a0a0a]/95 border border-primary/15 p-4 sm:p-5">
+          <BountyCountLabel />
           <h1 className="text-[1.5rem] sm:text-[1.75rem] font-light text-primary leading-[1.1] tracking-tight">
-            Discover Profitable Crypto Bounties Consistently, Before Everyone Else.
+            Discover Profitable Crypto Bounties Consistently, Before Everyone Else. Get a 1000 Bounties in your Chat
           </h1>
           <p className="mt-3 text-[12px] sm:text-sm text-primary/70 font-mono leading-relaxed">
-            Get a 1000 Bounties in your Chat
+            <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities. <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms. <strong className="text-primary font-semibold">Rei</strong> finds and organizes bounties, quests, testnets and airdrops in <strong className="text-primary font-semibold">one AI-powered feed</strong>.
           </p>
           <div className="mt-3 flex flex-nowrap gap-1.5 overflow-hidden">
             <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
