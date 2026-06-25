@@ -56,6 +56,21 @@ const BountyCountPill = () => {
   );
 };
 
+const ROTATOR_WORDS = ['bounties', 'quests', 'tasks', 'airdrops'];
+
+const RotatorText = ({ words, interval = 2000 }: { words: string[]; interval?: number }) => {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => setIndex((i) => (i + 1) % words.length), interval);
+    return () => clearInterval(timer);
+  }, [words.length, interval]);
+  return (
+    <span className="inline-block text-[#ed565a] font-semibold transition-opacity duration-300">
+      {words[index]}
+    </span>
+  );
+};
+
 
 
 const SimplePill = ({ label }: { label: string }) => (
@@ -238,7 +253,7 @@ const LeftPanelTrack = () => (
         <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed whitespace-pre-line">
           <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities.{"\n"}
           <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms.{"\n"}
-          <strong className="text-primary font-semibold">Rei</strong> finds and organizes bounties, quests, testnets and airdrops in <strong className="text-primary font-semibold">one AI-powered feed and Agent</strong>.
+          <strong className="text-primary font-semibold">Rei</strong> finds and organizes <RotatorText words={ROTATOR_WORDS} /> in <strong className="text-primary font-semibold">one AI-powered feed and Agent</strong>.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <SimplePill label="Early Discovery" />
@@ -268,7 +283,7 @@ const LeftPanelTrack = () => (
           <p className="mt-3 text-[12px] sm:text-sm text-primary/70 font-mono leading-relaxed whitespace-pre-line">
             <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities.{"\n"}
             <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms.{"\n"}
-            <strong className="text-primary font-semibold">Rei</strong> finds and organizes bounties, quests, testnets and airdrops in <strong className="text-primary font-semibold">one AI-powered feed and Agent</strong>.
+            <strong className="text-primary font-semibold">Rei</strong> finds and organizes <RotatorText words={ROTATOR_WORDS} /> in <strong className="text-primary font-semibold">one AI-powered feed and Agent</strong>.
           </p>
           <div className="mt-3 flex flex-nowrap gap-1.5 overflow-hidden">
             <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
