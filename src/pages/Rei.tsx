@@ -189,15 +189,18 @@ export default function Rei() {
         scheduleStages();
       } else if (audioBlob) {
         setAnalysisStage('uploading');
-        const fileName = `${twitterUser.x_user_id}_${Date.now()}_audio.webm`;
-        filePath = fileName;
-        // Simulate upload progress (Supabase JS doesn't expose progress events)
         const uploadInterval = setInterval(() => {
           setUploadPercent((p) => (p < 90 ? p + 8 : p));
         }, 200);
-        const { error: uploadError } = await supabase.storage.from('rei-contributor-files').upload(filePath, audioBlob);
+        const form = new FormData();
+        form.append('file', audioBlob, `${twitterUser.x_user_id}_${Date.now()}_audio.webm`);
+        form.append('kind', 'rei-audio');
+        form.append('x_user_id', twitterUser.x_user_id);
+        const { data: upData, error: uploadError } = await supabase.functions.invoke('upload-contributor-file', { body: form });
         clearInterval(uploadInterval);
         if (uploadError) throw uploadError;
+        if (!upData?.path) throw new Error(upData?.error || 'Upload failed');
+        filePath = upData.path;
         setUploadPercent(100);
         setAnalysisStage('transcribing');
         scheduleStages();
