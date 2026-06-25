@@ -46,9 +46,12 @@ const useBountyCount = () => {
 
 const BountyCountLabel = () => {
   const count = useBountyCount();
+  const num = (count ?? 0).toLocaleString();
   return (
-    <p className="text-[11px] md:text-xs font-mono text-primary/60 mb-2">
-      {(count ?? 0).toLocaleString()} bounties delivered to date.
+    <p className="text-sm md:text-base font-mono text-[#ed565a] mb-2">
+      <strong className="font-semibold">{num}</strong>{' '}
+      <strong className="font-semibold">bounties</strong>{' '}
+      delivered to date.
     </p>
   );
 };
