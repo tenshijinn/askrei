@@ -226,25 +226,22 @@ const LeftPanelTrack = ({
       {/* DESKTOP (lg+) — original layout */}
       <div className="hidden lg:block pt-2">
         <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
-          A Thousand Unicorn Bounties
+          Discover Profitable Crypto Bounties Consistently,
           <br />
-          in Your Chat
+          Before Everyone Else.
         </h1>
         <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed">
-          Rei AI matches crypto{' '}
-          <span className={`transition-opacity duration-300 font-bold text-primary ${taskFade ? 'opacity-100' : 'opacity-0'}`}>
-            {rotatingTaskWords[taskIndex]}
-          </span>{' '}
-          from{' '}
-          <span className={`transition-opacity duration-300 font-bold text-primary ${fade ? 'opacity-100' : 'opacity-0'}`}>
-            {rotatingPlatforms[wordIndex]}
-          </span>{' '}
-          to your <strong className="font-bold text-primary">skills</strong>
+          Get a 1000 Bounties in your Chat
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
-          <SimplePill label="Discover Projects" />
-          <SimplePill label="Earn Crypto" />
-          <SimplePill label="Earn Points" />
+          <SimplePill label="Early Discovery" />
+          <SimplePill label="Consistent Profits" />
+          <SimplePill label="Save Hours" />
+          <SimplePill label="Stop Scrolling" />
+          <SimplePill label="Skip Saturation" />
+          <SimplePill label="No More FOMO" />
+          <SimplePill label="Stay Ahead" />
+          <SimplePill label="Financial Freedom" />
         </div>
       </div>
 
