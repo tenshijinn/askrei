@@ -254,28 +254,35 @@ const LeftPanelTrack = ({
         />
         <div className="absolute inset-x-3 bottom-3 sm:inset-x-4 sm:bottom-4 rounded-2xl bg-[#0a0a0a]/95 border border-primary/15 p-4 sm:p-5">
           <h1 className="text-[1.5rem] sm:text-[1.75rem] font-light text-primary leading-[1.1] tracking-tight">
-            A Thousand Unicorn Bounties in Your Chat
+            Discover Profitable Crypto Bounties Consistently, Before Everyone Else.
           </h1>
           <p className="mt-3 text-[12px] sm:text-sm text-primary/70 font-mono leading-relaxed">
-            Rei AI matches crypto{' '}
-            <span className={`transition-opacity duration-300 font-bold text-primary ${taskFade ? 'opacity-100' : 'opacity-0'}`}>
-              {rotatingTaskWords[taskIndex]}
-            </span>{' '}
-            from{' '}
-            <span className={`transition-opacity duration-300 font-bold text-primary ${fade ? 'opacity-100' : 'opacity-0'}`}>
-              {rotatingPlatforms[wordIndex]}
-            </span>{' '}
-            to your <strong className="font-bold text-primary">skills</strong>
+            Get a 1000 Bounties in your Chat
           </p>
           <div className="mt-3 flex flex-nowrap gap-1.5 overflow-hidden">
             <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
-              Discover Projects
+              Early Discovery
             </span>
             <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
-              Earn Crypto
+              Consistent Profits
             </span>
             <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
-              Earn Points
+              Save Hours
+            </span>
+            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+              Stop Scrolling
+            </span>
+            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+              Skip Saturation
+            </span>
+            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+              No More FOMO
+            </span>
+            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+              Stay Ahead
+            </span>
+            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+              Financial Freedom
             </span>
           </div>
         </div>
