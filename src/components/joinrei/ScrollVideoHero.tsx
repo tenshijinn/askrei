@@ -56,6 +56,21 @@ const BountyCountPill = () => {
   );
 };
 
+const ROTATOR_WORDS = ['bounties', 'quests', 'tasks', 'airdrops'];
+
+const RotatorText = ({ words, interval = 2000 }: { words: string[]; interval?: number }) => {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => setIndex((i) => (i + 1) % words.length), interval);
+    return () => clearInterval(timer);
+  }, [words.length, interval]);
+  return (
+    <span className="inline-block text-[#ed565a] font-semibold transition-opacity duration-300">
+      {words[index]}
+    </span>
+  );
+};
+
 
 
 const SimplePill = ({ label }: { label: string }) => (
