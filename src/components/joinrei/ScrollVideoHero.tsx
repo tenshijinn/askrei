@@ -176,17 +176,7 @@ const getScrollParent = (el: HTMLElement): HTMLElement | Window => {
 
 
 
-const LeftPanelTrack = ({
-  fade,
-  taskFade,
-  wordIndex,
-  taskIndex,
-}: {
-  fade: boolean;
-  taskFade: boolean;
-  wordIndex: number;
-  taskIndex: number;
-}) => (
+const LeftPanelTrack = () => (
   <div className="flex flex-col text-primary">
     {/* Block 1: Hero — top content, bottom buttons (matches / home) */}
     <div className="h-screen w-full flex flex-col justify-between p-6 sm:p-8 lg:p-12 xl:p-16">
