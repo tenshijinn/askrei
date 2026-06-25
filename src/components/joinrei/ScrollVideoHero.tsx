@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import reiLogo from '@/assets/joinrei/rei-logo.png';
 import reiHero from '@/assets/joinrei/rei-hero.png';
 import colosseumLogo from '@/assets/joinrei/colosseum-logo.png';
