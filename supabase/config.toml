@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.zernio-events]
 verify_jwt = false
+
+[functions.upload-contributor-file]
+verify_jwt = false
