@@ -13,6 +13,47 @@ const SCROLL_FRAME_COUNT = 60;
 const getScrollFrameSrc = (index: number) =>
   `/scroll-rei-frames/frame-${String(index + 1).padStart(3, '0')}.jpg`;
 
+const BOUNTY_COUNT_KEY = 'rei_bounty_count_v1';
+const BOUNTY_COUNT_TTL = 4 * 60 * 60 * 1000; // 4h
+
+const useBountyCount = () => {
+  const [count, setCount] = useState<number | null>(() => {
+    try {
+      const raw = localStorage.getItem(BOUNTY_COUNT_KEY);
+      if (!raw) return null;
+      const p = JSON.parse(raw);
+      if (Date.now() - p.t > BOUNTY_COUNT_TTL) return p.c ?? null;
+      return p.c;
+    } catch { return null; }
+  });
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(BOUNTY_COUNT_KEY);
+      if (raw) {
+        const p = JSON.parse(raw);
+        if (Date.now() - p.t < BOUNTY_COUNT_TTL) return;
+      }
+    } catch {}
+    supabase.from('tasks').select('*', { count: 'exact', head: true }).then(({ count: c }) => {
+      if (typeof c === 'number') {
+        setCount(c);
+        try { localStorage.setItem(BOUNTY_COUNT_KEY, JSON.stringify({ c, t: Date.now() })); } catch {}
+      }
+    });
+  }, []);
+  return count;
+};
+
+const BountyCountLabel = () => {
+  const count = useBountyCount();
+  return (
+    <p className="text-[11px] md:text-xs font-mono text-primary/60 mb-2">
+      {(count ?? 0).toLocaleString()} bounties delivered to date.
+    </p>
+  );
+};
+
+
 
 const SimplePill = ({ label }: { label: string }) => (
   <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#181818] border border-primary/20">
