@@ -227,7 +227,7 @@ const LeftPanelTrack = () => (
     <div className="h-screen w-full flex flex-col justify-between p-6 sm:p-8 lg:p-12 xl:p-16">
       {/* DESKTOP (lg+) — original layout */}
       <div className="hidden lg:block pt-2">
-        <BountyCountLabel />
+        <BountyCountPill />
         <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
           Spend Less time Searching
           <br />
@@ -257,7 +257,7 @@ const LeftPanelTrack = () => (
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
         <div className="absolute inset-x-3 bottom-3 sm:inset-x-4 sm:bottom-4 rounded-2xl bg-[#0a0a0a]/95 border border-primary/15 p-4 sm:p-5">
-          <BountyCountLabel />
+          <BountyCountPill />
           <h1 className="text-[1.5rem] sm:text-[1.75rem] font-light text-primary leading-[1.1] tracking-tight">
             Spend Less time Searching
             <br />
