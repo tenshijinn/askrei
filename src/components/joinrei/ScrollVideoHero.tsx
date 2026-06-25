@@ -264,48 +264,69 @@ const LeftPanelTrack = () => (
         </div>
       </div>
 
-      {/* MOBILE / TABLET — image as background with overlay card */}
-      <div className="lg:hidden relative flex-1 min-h-0 overflow-hidden rounded-3xl">
-        <img
-          src={reiHero}
-          alt="Rei AI Agent"
-          className="absolute inset-0 w-full h-full object-cover object-center"
-        />
-        <div className="absolute inset-x-3 bottom-3 sm:inset-x-4 sm:bottom-4 rounded-2xl bg-[#0a0a0a]/95 border border-primary/15 p-4 sm:p-5">
+      {/* MOBILE / TABLET — stacked layout matching template */}
+      <div className="lg:hidden flex-1 min-h-0 flex flex-col gap-3 sm:gap-4">
+        <div className="shrink-0">
           <BountyCountPill />
-          <h1 className="text-[1.5rem] sm:text-[1.75rem] font-light text-primary leading-[1.1] tracking-tight">
-            Spend Less time Searching
-            <br />
-            Spend More time Earning
-            <br />
-            A 1000 Bounties in your Chat
-          </h1>
-          <p className="mt-3 text-[12px] sm:text-sm text-primary/70 font-mono leading-relaxed whitespace-pre-line">
-            <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities.{"\n"}
-            <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms.{"\n"}
-            <strong className="text-primary font-semibold">Rei</strong> finds and organizes <RotatorText words={ROTATOR_WORDS} /> in <strong className="text-primary font-semibold">one AI-powered feed and Agent</strong>.
-          </p>
-          <div className="mt-3 flex flex-nowrap gap-1.5 overflow-hidden">
-            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
-              Early Discovery
-            </span>
-            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
-              Consistent Profits
-            </span>
-            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
-              Save Hours
-            </span>
-            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
-              No More FOMO
-            </span>
-            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
-              Stay Ahead
-            </span>
-          </div>
+        </div>
+        <h1 className="text-[1.25rem] sm:text-[1.5rem] font-light text-primary leading-[1.1] tracking-tight shrink-0">
+          Spend Less time Searching
+          <br />
+          Spend More time Earning
+          <br />
+          A 1000 Bounties in your Chat
+        </h1>
+        <p className="text-[11px] sm:text-[13px] text-primary/70 font-mono leading-relaxed whitespace-pre-line shrink-0">
+          <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities.{"\n"}
+          <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms.{"\n"}
+          <strong className="text-primary font-semibold">Rei</strong> finds and organizes <RotatorText words={ROTATOR_WORDS} /> in <strong className="text-primary font-semibold">one AI-powered feed and Agent</strong>.
+        </p>
+        <div className="flex flex-wrap gap-1.5 shrink-0">
+          <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+            Early Discovery
+          </span>
+          <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+            Consistent Profits
+          </span>
+          <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+            Save Hours
+          </span>
+          <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+            No More FOMO
+          </span>
+          <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+            Stay Ahead
+          </span>
+        </div>
+        <div className="flex flex-col gap-2 shrink-0">
+          <button
+            className="btn-manga w-full"
+            style={{ backgroundColor: '#ed565a', borderColor: '#ed565a', color: '#181818' }}
+            onClick={() => (window.location.href = '/rei')}
+          >
+            Start Now
+          </button>
+          <button
+            className="btn-manga btn-manga-outline w-full"
+            onClick={() => {
+              const scroller = document.querySelector('.snap-y') as HTMLElement | null;
+              const target = (scroller?.clientHeight ?? window.innerHeight) * 2;
+              (scroller ?? window).scrollBy({ top: target, behavior: 'smooth' });
+            }}
+          >
+            How it Works
+          </button>
+        </div>
+        <div className="flex-1 min-h-0 rounded-2xl overflow-hidden border border-primary/15">
+          <img
+            src={reiHero}
+            alt="Rei AI Agent"
+            className="w-full h-full object-cover object-center"
+          />
         </div>
       </div>
 
-      <div className="flex items-center gap-4 sm:gap-6 flex-wrap pt-4 lg:pt-0">
+      <div className="hidden lg:flex items-center gap-4 sm:gap-6 flex-wrap pt-4 lg:pt-0">
         <button
           className="btn-manga"
           style={{ backgroundColor: '#ed565a', borderColor: '#ed565a', color: '#181818' }}
@@ -323,7 +344,6 @@ const LeftPanelTrack = () => (
         >
           How it Works
         </button>
-
       </div>
     </div>
 
