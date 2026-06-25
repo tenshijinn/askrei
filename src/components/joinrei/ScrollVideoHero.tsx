@@ -12,8 +12,6 @@ const SCROLL_FRAME_COUNT = 60;
 const getScrollFrameSrc = (index: number) =>
   `/scroll-rei-frames/frame-${String(index + 1).padStart(3, '0')}.jpg`;
 
-const rotatingPlatforms = ['Galxe', 'QuestN', 'TaskOn', 'Zealy', 'Layer3', 'Crew3', 'RabbitHole'];
-const rotatingTaskWords = ['Tasks', 'Bounties', 'Quests'];
 
 const SimplePill = ({ label }: { label: string }) => (
   <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#181818] border border-primary/20">
