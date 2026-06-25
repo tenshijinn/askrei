@@ -69,13 +69,28 @@ export const HomeHero = () => {
 
           <div className={`mt-4 flex flex-wrap gap-2 transition-opacity duration-500 delay-200 ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
             <span className="px-4 py-1.5 rounded-full bg-[#181818] border border-primary/20 text-xs text-cream/80 font-mono">
-              Discover Projects
+              Early Discovery
             </span>
             <span className="px-4 py-1.5 rounded-full bg-[#181818] border border-primary/20 text-xs text-cream/80 font-mono">
-              Earn Crypto
+              Consistent Profits
             </span>
             <span className="px-4 py-1.5 rounded-full bg-[#181818] border border-primary/20 text-xs text-cream/80 font-mono">
-              Earn Points
+              Save Hours
+            </span>
+            <span className="px-4 py-1.5 rounded-full bg-[#181818] border border-primary/20 text-xs text-cream/80 font-mono">
+              Stop Scrolling
+            </span>
+            <span className="px-4 py-1.5 rounded-full bg-[#181818] border border-primary/20 text-xs text-cream/80 font-mono">
+              Skip Saturation
+            </span>
+            <span className="px-4 py-1.5 rounded-full bg-[#181818] border border-primary/20 text-xs text-cream/80 font-mono">
+              No More FOMO
+            </span>
+            <span className="px-4 py-1.5 rounded-full bg-[#181818] border border-primary/20 text-xs text-cream/80 font-mono">
+              Stay Ahead
+            </span>
+            <span className="px-4 py-1.5 rounded-full bg-[#181818] border border-primary/20 text-xs text-cream/80 font-mono">
+              Financial Freedom
             </span>
           </div>
         </div>
