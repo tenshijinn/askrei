@@ -229,22 +229,23 @@ const LeftPanelTrack = () => (
       <div className="hidden lg:block pt-2">
         <BountyCountLabel />
         <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
-          Discover Profitable Crypto Bounties Consistently,
+          Spend Less time Searching
           <br />
-          Before Everyone Else. Get a 1000 Bounties in your Chat
+          Spend More time Earning
+          <br />
+          A 1000 Bounties in your Chat
         </h1>
-        <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed">
-          <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities. <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms. <strong className="text-primary font-semibold">Rei</strong> finds and organizes bounties, quests, testnets and airdrops in <strong className="text-primary font-semibold">one AI-powered feed</strong>.
+        <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed whitespace-pre-line">
+          <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities.
+          <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms.
+          <strong className="text-primary font-semibold">Rei</strong> finds and organizes bounties, quests, testnets and airdrops in <strong className="text-primary font-semibold">one AI-powered feed and Agent</strong>.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <SimplePill label="Early Discovery" />
           <SimplePill label="Consistent Profits" />
           <SimplePill label="Save Hours" />
-          <SimplePill label="Stop Scrolling" />
-          <SimplePill label="Skip Saturation" />
           <SimplePill label="No More FOMO" />
           <SimplePill label="Stay Ahead" />
-          <SimplePill label="Financial Freedom" />
         </div>
       </div>
 
