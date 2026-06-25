@@ -253,11 +253,12 @@ const LeftPanelTrack = () => (
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
         <div className="absolute inset-x-3 bottom-3 sm:inset-x-4 sm:bottom-4 rounded-2xl bg-[#0a0a0a]/95 border border-primary/15 p-4 sm:p-5">
+          <BountyCountLabel />
           <h1 className="text-[1.5rem] sm:text-[1.75rem] font-light text-primary leading-[1.1] tracking-tight">
-            Discover Profitable Crypto Bounties Consistently, Before Everyone Else.
+            Discover Profitable Crypto Bounties Consistently, Before Everyone Else. Get a 1000 Bounties in your Chat
           </h1>
           <p className="mt-3 text-[12px] sm:text-sm text-primary/70 font-mono leading-relaxed">
-            Get a 1000 Bounties in your Chat
+            <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities. <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms. <strong className="text-primary font-semibold">Rei</strong> finds and organizes bounties, quests, testnets and airdrops in <strong className="text-primary font-semibold">one AI-powered feed</strong>.
           </p>
           <div className="mt-3 flex flex-nowrap gap-1.5 overflow-hidden">
             <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
