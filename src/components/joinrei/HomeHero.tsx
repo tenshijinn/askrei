@@ -8,36 +8,10 @@ import reiSpeechBubble from '@/assets/joinrei/rei-speech-bubble.gif';
 
 export const HomeHero = () => {
   const [headlineComplete, setHeadlineComplete] = useState(false);
-  const [wordIndex, setWordIndex] = useState(0);
-  const [taskIndex, setTaskIndex] = useState(0);
-  const [fade, setFade] = useState(true);
-  const [taskFade, setTaskFade] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => setHeadlineComplete(true), 1200);
     return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFade(false);
-      setTimeout(() => {
-        setWordIndex((prev) => (prev + 1) % rotatingPlatforms.length);
-        setFade(true);
-      }, 300);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTaskFade(false);
-      setTimeout(() => {
-        setTaskIndex((prev) => (prev + 1) % rotatingTaskWords.length);
-        setTaskFade(true);
-      }, 300);
-    }, 2400);
-    return () => clearInterval(interval);
   }, []);
 
   const scrollToNextSection = () => {
