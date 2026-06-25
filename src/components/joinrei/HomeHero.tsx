@@ -64,20 +64,7 @@ export const HomeHero = () => {
           </h1>
 
           <p className={`mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed transition-opacity duration-500 lg:whitespace-nowrap ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
-
-            Rei AI matches crypto{' '}
-            <span
-              className={`transition-opacity duration-300 font-bold text-primary ${taskFade ? 'opacity-100' : 'opacity-0'}`}
-            >
-              {rotatingTaskWords[taskIndex]}
-            </span>
-            {' '}from{' '}
-            <span
-              className={`transition-opacity duration-300 font-bold text-primary ${fade ? 'opacity-100' : 'opacity-0'}`}
-            >
-              {rotatingPlatforms[wordIndex]}
-            </span>
-            {' '}to your <strong className="font-bold text-primary">skills</strong>
+            Get a 1000 Bounties in your Chat
           </p>
 
           <div className={`mt-4 flex flex-wrap gap-2 transition-opacity duration-500 delay-200 ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
