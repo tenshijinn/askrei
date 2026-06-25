@@ -12,8 +12,6 @@ const SCROLL_FRAME_COUNT = 60;
 const getScrollFrameSrc = (index: number) =>
   `/scroll-rei-frames/frame-${String(index + 1).padStart(3, '0')}.jpg`;
 
-const rotatingPlatforms = ['Galxe', 'QuestN', 'TaskOn', 'Zealy', 'Layer3', 'Crew3', 'RabbitHole'];
-const rotatingTaskWords = ['Tasks', 'Bounties', 'Quests'];
 
 const SimplePill = ({ label }: { label: string }) => (
   <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#181818] border border-primary/20">
@@ -71,33 +69,7 @@ export const ScrollVideoHero = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
   const frameRef = useRef(0);
-  const [wordIndex, setWordIndex] = useState(0);
-  const [taskIndex, setTaskIndex] = useState(0);
-  const [fade, setFade] = useState(true);
-  const [taskFade, setTaskFade] = useState(true);
   const [frameIndex, setFrameIndex] = useState(0);
-
-  useEffect(() => {
-    const i = setInterval(() => {
-      setFade(false);
-      setTimeout(() => {
-        setWordIndex((p) => (p + 1) % rotatingPlatforms.length);
-        setFade(true);
-      }, 300);
-    }, 3000);
-    return () => clearInterval(i);
-  }, []);
-
-  useEffect(() => {
-    const i = setInterval(() => {
-      setTaskFade(false);
-      setTimeout(() => {
-        setTaskIndex((p) => (p + 1) % rotatingTaskWords.length);
-        setTaskFade(true);
-      }, 300);
-    }, 2400);
-    return () => clearInterval(i);
-  }, []);
 
   // Scrub through exported video frames. Chromium can stall on currentTime
   // scrubbing, while frame images stay perfectly tied to scroll progress.
@@ -157,12 +129,7 @@ export const ScrollVideoHero = () => {
         {/* LEFT — track that translates with scroll */}
         <div className="relative h-screen overflow-hidden">
           <div className="absolute inset-0 will-change-transform" id="scroll-left-track">
-            <LeftPanelTrack
-              fade={fade}
-              taskFade={taskFade}
-              wordIndex={wordIndex}
-              taskIndex={taskIndex}
-            />
+            <LeftPanelTrack />
           </div>
         </div>
 
@@ -209,42 +176,29 @@ const getScrollParent = (el: HTMLElement): HTMLElement | Window => {
 
 
 
-const LeftPanelTrack = ({
-  fade,
-  taskFade,
-  wordIndex,
-  taskIndex,
-}: {
-  fade: boolean;
-  taskFade: boolean;
-  wordIndex: number;
-  taskIndex: number;
-}) => (
+const LeftPanelTrack = () => (
   <div className="flex flex-col text-primary">
     {/* Block 1: Hero — top content, bottom buttons (matches / home) */}
     <div className="h-screen w-full flex flex-col justify-between p-6 sm:p-8 lg:p-12 xl:p-16">
       {/* DESKTOP (lg+) — original layout */}
       <div className="hidden lg:block pt-2">
         <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
-          A Thousand Unicorn Bounties
+          Discover Profitable Crypto Bounties Consistently,
           <br />
-          in Your Chat
+          Before Everyone Else.
         </h1>
         <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed">
-          Rei AI matches crypto{' '}
-          <span className={`transition-opacity duration-300 font-bold text-primary ${taskFade ? 'opacity-100' : 'opacity-0'}`}>
-            {rotatingTaskWords[taskIndex]}
-          </span>{' '}
-          from{' '}
-          <span className={`transition-opacity duration-300 font-bold text-primary ${fade ? 'opacity-100' : 'opacity-0'}`}>
-            {rotatingPlatforms[wordIndex]}
-          </span>{' '}
-          to your <strong className="font-bold text-primary">skills</strong>
+          Get a 1000 Bounties in your Chat
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
-          <SimplePill label="Discover Projects" />
-          <SimplePill label="Earn Crypto" />
-          <SimplePill label="Earn Points" />
+          <SimplePill label="Early Discovery" />
+          <SimplePill label="Consistent Profits" />
+          <SimplePill label="Save Hours" />
+          <SimplePill label="Stop Scrolling" />
+          <SimplePill label="Skip Saturation" />
+          <SimplePill label="No More FOMO" />
+          <SimplePill label="Stay Ahead" />
+          <SimplePill label="Financial Freedom" />
         </div>
       </div>
 
@@ -257,28 +211,35 @@ const LeftPanelTrack = ({
         />
         <div className="absolute inset-x-3 bottom-3 sm:inset-x-4 sm:bottom-4 rounded-2xl bg-[#0a0a0a]/95 border border-primary/15 p-4 sm:p-5">
           <h1 className="text-[1.5rem] sm:text-[1.75rem] font-light text-primary leading-[1.1] tracking-tight">
-            A Thousand Unicorn Bounties in Your Chat
+            Discover Profitable Crypto Bounties Consistently, Before Everyone Else.
           </h1>
           <p className="mt-3 text-[12px] sm:text-sm text-primary/70 font-mono leading-relaxed">
-            Rei AI matches crypto{' '}
-            <span className={`transition-opacity duration-300 font-bold text-primary ${taskFade ? 'opacity-100' : 'opacity-0'}`}>
-              {rotatingTaskWords[taskIndex]}
-            </span>{' '}
-            from{' '}
-            <span className={`transition-opacity duration-300 font-bold text-primary ${fade ? 'opacity-100' : 'opacity-0'}`}>
-              {rotatingPlatforms[wordIndex]}
-            </span>{' '}
-            to your <strong className="font-bold text-primary">skills</strong>
+            Get a 1000 Bounties in your Chat
           </p>
           <div className="mt-3 flex flex-nowrap gap-1.5 overflow-hidden">
             <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
-              Discover Projects
+              Early Discovery
             </span>
             <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
-              Earn Crypto
+              Consistent Profits
             </span>
             <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
-              Earn Points
+              Save Hours
+            </span>
+            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+              Stop Scrolling
+            </span>
+            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+              Skip Saturation
+            </span>
+            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+              No More FOMO
+            </span>
+            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+              Stay Ahead
+            </span>
+            <span className="shrink-0 px-2.5 py-1 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+              Financial Freedom
             </span>
           </div>
         </div>
