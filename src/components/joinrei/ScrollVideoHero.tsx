@@ -69,33 +69,7 @@ export const ScrollVideoHero = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
   const frameRef = useRef(0);
-  const [wordIndex, setWordIndex] = useState(0);
-  const [taskIndex, setTaskIndex] = useState(0);
-  const [fade, setFade] = useState(true);
-  const [taskFade, setTaskFade] = useState(true);
   const [frameIndex, setFrameIndex] = useState(0);
-
-  useEffect(() => {
-    const i = setInterval(() => {
-      setFade(false);
-      setTimeout(() => {
-        setWordIndex((p) => (p + 1) % rotatingPlatforms.length);
-        setFade(true);
-      }, 300);
-    }, 3000);
-    return () => clearInterval(i);
-  }, []);
-
-  useEffect(() => {
-    const i = setInterval(() => {
-      setTaskFade(false);
-      setTimeout(() => {
-        setTaskIndex((p) => (p + 1) % rotatingTaskWords.length);
-        setTaskFade(true);
-      }, 300);
-    }, 2400);
-    return () => clearInterval(i);
-  }, []);
 
   // Scrub through exported video frames. Chromium can stall on currentTime
   // scrubbing, while frame images stay perfectly tied to scroll progress.
