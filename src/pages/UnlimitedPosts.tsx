@@ -72,18 +72,14 @@ export default function UnlimitedPosts() {
       let screenshotUrl: string | null = null;
 
       if (screenshot) {
-        const ext = screenshot.name.split(".").pop() || "png";
-        const path = `unlimited-posts/${email.replace(/[^a-zA-Z0-9]/g, "_")}/${Date.now()}.${ext}`;
-        const { error: upErr } = await supabase.storage
-          .from("rei-contributor-files")
-          .upload(path, screenshot, { contentType: screenshot.type, upsert: false });
+        const form = new FormData();
+        form.append('file', screenshot, screenshot.name);
+        form.append('kind', 'campaign-screenshot');
+        form.append('owner_key', email);
+        const { data: upData, error: upErr } = await supabase.functions.invoke('upload-contributor-file', { body: form });
         if (upErr) throw new Error(`Upload failed: ${upErr.message}`);
-
-        const { data: signed, error: signErr } = await supabase.storage
-          .from("rei-contributor-files")
-          .createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
-        if (signErr || !signed?.signedUrl) throw new Error("Could not generate image URL");
-        screenshotUrl = signed.signedUrl;
+        if (!upData?.signedUrl) throw new Error(upData?.error || 'Could not generate image URL');
+        screenshotUrl = upData.signedUrl;
       }
 
       // Capture buyer identity so the promotion can be linked to their Rei account.
