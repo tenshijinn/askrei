@@ -224,13 +224,14 @@ const LeftPanelTrack = () => (
     <div className="h-screen w-full flex flex-col justify-between p-6 sm:p-8 lg:p-12 xl:p-16">
       {/* DESKTOP (lg+) — original layout */}
       <div className="hidden lg:block pt-2">
+        <BountyCountLabel />
         <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
           Discover Profitable Crypto Bounties Consistently,
           <br />
-          Before Everyone Else.
+          Before Everyone Else. Get a 1000 Bounties in your Chat
         </h1>
         <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed">
-          Get a 1000 Bounties in your Chat
+          <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities. <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms. <strong className="text-primary font-semibold">Rei</strong> finds and organizes bounties, quests, testnets and airdrops in <strong className="text-primary font-semibold">one AI-powered feed</strong>.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <SimplePill label="Early Discovery" />
