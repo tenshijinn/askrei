@@ -44,15 +44,15 @@ const useBountyCount = () => {
   return count;
 };
 
-const BountyCountLabel = () => {
+const BountyCountPill = () => {
   const count = useBountyCount();
   const num = (count ?? 0).toLocaleString();
   return (
-    <p className="text-sm md:text-base font-mono text-[#ed565a] mb-2">
-      <strong className="font-semibold">{num}</strong>{' '}
-      <strong className="font-semibold">bounties</strong>{' '}
-      delivered to date.
-    </p>
+    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-transparent border border-cream/30">
+      <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">{num}</span>
+      <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">bounties</span>
+      <span className="text-base md:text-lg font-mono text-cream/70">delivered to date.</span>
+    </div>
   );
 };
 
@@ -227,7 +227,7 @@ const LeftPanelTrack = () => (
     <div className="h-screen w-full flex flex-col justify-between p-6 sm:p-8 lg:p-12 xl:p-16">
       {/* DESKTOP (lg+) — original layout */}
       <div className="hidden lg:block pt-2">
-        <BountyCountLabel />
+        <BountyCountPill />
         <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
           Spend Less time Searching
           <br />
@@ -236,8 +236,8 @@ const LeftPanelTrack = () => (
           A 1000 Bounties in your Chat
         </h1>
         <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed whitespace-pre-line">
-          <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities.
-          <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms.
+          <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities.{"\n"}
+          <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms.{"\n"}
           <strong className="text-primary font-semibold">Rei</strong> finds and organizes bounties, quests, testnets and airdrops in <strong className="text-primary font-semibold">one AI-powered feed and Agent</strong>.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
@@ -257,7 +257,7 @@ const LeftPanelTrack = () => (
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
         <div className="absolute inset-x-3 bottom-3 sm:inset-x-4 sm:bottom-4 rounded-2xl bg-[#0a0a0a]/95 border border-primary/15 p-4 sm:p-5">
-          <BountyCountLabel />
+          <BountyCountPill />
           <h1 className="text-[1.5rem] sm:text-[1.75rem] font-light text-primary leading-[1.1] tracking-tight">
             Spend Less time Searching
             <br />
@@ -266,8 +266,8 @@ const LeftPanelTrack = () => (
             A 1000 Bounties in your Chat
           </h1>
           <p className="mt-3 text-[12px] sm:text-sm text-primary/70 font-mono leading-relaxed whitespace-pre-line">
-            <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities.
-            <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms.
+            <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities.{"\n"}
+            <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms.{"\n"}
             <strong className="text-primary font-semibold">Rei</strong> finds and organizes bounties, quests, testnets and airdrops in <strong className="text-primary font-semibold">one AI-powered feed and Agent</strong>.
           </p>
           <div className="mt-3 flex flex-nowrap gap-1.5 overflow-hidden">
