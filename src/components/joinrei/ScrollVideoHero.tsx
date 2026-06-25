@@ -129,12 +129,7 @@ export const ScrollVideoHero = () => {
         {/* LEFT — track that translates with scroll */}
         <div className="relative h-screen overflow-hidden">
           <div className="absolute inset-0 will-change-transform" id="scroll-left-track">
-            <LeftPanelTrack
-              fade={fade}
-              taskFade={taskFade}
-              wordIndex={wordIndex}
-              taskIndex={taskIndex}
-            />
+            <LeftPanelTrack />
           </div>
         </div>
 
