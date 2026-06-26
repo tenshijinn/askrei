@@ -351,6 +351,8 @@ const LeftPanelTrack = () => (
         <a href="https://arena.colosseum.org/projects/explore/rei" target="_blank" rel="noopener noreferrer" className="opacity-90 hover:opacity-100 transition-opacity">
           <img src={colossium} alt="Colosseum Frontier" className="h-12 lg:h-14 w-auto object-contain" />
         </a>
+        <img src={solanaX402Asset.url} alt="Solana + x402 payments enabled" className="h-14 lg:h-16 w-auto object-contain opacity-90" />
+        <img src={nousHermesAsset.url} alt="Powered by Nous + Hermes Agent" className="h-20 lg:h-24 w-auto object-contain opacity-90" />
       </div>
     </div>
 
