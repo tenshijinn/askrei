@@ -285,7 +285,7 @@ const LeftPanelTrack = () => (
           Spend More Time <strong className="font-semibold">Earning</strong>.
         </h1>
         <p className="text-[11px] sm:text-[13px] text-primary/70 font-mono leading-relaxed whitespace-normal shrink-0">
-          Stop wasting hours searching for crypto opportunities. Rei gives you <span className="text-[#ed565a] font-semibold">A 1000 Bounties in your Chat</span>, automatically discovering and organising crypto earning opportunities in <span className="text-[#ed565a] font-semibold">one AI-powered Chat and Agent</span>.
+          Stop wasting hours searching for ways to earn crypto. Rei gives you A 1000 Bounties in your Chat, she auto discovers and streamlines crypto <RotatorText words={ROTATOR_WORDS} /> in one AI Powered Chat.
         </p>
         <div className="flex flex-wrap gap-1.5 shrink-0">
           <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
