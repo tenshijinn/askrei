@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import reiLogo from '@/assets/joinrei/rei-logo.png';
 import reiHero from '@/assets/joinrei/rei-hero.png';
-import colosseumLogo from '@/assets/joinrei/colosseum-logo.png';
 import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
 import arubaito from '@/assets/joinrei/logo-bar-arubaito.png';
 import ignyte from '@/assets/joinrei/logo-bar-ignyte.png';
@@ -66,12 +65,12 @@ const ROTATOR_WORDS = ['Bounties', 'Quests', 'Tasks', 'Airdrops'];
 
 const TX_ITEMS = [
   { src: txSolAsset.url, alt: '+5.5 SOL received', threshold: 0 },
-  { src: txUsdgAsset.url, alt: '+3120 USDG received', threshold: 12 },
-  { src: txUsdcAsset.url, alt: '+1847 USDC received', threshold: 28 },
+  { src: txUsdgAsset.url, alt: '+3120 USDG received', threshold: 16 },
+  { src: txUsdcAsset.url, alt: '+1847 USDC received', threshold: 40 },
 ];
 
 const TxStack = ({ frameIndex }: { frameIndex: number }) => (
-  <div className="absolute top-4 left-4 z-30 flex flex-col gap-1.5 w-[min(360px,42%)] pointer-events-none">
+  <div className="absolute bottom-6 left-6 z-30 flex flex-col gap-1.5 w-[min(320px,38%)] pointer-events-none">
     {TX_ITEMS.map((tx, i) => {
       const visible = frameIndex >= tx.threshold;
       return (
@@ -239,19 +238,6 @@ export const ScrollVideoHero = () => {
           </div>
           <TxStack frameIndex={frameIndex} />
 
-          <div className="absolute bottom-6 right-6 z-20">
-            <a
-              href="https://arena.colosseum.org/projects/explore/rei"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img
-                src={colosseumLogo}
-                alt="Colosseum"
-                className="h-8 w-auto opacity-80 hover:opacity-100 transition-opacity"
-              />
-            </a>
-          </div>
         </div>
       </div>
 
