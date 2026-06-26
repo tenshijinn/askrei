@@ -246,25 +246,36 @@ const LeftPanelTrack = () => (
       <div className="hidden lg:block pt-2">
         <BountyCountPill />
         <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
-          Spend Less time Searching
+          Spend Less Time <strong className="font-semibold">Searching</strong>.
           <br />
-          Spend More time Earning
-          <br />
-          A 1000 Bounties in your Chat
+          Spend More Time <strong className="font-semibold">Earning</strong>.
         </h1>
-        <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed whitespace-pre-line">
-          <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities.{"\n"}
-          <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms.{"\n"}
-          <strong className="text-primary font-semibold">Rei</strong> finds and organizes <RotatorText words={ROTATOR_WORDS} /> in <strong className="text-primary font-semibold">one AI-powered feed and Agent</strong>.
+        <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed">
+          Stop wasting hours searching for crypto opportunities. Rei gives you <span className="text-[#ed565a] font-semibold">A 1000 Bounties in your Chat</span>, automatically discovering and organising crypto earning opportunities in <span className="text-[#ed565a] font-semibold">one AI-powered Chat and Agent</span>.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <SimplePill label="Early Discovery" />
-          <SimplePill label="Consistent Profits" />
           <SimplePill label="Save Hours" />
-          <SimplePill label="No More FOMO" />
-          <SimplePill label="Stay Ahead" />
+          <SimplePill label="Earn More" />
         </div>
       </div>
+
+      {/* MOBILE / TABLET — stacked layout matching template */}
+      <div className="lg:hidden flex-1 min-h-0 flex flex-col gap-3 sm:gap-4">
+        {/* Top header: logo left, How it works right */}
+        <div className="flex items-center justify-between shrink-0">
+          <img src={reiLogo} alt="Rei AI" className="h-8 w-auto object-contain" />
+          <button
+            className="text-xs font-mono text-cream/80 hover:text-cream transition-colors"
+            onClick={() => {
+              const scroller = document.querySelector('.snap-y') as HTMLElement | null;
+              const target = (scroller?.clientHeight ?? window.innerHeight) * 2;
+              (scroller ?? window).scrollBy({ top: target, behavior: 'smooth' });
+            }}
+          >
+            How it works
+          </button>
+        </div>
 
       {/* MOBILE / TABLET — stacked layout matching template */}
       <div className="lg:hidden flex-1 min-h-0 flex flex-col gap-3 sm:gap-4">
