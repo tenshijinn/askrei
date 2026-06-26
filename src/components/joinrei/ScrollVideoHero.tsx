@@ -244,7 +244,7 @@ export const ScrollVideoHero = () => {
             alt=""
             aria-hidden="true"
             className="absolute z-20 pointer-events-none select-none drop-shadow-2xl"
-            style={{ top: '22%', left: '38%', width: 'min(180px, 22%)', height: 'auto' }}
+            style={{ top: '20%', left: '52%', width: 'min(120px, 16%)', height: 'auto' }}
           />
 
         </div>
