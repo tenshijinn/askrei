@@ -10,6 +10,10 @@ import solanaFoundation from '@/assets/joinrei/logo-bar-solana-foundation.png';
 import colossium from '@/assets/joinrei/logo-bar-colossium.png';
 import solanaX402Asset from '@/assets/joinrei/logo-bar-solana-x402.png.asset.json';
 import nousHermesAsset from '@/assets/joinrei/logo-bar-nous-hermes.png.asset.json';
+import txSolAsset from '@/assets/joinrei/tx-sol.png.asset.json';
+import txUsdgAsset from '@/assets/joinrei/tx-usdg.png.asset.json';
+import txUsdcAsset from '@/assets/joinrei/tx-usdc.png.asset.json';
+
 
 const SCROLL_FRAME_COUNT = 60;
 const getScrollFrameSrc = (index: number) =>
@@ -59,6 +63,34 @@ const BountyCountPill = () => {
 };
 
 const ROTATOR_WORDS = ['Bounties', 'Quests', 'Tasks', 'Airdrops'];
+
+const TX_ITEMS = [
+  { src: txSolAsset.url, alt: '+5.5 SOL received', threshold: 0 },
+  { src: txUsdgAsset.url, alt: '+3120 USDG received', threshold: 12 },
+  { src: txUsdcAsset.url, alt: '+1847 USDC received', threshold: 28 },
+];
+
+const TxStack = ({ frameIndex }: { frameIndex: number }) => (
+  <div className="absolute top-4 left-4 z-30 flex flex-col gap-1.5 w-[min(360px,42%)] pointer-events-none">
+    {TX_ITEMS.map((tx, i) => {
+      const visible = frameIndex >= tx.threshold;
+      return (
+        <img
+          key={i}
+          src={tx.src}
+          alt={tx.alt}
+          className="w-full h-auto drop-shadow-2xl"
+          style={{
+            opacity: visible ? 1 : 0,
+            transform: visible ? 'translateY(0)' : 'translateY(12px)',
+            transition: 'opacity 500ms ease-out, transform 500ms ease-out',
+          }}
+        />
+      );
+    })}
+  </div>
+);
+
 
 const RotatorText = ({ words, interval = 2000 }: { words: string[]; interval?: number }) => {
   const [index, setIndex] = useState(0);
@@ -205,6 +237,8 @@ export const ScrollVideoHero = () => {
           <div className="absolute top-4 right-4 z-30 bg-[#0a0a0a] p-2">
             <img src={reiLogo} alt="Rei AI" className="h-12 lg:h-16 w-auto block" />
           </div>
+          <TxStack frameIndex={frameIndex} />
+
           <div className="absolute bottom-6 right-6 z-20">
             <a
               href="https://arena.colosseum.org/projects/explore/rei"
