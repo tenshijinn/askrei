@@ -8,6 +8,8 @@ import arubaito from '@/assets/joinrei/logo-bar-arubaito.png';
 import ignyte from '@/assets/joinrei/logo-bar-ignyte.png';
 import solanaFoundation from '@/assets/joinrei/logo-bar-solana-foundation.png';
 import colossium from '@/assets/joinrei/logo-bar-colossium.png';
+import solanaX402Asset from '@/assets/joinrei/logo-bar-solana-x402.png.asset.json';
+import nousHermesAsset from '@/assets/joinrei/logo-bar-nous-hermes.png.asset.json';
 
 const SCROLL_FRAME_COUNT = 60;
 const getScrollFrameSrc = (index: number) =>
