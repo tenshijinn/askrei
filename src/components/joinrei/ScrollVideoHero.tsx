@@ -3,7 +3,6 @@ import { supabase } from '@/integrations/supabase/client';
 import reiLogo from '@/assets/joinrei/rei-logo.png';
 import reiHero from '@/assets/joinrei/rei-hero.png';
 import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
-import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
 import arubaito from '@/assets/joinrei/logo-bar-arubaito.png';
 import ignyte from '@/assets/joinrei/logo-bar-ignyte.png';
 import solanaFoundation from '@/assets/joinrei/logo-bar-solana-foundation.png';
