@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import reiHero from '@/assets/joinrei/rei-hero.png';
-import reiSpeechBubble from '@/assets/joinrei/rei-speech-bubble.gif';
+import reiSpeechBubbleAsset from '@/assets/joinrei/rei-speech-bubble.gif.asset.json';
+const reiSpeechBubble = reiSpeechBubbleAsset.url;
 import reiLogo from '@/assets/joinrei/rei-logo.png';
 import { scrollToLastSection } from './scrollHelpers';
 

@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import reiHero from '@/assets/joinrei/rei-hero.png';
 import reiLogo from '@/assets/joinrei/rei-logo.png';
 import colosseumLogo from '@/assets/joinrei/colosseum-logo.png';
-import reiSpeechBubble from '@/assets/joinrei/rei-speech-bubble.gif';
+import reiSpeechBubbleAsset from '@/assets/joinrei/rei-speech-bubble.gif.asset.json';
+const reiSpeechBubble = reiSpeechBubbleAsset.url;
 
 
 export const HomeHero = () => {
