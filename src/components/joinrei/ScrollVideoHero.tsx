@@ -239,6 +239,13 @@ export const ScrollVideoHero = () => {
             <img src={reiLogo} alt="Rei AI" className="h-12 lg:h-16 w-auto block" />
           </div>
           <TxStack frameIndex={frameIndex} />
+          <img
+            src={speechBubbleAsset.url}
+            alt=""
+            aria-hidden="true"
+            className="absolute z-20 pointer-events-none select-none drop-shadow-2xl"
+            style={{ top: '22%', left: '38%', width: 'min(180px, 22%)', height: 'auto' }}
+          />
 
         </div>
       </div>
