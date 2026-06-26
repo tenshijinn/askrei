@@ -65,12 +65,12 @@ const ROTATOR_WORDS = ['Bounties', 'Quests', 'Tasks', 'Airdrops'];
 
 const TX_ITEMS = [
   { src: txSolAsset.url, alt: '+5.5 SOL received', threshold: 0 },
-  { src: txUsdgAsset.url, alt: '+3120 USDG received', threshold: 12 },
-  { src: txUsdcAsset.url, alt: '+1847 USDC received', threshold: 28 },
+  { src: txUsdgAsset.url, alt: '+3120 USDG received', threshold: 16 },
+  { src: txUsdcAsset.url, alt: '+1847 USDC received', threshold: 40 },
 ];
 
 const TxStack = ({ frameIndex }: { frameIndex: number }) => (
-  <div className="absolute top-4 left-4 z-30 flex flex-col gap-1.5 w-[min(360px,42%)] pointer-events-none">
+  <div className="absolute bottom-6 left-6 z-30 flex flex-col gap-1.5 w-[min(320px,38%)] pointer-events-none">
     {TX_ITEMS.map((tx, i) => {
       const visible = frameIndex >= tx.threshold;
       return (
