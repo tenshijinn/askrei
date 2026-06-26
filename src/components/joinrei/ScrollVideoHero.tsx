@@ -10,6 +10,10 @@ import solanaFoundation from '@/assets/joinrei/logo-bar-solana-foundation.png';
 import colossium from '@/assets/joinrei/logo-bar-colossium.png';
 import solanaX402Asset from '@/assets/joinrei/logo-bar-solana-x402.png.asset.json';
 import nousHermesAsset from '@/assets/joinrei/logo-bar-nous-hermes.png.asset.json';
+import txSolAsset from '@/assets/joinrei/tx-sol.png.asset.json';
+import txUsdgAsset from '@/assets/joinrei/tx-usdg.png.asset.json';
+import txUsdcAsset from '@/assets/joinrei/tx-usdc.png.asset.json';
+
 
 const SCROLL_FRAME_COUNT = 60;
 const getScrollFrameSrc = (index: number) =>
