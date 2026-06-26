@@ -209,6 +209,8 @@ export const ScrollVideoHero = () => {
           <div className="absolute top-4 right-4 z-30 bg-[#0a0a0a] p-2">
             <img src={reiLogo} alt="Rei AI" className="h-12 lg:h-16 w-auto block" />
           </div>
+          <TxStack frameIndex={frameIndex} />
+
           <div className="absolute bottom-6 right-6 z-20">
             <a
               href="https://arena.colosseum.org/projects/explore/rei"
