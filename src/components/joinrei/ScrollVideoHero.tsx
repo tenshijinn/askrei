@@ -200,7 +200,7 @@ export const ScrollVideoHero = () => {
           <img
             src={getScrollFrameSrc(frameIndex)}
             alt="Rei scroll animation"
-            className="absolute inset-0 w-full h-full object-cover object-top"
+            className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute top-4 right-4 z-30 bg-[#0a0a0a] p-2">
             <img src={reiLogo} alt="Rei AI" className="h-12 lg:h-16 w-auto block" />
