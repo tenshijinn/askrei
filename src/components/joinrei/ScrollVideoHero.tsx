@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { ScrollFadeIn } from './ScrollFadeIn';
 import reiLogo from '@/assets/joinrei/rei-logo.png';
 import reiHero from '@/assets/joinrei/rei-hero.png';
 import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
@@ -12,6 +13,7 @@ import nousHermesAsset from '@/assets/joinrei/logo-bar-nous-hermes.png.asset.jso
 import txSolAsset from '@/assets/joinrei/tx-sol.png.asset.json';
 import txUsdgAsset from '@/assets/joinrei/tx-usdg.png.asset.json';
 import txUsdcAsset from '@/assets/joinrei/tx-usdc.png.asset.json';
+import speechBubbleAsset from '@/assets/joinrei/rei-speech-bubble.gif.asset.json';
 
 
 const SCROLL_FRAME_COUNT = 60;
