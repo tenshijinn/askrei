@@ -276,45 +276,26 @@ const LeftPanelTrack = () => (
             How it works
           </button>
         </div>
-
-      {/* MOBILE / TABLET — stacked layout matching template */}
-      <div className="lg:hidden flex-1 min-h-0 flex flex-col gap-3 sm:gap-4">
-        {/* Top header: logo left, How it works right */}
-        <div className="flex items-center justify-between shrink-0">
-          <img src={reiLogo} alt="Rei AI" className="h-8 w-auto object-contain" />
-          <button
-            className="text-xs font-mono text-cream/80 hover:text-cream transition-colors"
-            onClick={() => {
-              const scroller = document.querySelector('.snap-y') as HTMLElement | null;
-              const target = (scroller?.clientHeight ?? window.innerHeight) * 2;
-              (scroller ?? window).scrollBy({ top: target, behavior: 'smooth' });
-            }}
-          >
-            How it works
-          </button>
-        </div>
         <div className="shrink-0">
           <BountyCountPill />
         </div>
         <h1 className="text-[1.5rem] sm:text-[1.75rem] font-light text-primary leading-[1.05] tracking-tight shrink-0">
-          Spend Less time Searching
+          Spend Less Time <strong className="font-semibold">Searching</strong>.
           <br />
-          Spend More time Earning
-          <br />
-          A 1000 Bounties in your Chat
+          Spend More Time <strong className="font-semibold">Earning</strong>.
         </h1>
         <p className="text-[11px] sm:text-[13px] text-primary/70 font-mono leading-relaxed whitespace-normal shrink-0">
-          <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities. <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms. <strong className="text-primary font-semibold">Rei</strong> finds and organizes <RotatorText words={ROTATOR_WORDS} /> in <strong className="text-primary font-semibold">one AI-powered feed and Agent</strong>.
+          Stop wasting hours searching for crypto opportunities. Rei gives you <span className="text-[#ed565a] font-semibold">A 1000 Bounties in your Chat</span>, automatically discovering and organising crypto earning opportunities in <span className="text-[#ed565a] font-semibold">one AI-powered Chat and Agent</span>.
         </p>
         <div className="flex flex-wrap gap-1.5 shrink-0">
           <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
-            Consistent Profits
+            Early Discovery
           </span>
           <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
             Save Hours
           </span>
           <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
-            No More FOMO
+            Earn More
           </span>
         </div>
         <div className="flex flex-col gap-2 shrink-0">
