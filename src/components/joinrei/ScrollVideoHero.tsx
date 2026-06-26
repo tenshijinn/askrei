@@ -238,19 +238,6 @@ export const ScrollVideoHero = () => {
           </div>
           <TxStack frameIndex={frameIndex} />
 
-          <div className="absolute bottom-6 right-6 z-20">
-            <a
-              href="https://arena.colosseum.org/projects/explore/rei"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img
-                src={colosseumLogo}
-                alt="Colosseum"
-                className="h-8 w-auto opacity-80 hover:opacity-100 transition-opacity"
-              />
-            </a>
-          </div>
         </div>
       </div>
 
