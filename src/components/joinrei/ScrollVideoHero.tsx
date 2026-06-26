@@ -8,6 +8,8 @@ import arubaito from '@/assets/joinrei/logo-bar-arubaito.png';
 import ignyte from '@/assets/joinrei/logo-bar-ignyte.png';
 import solanaFoundation from '@/assets/joinrei/logo-bar-solana-foundation.png';
 import colossium from '@/assets/joinrei/logo-bar-colossium.png';
+import solanaX402Asset from '@/assets/joinrei/logo-bar-solana-x402.png.asset.json';
+import nousHermesAsset from '@/assets/joinrei/logo-bar-nous-hermes.png.asset.json';
 
 const SCROLL_FRAME_COUNT = 60;
 const getScrollFrameSrc = (index: number) =>
@@ -244,23 +246,17 @@ const LeftPanelTrack = () => (
       <div className="hidden lg:block pt-2">
         <BountyCountPill />
         <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
-          Spend Less time Searching
+          Spend Less Time <strong className="font-semibold">Searching</strong>.
           <br />
-          Spend More time Earning
-          <br />
-          A 1000 Bounties in your Chat
+          Spend More Time <strong className="font-semibold">Earning</strong>.
         </h1>
-        <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed whitespace-pre-line">
-          <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities.{"\n"}
-          <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms.{"\n"}
-          <strong className="text-primary font-semibold">Rei</strong> finds and organizes <RotatorText words={ROTATOR_WORDS} /> in <strong className="text-primary font-semibold">one AI-powered feed and Agent</strong>.
+        <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed">
+          Stop wasting hours searching for crypto opportunities. Rei gives you <span className="text-[#ed565a] font-semibold">A 1000 Bounties in your Chat</span>, automatically discovering and organising crypto earning opportunities in <span className="text-[#ed565a] font-semibold">one AI-powered Chat and Agent</span>.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <SimplePill label="Early Discovery" />
-          <SimplePill label="Consistent Profits" />
           <SimplePill label="Save Hours" />
-          <SimplePill label="No More FOMO" />
-          <SimplePill label="Stay Ahead" />
+          <SimplePill label="Earn More" />
         </div>
       </div>
 
@@ -284,24 +280,22 @@ const LeftPanelTrack = () => (
           <BountyCountPill />
         </div>
         <h1 className="text-[1.5rem] sm:text-[1.75rem] font-light text-primary leading-[1.05] tracking-tight shrink-0">
-          Spend Less time Searching
+          Spend Less Time <strong className="font-semibold">Searching</strong>.
           <br />
-          Spend More time Earning
-          <br />
-          A 1000 Bounties in your Chat
+          Spend More Time <strong className="font-semibold">Earning</strong>.
         </h1>
         <p className="text-[11px] sm:text-[13px] text-primary/70 font-mono leading-relaxed whitespace-normal shrink-0">
-          <strong className="text-primary font-semibold">Stop</strong> wasting hours searching for crypto opportunities. <strong className="text-primary font-semibold">No more</strong> jumping between Telegram, X and quest platforms. <strong className="text-primary font-semibold">Rei</strong> finds and organizes <RotatorText words={ROTATOR_WORDS} /> in <strong className="text-primary font-semibold">one AI-powered feed and Agent</strong>.
+          Stop wasting hours searching for crypto opportunities. Rei gives you <span className="text-[#ed565a] font-semibold">A 1000 Bounties in your Chat</span>, automatically discovering and organising crypto earning opportunities in <span className="text-[#ed565a] font-semibold">one AI-powered Chat and Agent</span>.
         </p>
         <div className="flex flex-wrap gap-1.5 shrink-0">
           <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
-            Consistent Profits
+            Early Discovery
           </span>
           <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
             Save Hours
           </span>
           <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
-            No More FOMO
+            Earn More
           </span>
         </div>
         <div className="flex flex-col gap-2 shrink-0">
@@ -357,6 +351,8 @@ const LeftPanelTrack = () => (
         <a href="https://arena.colosseum.org/projects/explore/rei" target="_blank" rel="noopener noreferrer" className="opacity-90 hover:opacity-100 transition-opacity">
           <img src={colossium} alt="Colosseum Frontier" className="h-12 lg:h-14 w-auto object-contain" />
         </a>
+        <img src={solanaX402Asset.url} alt="Solana + x402 payments enabled" className="h-14 lg:h-16 w-auto object-contain opacity-90" />
+        <img src={nousHermesAsset.url} alt="Powered by Nous + Hermes Agent" className="h-20 lg:h-24 w-auto object-contain opacity-90" />
       </div>
     </div>
 
