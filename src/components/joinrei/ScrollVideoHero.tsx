@@ -387,48 +387,60 @@ const LeftPanelTrack = () => (
 
     {/* Block 3: How it works — centered */}
     <div className="h-screen w-full flex flex-col justify-center items-center px-8 lg:px-12 xl:px-16">
-      <h2 className="text-[1.5rem] md:text-[1.75rem] lg:text-[2rem] font-light text-primary leading-tight mb-4 text-center">
-        How it works
-      </h2>
+      <ScrollFadeIn>
+        <h2 className="text-[1.5rem] md:text-[1.75rem] lg:text-[2rem] font-light text-primary leading-tight mb-4 text-center">
+          How it works
+        </h2>
+      </ScrollFadeIn>
       <div className="flex flex-col gap-2.5 w-full max-w-md mx-auto">
-        <MiniFrame
-          title="One feed. Every platform."
-          extra={
-            <>
-              <SimplePill label="Galxe" />
-              <SimplePill label="Zealy" />
-              <SimplePill label="TaskOn" />
-              <SimplePill label="Earn" />
-            </>
-          }
-        >
-          Stop tab-hopping across quest platforms. Rei aggregates live bounties into one matched feed.
-        </MiniFrame>
-        <MiniFrame title="Tasks that fit your skills." extra={<MatchesSkillsPill />}>
-          SkillSync surfaces bounties matched to your wallet history and on-chain track record — not random noise.
-        </MiniFrame>
-        <MiniFrame
-          title="Get verified, get prioritised."
-          extra={
-            <>
-              <VerifiedLoginPill />
-              <ProofOfTalentPill />
-            </>
-          }
-        >
-          Verified X + 60s voice intro gives you a proof-of-talent score, so projects see{' '}
-          <strong className="text-cream font-semibold">you, not the farmers</strong>.
-        </MiniFrame>
-        <MiniFrame title="Find Highest Paying Bounties">
-          Time is money. Rei filters for highest paying rewards automatically.
-        </MiniFrame>
+        <ScrollFadeIn delay={100}>
+          <MiniFrame
+            title="One feed. Every platform."
+            extra={
+              <>
+                <SimplePill label="Galxe" />
+                <SimplePill label="Zealy" />
+                <SimplePill label="TaskOn" />
+                <SimplePill label="Earn" />
+              </>
+            }
+          >
+            Stop tab-hopping across quest platforms. Rei aggregates live bounties into one matched feed.
+          </MiniFrame>
+        </ScrollFadeIn>
+        <ScrollFadeIn delay={200}>
+          <MiniFrame title="Tasks that fit your skills." extra={<MatchesSkillsPill />}>
+            SkillSync surfaces bounties matched to your wallet history and on-chain track record — not random noise.
+          </MiniFrame>
+        </ScrollFadeIn>
+        <ScrollFadeIn delay={300}>
+          <MiniFrame
+            title="Get verified, get prioritised."
+            extra={
+              <>
+                <VerifiedLoginPill />
+                <ProofOfTalentPill />
+              </>
+            }
+          >
+            Verified X + 60s voice intro gives you a proof-of-talent score, so projects see{' '}
+            <strong className="text-cream font-semibold">you, not the farmers</strong>.
+          </MiniFrame>
+        </ScrollFadeIn>
+        <ScrollFadeIn delay={400}>
+          <MiniFrame title="Find Highest Paying Bounties">
+            Time is money. Rei filters for highest paying rewards automatically.
+          </MiniFrame>
+        </ScrollFadeIn>
       </div>
-      <button
-        className="btn-manga btn-manga-primary px-6 py-2 mt-4"
-        onClick={() => (window.location.href = '/rei')}
-      >
-        Signup
-      </button>
+      <ScrollFadeIn delay={500}>
+        <button
+          className="btn-manga btn-manga-primary px-6 py-2 mt-4"
+          onClick={() => (window.location.href = '/rei')}
+        >
+          Signup
+        </button>
+      </ScrollFadeIn>
     </div>
   </div>
 
