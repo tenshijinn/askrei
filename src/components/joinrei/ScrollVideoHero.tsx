@@ -58,7 +58,7 @@ const BountyCountPill = () => {
   );
 };
 
-const ROTATOR_WORDS = ['bounties', 'quests', 'tasks', 'airdrops'];
+const ROTATOR_WORDS = ['Bounties', 'Quests', 'Tasks', 'Airdrops'];
 
 const RotatorText = ({ words, interval = 2000 }: { words: string[]; interval?: number }) => {
   const [index, setIndex] = useState(0);
@@ -251,7 +251,7 @@ const LeftPanelTrack = () => (
           Spend More Time <strong className="font-semibold">Earning</strong>.
         </h1>
         <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed">
-          Stop wasting hours searching for ways to earn crypto. Rei gives you <strong className="text-[#ed565a]">A 1000 Bounties in your Chat</strong>, she auto discovers and streamlines crypto <RotatorText words={ROTATOR_WORDS} /> in <strong className="text-[#ed565a]">one AI Powered Chat</strong>.
+          Stop wasting hours searching for ways to earn crypto. Rei AI finds & streamlines crypto <RotatorText words={ROTATOR_WORDS} /> in <strong className="text-[#ed565a]">one AI Powered Chat</strong>. <strong className="text-[#ed565a]">Get a 1000 Bounties in your Chat</strong>.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <SimplePill label="Early Discovery" />
@@ -285,7 +285,7 @@ const LeftPanelTrack = () => (
           Spend More Time <strong className="font-semibold">Earning</strong>.
         </h1>
         <p className="text-[11px] sm:text-[13px] text-primary/70 font-mono leading-relaxed whitespace-normal shrink-0">
-          Stop wasting hours searching for ways to earn crypto. Rei gives you <strong className="text-[#ed565a]">A 1000 Bounties in your Chat</strong>, she auto discovers and streamlines crypto <RotatorText words={ROTATOR_WORDS} /> in <strong className="text-[#ed565a]">one AI Powered Chat</strong>.
+          Stop wasting hours searching for ways to earn crypto. Rei AI finds & streamlines crypto <RotatorText words={ROTATOR_WORDS} /> in <strong className="text-[#ed565a]">one AI Powered Chat</strong>. <strong className="text-[#ed565a]">Get a 1000 Bounties in your Chat</strong>.
         </p>
         <div className="flex flex-wrap gap-1.5 shrink-0">
           <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
