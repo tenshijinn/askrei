@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.upload-contributor-file]
 verify_jwt = false
+
+[functions.price-bounties]
+verify_jwt = false
