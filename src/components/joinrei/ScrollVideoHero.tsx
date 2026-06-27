@@ -76,7 +76,8 @@ const CombinedSocialProofPill = () => {
   return (
     <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-transparent border border-cream/30">
       <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">{num}</span>
-      <span className="text-base md:text-lg font-mono text-cream/70">bounties aggregated worth</span>
+      <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">bounties</span>
+      <span className="text-base md:text-lg font-mono text-cream/70">aggregated worth</span>
       {value ? (
         <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">{value}+</span>
       ) : null}
