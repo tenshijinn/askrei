@@ -68,25 +68,18 @@ const formatUsd = (n: number) => {
   return `$${Math.round(n).toLocaleString()}`;
 };
 
-const BountyCountPill = () => {
+const CombinedSocialProofPill = () => {
   const count = useBountyCount();
+  const usd = useBountyValueUsd();
   const num = (count ?? 0).toLocaleString();
+  const value = usd && usd > 0 ? formatUsd(usd) : null;
   return (
     <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-transparent border border-cream/30">
       <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">{num}</span>
-      <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">bounties</span>
-      <span className="text-base md:text-lg font-mono text-cream/70">delivered to date.</span>
-    </div>
-  );
-};
-
-const BountyValuePill = () => {
-  const usd = useBountyValueUsd();
-  if (usd == null || usd <= 0) return null;
-  return (
-    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-transparent border border-cream/30">
-      <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">{formatUsd(usd)}</span>
-      <span className="text-base md:text-lg font-mono text-cream/70">in bounties aggregated.</span>
+      <span className="text-base md:text-lg font-mono text-cream/70">bounties aggregated worth</span>
+      {value ? (
+        <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">{value}+</span>
+      ) : null}
     </div>
   );
 };
