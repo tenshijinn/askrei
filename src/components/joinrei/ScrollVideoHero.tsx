@@ -333,8 +333,9 @@ const LeftPanelTrack = () => (
             How it works
           </button>
         </div>
-        <div className="shrink-0">
+        <div className="shrink-0 flex flex-wrap gap-1.5">
           <BountyCountPill />
+          <BountyValuePill />
         </div>
         <h1 className="text-[1.5rem] sm:text-[1.75rem] font-light text-primary leading-[1.05] tracking-tight shrink-0">
           Spend Less Time <strong className="font-semibold">Searching</strong>.
