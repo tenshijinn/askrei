@@ -13,7 +13,7 @@ import nousHermesAsset from '@/assets/joinrei/logo-bar-nous-hermes.png.asset.jso
 import txSolAsset from '@/assets/joinrei/tx-sol.png.asset.json';
 import txUsdgAsset from '@/assets/joinrei/tx-usdg.png.asset.json';
 import txUsdcAsset from '@/assets/joinrei/tx-usdc.png.asset.json';
-import speechBubbleAsset from '@/assets/joinrei/rei-speech-bubble.gif.asset.json';
+
 
 
 const SCROLL_FRAME_COUNT = 60;
