@@ -294,7 +294,7 @@ const LeftPanelTrack = () => (
     <div className="h-screen w-full flex flex-col justify-between p-6 sm:p-8 lg:p-12 xl:p-16">
       {/* DESKTOP (lg+) — original layout */}
       <div className="hidden lg:block pt-2">
-        <div className="flex flex-wrap gap-2 mb-3"><BountyCountPill /><BountyValuePill /></div>
+        <CombinedSocialProofPill />
         <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
           Spend Less Time <strong className="font-semibold">Searching</strong>.
           <br />
@@ -327,8 +327,7 @@ const LeftPanelTrack = () => (
           </button>
         </div>
         <div className="shrink-0 flex flex-wrap gap-1.5">
-          <BountyCountPill />
-          <BountyValuePill />
+<CombinedSocialProofPill />
         </div>
         <h1 className="text-[1.5rem] sm:text-[1.75rem] font-light text-primary leading-[1.05] tracking-tight shrink-0">
           Spend Less Time <strong className="font-semibold">Searching</strong>.
