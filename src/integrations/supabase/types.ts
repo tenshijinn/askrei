@@ -489,6 +489,30 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_stats: {
+        Row: {
+          id: string
+          priced_count: number
+          total_bounties: number
+          total_value_usd: number
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          priced_count?: number
+          total_bounties?: number
+          total_value_usd?: number
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          priced_count?: number
+          total_bounties?: number
+          total_value_usd?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       points_transactions: {
         Row: {
           created_at: string | null
@@ -875,6 +899,9 @@ export type Database = {
           campaign_subscription_id: string | null
           company_name: string | null
           compensation: string | null
+          compensation_amount_usd: number | null
+          compensation_price_source: string | null
+          compensation_priced_at: string | null
           created_at: string | null
           description: string
           employer_wallet: string
@@ -898,6 +925,9 @@ export type Database = {
           campaign_subscription_id?: string | null
           company_name?: string | null
           compensation?: string | null
+          compensation_amount_usd?: number | null
+          compensation_price_source?: string | null
+          compensation_priced_at?: string | null
           created_at?: string | null
           description: string
           employer_wallet: string
@@ -921,6 +951,9 @@ export type Database = {
           campaign_subscription_id?: string | null
           company_name?: string | null
           compensation?: string | null
+          compensation_amount_usd?: number | null
+          compensation_price_source?: string | null
+          compensation_priced_at?: string | null
           created_at?: string | null
           description?: string
           employer_wallet?: string
