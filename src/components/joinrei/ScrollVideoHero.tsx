@@ -280,12 +280,12 @@ const LeftPanelTrack = () => (
           Spend More Time <strong className="font-semibold">Earning</strong>.
         </h1>
         <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed">
-          Stop wasting hours searching for ways to earn crypto. Rei AI finds & streamlines crypto <RotatorText words={ROTATOR_WORDS} /> in one AI Powered Chat. <strong className="text-[#ed565a]">Get a 1000 Bounties in your Chat</strong>.
+          Stop wasting hours searching for ways to earn crypto. Rei AI Agent / Chatbot aggregates <strong>[a 1000 Crypto (<RotatorText words={ROTATOR_WORDS} />) in your Chat]</strong>.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <SimplePill label="Early Discovery" />
           <SimplePill label="Save Hours" />
-          <SimplePill label="Earn More" />
+          <SimplePill label="Bounties-to-Skills-Matched" />
         </div>
       </div>
 
@@ -314,7 +314,7 @@ const LeftPanelTrack = () => (
           Spend More Time <strong className="font-semibold">Earning</strong>.
         </h1>
         <p className="text-[11px] sm:text-[13px] text-primary/70 font-mono leading-relaxed whitespace-normal shrink-0">
-          Stop wasting hours searching for ways to earn crypto. Rei AI finds & streamlines crypto <RotatorText words={ROTATOR_WORDS} /> in one AI Powered Chat. <strong className="text-[#ed565a]">Get a 1000 Bounties in your Chat</strong>.
+          Stop wasting hours searching for ways to earn crypto. Rei AI Agent / Chatbot aggregates <strong>[a 1000 Crypto (<RotatorText words={ROTATOR_WORDS} />) in your Chat]</strong>.
         </p>
         <div className="flex flex-wrap gap-1.5 shrink-0">
           <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
@@ -324,7 +324,7 @@ const LeftPanelTrack = () => (
             Save Hours
           </span>
           <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
-            Earn More
+            Bounties-to-Skills-Matched
           </span>
         </div>
         <div className="flex flex-col gap-2 shrink-0">
