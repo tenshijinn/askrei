@@ -51,6 +51,23 @@ const useBountyCount = () => {
   return count;
 };
 
+const useBountyValueUsd = () => {
+  const [usd, setUsd] = useState<number | null>(null);
+  useEffect(() => {
+    supabase.from('platform_stats').select('total_value_usd').eq('id', 'global').maybeSingle()
+      .then(({ data }) => {
+        if (data?.total_value_usd != null) setUsd(Number(data.total_value_usd));
+      });
+  }, []);
+  return usd;
+};
+
+const formatUsd = (n: number) => {
+  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `$${(n / 1_000).toFixed(1)}K`;
+  return `$${Math.round(n).toLocaleString()}`;
+};
+
 const BountyCountPill = () => {
   const count = useBountyCount();
   const num = (count ?? 0).toLocaleString();
@@ -59,6 +76,17 @@ const BountyCountPill = () => {
       <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">{num}</span>
       <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">bounties</span>
       <span className="text-base md:text-lg font-mono text-cream/70">delivered to date.</span>
+    </div>
+  );
+};
+
+const BountyValuePill = () => {
+  const usd = useBountyValueUsd();
+  if (usd == null || usd <= 0) return null;
+  return (
+    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-transparent border border-cream/30">
+      <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">{formatUsd(usd)}</span>
+      <span className="text-base md:text-lg font-mono text-cream/70">in bounties aggregated.</span>
     </div>
   );
 };
