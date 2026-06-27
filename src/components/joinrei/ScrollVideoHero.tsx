@@ -51,6 +51,23 @@ const useBountyCount = () => {
   return count;
 };
 
+const useBountyValueUsd = () => {
+  const [usd, setUsd] = useState<number | null>(null);
+  useEffect(() => {
+    supabase.from('platform_stats').select('total_value_usd').eq('id', 'global').maybeSingle()
+      .then(({ data }) => {
+        if (data?.total_value_usd != null) setUsd(Number(data.total_value_usd));
+      });
+  }, []);
+  return usd;
+};
+
+const formatUsd = (n: number) => {
+  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `$${(n / 1_000).toFixed(1)}K`;
+  return `$${Math.round(n).toLocaleString()}`;
+};
+
 const BountyCountPill = () => {
   const count = useBountyCount();
   const num = (count ?? 0).toLocaleString();
@@ -59,6 +76,17 @@ const BountyCountPill = () => {
       <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">{num}</span>
       <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">bounties</span>
       <span className="text-base md:text-lg font-mono text-cream/70">delivered to date.</span>
+    </div>
+  );
+};
+
+const BountyValuePill = () => {
+  const usd = useBountyValueUsd();
+  if (usd == null || usd <= 0) return null;
+  return (
+    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-transparent border border-cream/30">
+      <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">{formatUsd(usd)}</span>
+      <span className="text-base md:text-lg font-mono text-cream/70">in bounties aggregated.</span>
     </div>
   );
 };
@@ -273,7 +301,7 @@ const LeftPanelTrack = () => (
     <div className="h-screen w-full flex flex-col justify-between p-6 sm:p-8 lg:p-12 xl:p-16">
       {/* DESKTOP (lg+) — original layout */}
       <div className="hidden lg:block pt-2">
-        <BountyCountPill />
+        <div className="flex flex-wrap gap-2 mb-3"><BountyCountPill /><BountyValuePill /></div>
         <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
           Spend Less Time <strong className="font-semibold">Searching</strong>.
           <br />
@@ -305,8 +333,9 @@ const LeftPanelTrack = () => (
             How it works
           </button>
         </div>
-        <div className="shrink-0">
+        <div className="shrink-0 flex flex-wrap gap-1.5">
           <BountyCountPill />
+          <BountyValuePill />
         </div>
         <h1 className="text-[1.5rem] sm:text-[1.75rem] font-light text-primary leading-[1.05] tracking-tight shrink-0">
           Spend Less Time <strong className="font-semibold">Searching</strong>.
