@@ -114,10 +114,8 @@ export default function Rei() {
         if (error) { console.error('Error fetching registration:', error); }
         else if (data) {
           setRegistrationData(data); setIsSuccess(true); setPortfolioUrl(data.portfolio_url || ''); setSelectedRoles(data.role_tags || []); setConsent(true); setNoAccountFound(false);
-          // Returning registered user: silently re-check follow status so we skip the Activate card if they still follow @AskRei_.
-          supabase.functions.invoke('twitter-oauth', { body: { action: 'checkFollow', x_user_id: twitterUser.x_user_id } })
-            .then(({ data: followData }) => { if (followData?.follows_askrei) setInitialFollowing(true); })
-            .catch((e) => console.warn('[Rei] background follow check failed:', e));
+          // Returning registered user: skip the Activate card entirely, regardless of current follow status.
+          setInitialFollowing(true);
         }
         else { if (storedMode === 'signin') { setShowSignUp(true); setNoAccountFound(false); toast({ title: 'No account yet', description: 'No profile found for this X account — let\'s create one now.' }); } }
         setCheckedUserId(twitterUser.x_user_id);
