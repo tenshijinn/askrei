@@ -590,7 +590,7 @@ export default function Rei() {
                   </div>
                 )}
               </div>
-              {twitterUser && (profileActivated || registrationData) && (
+              {twitterUser && (profileActivated || initialFollowing || registrationData) && (
                 <div data-tour="reg-wallet" className={step !== 2 && hasWallet ? 'opacity-40' : ''}>
                   <div className="flex items-center gap-3 mb-4">
                     <div className="h-7 w-7 rounded-full flex items-center justify-center" style={{ background: hasWallet ? 'hsla(18,52%,82%,0.12)' : '#1e1e1e', fontSize: '12px', color: hasWallet ? '#e8c4b8' : '#5c5a57', border: '0.5px solid hsla(0,0%,100%,0.08)' }}>{hasWallet ? <Check className="h-3.5 w-3.5" /> : '2'}</div>
