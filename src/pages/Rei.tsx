@@ -266,6 +266,27 @@ export default function Rei() {
     sessionStorage.removeItem('twitter_code_verifier_rei'); sessionStorage.removeItem('rei_auth_mode');
   };
 
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const handleDeleteAccount = async () => {
+    if (!twitterUser?.x_user_id && !registrationData?.wallet_address) return;
+    setIsDeletingAccount(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('delete-rei-account', {
+        body: {
+          x_user_id: twitterUser?.x_user_id,
+          wallet_address: registrationData?.wallet_address || effectiveWallet,
+        },
+      });
+      if (error) throw error;
+      toast({ title: 'Account deleted', description: 'All your data has been removed from Rei.' });
+      handleLogout();
+    } catch (e: any) {
+      toast({ title: 'Delete failed', description: e?.message || 'Could not delete account.', variant: 'destructive' });
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  };
+
   // ==================== LOGGED IN VIEW ====================
   if (isSuccess && registrationData && !isEditMode && (initialFollowing || profileActivated)) {
     const analysis = registrationData.profile_analysis as any;
