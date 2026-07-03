@@ -479,6 +479,31 @@ export default function Rei() {
                 <BountyPromotions xUserId={twitterUser?.x_user_id} walletAddress={effectiveWallet || registrationData?.wallet_address} />
                 <button data-tour="edit-profile" onClick={() => setIsEditMode(true)} className="btn-manga btn-manga-outline w-full" style={{ borderRadius: '28px', padding: '11px 22px', fontSize: '13px', cursor: 'pointer' }}>Edit Profile</button>
                 <button onClick={walkthrough.replay} className="w-full" style={{ background: 'none', border: 'none', color: '#a09e9a', fontSize: '12px', textDecoration: 'underline', textUnderlineOffset: 3, cursor: 'pointer', paddingTop: 4 }}>Replay walkthrough</button>
+                <div style={{ marginTop: 24, paddingTop: 16, borderTop: '0.5px solid hsla(0,0%,100%,0.06)' }}>
+                  <p style={{ fontSize: '11px', color: '#5c5a57', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Danger Zone</p>
+                  <p style={{ fontSize: '12px', color: '#a09e9a', marginBottom: 12 }}>Permanently delete your Rei profile and all associated data. This cannot be undone.</p>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <button className="w-full flex items-center justify-center gap-2" style={{ borderRadius: '28px', padding: '11px 22px', fontSize: '13px', cursor: 'pointer', background: 'transparent', color: '#ed565a', border: '0.5px solid rgba(237,86,90,0.5)' }}>
+                        <Trash2 className="h-3.5 w-3.5" /> Delete My Account
+                      </button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent style={{ background: '#141414', border: '0.5px solid hsla(0,0%,100%,0.08)', color: '#f0ede8' }}>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle style={{ color: '#f0ede8' }}>Delete your Rei account?</AlertDialogTitle>
+                        <AlertDialogDescription style={{ color: '#a09e9a' }}>
+                          This will permanently remove your profile, points, chat history, submissions, subscriptions, and all other data tied to <strong style={{ color: '#f0ede8' }}>@{registrationData.handle}</strong>. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel style={{ background: 'transparent', color: '#a09e9a', border: '0.5px solid hsla(0,0%,100%,0.15)' }}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteAccount} disabled={isDeletingAccount} style={{ background: '#ed565a', color: '#fff', border: 'none' }}>
+                          {isDeletingAccount ? 'Deleting…' : 'Yes, delete everything'}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               </div>
             </div>
           )}
