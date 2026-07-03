@@ -112,7 +112,7 @@ export default function Rei() {
         const data = response?.data;
         if (error) { console.error('Error fetching registration:', error); }
         else if (data) { setRegistrationData(data); setIsSuccess(true); setPortfolioUrl(data.portfolio_url || ''); setSelectedRoles(data.role_tags || []); setConsent(true); setNoAccountFound(false); }
-        else { if (storedMode === 'signin') { setNoAccountFound(true); setTwitterUser(null); localStorage.removeItem('rei_twitter_user'); localStorage.removeItem('rei_verification_status'); toast({ title: 'No Account Found', description: 'No existing account found with this X account. Please sign up to create one.', variant: 'destructive' }); } }
+        else { if (storedMode === 'signin') { setShowSignUp(true); setNoAccountFound(false); toast({ title: 'No account yet', description: 'No profile found for this X account — let\'s create one now.' }); } }
         setCheckedUserId(twitterUser.x_user_id);
       } catch (error) { console.error('Error checking registration:', error); }
       finally { setIsLoadingRegistration(false); sessionStorage.removeItem('rei_auth_mode'); }
