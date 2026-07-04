@@ -492,6 +492,8 @@ export type Database = {
       platform_stats: {
         Row: {
           id: string
+          lifetime_bounties: number
+          lifetime_value_usd: number
           priced_count: number
           total_bounties: number
           total_value_usd: number
@@ -499,6 +501,8 @@ export type Database = {
         }
         Insert: {
           id: string
+          lifetime_bounties?: number
+          lifetime_value_usd?: number
           priced_count?: number
           total_bounties?: number
           total_value_usd?: number
@@ -506,6 +510,8 @@ export type Database = {
         }
         Update: {
           id?: string
+          lifetime_bounties?: number
+          lifetime_value_usd?: number
           priced_count?: number
           total_bounties?: number
           total_value_usd?: number
