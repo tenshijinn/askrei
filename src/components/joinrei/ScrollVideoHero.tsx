@@ -41,12 +41,14 @@ const useBountyCount = () => {
         if (Date.now() - p.t < BOUNTY_COUNT_TTL) return;
       }
     } catch {}
-    supabase.from('tasks').select('*', { count: 'exact', head: true }).then(({ count: c }) => {
-      if (typeof c === 'number') {
-        setCount(c);
-        try { localStorage.setItem(BOUNTY_COUNT_KEY, JSON.stringify({ c, t: Date.now() })); } catch {}
-      }
-    });
+    supabase.from('platform_stats').select('lifetime_bounties').eq('id', 'global').maybeSingle()
+      .then(({ data }) => {
+        const c = data?.lifetime_bounties;
+        if (typeof c === 'number') {
+          setCount(c);
+          try { localStorage.setItem(BOUNTY_COUNT_KEY, JSON.stringify({ c, t: Date.now() })); } catch {}
+        }
+      });
   }, []);
   return count;
 };
@@ -54,13 +56,14 @@ const useBountyCount = () => {
 const useBountyValueUsd = () => {
   const [usd, setUsd] = useState<number | null>(null);
   useEffect(() => {
-    supabase.from('platform_stats').select('total_value_usd').eq('id', 'global').maybeSingle()
+    supabase.from('platform_stats').select('lifetime_value_usd').eq('id', 'global').maybeSingle()
       .then(({ data }) => {
-        if (data?.total_value_usd != null) setUsd(Number(data.total_value_usd));
+        if (data?.lifetime_value_usd != null) setUsd(Number(data.lifetime_value_usd));
       });
   }, []);
   return usd;
 };
+
 
 const formatUsd = (n: number) => {
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;

@@ -140,13 +140,25 @@ Deno.serve(async (req) => {
     (s: number, r: any) => s + Number(r.compensation_amount_usd ?? 0), 0);
   const pricedCount = (agg ?? []).length;
 
+  const { data: prev } = await supabase
+    .from("platform_stats")
+    .select("lifetime_bounties, lifetime_value_usd")
+    .eq("id", "global")
+    .maybeSingle();
+
+  const lifetimeBounties = Math.max(prev?.lifetime_bounties ?? 0, totalBounties ?? 0);
+  const lifetimeValueUsd = Math.max(Number(prev?.lifetime_value_usd ?? 0), totalValueUsd);
+
   await supabase.from("platform_stats").upsert({
     id: "global",
     total_bounties: totalBounties ?? 0,
     total_value_usd: totalValueUsd,
     priced_count: pricedCount,
+    lifetime_bounties: lifetimeBounties,
+    lifetime_value_usd: lifetimeValueUsd,
     updated_at: new Date().toISOString(),
   });
+
 
   return new Response(JSON.stringify({
     priced, skipped,
