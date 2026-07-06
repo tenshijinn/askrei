@@ -20,34 +20,15 @@ const SCROLL_FRAME_COUNT = 60;
 const getScrollFrameSrc = (index: number) =>
   `/scroll-rei-frames/frame-${String(index + 1).padStart(3, '0')}.jpg`;
 
-const BOUNTY_COUNT_KEY = 'rei_bounty_count_v1';
-const BOUNTY_COUNT_TTL = 4 * 60 * 60 * 1000; // 4h
-
 const useBountyCount = () => {
-  const [count, setCount] = useState<number | null>(() => {
-    try {
-      const raw = localStorage.getItem(BOUNTY_COUNT_KEY);
-      if (!raw) return null;
-      const p = JSON.parse(raw);
-      if (Date.now() - p.t > BOUNTY_COUNT_TTL) return p.c ?? null;
-      return p.c;
-    } catch { return null; }
-  });
+  const [count, setCount] = useState<number | null>(null);
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(BOUNTY_COUNT_KEY);
-      if (raw) {
-        const p = JSON.parse(raw);
-        if (Date.now() - p.t < BOUNTY_COUNT_TTL) return;
-      }
-    } catch {}
+    // Clear any stale cache from a previous version
+    try { localStorage.removeItem('rei_bounty_count_v1'); } catch {}
     supabase.from('platform_stats').select('lifetime_bounties').eq('id', 'global').maybeSingle()
       .then(({ data }) => {
         const c = data?.lifetime_bounties;
-        if (typeof c === 'number') {
-          setCount(c);
-          try { localStorage.setItem(BOUNTY_COUNT_KEY, JSON.stringify({ c, t: Date.now() })); } catch {}
-        }
+        if (typeof c === 'number') setCount(c);
       });
   }, []);
   return count;
