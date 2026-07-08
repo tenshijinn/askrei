@@ -228,11 +228,15 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
           setClicks([]);
         } else {
           const { data: ck, error: ckErr } = await supabase
-            .from('campaign_clicks')
-            .select('campaign_subscription_id, click_date, ip_hash')
-            .in('campaign_subscription_id', ids);
+            .rpc('get_campaign_click_stats', { p_campaign_ids: ids });
           if (ckErr) throw ckErr;
-          if (!cancelled) setClicks(ck || []);
+          const rows: ClickRow[] = (ck || []).map((r: { campaign_subscription_id: string; click_date: string; total_clicks: number | string; unique_clicks: number | string }) => ({
+            campaign_subscription_id: r.campaign_subscription_id,
+            click_date: r.click_date,
+            total_clicks: Number(r.total_clicks) || 0,
+            unique_clicks: Number(r.unique_clicks) || 0,
+          }));
+          if (!cancelled) setClicks(rows);
         }
       } catch (e) {
         if (!cancelled) {
