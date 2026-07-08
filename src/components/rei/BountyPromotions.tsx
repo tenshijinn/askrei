@@ -265,14 +265,14 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
         if (!cutoff) return true;
         return new Date(k.click_date) >= cutoff;
       });
-      const totalClicks = myClicks.length;
-      const uniqueClicks = new Set(myClicks.map((k) => k.ip_hash || '')).size;
+      const totalClicks = myClicks.reduce((s, k) => s + k.total_clicks, 0);
+      const uniqueClicks = myClicks.reduce((s, k) => s + k.unique_clicks, 0);
       const ctr = totalClicks ? (uniqueClicks / totalClicks) * 100 : 0;
 
       // Build daily buckets
       const byDay = new Map<string, number>();
       for (const k of myClicks) {
-        byDay.set(k.click_date, (byDay.get(k.click_date) || 0) + 1);
+        byDay.set(k.click_date, (byDay.get(k.click_date) || 0) + k.total_clicks);
       }
       const series = Array.from(byDay.entries())
         .sort(([a], [b]) => a.localeCompare(b))
