@@ -29,7 +29,8 @@ const RANGE_DAYS: Record<Range, number | null> = { all: null, '30d': 30, '7d': 7
 interface ClickRow {
   campaign_subscription_id: string;
   click_date: string;
-  ip_hash: string | null;
+  total_clicks: number;
+  unique_clicks: number;
 }
 
 interface CampaignRow {
