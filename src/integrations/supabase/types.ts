@@ -1406,6 +1406,19 @@ export type Database = {
     }
     Functions: {
       generate_campaign_short_code: { Args: never; Returns: string }
+      get_campaign_click_stats: {
+        Args: { p_campaign_ids: string[] }
+        Returns: {
+          campaign_subscription_id: string
+          click_date: string
+          total_clicks: number
+          unique_clicks: number
+        }[]
+      }
+      get_campaign_unique_visits: {
+        Args: { p_short_code: string }
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -29,7 +29,8 @@ const RANGE_DAYS: Record<Range, number | null> = { all: null, '30d': 30, '7d': 7
 interface ClickRow {
   campaign_subscription_id: string;
   click_date: string;
-  ip_hash: string | null;
+  total_clicks: number;
+  unique_clicks: number;
 }
 
 interface CampaignRow {
@@ -227,11 +228,15 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
           setClicks([]);
         } else {
           const { data: ck, error: ckErr } = await supabase
-            .from('campaign_clicks')
-            .select('campaign_subscription_id, click_date, ip_hash')
-            .in('campaign_subscription_id', ids);
+            .rpc('get_campaign_click_stats', { p_campaign_ids: ids });
           if (ckErr) throw ckErr;
-          if (!cancelled) setClicks(ck || []);
+          const rows: ClickRow[] = (ck || []).map((r: { campaign_subscription_id: string; click_date: string; total_clicks: number | string; unique_clicks: number | string }) => ({
+            campaign_subscription_id: r.campaign_subscription_id,
+            click_date: r.click_date,
+            total_clicks: Number(r.total_clicks) || 0,
+            unique_clicks: Number(r.unique_clicks) || 0,
+          }));
+          if (!cancelled) setClicks(rows);
         }
       } catch (e) {
         if (!cancelled) {
@@ -260,14 +265,14 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
         if (!cutoff) return true;
         return new Date(k.click_date) >= cutoff;
       });
-      const totalClicks = myClicks.length;
-      const uniqueClicks = new Set(myClicks.map((k) => k.ip_hash || '')).size;
+      const totalClicks = myClicks.reduce((s, k) => s + k.total_clicks, 0);
+      const uniqueClicks = myClicks.reduce((s, k) => s + k.unique_clicks, 0);
       const ctr = totalClicks ? (uniqueClicks / totalClicks) * 100 : 0;
 
       // Build daily buckets
       const byDay = new Map<string, number>();
       for (const k of myClicks) {
-        byDay.set(k.click_date, (byDay.get(k.click_date) || 0) + 1);
+        byDay.set(k.click_date, (byDay.get(k.click_date) || 0) + k.total_clicks);
       }
       const series = Array.from(byDay.entries())
         .sort(([a], [b]) => a.localeCompare(b))
