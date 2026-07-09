@@ -1,42 +1,60 @@
-## Problem
+# Fix: daily bounty sync silently timing out
 
-The hero pill "**52 bounties aggregated worth $61.0K+**" pulls two independent numbers:
+## Root cause
 
-- **Bounties count** — live `SELECT count(*) FROM tasks` (`ScrollVideoHero.tsx` line ~44). Goes up as new rows land.
-- **USD value** — `platform_stats.total_value_usd`, recomputed each run of the `price-bounties` edge function by summing `compensation_amount_usd` across the current `tasks` table (no expiry filter).
+The `sync-drive-tasks-daily` pg_cron job fires at 09:00 UTC every day and pg_cron reports "succeeded" — but that only means "http request was queued". The actual HTTP call to the edge function is aborted after 5 seconds by pg_net's default timeout. Evidence from `net._http_response`:
 
-The suspected "30-day expiry" filter exists (in `v_public_tasks` and `rei-chat` search), but it does **not** affect the stats — the pill reads raw `tasks` + `platform_stats`, both unfiltered.
+```
+error_msg: Timeout of 5000 ms reached (HTTP Request/Response time: 4771 ms)
+```
 
-So the USD can only go down if a priced row is later removed/overwritten (e.g. re-upsert with a changed compensation string that hasn't been re-priced yet, or a manual delete). Either way, the user's ask is unambiguous: **stats must be monotonic — once a bounty has been counted, it should stay counted, forever.**
+The function needs longer than 5s because it now scrapes `og:image` (HTML fetch, up to 256KB, concurrency 8) for every bounty missing one before upserting. Result: no new bounties land, `platform_stats` stays at **92 / $102.9K** since July 6.
 
-## Plan
+The Drive feed itself may or may not have new bounties — we can't tell until the function is actually allowed to run to completion.
 
-1. **Add lifetime columns to `platform_stats`** (schema migration):
-   - `lifetime_bounties INTEGER NOT NULL DEFAULT 0`
-   - `lifetime_value_usd NUMERIC NOT NULL DEFAULT 0`
-   - Seed both with the current live values (`total_bounties`, `total_value_usd`) so we don't start from zero.
+## Fix (two parts)
 
-2. **Update `price-bounties` edge function** to write monotonic lifetime values:
-   - Compute the live count/sum as today.
-   - Set `lifetime_bounties = GREATEST(existing.lifetime_bounties, live_count)`.
-   - Set `lifetime_value_usd = GREATEST(existing.lifetime_value_usd, live_sum)`.
-   - Keep `total_bounties` / `total_value_usd` as-is (they still reflect current DB state and are useful for debugging).
+### 1. Raise the pg_net timeout on both cron jobs
 
-3. **Point the hero pill at the lifetime numbers** in `src/components/joinrei/ScrollVideoHero.tsx`:
-   - `useBountyCount` reads `platform_stats.lifetime_bounties` (single query, no live `tasks` count).
-   - `useBountyValueUsd` reads `platform_stats.lifetime_value_usd`.
-   - Both use the same row → count and value stay in lockstep and only ever grow.
+Recreate jobs 4 (`price-bounties-daily`) and 5 (`sync-drive-tasks-daily`) so `net.http_post` is called with `timeout_milliseconds := 300000` (5 min). This is a one-shot SQL insert via the Supabase insert path (contains the anon key, so it's runtime SQL, not a migration).
 
-4. **Kick `price-bounties` once** after deploy so lifetime values are populated immediately.
+```sql
+select cron.unschedule('sync-drive-tasks-daily');
+select cron.schedule(
+  'sync-drive-tasks-daily', '0 9 * * *',
+  $$ select net.http_post(
+       url := 'https://<ref>.supabase.co/functions/v1/sync-drive-tasks',
+       headers := '{"Content-Type":"application/json","apikey":"<anon>"}'::jsonb,
+       body := '{}'::jsonb,
+       timeout_milliseconds := 300000
+     ); $$
+);
+-- same treatment for price-bounties-daily (safety margin, cheap)
+```
 
-## Out of scope
+### 2. Make `sync-drive-tasks` upsert BEFORE the og:image scrape
 
-- No changes to `v_public_tasks` or the 30-day search filter — those are correct for user-facing feed/search.
-- No changes to `sync-drive-tasks` ingestion — it already preserves `compensation_amount_usd` across re-upserts.
-- No historical backfill beyond seeding lifetime with the current live values (we can't reconstruct bounties that have already been deleted).
+Even with a 5-min pg_net timeout, the function should never lose upserted rows to a slow scrape. Reorder in `supabase/functions/sync-drive-tasks/index.ts`:
 
-## Technical notes
+1. Parse + map bounties
+2. **Upsert all rows immediately** (as today, but earlier)
+3. Then scrape og:image for rows missing one and run a second lightweight upsert to fill `og_image` only
 
-- Files touched: `supabase/migrations/<new>.sql`, `supabase/functions/price-bounties/index.ts`, `src/components/joinrei/ScrollVideoHero.tsx`.
-- The `BOUNTY_COUNT_KEY` localStorage cache in `ScrollVideoHero` stays; it'll just cache the lifetime count.
-- `platform_stats` already has `SELECT` granted to `anon` + `authenticated`, so the client read continues to work.
+This guarantees new bounties are recorded even if og scraping is slow or partially fails, and it makes any future timeout non-destructive.
+
+Optional guardrails while we're in the file:
+- Wrap the whole og-scrape section in a hard time budget (e.g. 90s) and skip the rest if exceeded.
+- Log how many bounties were new vs updated after the first upsert so we can see growth without querying the DB.
+
+### 3. Validate
+
+- Manually invoke `sync-drive-tasks` once and confirm HTTP 200 with `{ ok:true, upserted:N }`.
+- Manually invoke `price-bounties` after, confirm `platform_stats` updates.
+- Check `tasks` `max(created_at)` moves past July 6 (if the Drive feed actually has new items).
+- Check `net._http_response` for the next cron run shows `status_code: 200`, not a timeout.
+
+## Non-goals
+
+- No changes to the pill UI on `/` — it will start moving on its own once stats refresh.
+- No changes to the Drive-side agent contract.
+- No schema changes.

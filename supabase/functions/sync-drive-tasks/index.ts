@@ -295,23 +295,7 @@ Deno.serve(async (req) => {
       rows.push(mapBounty(r.data));
     }
 
-    // 2b. For rows missing og_image, scrape it from the link in parallel (concurrency=8).
-    const needsOg = rows.filter((r) => !r.og_image && r.link);
-    let ogFilled = 0;
-    const CONCURRENCY = 8;
-    for (let i = 0; i < needsOg.length; i += CONCURRENCY) {
-      const batch = needsOg.slice(i, i + CONCURRENCY);
-      const results = await Promise.all(batch.map((r) => fetchOgImage(r.link)));
-      results.forEach((img, idx) => {
-        if (img) {
-          batch[idx].og_image = img;
-          ogFilled++;
-        }
-      });
-    }
-    console.log(`og_image: filled ${ogFilled}/${needsOg.length} via scrape`);
-
-    // 3. Upsert in chunks of 200 to keep payloads reasonable.
+    // 3. Upsert FIRST — never let slow og:image scraping block new bounties.
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
       auth: { persistSession: false },
     });
@@ -329,6 +313,34 @@ Deno.serve(async (req) => {
         upserted += count ?? chunk.length;
       }
     }
+    console.log(`upserted ${upserted}/${rows.length} tasks (skipped ${skipped.length})`);
+
+    // 4. Backfill og_image for rows that don't have one, under a hard time budget.
+    //    Do it only for rows we just upserted; second pass writes only { og_image }.
+    const OG_BUDGET_MS = 90_000;
+    const ogStart = Date.now();
+    const needsOg = rows.filter((r) => !r.og_image && r.link);
+    let ogFilled = 0;
+    const CONCURRENCY = 8;
+    outer: for (let i = 0; i < needsOg.length; i += CONCURRENCY) {
+      if (Date.now() - ogStart > OG_BUDGET_MS) {
+        console.log(`og_image: time budget reached at ${i}/${needsOg.length}`);
+        break outer;
+      }
+      const batch = needsOg.slice(i, i + CONCURRENCY);
+      const results = await Promise.all(batch.map((r) => fetchOgImage(r.link)));
+      const updates: { external_id: string; og_image: string }[] = [];
+      results.forEach((img, idx) => {
+        if (img) {
+          updates.push({ external_id: batch[idx].external_id, og_image: img });
+          ogFilled++;
+        }
+      });
+      for (const u of updates) {
+        await supabase.from("tasks").update({ og_image: u.og_image }).eq("external_id", u.external_id);
+      }
+    }
+    console.log(`og_image: filled ${ogFilled}/${needsOg.length} via scrape`);
 
     return new Response(
       JSON.stringify({
@@ -336,6 +348,7 @@ Deno.serve(async (req) => {
         file_id: fileId,
         fetched: parsed.data.bounties.length,
         upserted,
+        og_filled: ogFilled,
         skipped: skipped.length,
         skipped_sample: skipped.slice(0, 5),
         errors,
