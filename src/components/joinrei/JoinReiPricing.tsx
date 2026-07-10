@@ -12,6 +12,8 @@ interface PricingPoint {
   period: string;
   perDay: string | null;
   saveNote: string | null;
+  originalPrice?: string;
+  betaLabel?: string;
 }
 
 interface Usp {
