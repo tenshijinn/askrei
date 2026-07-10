@@ -189,11 +189,23 @@ export const JoinReiPricing = () => {
                     )}
 
                     <div className="flex items-baseline gap-2 mb-1">
+                      {activePrice.betaLabel && (
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-primary/90">
+                          {activePrice.betaLabel}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-baseline gap-2 mb-1">
                       <span
                         className={`text-4xl font-light font-mono ${isPremium ? 'text-amber-500' : 'text-cream'}`}
                       >
                         {activePrice.price}
                       </span>
+                      {activePrice.originalPrice && (
+                        <span className="text-lg font-mono text-cream/40 line-through decoration-cream/40">
+                          {activePrice.originalPrice}
+                        </span>
+                      )}
                       <span className="text-cream/60 font-mono text-xs">{activePrice.period}</span>
                     </div>
 
