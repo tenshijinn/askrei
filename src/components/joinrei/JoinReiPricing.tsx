@@ -45,7 +45,7 @@ const pricingTiers: PricingTier[] = [
     leverage: 'x10 Leverage User Growth',
     subtitle: '1 Promotion Post',
     prices: {
-      monthly: { price: '$5', period: 'Per Post', perDay: null, saveNote: null },
+      monthly: { price: '$5', period: 'Per Post', perDay: null, saveNote: null, originalPrice: '$50', betaLabel: 'Beta Launch Price' },
     },
     hasToggle: false,
     icon: iconDIY,
