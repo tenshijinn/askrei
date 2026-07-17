@@ -17,6 +17,8 @@ import ReferralRedirect from "./pages/ReferralRedirect";
 import CampaignRedirect from "./pages/CampaignRedirect";
 import ButtonLab from "./pages/ButtonLab";
 import NotFound from "./pages/NotFound";
+import OAuthConsent from "./pages/OAuthConsent";
+import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,8 @@ const App = () => (
               <Route path="/r/:code" element={<ReferralRedirect />} />
               <Route path="/c/:code" element={<CampaignRedirect />} />
               <Route path="/button-lab" element={<ButtonLab />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "sdk_version": "0.23.0",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://qajahmmzqhgboeoorfqj.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "rei-chat-mcp",
+      "version": "0.1.0",
+      "title": "Rei.chat MCP"
+    },
+    "tools": [
+      {
+        "name": "search_bounties",
+        "title": "Search bounties",
+        "description": "Search active crypto bounties and tasks aggregated on rei.chat (Superteam, Zealy, QuestN, Scribble, and others). Filter by keyword, role tag, or platform.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "description": "Case-insensitive match on title / description / company_name.",
+              "type": "string"
+            },
+            "role": {
+              "description": "Role tag, e.g. developer, designer, kol, writer, or platform tag like scribble, zealy.",
+              "type": "string"
+            },
+            "limit": {
+              "default": 20,
+              "description": "Max rows to return (1-50).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "search_jobs",
+        "title": "Search jobs",
+        "description": "Search active Web3 jobs (full-time, contract) aggregated on rei.chat. Filter by keyword or role.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string"
+            },
+            "role": {
+              "description": "Role tag, e.g. developer, designer, marketing.",
+              "type": "string"
+            },
+            "limit": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_skill_categories",
+        "title": "List skill categories",
+        "description": "Return the full rei.chat skill taxonomy with counts of active tasks, jobs, and talent per category.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "description": "Optional name filter (case-insensitive).",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "whoami",
+        "title": "Who am I",
+        "description": "Return the signed-in rei.chat user's OAuth identity (email, user id, client id). Useful for connectivity checks.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
