@@ -374,9 +374,32 @@ const LeftPanelTrack = () => (
           Stop wasting hours searching ways to earn crypto. Rei AI Agent+Chatbot aggregates <strong>a 1000 Crypto <RotatorText words={ROTATOR_WORDS} /> in your Chat</strong>.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
-          <SimplePill label="Early Discovery" />
-          <SimplePill label="Save Hours" />
-          <SimplePill label="Bounties-to-Skills-Matched" />
+          <HeroPill label="Early Discovery" />
+          <HeroPill label="Save Hours" />
+          <HeroPill label="Bounties-to-Skills-Matched" />
+        </div>
+        <div className="mt-6 flex items-center gap-4 sm:gap-6 flex-wrap">
+          <button
+            className="btn-manga"
+            style={{ backgroundColor: '#ed565a', borderColor: '#ed565a', color: '#181818' }}
+            onClick={() => (window.location.href = '/rei')}
+          >
+            Start Now
+          </button>
+          <button
+            className="btn-manga btn-manga-outline"
+            onClick={() => {
+              const scroller = document.querySelector('.snap-y') as HTMLElement | null;
+              const target = (scroller?.clientHeight ?? window.innerHeight) * 2;
+              (scroller ?? window).scrollBy({ top: target, behavior: 'smooth' });
+            }}
+          >
+            How it Works
+          </button>
+        </div>
+        <div className="mt-6 flex items-stretch gap-4">
+          <LatestBountyCard />
+          <PlatformTicker />
         </div>
       </div>
 
