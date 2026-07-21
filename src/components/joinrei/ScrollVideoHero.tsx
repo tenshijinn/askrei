@@ -13,6 +13,98 @@ import nousHermesAsset from '@/assets/joinrei/logo-bar-nous-hermes.png.asset.jso
 import txSolAsset from '@/assets/joinrei/tx-sol.png.asset.json';
 import txUsdgAsset from '@/assets/joinrei/tx-usdg.png.asset.json';
 import txUsdcAsset from '@/assets/joinrei/tx-usdc.png.asset.json';
+import platZealy from '@/assets/joinrei/logo-plat-zealy.png.asset.json';
+import platTaskon from '@/assets/joinrei/logo-plat-taskon.png.asset.json';
+import platGalxe from '@/assets/joinrei/logo-plat-galxe.png.asset.json';
+import platScribble from '@/assets/joinrei/logo-plat-scribble.png.asset.json';
+import platSuperteam from '@/assets/joinrei/logo-plat-superteam-earn.png.asset.json';
+
+const PLATFORM_LOGOS = [
+  { src: platZealy.url, alt: 'Zealy' },
+  { src: platTaskon.url, alt: 'TaskOn' },
+  { src: platGalxe.url, alt: 'Galxe' },
+  { src: platScribble.url, alt: 'Scribble' },
+  { src: platSuperteam.url, alt: 'Superteam Earn' },
+];
+
+const HeroPill = ({ label }: { label: string }) => (
+  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border border-white/20">
+    <span className="text-xs text-white/50 font-mono">{label}</span>
+  </div>
+);
+
+const parseLatestBountyAmount = (comp: string | null | undefined): string | null => {
+  if (!comp) return null;
+  const m = comp.match(/\$\s?([\d,]+(?:\.\d+)?)\s?([KkMm])?/);
+  if (!m) return null;
+  const n = Number(m[1].replace(/,/g, ''));
+  if (!isFinite(n)) return null;
+  const suf = m[2]?.toUpperCase() ?? '';
+  if (suf === 'M') return `$${n}M`;
+  if (suf === 'K') return `$${n}K`;
+  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `$${(n / 1_000).toFixed(1)}K`;
+  return `$${Math.round(n).toLocaleString()}`;
+};
+
+const useLatestBounty = () => {
+  const [amount, setAmount] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      const { data } = await supabase
+        .from('v_public_tasks')
+        .select('compensation, created_at')
+        .not('compensation', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(20);
+      if (cancelled || !data) return;
+      for (const row of data) {
+        const v = parseLatestBountyAmount(row.compensation);
+        if (v) { setAmount(v); return; }
+      }
+    };
+    load();
+    const id = setInterval(load, 60 * 60 * 1000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, []);
+  return amount;
+};
+
+const LatestBountyCard = () => {
+  const amount = useLatestBounty();
+  return (
+    <div className="rounded-xl border-[0.5px] border-white/10 bg-[#141414]/60 backdrop-blur-sm px-5 py-3 min-w-[160px]">
+      <p className="text-[10px] font-mono text-white/40 tracking-wider mb-1">Latest Bounty</p>
+      <p className="text-2xl font-light text-white/60 tabular-nums">{amount ?? '—'}</p>
+    </div>
+  );
+};
+
+const PlatformTicker = () => (
+  <div className="rounded-xl border-[0.5px] border-white/10 bg-[#141414]/60 backdrop-blur-sm px-5 py-3 flex-1 min-w-0 overflow-hidden">
+    <p className="text-[10px] font-mono text-white/40 tracking-wider mb-2">Bounty Platforms Aggregated</p>
+    <div className="hero-ticker-viewport">
+      <div className="hero-ticker-track">
+        {[...PLATFORM_LOGOS, ...PLATFORM_LOGOS].map((l, i) => (
+          <img key={i} src={l.src} alt={l.alt} className="h-6 w-auto object-contain opacity-60 shrink-0" />
+        ))}
+      </div>
+    </div>
+    <style>{`
+      .hero-ticker-viewport { overflow: hidden; width: 100%; }
+      .hero-ticker-track {
+        display: flex; align-items: center; gap: 3rem; width: max-content;
+        animation: hero-ticker 40s linear infinite;
+      }
+      .hero-ticker-viewport:hover .hero-ticker-track { animation-play-state: paused; }
+      @keyframes hero-ticker {
+        from { transform: translateX(0); }
+        to   { transform: translateX(-50%); }
+      }
+    `}</style>
+  </div>
+);
 
 
 
@@ -282,9 +374,32 @@ const LeftPanelTrack = () => (
           Stop wasting hours searching ways to earn crypto. Rei AI Agent+Chatbot aggregates <strong>a 1000 Crypto <RotatorText words={ROTATOR_WORDS} /> in your Chat</strong>.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
-          <SimplePill label="Early Discovery" />
-          <SimplePill label="Save Hours" />
-          <SimplePill label="Bounties-to-Skills-Matched" />
+          <HeroPill label="Early Discovery" />
+          <HeroPill label="Save Hours" />
+          <HeroPill label="Bounties-to-Skills-Matched" />
+        </div>
+        <div className="mt-6 flex items-center gap-4 sm:gap-6 flex-wrap">
+          <button
+            className="btn-manga"
+            style={{ backgroundColor: '#ed565a', borderColor: '#ed565a', color: '#181818' }}
+            onClick={() => (window.location.href = '/rei')}
+          >
+            Start Now
+          </button>
+          <button
+            className="btn-manga btn-manga-outline"
+            onClick={() => {
+              const scroller = document.querySelector('.snap-y') as HTMLElement | null;
+              const target = (scroller?.clientHeight ?? window.innerHeight) * 2;
+              (scroller ?? window).scrollBy({ top: target, behavior: 'smooth' });
+            }}
+          >
+            How it Works
+          </button>
+        </div>
+        <div className="mt-6 flex items-stretch gap-4">
+          <LatestBountyCard />
+          <PlatformTicker />
         </div>
       </div>
 
@@ -344,25 +459,6 @@ const LeftPanelTrack = () => (
         </div>
       </div>
 
-      <div className="hidden lg:flex items-center gap-4 sm:gap-6 flex-wrap pt-4 lg:pt-0">
-        <button
-          className="btn-manga"
-          style={{ backgroundColor: '#ed565a', borderColor: '#ed565a', color: '#181818' }}
-          onClick={() => (window.location.href = '/rei')}
-        >
-          Start Now
-        </button>
-        <button
-          className="btn-manga btn-manga-outline"
-          onClick={() => {
-            const scroller = document.querySelector('.snap-y') as HTMLElement | null;
-            const target = (scroller?.clientHeight ?? window.innerHeight) * 2;
-            (scroller ?? window).scrollBy({ top: target, behavior: 'smooth' });
-          }}
-        >
-          How it Works
-        </button>
-      </div>
     </div>
 
     {/* Block 2: Logo bar — centered */}
