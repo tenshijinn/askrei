@@ -405,41 +405,43 @@ const LeftPanelTrack = () => (
     {/* Block 1: Hero — top content, bottom buttons (matches / home) */}
     <div className="h-screen w-full flex flex-col justify-between p-6 sm:p-8 lg:p-12 xl:p-16">
       {/* DESKTOP (lg+) — original layout */}
-      <div className="hidden lg:block pt-2">
-        <CombinedSocialProofPill />
-        <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
-          Spend Less Time <strong className="font-semibold">Searching</strong>.
-          <br />
-          Spend More Time <strong className="font-semibold">Earning</strong>.
-        </h1>
-        <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed">
-          Stop wasting hours searching ways to earn crypto. Rei AI Agent+Chatbot aggregates <strong>a 1000 Crypto <RotatorText words={ROTATOR_WORDS} /> in your Chat</strong>.
-        </p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          <HeroPill label="Early Discovery" />
-          <HeroPill label="Save Hours" />
-          <HeroPill label="Bounties-to-Skills-Matched" />
+      <div className="hidden lg:flex lg:flex-col lg:justify-between h-full pt-2 pb-2">
+        <div>
+          <CombinedSocialProofPill />
+          <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
+            Spend Less Time <strong className="font-semibold">Searching</strong>.
+            <br />
+            Spend More Time <strong className="font-semibold">Earning</strong>.
+          </h1>
+          <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed">
+            Stop wasting hours searching ways to earn crypto. Rei AI Agent+Chatbot aggregates <strong>a 1000 Crypto <RotatorText words={ROTATOR_WORDS} /> in your Chat</strong>.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <HeroPill label="Early Discovery" />
+            <HeroPill label="Save Hours" />
+            <HeroPill label="Bounties-to-Skills-Matched" />
+          </div>
+          <div className="mt-6 flex items-center gap-4 sm:gap-6 flex-wrap">
+            <button
+              className="btn-manga"
+              style={{ backgroundColor: '#ed565a', borderColor: '#ed565a', color: '#181818' }}
+              onClick={() => (window.location.href = '/rei')}
+            >
+              Start Now
+            </button>
+            <button
+              className="btn-manga btn-manga-outline"
+              onClick={() => {
+                const scroller = document.querySelector('.snap-y') as HTMLElement | null;
+                const target = (scroller?.clientHeight ?? window.innerHeight) * 2;
+                (scroller ?? window).scrollBy({ top: target, behavior: 'smooth' });
+              }}
+            >
+              How it Works
+            </button>
+          </div>
         </div>
-        <div className="mt-6 flex items-center gap-4 sm:gap-6 flex-wrap">
-          <button
-            className="btn-manga"
-            style={{ backgroundColor: '#ed565a', borderColor: '#ed565a', color: '#181818' }}
-            onClick={() => (window.location.href = '/rei')}
-          >
-            Start Now
-          </button>
-          <button
-            className="btn-manga btn-manga-outline"
-            onClick={() => {
-              const scroller = document.querySelector('.snap-y') as HTMLElement | null;
-              const target = (scroller?.clientHeight ?? window.innerHeight) * 2;
-              (scroller ?? window).scrollBy({ top: target, behavior: 'smooth' });
-            }}
-          >
-            How it Works
-          </button>
-        </div>
-        <div className="mt-6 flex items-stretch gap-4">
+        <div className="flex items-stretch gap-4">
           <LatestBountyCard />
           <PlatformTicker />
         </div>
@@ -447,6 +449,7 @@ const LeftPanelTrack = () => (
 
       {/* MOBILE / TABLET — stacked layout matching template */}
       <div className="lg:hidden flex-1 min-h-0 flex flex-col gap-3 sm:gap-4">
+
         {/* Top header: logo left, How it works right */}
         <div className="flex items-center justify-between shrink-0">
           <img src={reiLogo} alt="Rei AI" className="h-8 w-auto object-contain" />
