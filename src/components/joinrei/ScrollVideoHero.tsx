@@ -459,25 +459,6 @@ const LeftPanelTrack = () => (
         </div>
       </div>
 
-      <div className="hidden lg:flex items-center gap-4 sm:gap-6 flex-wrap pt-4 lg:pt-0">
-        <button
-          className="btn-manga"
-          style={{ backgroundColor: '#ed565a', borderColor: '#ed565a', color: '#181818' }}
-          onClick={() => (window.location.href = '/rei')}
-        >
-          Start Now
-        </button>
-        <button
-          className="btn-manga btn-manga-outline"
-          onClick={() => {
-            const scroller = document.querySelector('.snap-y') as HTMLElement | null;
-            const target = (scroller?.clientHeight ?? window.innerHeight) * 2;
-            (scroller ?? window).scrollBy({ top: target, behavior: 'smooth' });
-          }}
-        >
-          How it Works
-        </button>
-      </div>
     </div>
 
     {/* Block 2: Logo bar — centered */}
