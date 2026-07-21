@@ -96,7 +96,7 @@ const useLatestBounty = () => {
       if (cancelled || !data) return;
       for (const row of data) {
         const v = parseLatestBountyAmount(row.compensation);
-        if (v && row.created_at) { setState({ amount: v, createdAt: row.created_at }); return; }
+        if (v && row.created_at) { setState({ amount: v.display, createdAt: row.created_at }); return; }
       }
     };
     load();
@@ -113,6 +113,7 @@ const LatestBountyCard = () => {
     const id = setInterval(() => force((v) => v + 1), 60_000);
     return () => clearInterval(id);
   }, []);
+
   return (
     <div className="rounded-xl border-[0.5px] border-white/10 bg-[#141414]/60 backdrop-blur-sm px-5 py-3 min-w-[180px] flex flex-col justify-between">
       <div>
