@@ -33,30 +33,40 @@ const HeroPill = ({ label }: { label: string }) => (
   </div>
 );
 
-const parseLatestBountyAmount = (comp: string | null | undefined): string | null => {
+const formatNumber = (n: number): string => {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(n >= 10_000_000 ? 0 : 1)}M`;
+  if (n >= 10_000) return `${(n / 1_000).toFixed(0)}K`;
+  if (Number.isInteger(n)) return n.toLocaleString();
+  return n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+};
+
+// Returns { amount, token } — token is null for fiat/dollar values.
+const parseLatestBountyAmount = (
+  comp: string | null | undefined,
+): { display: string } | null => {
   if (!comp) return null;
   const s = comp.trim();
-  // Dollar format e.g. "$1,800", "$1.5K", "$2M"
-  const dm = s.match(/\$\s?([\d,]+(?:\.\d+)?)\s?([KkMm])?/);
+  // Dollar / fiat, e.g. "$1,800", "$1.5K", "$2M"
+  const dm = s.match(/^\$\s?([\d,]+(?:\.\d+)?)\s?([KkMm])?/);
   if (dm) {
-    const n = Number(dm[1].replace(/,/g, ''));
-    if (isFinite(n)) {
-      const suf = dm[2]?.toUpperCase() ?? '';
-      if (suf === 'M') return `$${n}M`;
-      if (suf === 'K') return `$${n}K`;
-      if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-      if (n >= 1_000) return `$${(n / 1_000).toFixed(1)}K`;
-      return `$${Math.round(n).toLocaleString()}`;
-    }
+    let n = Number(dm[1].replace(/,/g, ''));
+    if (!isFinite(n)) return null;
+    const suf = dm[2]?.toUpperCase();
+    if (suf === 'M') n *= 1_000_000;
+    if (suf === 'K') n *= 1_000;
+    return { display: `$${formatNumber(n)}` };
   }
-  // Crypto format e.g. "1,000 USDT", "20 USDC", "10 SOL"
-  const cm = s.match(/^([\d,]+(?:\.\d+)?)\s+([A-Za-z]{2,10})$/);
+  // Amount + token, e.g. "1 USDC", "5,000 USDG", "10 EVM", "0.5 SOL"
+  const cm = s.match(/^([\d,]+(?:\.\d+)?)\s+\$?([A-Za-z][A-Za-z0-9]{1,15})/);
   if (cm) {
     const n = Number(cm[1].replace(/,/g, ''));
-    if (isFinite(n)) return `${n.toLocaleString()} $${cm[2].toUpperCase()}`;
+    if (!isFinite(n)) return null;
+    return { display: `${formatNumber(n)} $${cm[2].toUpperCase()}` };
   }
-  return null;
+  // Fallback — show raw string
+  return { display: s };
 };
+
 
 const formatRelativeTime = (iso: string): string => {
   const diffMs = Date.now() - new Date(iso).getTime();
