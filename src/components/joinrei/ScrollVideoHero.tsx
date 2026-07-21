@@ -139,7 +139,7 @@ const PlatformTicker = () => {
       <div className="hero-ticker-viewport">
         <div className="hero-ticker-track" style={{ animationPlayState: paused ? 'paused' : 'running' }}>
           {[...PLATFORM_LOGOS, ...PLATFORM_LOGOS].map((l, i) => (
-            <img key={i} src={l.src} alt={l.alt} className="h-6 w-auto object-contain opacity-60 shrink-0" />
+            <img key={i} src={l.src} alt={l.alt} className="h-10 w-auto object-contain opacity-60 shrink-0" />
           ))}
         </div>
       </div>
