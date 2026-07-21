@@ -35,20 +35,45 @@ const HeroPill = ({ label }: { label: string }) => (
 
 const parseLatestBountyAmount = (comp: string | null | undefined): string | null => {
   if (!comp) return null;
-  const m = comp.match(/\$\s?([\d,]+(?:\.\d+)?)\s?([KkMm])?/);
-  if (!m) return null;
-  const n = Number(m[1].replace(/,/g, ''));
-  if (!isFinite(n)) return null;
-  const suf = m[2]?.toUpperCase() ?? '';
-  if (suf === 'M') return `$${n}M`;
-  if (suf === 'K') return `$${n}K`;
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `$${(n / 1_000).toFixed(1)}K`;
-  return `$${Math.round(n).toLocaleString()}`;
+  const s = comp.trim();
+  // Dollar format e.g. "$1,800", "$1.5K", "$2M"
+  const dm = s.match(/\$\s?([\d,]+(?:\.\d+)?)\s?([KkMm])?/);
+  if (dm) {
+    const n = Number(dm[1].replace(/,/g, ''));
+    if (isFinite(n)) {
+      const suf = dm[2]?.toUpperCase() ?? '';
+      if (suf === 'M') return `$${n}M`;
+      if (suf === 'K') return `$${n}K`;
+      if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
+      if (n >= 1_000) return `$${(n / 1_000).toFixed(1)}K`;
+      return `$${Math.round(n).toLocaleString()}`;
+    }
+  }
+  // Crypto format e.g. "1,000 USDT", "20 USDC", "10 SOL"
+  const cm = s.match(/^([\d,]+(?:\.\d+)?)\s+([A-Za-z]{2,10})$/);
+  if (cm) {
+    const n = Number(cm[1].replace(/,/g, ''));
+    if (isFinite(n)) return `${n.toLocaleString()} $${cm[2].toUpperCase()}`;
+  }
+  return null;
+};
+
+const formatRelativeTime = (iso: string): string => {
+  const diffMs = Date.now() - new Date(iso).getTime();
+  const min = Math.max(0, Math.floor(diffMs / 60000));
+  if (min < 1) return 'just now';
+  if (min < 60) return `${min}min ago`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}hr ago`;
+  const d = Math.floor(hr / 24);
+  if (d < 30) return `${d}d ago`;
+  const mo = Math.floor(d / 30);
+  if (mo < 12) return `${mo}mo ago`;
+  return `${Math.floor(mo / 12)}y ago`;
 };
 
 const useLatestBounty = () => {
-  const [amount, setAmount] = useState<string | null>(null);
+  const [state, setState] = useState<{ amount: string; createdAt: string } | null>(null);
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
@@ -57,54 +82,71 @@ const useLatestBounty = () => {
         .select('compensation, created_at')
         .not('compensation', 'is', null)
         .order('created_at', { ascending: false })
-        .limit(20);
+        .limit(30);
       if (cancelled || !data) return;
       for (const row of data) {
         const v = parseLatestBountyAmount(row.compensation);
-        if (v) { setAmount(v); return; }
+        if (v && row.created_at) { setState({ amount: v, createdAt: row.created_at }); return; }
       }
     };
     load();
     const id = setInterval(load, 60 * 60 * 1000);
     return () => { cancelled = true; clearInterval(id); };
   }, []);
-  return amount;
+  return state;
 };
 
 const LatestBountyCard = () => {
-  const amount = useLatestBounty();
+  const data = useLatestBounty();
+  const [, force] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => force((v) => v + 1), 60_000);
+    return () => clearInterval(id);
+  }, []);
   return (
-    <div className="rounded-xl border-[0.5px] border-white/10 bg-[#141414]/60 backdrop-blur-sm px-5 py-3 min-w-[160px]">
-      <p className="text-[10px] font-mono text-white/40 tracking-wider mb-1">Latest Bounty</p>
-      <p className="text-2xl font-light text-white/60 tabular-nums">{amount ?? '—'}</p>
+    <div className="rounded-xl border-[0.5px] border-white/10 bg-[#141414]/60 backdrop-blur-sm px-5 py-3 min-w-[180px] flex flex-col justify-between">
+      <div>
+        <p className="text-[10px] font-mono text-white/40 tracking-wider mb-1">Latest Bounty</p>
+        <p className="text-2xl font-light text-white/70 tabular-nums whitespace-nowrap">{data?.amount ?? '—'}</p>
+      </div>
+      <p className="text-[10px] font-mono text-white/30 mt-2">
+        {data ? `added ${formatRelativeTime(data.createdAt)}` : ''}
+      </p>
     </div>
   );
 };
 
-const PlatformTicker = () => (
-  <div className="rounded-xl border-[0.5px] border-white/10 bg-[#141414]/60 backdrop-blur-sm px-5 py-3 flex-1 min-w-0 overflow-hidden">
-    <p className="text-[10px] font-mono text-white/40 tracking-wider mb-2">Bounty Platforms Aggregated</p>
-    <div className="hero-ticker-viewport">
-      <div className="hero-ticker-track">
-        {[...PLATFORM_LOGOS, ...PLATFORM_LOGOS].map((l, i) => (
-          <img key={i} src={l.src} alt={l.alt} className="h-6 w-auto object-contain opacity-60 shrink-0" />
-        ))}
+const PlatformTicker = () => {
+  const [paused, setPaused] = useState(false);
+  return (
+    <div
+      className="rounded-xl border-[0.5px] border-white/10 bg-[#141414]/60 backdrop-blur-sm px-5 py-3 flex-1 min-w-0 overflow-hidden flex flex-col justify-center"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <p className="text-[10px] font-mono text-white/40 tracking-wider mb-2">Bounty Platforms Aggregated</p>
+      <div className="hero-ticker-viewport">
+        <div className="hero-ticker-track" style={{ animationPlayState: paused ? 'paused' : 'running' }}>
+          {[...PLATFORM_LOGOS, ...PLATFORM_LOGOS].map((l, i) => (
+            <img key={i} src={l.src} alt={l.alt} className="h-6 w-auto object-contain opacity-60 shrink-0" />
+          ))}
+        </div>
       </div>
+      <style>{`
+        .hero-ticker-viewport { overflow: hidden; width: 100%; }
+        .hero-ticker-track {
+          display: flex; align-items: center; gap: 3rem; width: max-content;
+          animation: hero-ticker 40s linear infinite;
+        }
+        @keyframes hero-ticker {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+      `}</style>
     </div>
-    <style>{`
-      .hero-ticker-viewport { overflow: hidden; width: 100%; }
-      .hero-ticker-track {
-        display: flex; align-items: center; gap: 3rem; width: max-content;
-        animation: hero-ticker 40s linear infinite;
-      }
-      .hero-ticker-viewport:hover .hero-ticker-track { animation-play-state: paused; }
-      @keyframes hero-ticker {
-        from { transform: translateX(0); }
-        to   { transform: translateX(-50%); }
-      }
-    `}</style>
-  </div>
-);
+  );
+};
+
 
 
 
