@@ -154,7 +154,7 @@ const PlatformTicker = () => {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <p className="text-[10px] font-mono text-white/40 tracking-wider mb-2">Bounty Platforms</p>
+      <p className="text-[10px] font-mono text-white/40 tracking-wider mb-2">Platforms Aggregated</p>
       <div className="hero-ticker-viewport">
         <div className="hero-ticker-track" style={{ animationPlayState: paused ? 'paused' : 'running' }}>
           {[...PLATFORM_LOGOS, ...PLATFORM_LOGOS].map((l, i) => (
