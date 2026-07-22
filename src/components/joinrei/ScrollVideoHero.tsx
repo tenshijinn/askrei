@@ -40,10 +40,17 @@ const formatNumber = (n: number): string => {
   return n.toLocaleString(undefined, { maximumFractionDigits: 2 });
 };
 
-// Returns { amount, token } — token is null for fiat/dollar values.
+// Rough USD estimates just for ranking "biggest bounty in the latest batch".
+const USD_RANK: Record<string, number> = {
+  USD: 1, USDC: 1, USDT: 1, USDG: 1, DAI: 1, PYUSD: 1, BUSD: 1, FDUSD: 1, USDP: 1,
+  SOL: 150, ETH: 3000, BTC: 60000, BNB: 500, MATIC: 0.7, POL: 0.7,
+  ARB: 1, OP: 2, SUI: 1, APT: 8, AVAX: 30, JUP: 0.8, JTO: 3, PYTH: 0.4,
+};
+
+// Returns display string + a rough USD estimate for ranking.
 const parseLatestBountyAmount = (
   comp: string | null | undefined,
-): { display: string } | null => {
+): { display: string; usd: number } | null => {
   if (!comp) return null;
   const s = comp.trim();
   // Dollar / fiat, e.g. "$1,800", "$1.5K", "$2M"
@@ -54,17 +61,18 @@ const parseLatestBountyAmount = (
     const suf = dm[2]?.toUpperCase();
     if (suf === 'M') n *= 1_000_000;
     if (suf === 'K') n *= 1_000;
-    return { display: `$${formatNumber(n)}` };
+    return { display: `$${formatNumber(n)}`, usd: n };
   }
   // Amount + token, e.g. "1 USDC", "5,000 USDG", "10 EVM", "0.5 SOL"
   const cm = s.match(/^([\d,]+(?:\.\d+)?)\s+\$?([A-Za-z][A-Za-z0-9]{1,15})/);
   if (cm) {
     const n = Number(cm[1].replace(/,/g, ''));
     if (!isFinite(n)) return null;
-    return { display: `${formatNumber(n)} $${cm[2].toUpperCase()}` };
+    const sym = cm[2].toUpperCase();
+    const rate = USD_RANK[sym] ?? 0;
+    return { display: `${formatNumber(n)} $${sym}`, usd: n * rate };
   }
-  // Fallback — show raw string
-  return { display: s };
+  return { display: s, usd: 0 };
 };
 
 
@@ -92,12 +100,23 @@ const useLatestBounty = () => {
         .select('compensation, created_at')
         .not('compensation', 'is', null)
         .order('created_at', { ascending: false })
-        .limit(30);
-      if (cancelled || !data) return;
-      for (const row of data) {
+        .limit(100);
+      if (cancelled || !data || data.length === 0) return;
+
+      // Newest batch = rows sharing the max created_at timestamp.
+      const newest = data[0].created_at;
+      const batch = data.filter((r) => r.created_at === newest);
+
+      let best: { display: string; usd: number } | null = null;
+      let fallback: { display: string; usd: number } | null = null;
+      for (const row of batch) {
         const v = parseLatestBountyAmount(row.compensation);
-        if (v && row.created_at) { setState({ amount: v.display, createdAt: row.created_at }); return; }
+        if (!v) continue;
+        if (!fallback) fallback = v;
+        if (v.usd > 0 && (!best || v.usd > best.usd)) best = v;
       }
+      const pick = best ?? fallback;
+      if (pick && newest) setState({ amount: pick.display, createdAt: newest });
     };
     load();
     const id = setInterval(load, 60 * 60 * 1000);
@@ -121,7 +140,7 @@ const LatestBountyCard = () => {
         <p className="text-2xl font-light text-white/70 tabular-nums whitespace-nowrap">{data?.amount ?? '—'}</p>
       </div>
       <p className="text-[10px] font-mono text-white/30 mt-2">
-        {data ? `added ${formatRelativeTime(data.createdAt)}` : ''}
+        {data ? `synced ${formatRelativeTime(data.createdAt)}` : ''}
       </p>
     </div>
   );
