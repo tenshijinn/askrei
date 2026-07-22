@@ -506,13 +506,13 @@ const LeftPanelTrack = () => (
           Stop wasting hours searching ways to earn crypto. Rei AI Agent+Chatbot aggregates <strong>a 1000 Crypto <RotatorText words={ROTATOR_WORDS} /> in your Chat</strong>.
         </p>
         <div className="flex flex-wrap gap-1.5 shrink-0">
-          <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+          <span className="shrink-0 px-2 py-0.5 rounded-full bg-transparent border border-white/20 text-[10px] text-white/50 font-mono whitespace-nowrap">
             Early Discovery
           </span>
-          <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+          <span className="shrink-0 px-2 py-0.5 rounded-full bg-transparent border border-white/20 text-[10px] text-white/50 font-mono whitespace-nowrap">
             Save Hours
           </span>
-          <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#181818] border border-primary/20 text-[10px] text-cream/80 font-mono whitespace-nowrap">
+          <span className="shrink-0 px-2 py-0.5 rounded-full bg-transparent border border-white/20 text-[10px] text-white/50 font-mono whitespace-nowrap">
             Bounties-to-Skills-Matched
           </span>
         </div>
@@ -531,6 +531,10 @@ const LeftPanelTrack = () => (
             alt="Rei AI Agent"
             className="w-full h-full object-cover object-center"
           />
+        </div>
+        <div className="grid grid-cols-2 gap-2 shrink-0">
+          <LatestBountyCard />
+          <PlatformTicker />
         </div>
       </div>
 
