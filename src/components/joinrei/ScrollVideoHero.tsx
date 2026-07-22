@@ -222,12 +222,12 @@ const CombinedSocialProofPill = () => {
   const num = (count ?? 0).toLocaleString();
   const value = usd && usd > 0 ? formatUsd(usd) : null;
   return (
-    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-transparent border border-cream/30">
-      <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">{num}</span>
-      <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">bounties</span>
-      <span className="text-base md:text-lg font-mono text-cream/70">aggregated worth</span>
+    <div className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-transparent border border-cream/30 whitespace-nowrap max-w-full">
+      <span className="text-[11px] sm:text-base md:text-lg font-mono text-[#ed565a] font-semibold">{num}</span>
+      <span className="text-[11px] sm:text-base md:text-lg font-mono text-[#ed565a] font-semibold">bounties</span>
+      <span className="text-[11px] sm:text-base md:text-lg font-mono text-cream/70">aggregated worth</span>
       {value ? (
-        <span className="text-base md:text-lg font-mono text-[#ed565a] font-semibold">{value}+</span>
+        <span className="text-[11px] sm:text-base md:text-lg font-mono text-[#ed565a] font-semibold">{value}+</span>
       ) : null}
     </div>
   );
