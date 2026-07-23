@@ -49,9 +49,15 @@ const TalentCard = ({ xUserId, handle, displayName, profileImageUrl, roleTags, p
             <AvatarFallback>{(displayName || handle || '?')[0].toUpperCase()}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
               {matchScore && <Badge variant="outline" className="text-primary">{matchScore}% Match</Badge>}
-              {bluechipVerified && <Badge variant="secondary">✓ Bluechip</Badge>}
+              {showDiamondBadge ? (
+                <Badge variant="secondary" title={`Diamond Score ${effectiveDiamondScore}`}>
+                  {TIER_EMOJI[effectiveDiamondTier!] ?? "💎"} {effectiveDiamondTier}
+                </Badge>
+              ) : bluechipVerified ? (
+                <Badge variant="secondary">✓ Bluechip</Badge>
+              ) : null}
             </div>
             <CardTitle className="text-xl">{displayName || handle || 'Anonymous'}</CardTitle>
             {handle && <CardDescription>@{handle}</CardDescription>}
