@@ -13,6 +13,8 @@ interface TalentCardProps {
   profileScore?: number;
   bluechipScore?: number;
   bluechipVerified?: boolean;
+  diamondScore?: number;
+  diamondTier?: string;
   analysisSummary?: string;
   portfolioUrl?: string;
   matchScore?: number;
@@ -22,7 +24,20 @@ interface TalentCardProps {
   onViewProfile?: () => void;
 }
 
-const TalentCard = ({ xUserId, handle, displayName, profileImageUrl, roleTags, profileScore, bluechipScore, bluechipVerified, analysisSummary, portfolioUrl, matchScore, matchReason, isPaid = false, fullProfile, onViewProfile }: TalentCardProps) => {
+const TIER_EMOJI: Record<string, string> = {
+  "Coal": "🪨",
+  "Emerald": "🟢",
+  "Sapphire": "🔷",
+  "Diamond": "💎",
+  "Rei's Diamond": "👑",
+};
+
+const TalentCard = ({ xUserId, handle, displayName, profileImageUrl, roleTags, profileScore, bluechipScore, bluechipVerified, diamondScore, diamondTier, analysisSummary, portfolioUrl, matchScore, matchReason, isPaid = false, fullProfile, onViewProfile }: TalentCardProps) => {
+  // Prefer the new Diamonds fields from fullProfile.wallet_behaviour when available.
+  const wb = fullProfile?.wallet_behaviour ?? fullProfile?.profile_analysis?.wallet_behaviour;
+  const effectiveDiamondScore = diamondScore ?? wb?.diamond_score;
+  const effectiveDiamondTier = diamondTier ?? wb?.diamond_tier;
+  const showDiamondBadge = typeof effectiveDiamondScore === "number" && !!effectiveDiamondTier;
   const showFullDetails = isPaid && fullProfile;
   return (
     <Card className={`hover:border-primary transition-colors ${!isPaid ? 'relative overflow-hidden' : ''}`}>
