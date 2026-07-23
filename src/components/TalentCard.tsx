@@ -87,7 +87,11 @@ const TalentCard = ({ xUserId, handle, displayName, profileImageUrl, roleTags, p
         ) : (
           <>
             {analysisSummary && <div><p className="text-sm text-muted-foreground mb-2">Summary</p><p className="text-sm line-clamp-2">{analysisSummary}</p></div>}
-            {bluechipScore !== undefined && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Bluechip Score</span><span className="font-medium">{bluechipScore.toFixed(1)}/10</span></div>}
+            {typeof effectiveDiamondScore === "number" ? (
+              <div className="flex justify-between text-sm"><span className="text-muted-foreground">Diamond Score</span><span className="font-medium">{effectiveDiamondScore}/100</span></div>
+            ) : bluechipScore !== undefined ? (
+              <div className="flex justify-between text-sm"><span className="text-muted-foreground">Bluechip Score</span><span className="font-medium">{bluechipScore.toFixed(1)}/10</span></div>
+            ) : null}
             <Button className="w-full" onClick={onViewProfile} disabled={!onViewProfile}><Lock className="mr-2 h-4 w-4" />View Full Profile - $5 SOL</Button>
             <div className="text-xs text-muted-foreground text-center">Payment required to view full details</div>
           </>
