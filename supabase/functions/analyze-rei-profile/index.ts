@@ -258,6 +258,15 @@ Please analyze this contributor's profile based on their video introduction${wal
     let iterationCount = 0;
     const maxIterations = 10; // Prevent infinite loops
 
+    // Capture raw Moralis payloads for the Diamonds engine — no extra API calls.
+    const moralisRaw: MoralisRawBundle = {};
+    const moralisFieldByTool: Record<string, keyof MoralisRawBundle> = {
+      getWalletPortfolio: 'portfolio',
+      getWalletSwaps: 'swaps',
+      getWalletTokens: 'tokens',
+      getWalletNFTs: 'nfts',
+    };
+
     console.log('Starting AI analysis with Moralis API tool calling...');
 
     // Tool calling loop
