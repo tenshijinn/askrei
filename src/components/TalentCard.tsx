@@ -13,6 +13,8 @@ interface TalentCardProps {
   profileScore?: number;
   bluechipScore?: number;
   bluechipVerified?: boolean;
+  diamondScore?: number;
+  diamondTier?: string;
   analysisSummary?: string;
   portfolioUrl?: string;
   matchScore?: number;
@@ -22,7 +24,20 @@ interface TalentCardProps {
   onViewProfile?: () => void;
 }
 
-const TalentCard = ({ xUserId, handle, displayName, profileImageUrl, roleTags, profileScore, bluechipScore, bluechipVerified, analysisSummary, portfolioUrl, matchScore, matchReason, isPaid = false, fullProfile, onViewProfile }: TalentCardProps) => {
+const TIER_EMOJI: Record<string, string> = {
+  "Coal": "🪨",
+  "Emerald": "🟢",
+  "Sapphire": "🔷",
+  "Diamond": "💎",
+  "Rei's Diamond": "👑",
+};
+
+const TalentCard = ({ xUserId, handle, displayName, profileImageUrl, roleTags, profileScore, bluechipScore, bluechipVerified, diamondScore, diamondTier, analysisSummary, portfolioUrl, matchScore, matchReason, isPaid = false, fullProfile, onViewProfile }: TalentCardProps) => {
+  // Prefer the new Diamonds fields from fullProfile.wallet_behaviour when available.
+  const wb = fullProfile?.wallet_behaviour ?? fullProfile?.profile_analysis?.wallet_behaviour;
+  const effectiveDiamondScore = diamondScore ?? wb?.diamond_score;
+  const effectiveDiamondTier = diamondTier ?? wb?.diamond_tier;
+  const showDiamondBadge = typeof effectiveDiamondScore === "number" && !!effectiveDiamondTier;
   const showFullDetails = isPaid && fullProfile;
   return (
     <Card className={`hover:border-primary transition-colors ${!isPaid ? 'relative overflow-hidden' : ''}`}>
@@ -34,9 +49,15 @@ const TalentCard = ({ xUserId, handle, displayName, profileImageUrl, roleTags, p
             <AvatarFallback>{(displayName || handle || '?')[0].toUpperCase()}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
               {matchScore && <Badge variant="outline" className="text-primary">{matchScore}% Match</Badge>}
-              {bluechipVerified && <Badge variant="secondary">✓ Bluechip</Badge>}
+              {showDiamondBadge ? (
+                <Badge variant="secondary" title={`Diamond Score ${effectiveDiamondScore}`}>
+                  {TIER_EMOJI[effectiveDiamondTier!] ?? "💎"} {effectiveDiamondTier}
+                </Badge>
+              ) : bluechipVerified ? (
+                <Badge variant="secondary">✓ Bluechip</Badge>
+              ) : null}
             </div>
             <CardTitle className="text-xl">{displayName || handle || 'Anonymous'}</CardTitle>
             {handle && <CardDescription>@{handle}</CardDescription>}
@@ -66,7 +87,11 @@ const TalentCard = ({ xUserId, handle, displayName, profileImageUrl, roleTags, p
         ) : (
           <>
             {analysisSummary && <div><p className="text-sm text-muted-foreground mb-2">Summary</p><p className="text-sm line-clamp-2">{analysisSummary}</p></div>}
-            {bluechipScore !== undefined && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Bluechip Score</span><span className="font-medium">{bluechipScore.toFixed(1)}/10</span></div>}
+            {typeof effectiveDiamondScore === "number" ? (
+              <div className="flex justify-between text-sm"><span className="text-muted-foreground">Diamond Score</span><span className="font-medium">{effectiveDiamondScore}/100</span></div>
+            ) : bluechipScore !== undefined ? (
+              <div className="flex justify-between text-sm"><span className="text-muted-foreground">Bluechip Score</span><span className="font-medium">{bluechipScore.toFixed(1)}/10</span></div>
+            ) : null}
             <Button className="w-full" onClick={onViewProfile} disabled={!onViewProfile}><Lock className="mr-2 h-4 w-4" />View Full Profile - $5 SOL</Button>
             <div className="text-xs text-muted-foreground text-center">Payment required to view full details</div>
           </>

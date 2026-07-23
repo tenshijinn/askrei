@@ -198,6 +198,9 @@ Deno.serve(async (req) => {
           profile_score: profileScore,
           skills: skills,
           work_experience: workExperience,
+          diamond_score: profileAnalysis?.wallet_behaviour?.diamond_score ?? null,
+          diamond_tier: profileAnalysis?.wallet_behaviour?.diamond_tier ?? null,
+          wallet_behaviour: profileAnalysis?.wallet_behaviour ?? null,
         },
         { 
           onConflict: 'x_user_id',

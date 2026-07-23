@@ -1,3 +1,7 @@
+import { normalizeMoralis, type MoralisRawBundle } from "../_shared/diamonds/providers/moralis.ts";
+import { fetchTrustaSignals } from "../_shared/diamonds/providers/trusta.ts";
+import { computeDiamonds } from "../_shared/diamonds/engine.ts";
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -254,6 +258,15 @@ Please analyze this contributor's profile based on their video introduction${wal
     let iterationCount = 0;
     const maxIterations = 10; // Prevent infinite loops
 
+    // Capture raw Moralis payloads for the Diamonds engine — no extra API calls.
+    const moralisRaw: MoralisRawBundle = {};
+    const moralisFieldByTool: Record<string, keyof MoralisRawBundle> = {
+      getWalletPortfolio: 'portfolio',
+      getWalletSwaps: 'swaps',
+      getWalletTokens: 'tokens',
+      getWalletNFTs: 'nfts',
+    };
+
     console.log('Starting AI analysis with Moralis API tool calling...');
 
     // Tool calling loop
@@ -300,7 +313,13 @@ Please analyze this contributor's profile based on their video introduction${wal
           
           // Execute Moralis API call
           const toolResult = await executeMoralisAPI(toolName, toolArgs);
-          
+
+          // Stash the raw payload for the Diamonds engine.
+          const field = moralisFieldByTool[toolName];
+          if (field && toolResult && !(toolResult as any).error) {
+            moralisRaw[field] = toolResult;
+          }
+
           // Add tool result to conversation
           messages.push({
             role: 'tool',
@@ -337,6 +356,22 @@ Please analyze this contributor's profile based on their video introduction${wal
     }
 
     console.log('Analysis complete. Overall score:', finalAnalysis.overall_score);
+
+    // Rei's Diamonds — compute Wallet Behaviour Profile from Moralis + Trusta.
+    // Never throws; provider failures degrade gracefully.
+    if (walletAddress) {
+      try {
+        const moralisSignals = normalizeMoralis(moralisRaw);
+        const trustaSignals = await fetchTrustaSignals(walletAddress);
+        const walletBehaviour = computeDiamonds([moralisSignals, trustaSignals]);
+        finalAnalysis.wallet_behaviour = walletBehaviour;
+        console.log(
+          `[diamonds] score=${walletBehaviour.diamond_score} tier=${walletBehaviour.diamond_tier} providers=${walletBehaviour.providers_used.join(',') || 'none'}`,
+        );
+      } catch (diamondsErr) {
+        console.warn('[diamonds] failed to compute wallet behaviour:', (diamondsErr as Error).message);
+      }
+    }
 
     return new Response(
       JSON.stringify({

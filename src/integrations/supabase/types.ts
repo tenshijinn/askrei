@@ -681,6 +681,8 @@ export type Database = {
           analysis_summary: string | null
           consent: boolean
           created_at: string
+          diamond_score: number | null
+          diamond_tier: string | null
           display_name: string | null
           file_path: string
           handle: string | null
@@ -697,6 +699,7 @@ export type Database = {
           updated_at: string
           verified: boolean | null
           wallet_address: string
+          wallet_behaviour: Json | null
           work_experience: Json
           x_user_id: string | null
         }
@@ -704,6 +707,8 @@ export type Database = {
           analysis_summary?: string | null
           consent?: boolean
           created_at?: string
+          diamond_score?: number | null
+          diamond_tier?: string | null
           display_name?: string | null
           file_path: string
           handle?: string | null
@@ -720,6 +725,7 @@ export type Database = {
           updated_at?: string
           verified?: boolean | null
           wallet_address: string
+          wallet_behaviour?: Json | null
           work_experience?: Json
           x_user_id?: string | null
         }
@@ -727,6 +733,8 @@ export type Database = {
           analysis_summary?: string | null
           consent?: boolean
           created_at?: string
+          diamond_score?: number | null
+          diamond_tier?: string | null
           display_name?: string | null
           file_path?: string
           handle?: string | null
@@ -743,6 +751,7 @@ export type Database = {
           updated_at?: string
           verified?: boolean | null
           wallet_address?: string
+          wallet_behaviour?: Json | null
           work_experience?: Json
           x_user_id?: string | null
         }
