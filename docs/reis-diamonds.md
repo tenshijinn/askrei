@@ -1,7 +1,7 @@
 # Rei's Diamonds — Wallet Behaviour Engine
 
 Rei's Diamonds is Rei's proprietary Wallet Behaviour Engine. It fuses on-chain
-signals from Moralis with reputation signals from Trusta AI (and, in future,
+signals from Moralis with reputation signals from Nomis (nomis.cc) (and, in future,
 Helius / Birdeye / Nansen / Arkham) into a single explainable **Diamond Score**
 plus five subscores. It is the successor to the Bluechip Score.
 
@@ -83,4 +83,5 @@ enrich the merged signal set.
 ## Secrets
 
 - `MORALIS_API_KEY` — required.
-- `TRUSTA_API_KEY` — optional; the engine degrades to Moralis-only when missing.
+- `NOMIS_API_KEY` + `NOMIS_CLIENT_ID` — optional; the engine degrades to Moralis-only when either is missing. Request access via https://docs.nomis.cc/nomis-api/get-access.
+
