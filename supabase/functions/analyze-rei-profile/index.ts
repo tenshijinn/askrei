@@ -1,5 +1,5 @@
 import { normalizeMoralis, type MoralisRawBundle } from "../_shared/diamonds/providers/moralis.ts";
-import { fetchTrustaSignals } from "../_shared/diamonds/providers/trusta.ts";
+import { fetchNomisSignals } from "../_shared/diamonds/providers/nomis.ts";
 import { computeDiamonds } from "../_shared/diamonds/engine.ts";
 
 const corsHeaders = {
@@ -362,8 +362,8 @@ Please analyze this contributor's profile based on their video introduction${wal
     if (walletAddress) {
       try {
         const moralisSignals = normalizeMoralis(moralisRaw);
-        const trustaSignals = await fetchTrustaSignals(walletAddress);
-        const walletBehaviour = computeDiamonds([moralisSignals, trustaSignals]);
+        const nomisSignals = await fetchNomisSignals(walletAddress);
+        const walletBehaviour = computeDiamonds([moralisSignals, nomisSignals]);
         finalAnalysis.wallet_behaviour = walletBehaviour;
         console.log(
           `[diamonds] score=${walletBehaviour.diamond_score} tier=${walletBehaviour.diamond_tier} providers=${walletBehaviour.providers_used.join(',') || 'none'}`,

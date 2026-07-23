@@ -27,7 +27,7 @@ existing `wallet_verification`:
       "confidence": { "score": 82, "reasons": ["Multiple providers responded", "612 txns sampled"] }
     },
     "reasons": ["Wallet active for 3.4 years", "Healthy reputation", "Low suspicious activity"],
-    "providers_used": ["moralis", "trusta"],
+    "providers_used": ["moralis", "nomis"],
     "engine_version": "diamonds/1.0.0"
   }
 }
