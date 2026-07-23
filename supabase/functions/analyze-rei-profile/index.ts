@@ -357,6 +357,22 @@ Please analyze this contributor's profile based on their video introduction${wal
 
     console.log('Analysis complete. Overall score:', finalAnalysis.overall_score);
 
+    // Rei's Diamonds — compute Wallet Behaviour Profile from Moralis + Trusta.
+    // Never throws; provider failures degrade gracefully.
+    if (walletAddress) {
+      try {
+        const moralisSignals = normalizeMoralis(moralisRaw);
+        const trustaSignals = await fetchTrustaSignals(walletAddress);
+        const walletBehaviour = computeDiamonds([moralisSignals, trustaSignals]);
+        finalAnalysis.wallet_behaviour = walletBehaviour;
+        console.log(
+          `[diamonds] score=${walletBehaviour.diamond_score} tier=${walletBehaviour.diamond_tier} providers=${walletBehaviour.providers_used.join(',') || 'none'}`,
+        );
+      } catch (diamondsErr) {
+        console.warn('[diamonds] failed to compute wallet behaviour:', (diamondsErr as Error).message);
+      }
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
