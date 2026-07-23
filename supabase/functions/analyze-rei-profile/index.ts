@@ -313,7 +313,13 @@ Please analyze this contributor's profile based on their video introduction${wal
           
           // Execute Moralis API call
           const toolResult = await executeMoralisAPI(toolName, toolArgs);
-          
+
+          // Stash the raw payload for the Diamonds engine.
+          const field = moralisFieldByTool[toolName];
+          if (field && toolResult && !(toolResult as any).error) {
+            moralisRaw[field] = toolResult;
+          }
+
           // Add tool result to conversation
           messages.push({
             role: 'tool',
