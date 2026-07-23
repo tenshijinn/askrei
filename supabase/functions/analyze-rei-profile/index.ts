@@ -1,3 +1,7 @@
+import { normalizeMoralis, type MoralisRawBundle } from "../_shared/diamonds/providers/moralis.ts";
+import { fetchTrustaSignals } from "../_shared/diamonds/providers/trusta.ts";
+import { computeDiamonds } from "../_shared/diamonds/engine.ts";
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
