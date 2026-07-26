@@ -217,7 +217,11 @@ export default function Rei() {
         throw new Error('No audio available');
       }
 
-      const { data, error } = await supabase.functions.invoke('submit-rei-registration', { body: { x_user_id: twitterUser.x_user_id, handle: twitterUser.handle, display_name: twitterUser.display_name, profile_image_url: twitterUser.profile_image_url, verified: twitterUser.verified, wallet_address: walletAddress, file_path: filePath, portfolio_url: portfolioUrl || null, role_tags: selectedRoles, consent: true, reanalyze: useExistingTranscript } });
+      // EVM wallet is locked once registered; only send it on first registration.
+      const evmToSubmit = isEditMode
+        ? (registrationData?.evm_wallet_address || null)
+        : (evmConnected && evmAddress ? evmAddress : null);
+      const { data, error } = await supabase.functions.invoke('submit-rei-registration', { body: { x_user_id: twitterUser.x_user_id, handle: twitterUser.handle, display_name: twitterUser.display_name, profile_image_url: twitterUser.profile_image_url, verified: twitterUser.verified, wallet_address: walletAddress, evm_wallet_address: evmToSubmit, file_path: filePath, portfolio_url: portfolioUrl || null, role_tags: selectedRoles, consent: true, reanalyze: useExistingTranscript } });
       clearStageTimers();
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
