@@ -79,6 +79,14 @@ function farmerScore(s: NormalizedSignals): SubscoreWithReasons {
   const reasons: string[] = [];
   let score = 0;
 
+  // Null-penalise: no signals = unknown, not "clean". Baseline 50.
+  const hasInputs =
+    s.churn_rate !== null || s.avg_hold_days !== null || (s.swap_count ?? 0) > 0;
+  if (!hasInputs) {
+    push(reasons, "Insufficient trading history to assess farming");
+    return { score: 50, reasons };
+  }
+
   if (s.churn_rate !== null) {
     score += s.churn_rate * 40;
     if (s.churn_rate > 0.6) push(reasons, `High wallet churn (${Math.round(s.churn_rate * 100)}%)`);
@@ -113,6 +121,12 @@ function jeetScore(s: NormalizedSignals): SubscoreWithReasons {
   const reasons: string[] = [];
   let score = 0;
 
+  const hasInputs = s.fast_sell_ratio !== null || s.avg_hold_days !== null;
+  if (!hasInputs) {
+    push(reasons, "Insufficient sell history to assess");
+    return { score: 50, reasons };
+  }
+
   if (s.fast_sell_ratio !== null) {
     score += s.fast_sell_ratio * 60;
     if (s.fast_sell_ratio > 0.5) push(reasons, `${Math.round(s.fast_sell_ratio * 100)}% of sells within 24h`);
@@ -131,6 +145,7 @@ function jeetScore(s: NormalizedSignals): SubscoreWithReasons {
 
   return { score: clamp(score), reasons };
 }
+
 
 function communityScore(s: NormalizedSignals): SubscoreWithReasons {
   const reasons: string[] = [];
