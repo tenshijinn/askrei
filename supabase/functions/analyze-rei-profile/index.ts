@@ -3,7 +3,7 @@ import { fetchHeliusSignals } from "../_shared/diamonds/providers/helius.ts";
 import { fetchBirdeyeSignals } from "../_shared/diamonds/providers/birdeye.ts";
 import { fetchAlchemySignals } from "../_shared/diamonds/providers/alchemy.ts";
 import { fetchBlockscoutSignals } from "../_shared/diamonds/providers/blockscout.ts";
-import { computeDiamonds } from "../_shared/diamonds/engine.ts";
+import { computeDiamonds, mergeSignals, combineChainSignals } from "../_shared/diamonds/engine.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,6 +13,7 @@ const corsHeaders = {
 interface AnalysisRequest {
   transcript: string;
   walletAddress: string;
+  evmWalletAddress?: string | null;
   roleTags: string[];
 }
 
