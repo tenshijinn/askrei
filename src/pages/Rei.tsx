@@ -533,183 +533,198 @@ export default function Rei() {
       <div className="w-full md:w-1/2 min-h-screen flex flex-col">
         <div className="flex-1 flex flex-col items-center justify-center overflow-y-auto px-6 py-10 md:p-[100px]">
           <div className="w-full max-w-2xl mb-8">
-            <h1 style={{ fontSize: '30px', fontWeight: 300, color: '#f0ede8', letterSpacing: '-0.025em', marginBottom: '8px' }}>Rei Proof-Of-Talent Portal</h1>
-            <div className="flex items-center gap-2">{[1, 2, 3].map((s) => <div key={s} className="flex-1"><div style={{ height: '3px', borderRadius: '2px', background: s <= step ? '#e8c4b8' : '#1e1e1e', transition: 'background 0.3s' }} /></div>)}</div>
+            <h1 style={{ fontSize: '30px', fontWeight: 300, color: '#f0ede8', letterSpacing: '-0.025em', marginBottom: '12px' }}>Rei Proof-Of-Talent Portal</h1>
+            {twitterUser && (
+              <div className="flex items-center justify-between mb-2">
+                <span style={{ fontSize: '11px', color: '#e8c4b8', letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 500 }}>Step {step} of 3</span>
+                <span style={{ fontSize: '12px', color: '#a09e9a' }}>{step === 1 ? 'Connect your wallets' : step === 2 ? 'Tell us about you' : 'Activate Rei'}</span>
+              </div>
+            )}
+            <div className="flex items-center gap-2">{[1, 2, 3].map((s) => <div key={s} className="flex-1"><div style={{ height: '3px', borderRadius: '2px', background: twitterUser && s <= step ? '#e8c4b8' : '#1e1e1e', transition: 'background 0.3s' }} /></div>)}</div>
           </div>
           <div className="w-full max-w-2xl rei-surface">
             <div className="space-y-6">
-              <div className={step !== 1 && twitterUser && (profileActivated || initialFollowing) ? 'opacity-40' : ''}>
-                {!twitterUser ? (
-                  showSignUp ? (
-                    <div className="space-y-6">
-                      <div className="space-y-3">
-                        <h4 style={{ fontSize: '24px', fontWeight: 300, color: '#f0ede8', letterSpacing: '-0.025em' }}>Sign Up</h4>
-                        <p style={{ fontSize: '13px', color: '#5c5a57' }}>Create a new profile on Rei</p>
-                        <TypewriterCtaButton
-                          onClick={() => handleTwitterLogin('signup')}
-                          disabled={isProcessingCallback}
-                          className="btn-manga btn-manga-primary w-full flex items-center justify-center gap-1.5"
-                          style={{ borderRadius: '28px', padding: '11px 22px', cursor: isProcessingCallback ? 'wait' : 'pointer' }}
-                          icon={<Twitter style={{ width: '16px', height: '16px' }} />}
-                          prefix="Sign up with"
-                          badge={<img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} />}
-                          suffix="X"
-                        />
-                        <FollowChecklist verified={verifiedCheck} follow={followCheck} />
-                      </div>
-                      <p className="text-center" style={{ fontSize: '13px', color: '#5c5a57' }}>Already have an account?{' '}<button onClick={() => setShowSignUp(false)} style={{ fontWeight: 500, color: '#f0ede8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign in</button></p>
-                      {noAccountFound && <div className="rei-surface-2 flex items-center gap-3" style={{ padding: '14px', borderColor: 'hsla(0,63%,55%,0.3)' }}><AlertCircle className="h-4 w-4" style={{ color: '#ef4444' }} /><span style={{ fontSize: '13px', color: '#ef4444' }}>No existing account found. Please sign up.</span></div>}
+              {!twitterUser ? (
+                showSignUp ? (
+                  <div className="space-y-6">
+                    <div className="space-y-3">
+                      <h4 style={{ fontSize: '24px', fontWeight: 300, color: '#f0ede8', letterSpacing: '-0.025em' }}>Sign Up</h4>
+                      <p style={{ fontSize: '13px', color: '#5c5a57' }}>Create a new profile on Rei</p>
+                      <TypewriterCtaButton
+                        onClick={() => handleTwitterLogin('signup')}
+                        disabled={isProcessingCallback}
+                        className="btn-manga btn-manga-primary w-full flex items-center justify-center gap-1.5"
+                        style={{ borderRadius: '28px', padding: '11px 22px', cursor: isProcessingCallback ? 'wait' : 'pointer' }}
+                        icon={<Twitter style={{ width: '16px', height: '16px' }} />}
+                        prefix="Sign up with"
+                        badge={<img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} />}
+                        suffix="X"
+                      />
+                      <FollowChecklist verified={verifiedCheck} follow={followCheck} />
                     </div>
-                  ) : (
-                    <div className="space-y-6">
-                      <div className="space-y-3">
-                        <h4 style={{ fontSize: '24px', fontWeight: 300, color: '#f0ede8', letterSpacing: '-0.025em' }}>Sign In</h4>
-                        <p style={{ fontSize: '13px', color: '#5c5a57' }}>Access your existing profile on Rei</p>
-                        <TypewriterCtaButton
-                          onClick={() => handleTwitterLogin('signin')}
-                          disabled={isProcessingCallback}
-                          className="btn-manga btn-manga-outline w-full flex items-center justify-center gap-1.5"
-                          style={{ borderRadius: '28px', padding: '11px 22px', cursor: isProcessingCallback ? 'wait' : 'pointer' }}
-                          icon={<Twitter style={{ width: '16px', height: '16px' }} />}
-                          prefix="Sign in with"
-                          badge={<img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} />}
-                          suffix="X"
-                        />
-                        <FollowChecklist verified={verifiedCheck} follow={followCheck} />
-                      </div>
-                      <p className="text-center" style={{ fontSize: '13px', color: '#5c5a57' }}>Don't have an account?{' '}<button onClick={() => setShowSignUp(true)} style={{ fontWeight: 500, color: '#f0ede8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign up</button></p>
-                      {noAccountFound && <div className="rei-surface-2 flex items-center gap-3" style={{ padding: '14px', borderColor: 'hsla(0,63%,55%,0.3)' }}><AlertCircle className="h-4 w-4" style={{ color: '#ef4444' }} /><span style={{ fontSize: '13px', color: '#ef4444' }}>No existing account found. Please sign up.</span></div>}
-                    </div>
-                  )
-                ) : !profileActivated && !initialFollowing ? (
-                  <ConnectReiCard
-                    xUserId={twitterUser.x_user_id}
-                    initialFollowing={initialFollowing}
-                    onContinue={() => setProfileActivated(true)}
-                  />
+                    <p className="text-center" style={{ fontSize: '13px', color: '#5c5a57' }}>Already have an account?{' '}<button onClick={() => setShowSignUp(false)} style={{ fontWeight: 500, color: '#f0ede8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign in</button></p>
+                    {noAccountFound && <div className="rei-surface-2 flex items-center gap-3" style={{ padding: '14px', borderColor: 'hsla(0,63%,55%,0.3)' }}><AlertCircle className="h-4 w-4" style={{ color: '#ef4444' }} /><span style={{ fontSize: '13px', color: '#ef4444' }}>No existing account found. Please sign up.</span></div>}
+                  </div>
                 ) : (
-                  <div className="space-y-3">
-                    <div className="rei-surface-2 flex items-center gap-3" style={{ padding: '14px' }}>
-                      {twitterUser.profile_image_url && <img src={twitterUser.profile_image_url} alt={twitterUser.handle} className="h-10 w-10 rounded-full" />}
-                      <div style={{ flex: 1 }}><p style={{ fontWeight: 500, color: '#f0ede8', fontSize: '14px' }}>{twitterUser.display_name}</p><p style={{ fontSize: '12px', color: '#5c5a57' }}>@{twitterUser.handle}</p></div>
+                  <div className="space-y-6">
+                    <div className="space-y-3">
+                      <h4 style={{ fontSize: '24px', fontWeight: 300, color: '#f0ede8', letterSpacing: '-0.025em' }}>Sign In</h4>
+                      <p style={{ fontSize: '13px', color: '#5c5a57' }}>Access your existing profile on Rei</p>
+                      <TypewriterCtaButton
+                        onClick={() => handleTwitterLogin('signin')}
+                        disabled={isProcessingCallback}
+                        className="btn-manga btn-manga-outline w-full flex items-center justify-center gap-1.5"
+                        style={{ borderRadius: '28px', padding: '11px 22px', cursor: isProcessingCallback ? 'wait' : 'pointer' }}
+                        icon={<Twitter style={{ width: '16px', height: '16px' }} />}
+                        prefix="Sign in with"
+                        badge={<img src={xVerifiedBadge} alt="verified" style={{ width: '16px', height: '16px' }} />}
+                        suffix="X"
+                      />
+                      <FollowChecklist verified={verifiedCheck} follow={followCheck} />
+                    </div>
+                    <p className="text-center" style={{ fontSize: '13px', color: '#5c5a57' }}>Don't have an account?{' '}<button onClick={() => setShowSignUp(true)} style={{ fontWeight: 500, color: '#f0ede8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign up</button></p>
+                    {noAccountFound && <div className="rei-surface-2 flex items-center gap-3" style={{ padding: '14px', borderColor: 'hsla(0,63%,55%,0.3)' }}><AlertCircle className="h-4 w-4" style={{ color: '#ef4444' }} /><span style={{ fontSize: '13px', color: '#ef4444' }}>No existing account found. Please sign up.</span></div>}
+                  </div>
+                )
+              ) : (
+                <>
+                  {/* Pinned identity strip */}
+                  <div className="space-y-2">
+                    <div className="rei-surface-2 flex items-center gap-3" style={{ padding: '10px 14px' }}>
+                      {twitterUser.profile_image_url && <img src={twitterUser.profile_image_url} alt={twitterUser.handle} className="h-9 w-9 rounded-full" />}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontWeight: 500, color: '#f0ede8', fontSize: '13px', margin: 0 }}>{twitterUser.display_name}</p>
+                        <p style={{ fontSize: '11px', color: '#5c5a57', margin: 0 }}>@{twitterUser.handle}</p>
+                      </div>
                       {twitterUser.verified && <span className="rei-chip" style={{ padding: '3px 10px', fontSize: '10px' }}>Verified</span>}
                     </div>
                     <div className="rei-surface-2 flex items-center gap-2" style={{ padding: '10px 14px', borderColor: 'hsla(18,52%,82%,0.22)' }}><Check className="h-4 w-4" style={{ color: '#e8c4b8' }} /><span style={{ fontSize: '13px', fontWeight: 500, color: '#e8c4b8' }}>Identity Verified</span></div>
                   </div>
-                )}
-              </div>
-              {twitterUser && (profileActivated || initialFollowing || registrationData) && (
-                <div data-tour="reg-wallet" className={step !== 2 && hasWallet ? 'opacity-40' : ''}>
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="h-7 w-7 rounded-full flex items-center justify-center" style={{ background: hasWallet ? 'hsla(18,52%,82%,0.12)' : '#1e1e1e', fontSize: '12px', color: hasWallet ? '#e8c4b8' : '#5c5a57', border: '0.5px solid hsla(0,0%,100%,0.08)' }}>{hasWallet ? <Check className="h-3.5 w-3.5" /> : '2'}</div>
-                    <span style={{ fontSize: '14px', fontWeight: 500, color: '#f0ede8' }}>Connect Your Wallets</span>
+
+                  {/* Step 1: Wallets */}
+                  <div data-tour="reg-wallet" className={step > 1 && hasWallet && !isEditMode ? 'opacity-40' : ''}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span style={{ fontSize: '14px', fontWeight: 500, color: '#f0ede8' }}>Connect your wallets</span>
+                      {hasWallet && <Check className="h-4 w-4" style={{ color: '#e8c4b8' }} />}
+                    </div>
+                    {!isEditMode && (
+                      <div className="rei-surface-2 mb-4" style={{ padding: '12px 14px', borderColor: 'hsla(18,52%,82%,0.22)' }}>
+                        <p style={{ fontSize: '12px', color: '#a09e9a', lineHeight: 1.6, margin: 0 }}>
+                          Your wallets power <span style={{ color: '#e8c4b8', fontWeight: 500 }}>Rei's Diamonds</span> — your onchain reputation score.
+                          Solana is required and used for all payouts. EVM is optional and only used to enrich your score with more onchain history.
+                          <span style={{ display: 'block', marginTop: 6, color: '#5c5a57' }}>Wallets are locked to your account once registered — choose carefully.</span>
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Unified wallet card */}
+                    <div className="rei-surface-2" style={{ padding: '16px' }}>
+                      {/* Solana row (required — filled primary button) */}
+                      <div>
+                        <div style={{ fontSize: '11px', color: '#5c5a57', marginBottom: '8px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Solana Wallet · Required</div>
+                        {isEditMode && registrationData?.wallet_address ? (
+                          <div className="rei-surface-2" style={{ padding: '10px 12px' }}>
+                            <p style={{ fontSize: '10px', color: '#5c5a57', margin: '0 0 2px' }}>Linked (locked)</p>
+                            <p style={{ fontSize: '11px', fontFamily: "'SF Mono', 'Consolas', monospace", color: '#a09e9a', wordBreak: 'break-all', margin: 0 }}>{registrationData.wallet_address}</p>
+                          </div>
+                        ) : connected && publicKey ? (
+                          <div className="rei-surface-2 flex items-center justify-between gap-3" style={{ padding: '10px 14px' }}>
+                            <div style={{ minWidth: 0 }}>
+                              <p style={{ fontSize: '10px', color: '#5c5a57', margin: 0 }}>Connected</p>
+                              <p style={{ fontSize: '11px', fontFamily: "'SF Mono', 'Consolas', monospace", color: '#a09e9a', wordBreak: 'break-all', margin: 0 }}>{publicKey.toString()}</p>
+                            </div>
+                            <Check className="h-4 w-4 flex-shrink-0" style={{ color: '#e8c4b8' }} />
+                          </div>
+                        ) : (
+                          <WalletMultiButton className="!w-full !h-11 !bg-[#e8c4b8] !text-[#0a0a0a] hover:!opacity-90 !rounded-[28px] !font-sans !text-sm !font-medium !justify-center !border-0" />
+                        )}
+                      </div>
+
+                      <div style={{ height: '1px', background: 'hsla(0,0%,100%,0.06)', margin: '16px 0' }} />
+
+                      {/* EVM row (optional — outlined ghost button) */}
+                      <div>
+                        <div style={{ fontSize: '11px', color: '#5c5a57', marginBottom: '8px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>EVM Wallet · Optional</div>
+                        {isEditMode && registrationData?.evm_wallet_address ? (
+                          <div className="rei-surface-2" style={{ padding: '10px 12px' }}>
+                            <p style={{ fontSize: '10px', color: '#5c5a57', margin: '0 0 2px' }}>Linked (locked)</p>
+                            <p style={{ fontSize: '11px', fontFamily: "'SF Mono', 'Consolas', monospace", color: '#a09e9a', wordBreak: 'break-all', margin: 0 }}>{registrationData.evm_wallet_address}</p>
+                          </div>
+                        ) : isEditMode ? (
+                          <div className="rei-surface-2" style={{ padding: '10px 12px' }}>
+                            <p style={{ fontSize: '11px', color: '#5c5a57', margin: 0 }}>No EVM wallet linked.</p>
+                          </div>
+                        ) : evmConnected && evmAddress ? (
+                          <div className="rei-surface-2 flex items-center justify-between gap-3" style={{ padding: '10px 14px' }}>
+                            <div style={{ minWidth: 0 }}>
+                              <p style={{ fontSize: '10px', color: '#5c5a57', margin: 0 }}>Connected</p>
+                              <p style={{ fontSize: '11px', fontFamily: "'SF Mono', 'Consolas', monospace", color: '#a09e9a', wordBreak: 'break-all', margin: 0 }}>{evmAddress}</p>
+                            </div>
+                            <button onClick={() => disconnectEvm()} style={{ fontSize: '10px', color: '#e8c4b8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px', padding: 0, flexShrink: 0 }}>Disconnect</button>
+                          </div>
+                        ) : (
+                          <ConnectButton.Custom>
+                            {({ openConnectModal, mounted }) => (
+                              <button
+                                type="button"
+                                onClick={openConnectModal}
+                                disabled={!mounted}
+                                className="w-full h-11 rounded-[28px] text-sm font-medium"
+                                style={{
+                                  background: 'transparent',
+                                  color: '#f0ede8',
+                                  border: '0.5px solid hsla(0,0%,100%,0.18)',
+                                  cursor: !mounted ? 'default' : 'pointer',
+                                }}
+                              >
+                                Connect EVM Wallet
+                              </button>
+                            )}
+                          </ConnectButton.Custom>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  {!isEditMode && (
-                    <div className="rei-surface-2 mb-4" style={{ padding: '12px 14px', borderColor: 'hsla(18,52%,82%,0.22)' }}>
-                      <p style={{ fontSize: '12px', color: '#a09e9a', lineHeight: 1.6, margin: 0 }}>
-                        Your wallets power <span style={{ color: '#e8c4b8', fontWeight: 500 }}>Rei's Diamonds</span> — your onchain reputation score.
-                        Solana is required and used for all payouts. EVM is optional and only used to enrich your score with more onchain history.
-                        <span style={{ display: 'block', marginTop: 6, color: '#5c5a57' }}>Wallets are locked to your account once registered — choose carefully.</span>
-                      </p>
+
+                  {/* Step 2: Tell us about you */}
+                  {hasWallet && (!isSuccess || isEditMode) && (
+                    <div className={step > 2 ? 'opacity-40' : ''}>
+                      <div className="flex items-center gap-2 mb-4">
+                        <span style={{ fontSize: '14px', fontWeight: 500, color: '#f0ede8' }}>{isEditMode ? 'Edit my details' : 'Tell us about you'}</span>
+                      </div>
+                      <div className="space-y-4">
+                        {isEditMode && registrationData?.file_path && (
+                          <div className="rei-surface-2 space-y-3" style={{ padding: '14px', borderColor: 'hsla(18,52%,82%,0.22)' }}>
+                            <div className="flex items-center gap-2"><Sparkles className="h-4 w-4" style={{ color: '#e8c4b8' }} /><span style={{ fontSize: '13px', fontWeight: 500, color: '#f0ede8' }}>Re-analyze Profile</span></div>
+                            <p style={{ fontSize: '12px', color: '#5c5a57', lineHeight: '1.65' }}>Re-run AI analysis with updated wallet data. No need to record again!</p>
+                            <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={useExistingTranscript} onChange={(e) => { setUseExistingTranscript(e.target.checked); if (e.target.checked) setAudioBlob(null); }} style={{ accentColor: '#e8c4b8' }} /><span style={{ fontSize: '13px', color: '#a09e9a' }}>Use existing introduction</span></label>
+                          </div>
+                        )}
+                        {!useExistingTranscript && <div data-tour="reg-voice"><div className="rei-section-label">{isEditMode ? 'Record New Introduction' : 'Record Your Introduction'}</div><AudioRecorder onAudioReady={handleAudioReady} maxDurationSeconds={60} /></div>}
+                        <div data-tour="reg-portfolio"><div className="rei-section-label">Portfolio URL (Optional)</div><input type="url" placeholder="https://..." value={portfolioUrl} onChange={(e) => setPortfolioUrl(e.target.value)} className="rei-field" /></div>
+                        <div data-tour="reg-roles"><div className="rei-section-label">Role Tags *</div><div className="flex flex-wrap gap-2">{ROLE_OPTIONS.map((role) => <button key={role.value} onClick={() => toggleRole(role.value)} className="rei-chip" style={{ background: selectedRoles.includes(role.value) ? 'hsla(18,52%,82%,0.12)' : '#1e1e1e', borderColor: selectedRoles.includes(role.value) ? 'hsla(18,52%,82%,0.22)' : 'hsla(0,0%,100%,0.18)', color: selectedRoles.includes(role.value) ? '#e8c4b8' : '#a09e9a' }}>{selectedRoles.includes(role.value) && <span className="rei-chip-dot" />}{role.label}</button>)}</div></div>
+                        <div className="rei-surface-2" style={{ padding: '14px' }}><label className="flex items-start gap-2 cursor-pointer"><input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ accentColor: '#e8c4b8', marginTop: '2px' }} /><span style={{ fontSize: '13px', color: '#a09e9a' }}>I consent to data storage *</span></label></div>
+                        <div className="flex gap-2">
+                          {isEditMode && <button onClick={() => { setIsEditMode(false); setAudioBlob(null); setUseExistingTranscript(false); setShowWalletChange(false); }} className="btn-manga btn-manga-outline flex-1" style={{ borderRadius: '28px', padding: '11px 22px', cursor: 'pointer' }}>Cancel</button>}
+                          <button data-tour="reg-submit" onClick={handleSubmit} disabled={!canSubmit || isSubmitting} className="btn-manga btn-manga-primary flex-1" style={{ borderRadius: '28px', padding: '11px 22px', cursor: canSubmit && !isSubmitting ? 'pointer' : 'not-allowed', opacity: canSubmit && !isSubmitting ? 1 : 0.4 }}>
+                            {isSubmitting ? (useExistingTranscript ? 'Re-analyzing...' : 'Submitting...') : useExistingTranscript ? 'Re-analyze Profile' : (isEditMode ? 'Update Profile' : 'Register')}
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   )}
 
-                  {/* Solana wallet — required */}
-                  <div className="mb-4">
-                    <div style={{ fontSize: '11px', color: '#5c5a57', marginBottom: '6px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Solana Wallet · Required</div>
-                    {isEditMode && registrationData?.wallet_address ? (
-                      <div className="rei-surface-2" style={{ padding: '14px' }}>
-                        <p style={{ fontSize: '11px', color: '#5c5a57', marginBottom: '4px' }}>Linked Wallet (locked)</p>
-                        <p style={{ fontSize: '11px', fontFamily: "'SF Mono', 'Consolas', monospace", color: '#a09e9a', wordBreak: 'break-all' }}>{registrationData.wallet_address}</p>
-                      </div>
-                    ) : (
-                      <>
-                        <WalletMultiButton className="!w-full !h-11 !bg-[#f0ede8] !text-[#0a0a0a] hover:!opacity-80 !rounded-[28px] !font-sans !text-sm !font-medium" />
-                        {connected && publicKey && <div className="rei-surface-2 mt-3" style={{ padding: '14px' }}><p style={{ fontSize: '11px', color: '#5c5a57', marginBottom: '4px' }}>Connected Wallet</p><p style={{ fontSize: '11px', fontFamily: "'SF Mono', 'Consolas', monospace", color: '#a09e9a', wordBreak: 'break-all' }}>{publicKey.toString()}</p></div>}
-                      </>
-                    )}
-                  </div>
+                  {/* Step 3: Activate Rei (final optional upsell) */}
+                  {isSuccess && !isEditMode && !initialFollowing && !profileActivated && (
+                    <ConnectReiCard
+                      xUserId={twitterUser.x_user_id}
+                      initialFollowing={initialFollowing}
+                      onContinue={() => setProfileActivated(true)}
+                    />
+                  )}
+                </>
+              )}
 
-                  {/* EVM wallet — optional */}
-                  <div>
-                    <div style={{ fontSize: '11px', color: '#5c5a57', marginBottom: '6px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>EVM Wallet · Optional</div>
-                    {isEditMode && registrationData?.evm_wallet_address ? (
-                      <div className="rei-surface-2" style={{ padding: '14px' }}>
-                        <p style={{ fontSize: '11px', color: '#5c5a57', marginBottom: '4px' }}>Linked EVM Wallet (locked)</p>
-                        <p style={{ fontSize: '11px', fontFamily: "'SF Mono', 'Consolas', monospace", color: '#a09e9a', wordBreak: 'break-all' }}>{registrationData.evm_wallet_address}</p>
-                      </div>
-                    ) : isEditMode ? (
-                      <div className="rei-surface-2" style={{ padding: '14px' }}>
-                        <p style={{ fontSize: '11px', color: '#5c5a57', margin: 0 }}>No EVM wallet linked. Wallets are locked after registration.</p>
-                      </div>
-                    ) : (
-                      <>
-                        <ConnectButton.Custom>
-                          {({ openConnectModal, mounted }) => (
-                            <button
-                              type="button"
-                              onClick={openConnectModal}
-                              disabled={!mounted || evmConnected}
-                              className="w-full h-11 rounded-[28px] text-sm font-medium"
-                              style={{
-                                background: evmConnected ? '#1e1e1e' : 'transparent',
-                                color: evmConnected ? '#a09e9a' : '#f0ede8',
-                                border: '0.5px solid hsla(0,0%,100%,0.18)',
-                                cursor: !mounted || evmConnected ? 'default' : 'pointer',
-                              }}
-                            >
-                              {evmConnected && evmAddress
-                                ? `Connected · ${evmAddress.slice(0, 6)}…${evmAddress.slice(-4)}`
-                                : 'Connect EVM Wallet'}
-                            </button>
-                          )}
-                        </ConnectButton.Custom>
-                        {evmConnected && evmAddress && (
-                          <div className="rei-surface-2 mt-3" style={{ padding: '14px' }}>
-                            <div className="flex items-center justify-between gap-3 mb-1">
-                              <p style={{ fontSize: '11px', color: '#5c5a57', margin: 0 }}>Connected EVM Wallet</p>
-                              <button
-                                onClick={() => disconnectEvm()}
-                                style={{ fontSize: '10px', color: '#e8c4b8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px', padding: 0 }}
-                              >
-                                Disconnect
-                              </button>
-                            </div>
-                            <p style={{ fontSize: '11px', fontFamily: "'SF Mono', 'Consolas', monospace", color: '#a09e9a', wordBreak: 'break-all', margin: 0 }}>{evmAddress}</p>
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-                </div>
-              )}
-              {twitterUser && hasWallet && (!isSuccess || isEditMode) && (
-                <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="h-7 w-7 rounded-full flex items-center justify-center" style={{ background: '#1e1e1e', fontSize: '12px', color: '#5c5a57', border: '0.5px solid hsla(0,0%,100%,0.08)' }}>3</div>
-                    <span style={{ fontSize: '14px', fontWeight: 500, color: '#f0ede8' }}>{isEditMode ? 'Edit My Details' : 'Submit My Details'}</span>
-                  </div>
-                  <div className="space-y-4">
-                    {isEditMode && registrationData?.file_path && (
-                      <div className="rei-surface-2 space-y-3" style={{ padding: '14px', borderColor: 'hsla(18,52%,82%,0.22)' }}>
-                        <div className="flex items-center gap-2"><Sparkles className="h-4 w-4" style={{ color: '#e8c4b8' }} /><span style={{ fontSize: '13px', fontWeight: 500, color: '#f0ede8' }}>Re-analyze Profile</span></div>
-                        <p style={{ fontSize: '12px', color: '#5c5a57', lineHeight: '1.65' }}>Re-run AI analysis with updated wallet data. No need to record again!</p>
-                        <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={useExistingTranscript} onChange={(e) => { setUseExistingTranscript(e.target.checked); if (e.target.checked) setAudioBlob(null); }} style={{ accentColor: '#e8c4b8' }} /><span style={{ fontSize: '13px', color: '#a09e9a' }}>Use existing introduction</span></label>
-                      </div>
-                    )}
-                    {!useExistingTranscript && <div data-tour="reg-voice"><div className="rei-section-label">{isEditMode ? 'Record New Introduction' : 'Record Your Introduction'}</div><AudioRecorder onAudioReady={handleAudioReady} maxDurationSeconds={60} /></div>}
-                    <div data-tour="reg-portfolio"><div className="rei-section-label">Portfolio URL (Optional)</div><input type="url" placeholder="https://..." value={portfolioUrl} onChange={(e) => setPortfolioUrl(e.target.value)} className="rei-field" /></div>
-                    <div data-tour="reg-roles"><div className="rei-section-label">Role Tags *</div><div className="flex flex-wrap gap-2">{ROLE_OPTIONS.map((role) => <button key={role.value} onClick={() => toggleRole(role.value)} className="rei-chip" style={{ background: selectedRoles.includes(role.value) ? 'hsla(18,52%,82%,0.12)' : '#1e1e1e', borderColor: selectedRoles.includes(role.value) ? 'hsla(18,52%,82%,0.22)' : 'hsla(0,0%,100%,0.18)', color: selectedRoles.includes(role.value) ? '#e8c4b8' : '#a09e9a' }}>{selectedRoles.includes(role.value) && <span className="rei-chip-dot" />}{role.label}</button>)}</div></div>
-                    <div className="rei-surface-2" style={{ padding: '14px' }}><label className="flex items-start gap-2 cursor-pointer"><input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={{ accentColor: '#e8c4b8', marginTop: '2px' }} /><span style={{ fontSize: '13px', color: '#a09e9a' }}>I consent to data storage *</span></label></div>
-                    <div className="flex gap-2">
-                      {isEditMode && <button onClick={() => { setIsEditMode(false); setAudioBlob(null); setUseExistingTranscript(false); setShowWalletChange(false); }} className="btn-manga btn-manga-outline flex-1" style={{ borderRadius: '28px', padding: '11px 22px', cursor: 'pointer' }}>Cancel</button>}
-                      <button data-tour="reg-submit" onClick={handleSubmit} disabled={!canSubmit || isSubmitting} className="btn-manga btn-manga-primary flex-1" style={{ borderRadius: '28px', padding: '11px 22px', cursor: canSubmit && !isSubmitting ? 'pointer' : 'not-allowed', opacity: canSubmit && !isSubmitting ? 1 : 0.4 }}>
-                        {isSubmitting ? (useExistingTranscript ? 'Re-analyzing...' : 'Submitting...') : useExistingTranscript ? 'Re-analyze Profile' : (isEditMode ? 'Update Profile' : 'Register')}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
