@@ -223,7 +223,7 @@ export function ConnectReiCard({ xUserId, initialFollowing = false, onContinue }
         className="btn-manga btn-manga-primary w-full flex items-center justify-center gap-2"
         style={{ borderRadius: '28px', padding: '11px 22px', cursor: 'pointer' }}
       >
-        <span>Continue → Connect wallets</span>
+        <span>Finish setup</span>
         <ArrowRight className="h-4 w-4" />
       </button>
     </div>
