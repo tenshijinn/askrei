@@ -601,6 +601,8 @@ export default function Rei() {
                     <div className="rei-surface-2 flex items-center gap-2" style={{ padding: '10px 14px', borderColor: 'hsla(18,52%,82%,0.22)' }}><Check className="h-4 w-4" style={{ color: '#e8c4b8' }} /><span style={{ fontSize: '13px', fontWeight: 500, color: '#e8c4b8' }}>Identity Verified</span></div>
                   </div>
 
+                  {/* Steps 1 & 2 hidden once we advance to the final activation step */}
+                  {!(isSuccess && !isEditMode && !initialFollowing && !profileActivated) && (<>
                   {/* Step 1: Wallets */}
                   <div data-tour="reg-wallet" className={step > 1 && hasWallet && !isEditMode ? 'opacity-40' : ''}>
                     <div className="flex items-center gap-2 mb-3">
@@ -713,6 +715,8 @@ export default function Rei() {
                       </div>
                     </div>
                   )}
+
+                  </>)}
 
                   {/* Step 3: Activate Rei (final optional upsell) */}
                   {isSuccess && !isEditMode && !initialFollowing && !profileActivated && (
