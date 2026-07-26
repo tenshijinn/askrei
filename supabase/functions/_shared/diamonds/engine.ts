@@ -264,16 +264,28 @@ export function computeDiamonds(
   const risk = riskScore(merged);
   const confidence = confidenceScore(merged, okSignals.length);
 
+  // Activity gate: below the minimum-history floor, Community's contribution
+  // scales down linearly so a fresh empty wallet cannot inherit a high score
+  // from "no bad signals detected".
+  const txns = merged.transaction_count ?? merged.swap_count ?? 0;
+  const age = merged.account_age_days ?? 0;
+  const activityGate = Math.min(1, txns / 25) * Math.min(1, age / 30);
+  const gatedCommunity = community.score * activityGate;
+
   const diamondRaw =
-    WEIGHTS.community * community.score +
+    WEIGHTS.community * gatedCommunity +
     WEIGHTS.farmerInverse * (100 - farmer.score) +
     WEIGHTS.jeetInverse * (100 - jeet.score) +
     WEIGHTS.riskInverse * (100 - risk.score) +
     WEIGHTS.confidence * confidence.score;
-  const diamond = clamp(diamondRaw);
+
+  // Confidence gate: a low-confidence wallet cannot land above ~mid-Sapphire.
+  const confidenceGate = Math.min(1, confidence.score / 60);
+  const diamond = clamp(diamondRaw * confidenceGate);
 
   // Top-level reasons: cherry-pick the strongest positive drivers.
   const topReasons: string[] = [];
+  if (activityGate < 1) push(topReasons, "Insufficient history for full scoring");
   push(topReasons, community.reasons[0]);
   if (farmer.score < 25) push(topReasons, "Low farmer-like behaviour");
   if (jeet.score < 25) push(topReasons, "Healthy holding behaviour");
@@ -290,3 +302,4 @@ export function computeDiamonds(
     engine_version: ENGINE_VERSION,
   };
 }
+
