@@ -1,87 +1,68 @@
 ## Goal
 
-Two coupled changes on the signup/signin flow at `/rei`:
+Three small polish changes to the registration flow in `src/pages/Rei.tsx` (and the connect card):
 
-1. **Following @AskRei_ becomes a suggestion, not a gate.** After X sign-in, users go straight to the wallet step. The follow prompt is preserved as an optional nudge.
-2. **Introduce agent integrations as first-class connect options** on the same screen — X (primary) plus ChatGPT, Claude, Cursor, and other MCP clients as secondary suggestions.
+1. Make the Solana and EVM wallet buttons visually consistent inside one card.
+2. Re-order the 3-step flow so it feels more natural.
+3. Add explicit `Step N of 3` labels above the progress bar.
 
-## Current behavior (verified)
+## 1. Unified wallet card
 
-- `src/pages/Rei.tsx` (line 584) gates step 2 behind `profileActivated || initialFollowing`. Until the user follows `@AskRei_` (polled via `twitter-oauth/checkFollow`) or clicks through the 3-step `ActivateReiProfileCard`, wallet connect is disabled/dimmed.
-- The Activate card owns three "steps": Verified X ✓ → Follow @AskRei_ → Unlock. Follow is the only real gate; the other two are decoration.
-- MCP server already exists (`.lovable/mcp/manifest.json` at `/functions/v1/mcp`, OAuth-protected) with `search_bounties`, `search_jobs`, etc. So "use Rei from ChatGPT/Claude" is real and shippable today.
+Today the Solana button is a purple filled `WalletMultiButton` and the EVM button is a transparent outlined `ConnectButton.Custom` — visually mismatched even though they sit in the same card.
 
-## Proposed UI (single new card replaces `ActivateReiProfileCard` after X sign-in)
+Change both to the same button style so they read as a matched pair:
 
-Rename mental model: from "Activate your Rei profile" (blocker) → **"Connect Rei to your workflow"** (menu of suggestions the user can act on now or skip). Structure:
+- Same height (44px), same `rounded-[28px]`, same font size/weight.
+- Solana = **primary filled** (peach `#e8c4b8` on dark, matches the "Continue" and "Follow" buttons already used in `ConnectReiCard`) since it's required.
+- EVM = **outlined ghost** (transparent, hairline border) since it's optional.
+- Wrap both under one `rei-surface-2` card with a subtle divider between them, so it's obviously one "Wallets" card with two rows instead of two loose buttons.
+- Keep the small `SOLANA WALLET · REQUIRED` / `EVM WALLET · OPTIONAL` labels as row headers inside the card.
+- Style `WalletMultiButton` via its className to match — override its default purple to the peach primary and align padding/radius. Connected-state pill (`Connected · 0x1234…abcd`) stays the same for both.
 
-```text
-┌─────────────────────────────────────────────────────────┐
-│  ✓ Signed in as @handle · Verified                      │
-├─────────────────────────────────────────────────────────┤
-│  Recommended · make Rei work harder for you             │
-│                                                          │
-│  ┌──────────────────────────────────────────────────┐   │
-│  │ [X logo]  Follow @AskRei_ on X       [Follow →]  │   │ ← primary, pulsing (existing style)
-│  │ Get bounty DMs, daily posts, tag for Q&A          │   │
-│  └──────────────────────────────────────────────────┘   │
-│                                                          │
-│  Or use Rei from your AI assistant                       │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐    │
-│  │ ChatGPT  │ │  Claude  │ │  Cursor  │ │  Copy    │    │ ← secondary tiles
-│  │ Connect →│ │ Connect →│ │ Connect →│ │ MCP URL  │    │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────┘    │
-│                                                          │
-│              [ Continue to wallet setup → ]              │ ← always enabled
-└─────────────────────────────────────────────────────────┘
+## 2. Flow re-order
+
+Current order after X sign-in:
+1. Connect Rei to your workflow (Follow @AskRei_ + MCP)
+2. Connect wallets
+3. Submit details (voice intro, roles, consent)
+
+Problem: step 1 is entirely optional "activation extras" but sits before the required work. Users hit soft nice-to-haves before they've actually finished registering.
+
+Proposed new order:
+1. **Connect your wallets** (Solana required, EVM optional) — the highest-signal required step, and the one that powers Rei's Diamonds scoring the analysis depends on.
+2. **Tell us about you** (voice intro + roles + consent, i.e. today's step 3).
+3. **Activate Rei** (follow @AskRei_ + MCP tiles) — moved to the end as a "you're in, here's how to plug Rei into your workflow" upsell. Continue button becomes "Finish" and lands them on `/rei`.
+
+Rationale: required → required → optional, and the MCP/Follow card fits better as a post-registration success screen than as a gate before wallets.
+
+The `ConnectReiCard` component itself does not need to change — it's already framed as optional. We just move where it's rendered in `Rei.tsx` and rename its Continue button copy to "Finish setup".
+
+## 3. Step indicators
+
+Above the existing 3-segment progress bar (line 537), add a small header row:
+
+```
+Step 2 of 3 · Connect your wallets
 ```
 
-Behavior:
-- **Not blocking.** "Continue to wallet setup" is always enabled — advancing sets `profileActivated = true` locally and unlocks step 2 immediately.
-- **Follow card** keeps the existing heartbeat pulse + intent-follow URL + auto-poll via `twitter-oauth/checkFollow`. If the poll detects a follow, the tile flips to a green "Following ✓" state but does NOT auto-advance (user is already free to move on).
-- **AI assistant tiles** each open the appropriate deep link in a new tab:
-  - ChatGPT → `https://chatgpt.com/` with a "Copy MCP URL" fallback (ChatGPT still requires manual paste in Settings → Connectors for most users; we show a one-click "Copy MCP URL" toast).
-  - Claude → `https://claude.ai/settings/connectors` (deep link to connector settings).
-  - Cursor → `cursor://anysphere.cursor-deeplink/mcp/install?name=rei&config=...` (Cursor's documented MCP install deep link).
-  - "Copy MCP URL" tile always visible for any other client — copies `https://rei.chat/functions/v1/mcp` to clipboard.
-- The two marquees currently in `ActivateReiProfileCard` (`Activate for Rewards`, `Activate for Functions`) collapse into short helper copy under the Follow tile — the marquees are cute but they read as gatekeeping.
-- The 3-step "Verified → Activate → Unlock" progress bar (the `CELLS`-based cell bar and 66→100% progression) is removed. The 3-dot step bar at the top of the whole page already communicates progress; a second progress bar for a now-optional step is misleading.
+- Left side: `Step {step} of 3` in the muted peach `#e8c4b8`, 11px, uppercase, letter-spaced — matches the existing "Recommended" / "Or use Rei…" eyebrow style used in `ConnectReiCard`.
+- Right side: current step title (`Sign in with X` / `Connect your wallets` / `Tell us about you` / `Activate Rei`) in `#a09e9a`, 12px.
+- The 3-segment bar stays underneath, filled peach up to the current step.
 
-## Returning users
+Also drop the inline `1` / `2` / `3` numbered circles that currently sit next to each section header inside the card (lines 604, 689) — with the top step indicator they become redundant. Replace each with just the section title (and the existing check-mark chip when complete).
 
-`initialFollowing` still influences the flow (already-following users see the "Following ✓" tile pre-lit), but no branch treats non-followers differently — same card, same continue button.
+## Technical notes
 
-## Data & backend
-
-- **No schema changes.** `follows_askrei` continues to be read from `twitter-oauth` and stored on the profile row (useful analytics: what % of registrants follow).
-- **No MCP changes.** Manifest is already deployed. New tiles are pure frontend deep links / clipboard copies.
-- `twitter-oauth/checkFollow` polling stays but is optional — only started when the user clicks the Follow tile, and cancelled when they hit "Continue".
-
-## Files touched
-
-- `src/pages/Rei.tsx` — replace the `!profileActivated && !initialFollowing` branch (line 584) with the new card; remove the `initialFollowing` gate from step 2's condition (line 601) so wallet section becomes available as soon as `twitterUser` exists.
-- `src/components/rei/ActivateReiProfileCard.tsx` — rewrite as `ConnectReiCard.tsx` (new name reflects new intent). Keep the pulse-follow button, drop the linear progress bar, marquees, and step-3 "unlock" animation. Add MCP tiles + Continue button.
-- `src/components/rei/mcpConnectTiles.tsx` (new, small) — the 4 tiles + deep-link URLs + copy-to-clipboard helper. Keeping this separate makes it reusable on the account/profile page later.
-- No changes to `twitter-oauth` edge function or MCP manifest.
-
-## Copy (draft, editable)
-
-- Section header: **"Connect Rei to your workflow"** · *"All optional — skip and set up later from your profile."*
-- Follow tile: **"Follow @AskRei_ on X"** · *"Get high-paying bounties DM'd to you, daily posts, and tag @AskRei_ anywhere for tailored answers."*
-- MCP header: **"Use Rei inside your AI assistant"** · *"Rei speaks MCP — plug it into ChatGPT, Claude, Cursor, or any MCP-compatible client."*
-- Continue: **"Continue → Connect wallets"**
-
-## Verification
-
-- Sign up with a fresh X account that does NOT follow @AskRei_ → new card appears, Continue button is enabled from the start, clicking it advances to wallet step.
-- Sign up with an X account that already follows → follow tile shows "Following ✓" pre-lit, same Continue behavior.
-- Click Follow tile → opens x.com intent in new tab, tile shows "Checking… Ns", and if a follow is detected the tile updates without changing wallet-step accessibility.
-- Click each AI tile → correct deep link opens / URL copied to clipboard (toast confirms).
-- Reload mid-flow → user still sees the card until they click Continue; no forced re-follow.
-- Grep confirms no other code path treats `follows_askrei` as a gate.
+- File touched: `src/pages/Rei.tsx` only. `ConnectReiCard.tsx` gets a one-line copy change ("Continue → Connect wallets" → "Finish setup").
+- `useEffect` step-advancers (lines 107–108) update to the new order:
+  - `step 1 → 2` when Solana wallet connected (was: when X connected).
+  - `step 2 → 3` when audio + roles + consent submitted (was: when wallet connected).
+  - X sign-in is a precondition for showing step 1 at all, same as today; the "identity verified" pill stays pinned at the top of the card across all three steps so users see they're signed in.
+- `hasWallet` / `profileActivated` gates get remapped to the new order; no schema or backend changes.
+- No changes to `submit-rei-registration`, `analyze-rei-profile`, or the Diamonds engine.
 
 ## Out of scope
 
-- Editing the MCP manifest, adding new MCP tools, or changing OAuth flow.
-- Changing the follow requirement anywhere else (e.g. leaderboards, chat features) — this plan only touches the registration/sign-in card.
-- Persisting per-user "which AI assistants did they connect" analytics (can be added later as a follow-up).
+- No changes to what data is collected or how scoring works.
+- No changes to the sign-in / sign-up entry screens.
+- No changes to the post-registration `/rei` app shell.
