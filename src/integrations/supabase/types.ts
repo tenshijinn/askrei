@@ -684,6 +684,7 @@ export type Database = {
           diamond_score: number | null
           diamond_tier: string | null
           display_name: string | null
+          evm_wallet_address: string | null
           file_path: string
           handle: string | null
           id: string
@@ -710,6 +711,7 @@ export type Database = {
           diamond_score?: number | null
           diamond_tier?: string | null
           display_name?: string | null
+          evm_wallet_address?: string | null
           file_path: string
           handle?: string | null
           id?: string
@@ -736,6 +738,7 @@ export type Database = {
           diamond_score?: number | null
           diamond_tier?: string | null
           display_name?: string | null
+          evm_wallet_address?: string | null
           file_path?: string
           handle?: string | null
           id?: string

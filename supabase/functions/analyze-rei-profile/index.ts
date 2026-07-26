@@ -3,7 +3,7 @@ import { fetchHeliusSignals } from "../_shared/diamonds/providers/helius.ts";
 import { fetchBirdeyeSignals } from "../_shared/diamonds/providers/birdeye.ts";
 import { fetchAlchemySignals } from "../_shared/diamonds/providers/alchemy.ts";
 import { fetchBlockscoutSignals } from "../_shared/diamonds/providers/blockscout.ts";
-import { computeDiamonds } from "../_shared/diamonds/engine.ts";
+import { computeDiamonds, mergeSignals, combineChainSignals } from "../_shared/diamonds/engine.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,6 +13,7 @@ const corsHeaders = {
 interface AnalysisRequest {
   transcript: string;
   walletAddress: string;
+  evmWalletAddress?: string | null;
   roleTags: string[];
 }
 
@@ -145,7 +146,7 @@ Deno.serve(async (req) => {
 
   try {
     const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')!;
-    const { transcript, walletAddress, roleTags }: AnalysisRequest = await req.json();
+    const { transcript, walletAddress, evmWalletAddress, roleTags }: AnalysisRequest = await req.json();
 
     console.log('Analyzing profile for wallet:', walletAddress);
 
@@ -365,26 +366,33 @@ Please analyze this contributor's profile based on their video introduction${wal
     if (walletAddress) {
       try {
         // Provider Abstraction Layer — each provider returns raw blockchain
-        // data normalized to NormalizedSignals. Scoring is performed entirely
-        // inside the Diamonds engine; no provider determines the score.
-        const isEvm = walletAddress.startsWith('0x');
-        const providerResults = await Promise.all(
-          isEvm
-            ? [
-                Promise.resolve(normalizeMoralis(moralisRaw)),
-                fetchAlchemySignals(walletAddress),
-                fetchBlockscoutSignals(walletAddress),
-              ]
-            : [
-                Promise.resolve(normalizeMoralis(moralisRaw)),
-                fetchHeliusSignals(walletAddress),
-                fetchBirdeyeSignals(walletAddress),
-              ],
-        );
-        const walletBehaviour = computeDiamonds(providerResults);
+        // data normalized to NormalizedSignals. Solana routes to Moralis/
+        // Helius/Birdeye; the optional EVM wallet routes to Moralis (EVM
+        // note: Moralis raw bundle here is Solana-only) plus Alchemy and
+        // Blockscout. All signals are combined across chains before scoring.
+        const svmProviders = await Promise.all([
+          Promise.resolve(normalizeMoralis(moralisRaw)),
+          fetchHeliusSignals(walletAddress),
+          fetchBirdeyeSignals(walletAddress),
+        ]);
+        const svmMerged = mergeSignals(svmProviders);
+
+        let evmProviders: typeof svmProviders = [];
+        let evmMerged = mergeSignals([]);
+        if (evmWalletAddress && evmWalletAddress.startsWith('0x')) {
+          evmProviders = await Promise.all([
+            fetchAlchemySignals(evmWalletAddress),
+            fetchBlockscoutSignals(evmWalletAddress),
+          ]);
+          evmMerged = mergeSignals(evmProviders);
+        }
+
+        const combined = combineChainSignals([svmMerged, evmMerged]);
+        const allSignals = [...svmProviders, ...evmProviders];
+        const walletBehaviour = computeDiamonds(allSignals, combined);
         finalAnalysis.wallet_behaviour = walletBehaviour;
         console.log(
-          `[diamonds] score=${walletBehaviour.diamond_score} tier=${walletBehaviour.diamond_tier} providers=${walletBehaviour.providers_used.join(',') || 'none'}`,
+          `[diamonds] score=${walletBehaviour.diamond_score} tier=${walletBehaviour.diamond_tier} providers=${walletBehaviour.providers_used.join(',') || 'none'} evm=${!!evmWalletAddress}`,
         );
       } catch (diamondsErr) {
         console.warn('[diamonds] failed to compute wallet behaviour:', (diamondsErr as Error).message);
