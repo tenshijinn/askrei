@@ -308,7 +308,7 @@ export function computeDiamonds(
   override?: NormalizedSignals,
 ): WalletBehaviourProfile {
   const okSignals = signals.filter((s) => s.ok);
-  const merged = mergeSignals(signals);
+  const merged = override ?? mergeSignals(signals);
   const farmer = farmerScore(merged);
   const jeet = jeetScore(merged);
   const community = communityScore(merged);
