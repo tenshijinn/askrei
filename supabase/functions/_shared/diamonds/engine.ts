@@ -253,8 +253,59 @@ function confidenceScore(s: NormalizedSignals, providersOk: number): SubscoreWit
   return { score: clamp(score), reasons };
 }
 
+// Combine two or more chain-level merged NormalizedSignals into a single
+// cross-chain view: counts sum, sets union, ages take the max (oldest wallet
+// wins), reputation averages, risk/sybil take the max. Preserves the
+// provider-agnostic contract — providers never call this directly.
+export function combineChainSignals(chains: NormalizedSignals[]): NormalizedSignals {
+  const active = chains.filter((c) => c.ok);
+  if (active.length === 0) return chains[0] ?? mergeSignals([]);
+  if (active.length === 1) return active[0];
+  const nums = (fn: (s: NormalizedSignals) => number | null): number[] =>
+    active.map(fn).filter((v): v is number => v !== null && !Number.isNaN(v));
+  const sum = (fn: (s: NormalizedSignals) => number | null) => {
+    const vs = nums(fn); return vs.length ? vs.reduce((a, b) => a + b, 0) : null;
+  };
+  const max = (fn: (s: NormalizedSignals) => number | null) => {
+    const vs = nums(fn); return vs.length ? Math.max(...vs) : null;
+  };
+  const avg = (fn: (s: NormalizedSignals) => number | null) => {
+    const vs = nums(fn); return vs.length ? vs.reduce((a, b) => a + b, 0) / vs.length : null;
+  };
+  const dates = (fn: (s: NormalizedSignals) => string | null): string[] =>
+    active.map(fn).filter((v): v is string => !!v);
+  const protos = new Set<string>();
+  const cols = new Set<string>();
+  for (const c of active) {
+    c.unique_protocols.forEach((p) => protos.add(p));
+    c.unique_nft_collections.forEach((x) => cols.add(x));
+  }
+  const first = dates((s) => s.first_activity_at).sort();
+  const last = dates((s) => s.last_activity_at).sort();
+  return {
+    account_age_days: max((s) => s.account_age_days),
+    first_activity_at: first[0] ?? null,
+    last_activity_at: last[last.length - 1] ?? null,
+    transaction_count: sum((s) => s.transaction_count),
+    swap_count: sum((s) => s.swap_count),
+    token_count: sum((s) => s.token_count),
+    nft_count: sum((s) => s.nft_count),
+    unique_protocols: [...protos],
+    unique_nft_collections: [...cols],
+    avg_hold_days: avg((s) => s.avg_hold_days),
+    churn_rate: avg((s) => s.churn_rate),
+    fast_sell_ratio: avg((s) => s.fast_sell_ratio),
+    reputation_signal: avg((s) => s.reputation_signal),
+    risk_signal: max((s) => s.risk_signal),
+    sybil_signal: max((s) => s.sybil_signal),
+    provider: `chains(${active.map((a) => a.provider).join("+")})`,
+    ok: true,
+  };
+}
+
 export function computeDiamonds(
   signals: NormalizedSignals[],
+  override?: NormalizedSignals,
 ): WalletBehaviourProfile {
   const okSignals = signals.filter((s) => s.ok);
   const merged = mergeSignals(signals);
