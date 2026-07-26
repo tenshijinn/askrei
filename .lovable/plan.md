@@ -1,40 +1,79 @@
-## Plan: Recalibrate Diamonds engine + wire Birdeye
 
-### 1. Add Birdeye API key
-Request `BIRDEYE_API_KEY` via `add_secret`. The `fetchBirdeyeSignals` provider is already wired in `analyze-rei-profile` and `rescan-diamond-scores` — it will start returning `ok:true` automatically once the key is present.
+# Add EVM wallet at registration (Solana stays primary, wallets are locked once set)
 
-### 2. Derive behavioural signals from raw data (proprietary IP layer)
-Create `supabase/functions/_shared/diamonds/derive.ts` exporting `deriveBehaviouralSignals(rawTxns, rawSwaps)`:
-- `avg_hold_days` — per-token: weighted-avg time between first buy and matched sell (FIFO).
-- `fast_sell_ratio` — share of sells that closed a position within 24h of the matching buy.
-- `churn_rate` — tokens sold-to-zero ÷ tokens ever held.
-- `unique_protocols` — extract program/contract labels from Helius enriched txns / Moralis swap DEX names.
+Users optionally connect an EVM wallet during registration so its on-chain history feeds Rei's Diamonds alongside Solana. Solana remains the sole payout wallet. **Wallets cannot be changed after registration** — deleting the account is the only way to re-link.
 
-Hook it into the Moralis + Helius provider paths so `NormalizedSignals` now carries these derived fields instead of `null`.
+## Invariants (SVM-favorability)
 
-### 3. Recalibrate engine (fixes "empty wallet = Sapphire")
-In `supabase/functions/_shared/diamonds/engine.ts`:
+- **Solana wallet** — required. Powers payments, points, referrals, campaign attribution, MCP `whoami`, Solana Pay/x402, all `wallet_address` FKs. Unchanged.
+- **EVM wallet** — optional, enrichment only. Feeds Alchemy/Blockscout/Moralis-EVM into the Diamond Score. Never used for payouts, points, or identity.
+- **Account identity** stays keyed on `x_user_id`. `rei_registry.wallet_address` continues to mean Solana.
+- **Ownership** of the EVM address is proven implicitly by the wagmi/RainbowKit connect handshake (the wallet extension only exposes addresses whose keys it controls). No extra signature step.
+- **Once registered, wallets are locked.** No "Change wallet" affordance anywhere. To change, the user deletes their account (existing `delete-rei-account` flow) and re-registers.
+- **Diamond Score** merges signals from both chains when present. Confidence gate already down-weights sparse data.
 
-- **Null-penalise Farmer/Jeet/Risk inverses.** When a subscore's inputs are all `null`, treat that subscore as `50` (unknown), not `0` (clean). This removes the ~55-point free baseline for empty wallets.
-- **Activity gate on Community.** Community's full weight only applies when the wallet meets a minimum-history floor: `transaction_count ≥ 25` AND `account_age_days ≥ 30`. Below the floor, scale Community's contribution linearly (0 at zero activity, full at the floor).
-- **Confidence gates the composite.** Multiply final Diamond by `min(1, confidence/60)` so a low-confidence wallet cannot land above ~mid-Sapphire regardless of other scores.
-- **New "Insufficient history" reason** surfaced in `reasons[]` when the activity gate fires.
+## Data model
 
-Net effect: a fresh, empty wallet now lands in Coal/Emerald (~15–35), not Sapphire.
+Migration on `rei_registry`:
+- add `evm_wallet_address text null`
+- unique partial index on `evm_wallet_address` where not null (prevents one EVM wallet padding multiple accounts)
+- no ownership-sig columns (dropped per feedback)
 
-### 4. Rescan + report
-- Deploy, then invoke `rescan-diamond-scores` with no filter to recompute all 4 registered wallets.
-- Produce a results table with columns you can use for gamification/marketing:
+## Frontend (`src/pages/Rei.tsx` + wallet cards)
 
-  | Handle | Wallet | Score | Tier | Community | Farmer | Jeet | Risk | Confidence | Age (d) | Txns | Protocols | Avg hold (d) | Fast-sell % | Providers |
+Registration step 2 becomes two stacked cards:
 
-- Table is produced in chat only (no schema changes — all fields already live in `wallet_behaviour` jsonb on `rei_registry`, so backend can query them any time for leaderboards/segments).
+**Card A — Connect Solana Wallet** (required, unchanged mechanics)
+**Card B — Connect EVM Wallet (optional)** — RainbowKit `ConnectButton.Custom` styled to match Card A.
 
-### Files touched
-- New: `supabase/functions/_shared/diamonds/derive.ts`
-- Edit: `supabase/functions/_shared/diamonds/engine.ts`
-- Edit: `supabase/functions/_shared/diamonds/providers/moralis.ts` (call derive on raw swaps)
-- Edit: `supabase/functions/_shared/diamonds/providers/helius.ts` (call derive on enriched txns)
-- Secret: request `BIRDEYE_API_KEY`
+Add a shared, minimal explainer above both cards:
 
-No DB migrations, no frontend changes.
+> "Rei reads your wallets' public on-chain history to score your reputation (Diamond Score). Connecting an EVM wallet alongside your Solana wallet gives Rei a fuller picture of your activity — more accurate score, better bounty matches. **Payouts always go to your Solana wallet.** Wallets are locked once you register, so choose the ones that best represent you."
+
+Rules:
+- Card B never blocks submission; `canSubmit` still gates on Solana + roles + consent only.
+- **Remove all "Change wallet" UI** — both the existing Solana change flow and any EVM equivalent. In edit mode, wallet cards render as read-only "Linked" chips with no button. `showWalletChange` state and its handlers are deleted.
+- Include `evm_wallet_address` in the submit payload only on initial registration. Edit-mode submissions never touch either wallet field.
+
+## Edge functions
+
+`submit-rei-registration/index.ts`:
+- Accept `evm_wallet_address` on initial registration; ignore it on reanalyze/edit.
+- On upsert, only write `evm_wallet_address` when the existing row has none (guard against overwrite even if the client sends it).
+- Pass both addresses to `analyze-rei-profile`.
+
+`analyze-rei-profile/index.ts`:
+- When `evmWalletAddress` is present, run Moralis-EVM + Alchemy + Blockscout in parallel with the Solana providers.
+- Merge normalized signals from both chains before `computeDiamonds` (sum tx_count/swap_count, union protocol/collection sets, min account-age for confidence). Small merger helper in `_shared/diamonds/`.
+- Record every provider hit in `wallet_behaviour.providers_used`.
+
+`rescan-diamond-scores/index.ts`:
+- Select `evm_wallet_address` too; when present, run EVM providers, merge with Solana signals, write updated score. This is the ongoing "rescore as behavior evolves" path.
+
+`delete-rei-account/index.ts`:
+- No change — already deletes the whole row, which clears both wallet fields.
+
+## Out of scope
+
+- No payment/points/referral/MCP changes.
+- No per-chain Diamond badge — single score.
+- No wallet-change UI. Removing the existing Solana "Change wallet" affordance is part of this change.
+
+## Files touched
+
+- Migration: new file under `supabase/migrations/`
+- `src/pages/Rei.tsx` (add EVM card, add explainer, remove change-wallet UI/state)
+- `src/integrations/supabase/types.ts` (auto-regen)
+- `supabase/functions/submit-rei-registration/index.ts`
+- `supabase/functions/analyze-rei-profile/index.ts`
+- `supabase/functions/rescan-diamond-scores/index.ts`
+- `docs/reis-diamonds.md` (document dual-chain ingestion + locked-wallet policy)
+
+## Verification
+
+- Register fresh with Solana only → score unchanged from today.
+- Register fresh with both wallets → `wallet_behaviour.providers_used` includes EVM providers; score reflects merged signals.
+- Edit-mode UI shows both wallets as read-only, no Change button anywhere.
+- Attempt to submit an edit payload with a different `wallet_address` or `evm_wallet_address` → server ignores it.
+- Rescan endpoint recomputes scores for accounts with both wallets attached.
+- Grep confirms `evm_wallet_address` appears only in registration/analysis/rescan paths — nowhere in payment, points, or referral code.
