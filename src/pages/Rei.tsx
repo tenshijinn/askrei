@@ -602,7 +602,8 @@ export default function Rei() {
                   </div>
 
                   {/* Steps 1 & 2 hidden once we advance to the final activation step */}
-                  {!(isSuccess && !isEditMode && !initialFollowing && !profileActivated) && (<>
+                  {!(isSuccess && !isEditMode && !initialFollowing && !profileActivated) && (
+                  <div className="space-y-6">
                   {/* Step 1: Wallets */}
                   <div data-tour="reg-wallet" className={step > 1 && hasWallet && !isEditMode ? 'opacity-40' : ''}>
                     <div className="flex items-center gap-2 mb-3">
