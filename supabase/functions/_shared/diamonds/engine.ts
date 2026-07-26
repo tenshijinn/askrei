@@ -195,6 +195,16 @@ function riskScore(s: NormalizedSignals): SubscoreWithReasons {
   const reasons: string[] = [];
   let score = 0;
 
+  const hasInputs =
+    s.risk_signal !== null ||
+    s.sybil_signal !== null ||
+    (s.account_age_days ?? 0) > 0 ||
+    (s.swap_count ?? 0) > 0;
+  if (!hasInputs) {
+    push(reasons, "Insufficient history to assess risk");
+    return { score: 50, reasons };
+  }
+
   if (s.risk_signal !== null) {
     score += s.risk_signal * 60;
     if (s.risk_signal >= 0.6) push(reasons, "Elevated risk signal from reputation provider");
@@ -212,6 +222,7 @@ function riskScore(s: NormalizedSignals): SubscoreWithReasons {
 
   return { score: clamp(score), reasons };
 }
+
 
 function confidenceScore(s: NormalizedSignals, providersOk: number): SubscoreWithReasons {
   const reasons: string[] = [];
