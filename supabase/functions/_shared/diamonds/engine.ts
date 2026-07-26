@@ -79,6 +79,14 @@ function farmerScore(s: NormalizedSignals): SubscoreWithReasons {
   const reasons: string[] = [];
   let score = 0;
 
+  // Null-penalise: no signals = unknown, not "clean". Baseline 50.
+  const hasInputs =
+    s.churn_rate !== null || s.avg_hold_days !== null || (s.swap_count ?? 0) > 0;
+  if (!hasInputs) {
+    push(reasons, "Insufficient trading history to assess farming");
+    return { score: 50, reasons };
+  }
+
   if (s.churn_rate !== null) {
     score += s.churn_rate * 40;
     if (s.churn_rate > 0.6) push(reasons, `High wallet churn (${Math.round(s.churn_rate * 100)}%)`);
@@ -113,6 +121,12 @@ function jeetScore(s: NormalizedSignals): SubscoreWithReasons {
   const reasons: string[] = [];
   let score = 0;
 
+  const hasInputs = s.fast_sell_ratio !== null || s.avg_hold_days !== null;
+  if (!hasInputs) {
+    push(reasons, "Insufficient sell history to assess");
+    return { score: 50, reasons };
+  }
+
   if (s.fast_sell_ratio !== null) {
     score += s.fast_sell_ratio * 60;
     if (s.fast_sell_ratio > 0.5) push(reasons, `${Math.round(s.fast_sell_ratio * 100)}% of sells within 24h`);
@@ -131,6 +145,7 @@ function jeetScore(s: NormalizedSignals): SubscoreWithReasons {
 
   return { score: clamp(score), reasons };
 }
+
 
 function communityScore(s: NormalizedSignals): SubscoreWithReasons {
   const reasons: string[] = [];
@@ -180,6 +195,16 @@ function riskScore(s: NormalizedSignals): SubscoreWithReasons {
   const reasons: string[] = [];
   let score = 0;
 
+  const hasInputs =
+    s.risk_signal !== null ||
+    s.sybil_signal !== null ||
+    (s.account_age_days ?? 0) > 0 ||
+    (s.swap_count ?? 0) > 0;
+  if (!hasInputs) {
+    push(reasons, "Insufficient history to assess risk");
+    return { score: 50, reasons };
+  }
+
   if (s.risk_signal !== null) {
     score += s.risk_signal * 60;
     if (s.risk_signal >= 0.6) push(reasons, "Elevated risk signal from reputation provider");
@@ -197,6 +222,7 @@ function riskScore(s: NormalizedSignals): SubscoreWithReasons {
 
   return { score: clamp(score), reasons };
 }
+
 
 function confidenceScore(s: NormalizedSignals, providersOk: number): SubscoreWithReasons {
   const reasons: string[] = [];
@@ -238,16 +264,28 @@ export function computeDiamonds(
   const risk = riskScore(merged);
   const confidence = confidenceScore(merged, okSignals.length);
 
+  // Activity gate: below the minimum-history floor, Community's contribution
+  // scales down linearly so a fresh empty wallet cannot inherit a high score
+  // from "no bad signals detected".
+  const txns = merged.transaction_count ?? merged.swap_count ?? 0;
+  const age = merged.account_age_days ?? 0;
+  const activityGate = Math.min(1, txns / 25) * Math.min(1, age / 30);
+  const gatedCommunity = community.score * activityGate;
+
   const diamondRaw =
-    WEIGHTS.community * community.score +
+    WEIGHTS.community * gatedCommunity +
     WEIGHTS.farmerInverse * (100 - farmer.score) +
     WEIGHTS.jeetInverse * (100 - jeet.score) +
     WEIGHTS.riskInverse * (100 - risk.score) +
     WEIGHTS.confidence * confidence.score;
-  const diamond = clamp(diamondRaw);
+
+  // Confidence gate: a low-confidence wallet cannot land above ~mid-Sapphire.
+  const confidenceGate = Math.min(1, confidence.score / 60);
+  const diamond = clamp(diamondRaw * confidenceGate);
 
   // Top-level reasons: cherry-pick the strongest positive drivers.
   const topReasons: string[] = [];
+  if (activityGate < 1) push(topReasons, "Insufficient history for full scoring");
   push(topReasons, community.reasons[0]);
   if (farmer.score < 25) push(topReasons, "Low farmer-like behaviour");
   if (jeet.score < 25) push(topReasons, "Healthy holding behaviour");
@@ -264,3 +302,4 @@ export function computeDiamonds(
     engine_version: ENGINE_VERSION,
   };
 }
+
