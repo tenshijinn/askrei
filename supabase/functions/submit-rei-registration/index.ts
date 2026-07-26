@@ -12,6 +12,7 @@ interface RegistrationData {
   profile_image_url?: string;
   verified?: boolean;
   wallet_address: string;
+  evm_wallet_address?: string | null;
   file_path: string;
   portfolio_url?: string;
   role_tags: string[];
@@ -139,6 +140,7 @@ Deno.serve(async (req) => {
             body: {
               transcript: transcriptText,
               walletAddress: registrationData.wallet_address,
+              evmWalletAddress: registrationData.evm_wallet_address || null,
               roleTags: registrationData.role_tags
             }
           });
@@ -178,6 +180,24 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Wallets are locked once registered. On updates, keep the existing
+    // wallet_address and evm_wallet_address regardless of what the client sent.
+    let existingWallet: string | null = null;
+    let existingEvmWallet: string | null = null;
+    if (registrationData.x_user_id) {
+      const { data: existing } = await supabase
+        .from('rei_registry')
+        .select('wallet_address, evm_wallet_address')
+        .eq('x_user_id', registrationData.x_user_id)
+        .maybeSingle();
+      if (existing) {
+        existingWallet = (existing as any).wallet_address ?? null;
+        existingEvmWallet = (existing as any).evm_wallet_address ?? null;
+      }
+    }
+    const finalWallet = existingWallet ?? registrationData.wallet_address;
+    const finalEvmWallet = existingEvmWallet ?? (registrationData.evm_wallet_address || null);
+
     // Upsert registration data - use x_user_id for conflict since users can update their wallet
     const { data, error } = await supabase
       .from('rei_registry')
@@ -188,7 +208,8 @@ Deno.serve(async (req) => {
           display_name: registrationData.display_name,
           profile_image_url: registrationData.profile_image_url,
           verified: registrationData.verified || isWhitelisted,
-          wallet_address: registrationData.wallet_address,
+          wallet_address: finalWallet,
+          evm_wallet_address: finalEvmWallet,
           file_path: processedFilePath,
           portfolio_url: registrationData.portfolio_url,
           role_tags: registrationData.role_tags,

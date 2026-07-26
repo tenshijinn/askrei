@@ -12,7 +12,7 @@ import { fetchHeliusSignals } from '../_shared/diamonds/providers/helius.ts';
 import { fetchBirdeyeSignals } from '../_shared/diamonds/providers/birdeye.ts';
 import { fetchAlchemySignals } from '../_shared/diamonds/providers/alchemy.ts';
 import { fetchBlockscoutSignals } from '../_shared/diamonds/providers/blockscout.ts';
-import { computeDiamonds } from '../_shared/diamonds/engine.ts';
+import { computeDiamonds, mergeSignals, combineChainSignals } from '../_shared/diamonds/engine.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -48,25 +48,27 @@ async function fetchMoralisBundle(address: string): Promise<MoralisRawBundle> {
   return bundle;
 }
 
-async function rescanOne(address: string) {
-  const isEvm = address.startsWith('0x');
-  const moralisRaw = isEvm ? {} : await fetchMoralisBundle(address);
+async function rescanOne(svmAddress: string, evmAddress: string | null) {
+  const moralisRaw = await fetchMoralisBundle(svmAddress);
+  const svmProviders = await Promise.all([
+    Promise.resolve(normalizeMoralis(moralisRaw)),
+    fetchHeliusSignals(svmAddress),
+    fetchBirdeyeSignals(svmAddress),
+  ]);
+  const svmMerged = mergeSignals(svmProviders);
 
-  const signals = await Promise.all(
-    isEvm
-      ? [
-          Promise.resolve(normalizeMoralis(moralisRaw)),
-          fetchAlchemySignals(address),
-          fetchBlockscoutSignals(address),
-        ]
-      : [
-          Promise.resolve(normalizeMoralis(moralisRaw)),
-          fetchHeliusSignals(address),
-          fetchBirdeyeSignals(address),
-        ],
-  );
+  let evmProviders: typeof svmProviders = [];
+  let evmMerged = mergeSignals([]);
+  if (evmAddress && evmAddress.startsWith('0x')) {
+    evmProviders = await Promise.all([
+      fetchAlchemySignals(evmAddress),
+      fetchBlockscoutSignals(evmAddress),
+    ]);
+    evmMerged = mergeSignals(evmProviders);
+  }
 
-  return computeDiamonds(signals);
+  const combined = combineChainSignals([svmMerged, evmMerged]);
+  return computeDiamonds([...svmProviders, ...evmProviders], combined);
 }
 
 Deno.serve(async (req) => {
@@ -86,7 +88,7 @@ Deno.serve(async (req) => {
 
     let query = supabase
       .from('rei_registry')
-      .select('id, handle, wallet_address, profile_analysis');
+      .select('id, handle, wallet_address, evm_wallet_address, profile_analysis');
     if (filterId) query = query.eq('id', filterId);
     if (filterHandle) query = query.ilike('handle', filterHandle);
 
@@ -97,13 +99,14 @@ Deno.serve(async (req) => {
 
     for (const row of rows ?? []) {
       const address = row.wallet_address as string | null;
+      const evmAddress = (row as any).evm_wallet_address as string | null;
       if (!address) {
         results.push({ id: row.id, handle: row.handle, skipped: 'no wallet' });
         continue;
       }
 
       try {
-        const behaviour = await rescanOne(address);
+        const behaviour = await rescanOne(address, evmAddress);
 
         // Preserve existing profile_analysis but refresh wallet_behaviour.
         const existingAnalysis = (row.profile_analysis as Record<string, unknown> | null) ?? null;
