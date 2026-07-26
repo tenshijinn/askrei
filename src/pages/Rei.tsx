@@ -582,10 +582,10 @@ export default function Rei() {
                     </div>
                   )
                 ) : !profileActivated && !initialFollowing ? (
-                  <ActivateReiProfileCard
+                  <ConnectReiCard
                     xUserId={twitterUser.x_user_id}
                     initialFollowing={initialFollowing}
-                    onComplete={() => setProfileActivated(true)}
+                    onContinue={() => setProfileActivated(true)}
                   />
                 ) : (
                   <div className="space-y-3">
