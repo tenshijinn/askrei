@@ -716,6 +716,8 @@ export default function Rei() {
                     </div>
                   )}
 
+                  </>)}
+
                   {/* Step 3: Activate Rei (final optional upsell) */}
                   {isSuccess && !isEditMode && !initialFollowing && !profileActivated && (
                     <ConnectReiCard
