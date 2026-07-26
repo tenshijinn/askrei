@@ -1,5 +1,8 @@
 import { normalizeMoralis, type MoralisRawBundle } from "../_shared/diamonds/providers/moralis.ts";
-import { fetchNomisSignals } from "../_shared/diamonds/providers/nomis.ts";
+import { fetchHeliusSignals } from "../_shared/diamonds/providers/helius.ts";
+import { fetchBirdeyeSignals } from "../_shared/diamonds/providers/birdeye.ts";
+import { fetchAlchemySignals } from "../_shared/diamonds/providers/alchemy.ts";
+import { fetchBlockscoutSignals } from "../_shared/diamonds/providers/blockscout.ts";
 import { computeDiamonds } from "../_shared/diamonds/engine.ts";
 
 const corsHeaders = {
@@ -361,9 +364,24 @@ Please analyze this contributor's profile based on their video introduction${wal
     // Never throws; provider failures degrade gracefully.
     if (walletAddress) {
       try {
-        const moralisSignals = normalizeMoralis(moralisRaw);
-        const nomisSignals = await fetchNomisSignals(walletAddress);
-        const walletBehaviour = computeDiamonds([moralisSignals, nomisSignals]);
+        // Provider Abstraction Layer — each provider returns raw blockchain
+        // data normalized to NormalizedSignals. Scoring is performed entirely
+        // inside the Diamonds engine; no provider determines the score.
+        const isEvm = walletAddress.startsWith('0x');
+        const providerResults = await Promise.all(
+          isEvm
+            ? [
+                Promise.resolve(normalizeMoralis(moralisRaw)),
+                fetchAlchemySignals(walletAddress),
+                fetchBlockscoutSignals(walletAddress),
+              ]
+            : [
+                Promise.resolve(normalizeMoralis(moralisRaw)),
+                fetchHeliusSignals(walletAddress),
+                fetchBirdeyeSignals(walletAddress),
+              ],
+        );
+        const walletBehaviour = computeDiamonds(providerResults);
         finalAnalysis.wallet_behaviour = walletBehaviour;
         console.log(
           `[diamonds] score=${walletBehaviour.diamond_score} tier=${walletBehaviour.diamond_tier} providers=${walletBehaviour.providers_used.join(',') || 'none'}`,
