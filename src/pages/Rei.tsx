@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useAccount, useDisconnect } from 'wagmi';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { supabase } from '@/integrations/supabase/client';
 import type { Session, User } from '@supabase/supabase-js';
 import reiLogo from '@/assets/rei-logo-new.png';
@@ -37,6 +39,8 @@ const ROLE_OPTIONS: { value: RoleTag; label: string }[] = [
 
 export default function Rei() {
   const { publicKey, connected } = useWallet();
+  const { address: evmAddress, isConnected: evmConnected } = useAccount();
+  const { disconnect: disconnectEvm } = useDisconnect();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
