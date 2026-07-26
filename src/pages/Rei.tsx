@@ -104,8 +104,8 @@ export default function Rei() {
     if (code && state && storedVerifier && !twitterUser && !isProcessingCallback) { window.history.replaceState({}, '', '/rei'); handleTwitterCallback(code); }
   }, [twitterUser, isProcessingCallback]);
 
-  useEffect(() => { if (twitterUser && step === 1) setStep(2); }, [twitterUser]);
-  useEffect(() => { if (connected && twitterUser && step === 2) setStep(3); }, [connected, twitterUser]);
+  useEffect(() => { if (connected && twitterUser && step === 1) setStep(2); }, [connected, twitterUser]);
+  useEffect(() => { if (isSuccess && step === 2) setStep(3); }, [isSuccess]);
 
   useEffect(() => {
     const checkExistingRegistration = async () => {
