@@ -600,22 +600,87 @@ export default function Rei() {
               </div>
               {twitterUser && (profileActivated || initialFollowing || registrationData) && (
                 <div data-tour="reg-wallet" className={step !== 2 && hasWallet ? 'opacity-40' : ''}>
-                  <div className="flex items-center gap-3 mb-4">
+                  <div className="flex items-center gap-3 mb-3">
                     <div className="h-7 w-7 rounded-full flex items-center justify-center" style={{ background: hasWallet ? 'hsla(18,52%,82%,0.12)' : '#1e1e1e', fontSize: '12px', color: hasWallet ? '#e8c4b8' : '#5c5a57', border: '0.5px solid hsla(0,0%,100%,0.08)' }}>{hasWallet ? <Check className="h-3.5 w-3.5" /> : '2'}</div>
-                    <span style={{ fontSize: '14px', fontWeight: 500, color: '#f0ede8' }}>{isEditMode && registrationData?.wallet_address && !showWalletChange ? 'Solana Wallet' : 'Connect Solana Wallet'}</span>
+                    <span style={{ fontSize: '14px', fontWeight: 500, color: '#f0ede8' }}>Connect Your Wallets</span>
                   </div>
-                  {isEditMode && registrationData?.wallet_address && !showWalletChange ? (
-                    <div className="rei-surface-2" style={{ padding: '14px' }}>
-                      <p style={{ fontSize: '11px', color: '#5c5a57', marginBottom: '4px' }}>Linked Wallet</p>
-                      <p style={{ fontSize: '11px', fontFamily: "'SF Mono', 'Consolas', monospace", color: '#a09e9a', wordBreak: 'break-all', marginBottom: '10px' }}>{publicKey?.toString() || registrationData.wallet_address}</p>
-                      <button onClick={() => setShowWalletChange(true)} style={{ fontSize: '11px', color: '#e8c4b8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px', padding: 0 }}>Change wallet</button>
+                  {!isEditMode && (
+                    <div className="rei-surface-2 mb-4" style={{ padding: '12px 14px', borderColor: 'hsla(18,52%,82%,0.22)' }}>
+                      <p style={{ fontSize: '12px', color: '#a09e9a', lineHeight: 1.6, margin: 0 }}>
+                        Your wallets power <span style={{ color: '#e8c4b8', fontWeight: 500 }}>Rei's Diamonds</span> — your onchain reputation score.
+                        Solana is required and used for all payouts. EVM is optional and only used to enrich your score with more onchain history.
+                        <span style={{ display: 'block', marginTop: 6, color: '#5c5a57' }}>Wallets are locked to your account once registered — choose carefully.</span>
+                      </p>
                     </div>
-                  ) : (
-                    <>
-                      <WalletMultiButton className="!w-full !h-11 !bg-[#f0ede8] !text-[#0a0a0a] hover:!opacity-80 !rounded-[28px] !font-sans !text-sm !font-medium" />
-                      {connected && publicKey && <div className="rei-surface-2 mt-3" style={{ padding: '14px' }}><p style={{ fontSize: '11px', color: '#5c5a57', marginBottom: '4px' }}>Connected Wallet</p><p style={{ fontSize: '11px', fontFamily: "'SF Mono', 'Consolas', monospace", color: '#a09e9a', wordBreak: 'break-all' }}>{publicKey.toString()}</p></div>}
-                    </>
                   )}
+
+                  {/* Solana wallet — required */}
+                  <div className="mb-4">
+                    <div style={{ fontSize: '11px', color: '#5c5a57', marginBottom: '6px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Solana Wallet · Required</div>
+                    {isEditMode && registrationData?.wallet_address ? (
+                      <div className="rei-surface-2" style={{ padding: '14px' }}>
+                        <p style={{ fontSize: '11px', color: '#5c5a57', marginBottom: '4px' }}>Linked Wallet (locked)</p>
+                        <p style={{ fontSize: '11px', fontFamily: "'SF Mono', 'Consolas', monospace", color: '#a09e9a', wordBreak: 'break-all' }}>{registrationData.wallet_address}</p>
+                      </div>
+                    ) : (
+                      <>
+                        <WalletMultiButton className="!w-full !h-11 !bg-[#f0ede8] !text-[#0a0a0a] hover:!opacity-80 !rounded-[28px] !font-sans !text-sm !font-medium" />
+                        {connected && publicKey && <div className="rei-surface-2 mt-3" style={{ padding: '14px' }}><p style={{ fontSize: '11px', color: '#5c5a57', marginBottom: '4px' }}>Connected Wallet</p><p style={{ fontSize: '11px', fontFamily: "'SF Mono', 'Consolas', monospace", color: '#a09e9a', wordBreak: 'break-all' }}>{publicKey.toString()}</p></div>}
+                      </>
+                    )}
+                  </div>
+
+                  {/* EVM wallet — optional */}
+                  <div>
+                    <div style={{ fontSize: '11px', color: '#5c5a57', marginBottom: '6px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>EVM Wallet · Optional</div>
+                    {isEditMode && registrationData?.evm_wallet_address ? (
+                      <div className="rei-surface-2" style={{ padding: '14px' }}>
+                        <p style={{ fontSize: '11px', color: '#5c5a57', marginBottom: '4px' }}>Linked EVM Wallet (locked)</p>
+                        <p style={{ fontSize: '11px', fontFamily: "'SF Mono', 'Consolas', monospace", color: '#a09e9a', wordBreak: 'break-all' }}>{registrationData.evm_wallet_address}</p>
+                      </div>
+                    ) : isEditMode ? (
+                      <div className="rei-surface-2" style={{ padding: '14px' }}>
+                        <p style={{ fontSize: '11px', color: '#5c5a57', margin: 0 }}>No EVM wallet linked. Wallets are locked after registration.</p>
+                      </div>
+                    ) : (
+                      <>
+                        <ConnectButton.Custom>
+                          {({ openConnectModal, mounted }) => (
+                            <button
+                              type="button"
+                              onClick={openConnectModal}
+                              disabled={!mounted || evmConnected}
+                              className="w-full h-11 rounded-[28px] text-sm font-medium"
+                              style={{
+                                background: evmConnected ? '#1e1e1e' : 'transparent',
+                                color: evmConnected ? '#a09e9a' : '#f0ede8',
+                                border: '0.5px solid hsla(0,0%,100%,0.18)',
+                                cursor: !mounted || evmConnected ? 'default' : 'pointer',
+                              }}
+                            >
+                              {evmConnected && evmAddress
+                                ? `Connected · ${evmAddress.slice(0, 6)}…${evmAddress.slice(-4)}`
+                                : 'Connect EVM Wallet'}
+                            </button>
+                          )}
+                        </ConnectButton.Custom>
+                        {evmConnected && evmAddress && (
+                          <div className="rei-surface-2 mt-3" style={{ padding: '14px' }}>
+                            <div className="flex items-center justify-between gap-3 mb-1">
+                              <p style={{ fontSize: '11px', color: '#5c5a57', margin: 0 }}>Connected EVM Wallet</p>
+                              <button
+                                onClick={() => disconnectEvm()}
+                                style={{ fontSize: '10px', color: '#e8c4b8', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px', padding: 0 }}
+                              >
+                                Disconnect
+                              </button>
+                            </div>
+                            <p style={{ fontSize: '11px', fontFamily: "'SF Mono', 'Consolas', monospace", color: '#a09e9a', wordBreak: 'break-all', margin: 0 }}>{evmAddress}</p>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
               )}
               {twitterUser && hasWallet && (!isSuccess || isEditMode) && (
