@@ -158,8 +158,9 @@ const CampaignInfoCard = ({ campaign }: { campaign: CampaignView }) => (
     </div>
 
     <div className="rei-stat-card" style={{ padding: '14px 16px' }}>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-4 gap-3">
         {[
+          { label: 'Impressions', value: numFmt(campaign.uniqueImpressions) },
           { label: 'Total Clicks', value: numFmt(campaign.totalClicks) },
           { label: 'Unique Clicks', value: numFmt(campaign.uniqueClicks) },
           { label: 'CTR', value: `${campaign.ctr.toFixed(2)}%` },
