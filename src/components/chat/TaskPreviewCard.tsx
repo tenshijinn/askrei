@@ -30,6 +30,7 @@ export const TaskPreviewCard = ({ taskId }: TaskPreviewCardProps) => {
 
   return (
     <a
+      ref={impressionRef as React.RefObject<HTMLAnchorElement>}
       href={href}
       target="_blank"
       rel="noopener noreferrer"
