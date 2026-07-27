@@ -33,6 +33,13 @@ interface ClickRow {
   unique_clicks: number;
 }
 
+interface ImpressionRow {
+  campaign_subscription_id: string;
+  impression_date: string;
+  total_impressions: number;
+  unique_impressions: number;
+}
+
 interface CampaignRow {
   id: string;
   project_name: string;
@@ -52,8 +59,10 @@ interface CampaignView {
   shortCode: string | null;
   totalClicks: number;
   uniqueClicks: number;
+  totalImpressions: number;
+  uniqueImpressions: number;
   ctr: number;
-  series: { date: string; clicks: number }[];
+  series: { date: string; clicks: number; impressions: number }[];
 }
 
 const numFmt = (n: number) => n.toLocaleString();
@@ -121,6 +130,7 @@ const ChartCard = ({ campaign }: { campaign: CampaignView }) => (
               cursor={{ stroke: 'hsla(18,52%,82%,0.25)', strokeWidth: 1 }}
             />
             <Legend wrapperStyle={{ fontSize: 11, color: '#a09e9a' }} iconType="plainline" />
+            <Line type="monotone" dataKey="impressions" name="Impressions" stroke="#a09e9a" strokeWidth={1.5} dot={false} activeDot={{ r: 3, fill: '#a09e9a' }} />
             <Line type="monotone" dataKey="clicks" name="Clicks" stroke="#e8c4b8" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: '#e8c4b8' }} />
           </LineChart>
         </ResponsiveContainer>
@@ -148,8 +158,9 @@ const CampaignInfoCard = ({ campaign }: { campaign: CampaignView }) => (
     </div>
 
     <div className="rei-stat-card" style={{ padding: '14px 16px' }}>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-4 gap-3">
         {[
+          { label: 'Impressions', value: numFmt(campaign.uniqueImpressions) },
           { label: 'Total Clicks', value: numFmt(campaign.totalClicks) },
           { label: 'Unique Clicks', value: numFmt(campaign.uniqueClicks) },
           { label: 'CTR', value: `${campaign.ctr.toFixed(2)}%` },
@@ -197,6 +208,7 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
   const [loading, setLoading] = useState(true);
   const [campaigns, setCampaigns] = useState<CampaignRow[]>([]);
   const [clicks, setClicks] = useState<ClickRow[]>([]);
+  const [impressions, setImpressions] = useState<ImpressionRow[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -206,6 +218,7 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
         setLoading(false);
         setCampaigns([]);
         setClicks([]);
+        setImpressions([]);
         return;
       }
       setLoading(true);
@@ -226,9 +239,12 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
         const ids = (camps || []).map((c) => c.id);
         if (ids.length === 0) {
           setClicks([]);
+          setImpressions([]);
         } else {
-          const { data: ck, error: ckErr } = await supabase
-            .rpc('get_campaign_click_stats', { p_campaign_ids: ids });
+          const [{ data: ck, error: ckErr }, { data: im, error: imErr }] = await Promise.all([
+            supabase.rpc('get_campaign_click_stats', { p_campaign_ids: ids }),
+            supabase.rpc('get_campaign_impression_stats', { p_campaign_ids: ids }),
+          ]);
           if (ckErr) throw ckErr;
           const rows: ClickRow[] = (ck || []).map((r: { campaign_subscription_id: string; click_date: string; total_clicks: number | string; unique_clicks: number | string }) => ({
             campaign_subscription_id: r.campaign_subscription_id,
@@ -237,12 +253,22 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
             unique_clicks: Number(r.unique_clicks) || 0,
           }));
           if (!cancelled) setClicks(rows);
+          if (!imErr) {
+            const iRows: ImpressionRow[] = (im || []).map((r: { campaign_subscription_id: string; impression_date: string; total_impressions: number | string; unique_impressions: number | string }) => ({
+              campaign_subscription_id: r.campaign_subscription_id,
+              impression_date: r.impression_date,
+              total_impressions: Number(r.total_impressions) || 0,
+              unique_impressions: Number(r.unique_impressions) || 0,
+            }));
+            if (!cancelled) setImpressions(iRows);
+          }
         }
       } catch (e) {
         if (!cancelled) {
           console.warn('[BountyPromotions] load failed; showing empty state:', e);
           setCampaigns([]);
           setClicks([]);
+          setImpressions([]);
           setError(null);
         }
       } finally {
@@ -265,20 +291,38 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
         if (!cutoff) return true;
         return new Date(k.click_date) >= cutoff;
       });
+      const myImpressions = impressions.filter((k) => {
+        if (k.campaign_subscription_id !== c.id) return false;
+        if (!cutoff) return true;
+        return new Date(k.impression_date) >= cutoff;
+      });
       const totalClicks = myClicks.reduce((s, k) => s + k.total_clicks, 0);
       const uniqueClicks = myClicks.reduce((s, k) => s + k.unique_clicks, 0);
-      const ctr = totalClicks ? (uniqueClicks / totalClicks) * 100 : 0;
+      const totalImpressions = myImpressions.reduce((s, k) => s + k.total_impressions, 0);
+      const uniqueImpressions = myImpressions.reduce((s, k) => s + k.unique_impressions, 0);
+      // CTR = unique clicks / unique impressions (fallback to click-based when no impressions tracked yet)
+      const ctr = uniqueImpressions > 0
+        ? (uniqueClicks / uniqueImpressions) * 100
+        : (totalClicks ? (uniqueClicks / totalClicks) * 100 : 0);
 
-      // Build daily buckets
-      const byDay = new Map<string, number>();
+      // Build daily buckets (clicks + impressions)
+      const dayMap = new Map<string, { clicks: number; impressions: number }>();
       for (const k of myClicks) {
-        byDay.set(k.click_date, (byDay.get(k.click_date) || 0) + k.total_clicks);
+        const cur = dayMap.get(k.click_date) || { clicks: 0, impressions: 0 };
+        cur.clicks += k.total_clicks;
+        dayMap.set(k.click_date, cur);
       }
-      const series = Array.from(byDay.entries())
+      for (const k of myImpressions) {
+        const cur = dayMap.get(k.impression_date) || { clicks: 0, impressions: 0 };
+        cur.impressions += k.total_impressions;
+        dayMap.set(k.impression_date, cur);
+      }
+      const series = Array.from(dayMap.entries())
         .sort(([a], [b]) => a.localeCompare(b))
-        .map(([date, count]) => ({
+        .map(([date, v]) => ({
           date: new Date(date).toLocaleDateString(undefined, { month: 'short', day: '2-digit' }),
-          clicks: count,
+          clicks: v.clicks,
+          impressions: v.impressions,
         }));
 
       const status = statusFor(c.status, c.expires_at);
@@ -295,11 +339,13 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
         shortCode: c.short_code,
         totalClicks,
         uniqueClicks,
+        totalImpressions,
+        uniqueImpressions,
         ctr,
         series,
       };
     });
-  }, [campaigns, clicks, range]);
+  }, [campaigns, clicks, impressions, range]);
 
   return (
     <div className="rei-surface" style={{ padding: '24px' }}>

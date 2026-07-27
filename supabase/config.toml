@@ -35,3 +35,6 @@ verify_jwt = false
 
 [functions.price-bounties]
 verify_jwt = false
+
+[functions.track-campaign-impression]
+verify_jwt = false
