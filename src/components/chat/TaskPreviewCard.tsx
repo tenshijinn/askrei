@@ -1,5 +1,6 @@
 import { ExternalLink } from "lucide-react";
 import { useTaskPreview } from "@/hooks/useTaskPreview";
+import { useImpressionTracker } from "@/hooks/useImpressionTracker";
 
 interface TaskPreviewCardProps {
   taskId: string;
@@ -7,6 +8,7 @@ interface TaskPreviewCardProps {
 
 export const TaskPreviewCard = ({ taskId }: TaskPreviewCardProps) => {
   const { data, loading, uniqueVisits } = useTaskPreview(taskId);
+  const impressionRef = useImpressionTracker(data?.tracking_short_code ?? null);
 
   if (loading && !data) {
     return (
