@@ -206,6 +206,7 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
   const [loading, setLoading] = useState(true);
   const [campaigns, setCampaigns] = useState<CampaignRow[]>([]);
   const [clicks, setClicks] = useState<ClickRow[]>([]);
+  const [impressions, setImpressions] = useState<ImpressionRow[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -215,6 +216,7 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
         setLoading(false);
         setCampaigns([]);
         setClicks([]);
+        setImpressions([]);
         return;
       }
       setLoading(true);
