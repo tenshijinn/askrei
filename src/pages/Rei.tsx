@@ -487,9 +487,63 @@ export default function Rei() {
                 </div>
                 {analysis && <div className="rei-surface" style={{ padding: '24px' }}>
                   <span className="rei-section-label">Capabilities</span>
+                  {(registrationData.diamond_score != null || registrationData.wallet_behaviour) && (() => {
+                    const wb = registrationData.wallet_behaviour as any;
+                    const sub = wb?.subscores || {};
+                    const diamondScore = registrationData.diamond_score ?? 0;
+                    const diamondTier = registrationData.diamond_tier || wb?.diamond_tier || '—';
+                    const truncate = (a?: string | null) => (a ? `${a.slice(0, 4)}…${a.slice(-4)}` : null);
+                    const solPill = truncate(registrationData.wallet_address);
+                    const evmPill = truncate(registrationData.evm_wallet_address);
+                    const trust = sub?.risk?.score != null ? 100 - Math.round(sub.risk.score) : null;
+                    const chips = [
+                      { label: 'Community', value: sub?.community?.score },
+                      { label: 'Confidence', value: sub?.confidence?.score },
+                      { label: 'Trust', value: trust },
+                    ].filter((c) => c.value != null) as { label: string; value: number }[];
+                    return (
+                      <div className="rei-stat-card mb-4" style={{ padding: '14px 16px' }}>
+                        <div className="flex items-center justify-between gap-3 flex-wrap">
+                          <div className="flex items-center gap-3">
+                            <Gem className="h-4 w-4" style={{ color: '#e8c4b8' }} />
+                            <div>
+                              <div style={{ fontSize: '10px', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#5c5a57' }}>Rei's Diamond</div>
+                              <div className="flex items-baseline gap-2">
+                                <span style={{ fontSize: '22px', fontWeight: 500, color: '#f0ede8', fontFamily: "'SF Mono', 'Consolas', monospace", lineHeight: 1 }}>{Math.round(diamondScore)}</span>
+                                <span style={{ fontSize: '11px', color: '#a09e9a' }}>/100 · {diamondTier}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <button onClick={() => setShareOpen(true)} className="rei-chip" style={{ padding: '6px 12px', fontSize: '11px', color: '#f0ede8', cursor: 'pointer' }}>
+                            <Share2 className="h-3 w-3" /> Share card
+                          </button>
+                        </div>
+                        {(solPill || evmPill || chips.length > 0) && (
+                          <div className="flex flex-wrap gap-1.5 mt-3">
+                            {solPill && <span className="rei-chip" style={{ padding: '3px 9px', fontSize: '10px', fontFamily: "'SF Mono', 'Consolas', monospace" }}>SOL · {solPill}</span>}
+                            {evmPill && <span className="rei-chip" style={{ padding: '3px 9px', fontSize: '10px', fontFamily: "'SF Mono', 'Consolas', monospace" }}>ETH · {evmPill}</span>}
+                            {chips.map((c) => (
+                              <span key={c.label} className="rei-chip" style={{ padding: '3px 9px', fontSize: '10px' }}>{c.label} · {Math.round(c.value)}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                   {analysis.category_scores && <div className="grid grid-cols-2 gap-3 mb-5">{Object.entries(analysis.category_scores).map(([category, score]: [string, any]) => <div key={category} className="rei-stat-card" style={{ padding: '12px' }}><div className="flex justify-between items-center mb-2"><span style={{ fontSize: '11px', textTransform: 'capitalize', color: '#5c5a57', letterSpacing: '0.04em' }}>{category.replace('_', ' ')}</span><span style={{ fontSize: '13px', fontWeight: 500, color: '#f0ede8' }}>{score}/25</span></div><Progress value={(score / 25) * 100} className="h-1.5" /></div>)}</div>}
                   {analysis.key_strengths?.length > 0 && <div><div className="rei-section-label">Key Strengths</div><div className="space-y-1.5">{analysis.key_strengths.map((strength: string, idx: number) => <div key={idx} className="flex items-start gap-2" style={{ fontSize: '13px', color: '#a09e9a' }}><CheckCircle2 className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" style={{ color: '#e8c4b8' }} /><span>{strength}</span></div>)}</div></div>}
                 </div>}
+                <ReiDiamondShareCard
+                  open={shareOpen}
+                  onClose={() => setShareOpen(false)}
+                  handle={registrationData.handle}
+                  displayName={registrationData.display_name}
+                  profileImageUrl={registrationData.profile_image_url}
+                  diamondScore={registrationData.diamond_score ?? 0}
+                  diamondTier={registrationData.diamond_tier || (registrationData.wallet_behaviour as any)?.diamond_tier || '—'}
+                  subscores={(registrationData.wallet_behaviour as any)?.subscores}
+                />
+
                 <BountyPromotions xUserId={twitterUser?.x_user_id} walletAddress={effectiveWallet || registrationData?.wallet_address} />
                 <button data-tour="edit-profile" onClick={() => setIsEditMode(true)} className="btn-manga btn-manga-outline w-full" style={{ borderRadius: '28px', padding: '11px 22px', fontSize: '13px', cursor: 'pointer' }}>Edit Profile</button>
                 <button onClick={walkthrough.replay} className="w-full" style={{ background: 'none', border: 'none', color: '#a09e9a', fontSize: '12px', textDecoration: 'underline', textUnderlineOffset: 3, cursor: 'pointer', paddingTop: 4 }}>Replay walkthrough</button>
