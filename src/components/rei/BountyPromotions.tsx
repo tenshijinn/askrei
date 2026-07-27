@@ -130,6 +130,7 @@ const ChartCard = ({ campaign }: { campaign: CampaignView }) => (
               cursor={{ stroke: 'hsla(18,52%,82%,0.25)', strokeWidth: 1 }}
             />
             <Legend wrapperStyle={{ fontSize: 11, color: '#a09e9a' }} iconType="plainline" />
+            <Line type="monotone" dataKey="impressions" name="Impressions" stroke="#a09e9a" strokeWidth={1.5} dot={false} activeDot={{ r: 3, fill: '#a09e9a' }} />
             <Line type="monotone" dataKey="clicks" name="Clicks" stroke="#e8c4b8" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: '#e8c4b8' }} />
           </LineChart>
         </ResponsiveContainer>
