@@ -33,6 +33,13 @@ interface ClickRow {
   unique_clicks: number;
 }
 
+interface ImpressionRow {
+  campaign_subscription_id: string;
+  impression_date: string;
+  total_impressions: number;
+  unique_impressions: number;
+}
+
 interface CampaignRow {
   id: string;
   project_name: string;
@@ -52,8 +59,10 @@ interface CampaignView {
   shortCode: string | null;
   totalClicks: number;
   uniqueClicks: number;
+  totalImpressions: number;
+  uniqueImpressions: number;
   ctr: number;
-  series: { date: string; clicks: number }[];
+  series: { date: string; clicks: number; impressions: number }[];
 }
 
 const numFmt = (n: number) => n.toLocaleString();
