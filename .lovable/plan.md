@@ -1,68 +1,60 @@
-## Goal
+## Part 1 — Rei's Diamonds in the Capabilities card (owner-only)
 
-Three small polish changes to the registration flow in `src/pages/Rei.tsx` (and the connect card):
+Add a sparse on-chain summary block at the top of the existing Capabilities card in `src/pages/Rei.tsx` (around line 486–490). Data source: `rei_registry.diamond_score`, `diamond_tier`, `wallet_behaviour` (subscores), `wallet_address`, `evm_wallet_address` — all already populated by the engine.
 
-1. Make the Solana and EVM wallet buttons visually consistent inside one card.
-2. Re-order the 3-step flow so it feels more natural.
-3. Add explicit `Step N of 3` labels above the progress bar.
+Rendered elements (sparse, one row):
+- Diamond Score (big number) + tier label (e.g. "Rei's Diamond"), styled like the existing profile_score number.
+- Chains connected: SOL pill with truncated `wallet_address`; ETH pill with truncated `evm_wallet_address` if present.
+- Subscore highlights: 3 chips — the top-signal subscores from `wallet_behaviour.subscores` (pick the highest-scoring non-risk one + `community` + `risk` inverted as "trust"), each shown as `Label · NN`.
+- "Share card" button that opens a modal (see Part 2).
 
-## 1. Unified wallet card
+Owner-only: nothing added to `TalentCard.tsx`. Data stays fetched via the existing `registrationData` query already scoped to the signed-in user.
 
-Today the Solana button is a purple filled `WalletMultiButton` and the EVM button is a transparent outlined `ConnectButton.Custom` — visually mismatched even though they sit in the same card.
+## Part 2 — "Rei's Diamond" share card
 
-Change both to the same button style so they read as a matched pair:
+New component `src/components/rei/ReiDiamondShareCard.tsx`:
+- Dialog with a rendered 1200×630 (or 1:1 square) card containing: X avatar, `@handle`, Diamond Score, tier name/emoji, 3 subscore chips, small "rei.chat" wordmark. No wallet addresses, no raw signals, no email.
+- Two actions: **Download PNG** (via `html-to-image` — small dep, already used pattern in Lovable projects; if not present, use canvas snapshot with a simple DOM-to-canvas approach) and **Share on X** (opens `x.com/intent/tweet` with text like "My Rei's Diamond score: 87 · Tier X. Get yours at rei.chat").
+- Purely client-side, no new tables.
 
-- Same height (44px), same `rounded-[28px]`, same font size/weight.
-- Solana = **primary filled** (peach `#e8c4b8` on dark, matches the "Continue" and "Follow" buttons already used in `ConnectReiCard`) since it's required.
-- EVM = **outlined ghost** (transparent, hairline border) since it's optional.
-- Wrap both under one `rei-surface-2` card with a subtle divider between them, so it's obviously one "Wallets" card with two rows instead of two loose buttons.
-- Keep the small `SOLANA WALLET · REQUIRED` / `EVM WALLET · OPTIONAL` labels as row headers inside the card.
-- Style `WalletMultiButton` via its className to match — override its default purple to the peach primary and align padding/radius. Connected-state pill (`Connected · 0x1234…abcd`) stays the same for both.
+## Part 3 — Bounty impression tracking
 
-## 2. Flow re-order
+### Schema (migration)
+Add `campaign_impressions` table:
+- `campaign_subscription_id uuid` (FK to campaign_subscriptions.id)
+- `short_code text`
+- `ip_hash text`, `user_agent_hash text`, `session_id uuid`
+- `impression_date date`, `viewed_at timestamptz`
+- `is_unique boolean` (unique per ip_hash + short_code + date)
 
-Current order after X sign-in:
-1. Connect Rei to your workflow (Follow @AskRei_ + MCP)
-2. Connect wallets
-3. Submit details (voice intro, roles, consent)
+GRANTs + RLS: insert via edge function (service role) only; SELECT to authenticated for owner (via campaign ownership). Add RPC `get_campaign_impression_stats(p_campaign_ids uuid[])` mirroring `get_campaign_click_stats` returning daily totals + unique.
 
-Problem: step 1 is entirely optional "activation extras" but sits before the required work. Users hit soft nice-to-haves before they've actually finished registering.
+### Edge function
+New `supabase/functions/track-campaign-impression/index.ts` — mirrors `track-campaign-click` (hash IP/UA, dedupe per day, rate-limit) but does NOT award points. Called from client when a bounty card first becomes visible.
 
-Proposed new order:
-1. **Connect your wallets** (Solana required, EVM optional) — the highest-signal required step, and the one that powers Rei's Diamonds scoring the analysis depends on.
-2. **Tell us about you** (voice intro + roles + consent, i.e. today's step 3).
-3. **Activate Rei** (follow @AskRei_ + MCP tiles) — moved to the end as a "you're in, here's how to plug Rei into your workflow" upsell. Continue button becomes "Finish" and lands them on `/rei`.
+### Client wiring
+- Add `useImpressionTracker(shortCode)` hook using `IntersectionObserver` (threshold 0.5, 500ms dwell) that fires once per `short_code` per session (sessionStorage guard) and calls the edge function.
+- Attach to `TaskPreviewCard` (chat) and any list bounty card that has a `tracking_short_code`. Skip if no short_code.
 
-Rationale: required → required → optional, and the MCP/Follow card fits better as a post-registration success screen than as a gate before wallets.
-
-The `ConnectReiCard` component itself does not need to change — it's already framed as optional. We just move where it's rendered in `Rei.tsx` and rename its Continue button copy to "Finish setup".
-
-## 3. Step indicators
-
-Above the existing 3-segment progress bar (line 537), add a small header row:
-
-```
-Step 2 of 3 · Connect your wallets
-```
-
-- Left side: `Step {step} of 3` in the muted peach `#e8c4b8`, 11px, uppercase, letter-spaced — matches the existing "Recommended" / "Or use Rei…" eyebrow style used in `ConnectReiCard`.
-- Right side: current step title (`Sign in with X` / `Connect your wallets` / `Tell us about you` / `Activate Rei`) in `#a09e9a`, 12px.
-- The 3-segment bar stays underneath, filled peach up to the current step.
-
-Also drop the inline `1` / `2` / `3` numbered circles that currently sit next to each section header inside the card (lines 604, 689) — with the top step indicator they become redundant. Replace each with just the section title (and the existing check-mark chip when complete).
+### Analytics UI
+In `src/components/rei/BountyPromotions.tsx`:
+- Fetch impressions via new RPC in parallel with click stats.
+- Extend `CampaignView` with `totalImpressions`, `uniqueImpressions`, and recompute `CTR = uniqueClicks / uniqueImpressions * 100` (fallback to old formula when impressions=0 to avoid breakage on historical campaigns).
+- Add "Impressions" stat to the 3-stat block → becomes a 4-stat grid (Impressions, Unique Clicks, Total Clicks, CTR).
+- Add impressions line to the daily chart (second Line series in different tone).
 
 ## Technical notes
+- No changes to points logic — impressions are metrics only.
+- CTR formula change is scoped to the promoter analytics component; global bounty stats untouched.
+- Impression edge function needs `verify_jwt = false` entry in `supabase/config.toml`.
+- Rate limit: cap 200 impressions/IP/hour to prevent spam.
 
-- File touched: `src/pages/Rei.tsx` only. `ConnectReiCard.tsx` gets a one-line copy change ("Continue → Connect wallets" → "Finish setup").
-- `useEffect` step-advancers (lines 107–108) update to the new order:
-  - `step 1 → 2` when Solana wallet connected (was: when X connected).
-  - `step 2 → 3` when audio + roles + consent submitted (was: when wallet connected).
-  - X sign-in is a precondition for showing step 1 at all, same as today; the "identity verified" pill stays pinned at the top of the card across all three steps so users see they're signed in.
-- `hasWallet` / `profileActivated` gates get remapped to the new order; no schema or backend changes.
-- No changes to `submit-rei-registration`, `analyze-rei-profile`, or the Diamonds engine.
-
-## Out of scope
-
-- No changes to what data is collected or how scoring works.
-- No changes to the sign-in / sign-up entry screens.
-- No changes to the post-registration `/rei` app shell.
+## Files touched
+- `supabase/migrations/*` — new table, GRANTs, RLS, RPC
+- `supabase/functions/track-campaign-impression/index.ts` (new)
+- `supabase/config.toml` — add function entry
+- `src/hooks/useImpressionTracker.ts` (new)
+- `src/components/chat/TaskPreviewCard.tsx` — attach tracker
+- `src/components/rei/ReiDiamondShareCard.tsx` (new)
+- `src/pages/Rei.tsx` — Capabilities card additions + share button
+- `src/components/rei/BountyPromotions.tsx` — impressions + CTR
