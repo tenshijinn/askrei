@@ -190,6 +190,60 @@ export type Database = {
           },
         ]
       }
+      campaign_impressions: {
+        Row: {
+          campaign_subscription_id: string
+          created_at: string
+          id: string
+          impression_date: string
+          ip_hash: string | null
+          is_unique: boolean
+          session_id: string | null
+          short_code: string
+          user_agent_hash: string | null
+          viewed_at: string
+        }
+        Insert: {
+          campaign_subscription_id: string
+          created_at?: string
+          id?: string
+          impression_date?: string
+          ip_hash?: string | null
+          is_unique?: boolean
+          session_id?: string | null
+          short_code: string
+          user_agent_hash?: string | null
+          viewed_at?: string
+        }
+        Update: {
+          campaign_subscription_id?: string
+          created_at?: string
+          id?: string
+          impression_date?: string
+          ip_hash?: string | null
+          is_unique?: boolean
+          session_id?: string | null
+          short_code?: string
+          user_agent_hash?: string | null
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_impressions_campaign_subscription_id_fkey"
+            columns: ["campaign_subscription_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_subscriptions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_impressions_campaign_subscription_id_fkey"
+            columns: ["campaign_subscription_id"]
+            isOneToOne: false
+            referencedRelation: "v_public_campaign_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaign_subscriptions: {
         Row: {
           created_at: string
@@ -1425,6 +1479,15 @@ export type Database = {
           click_date: string
           total_clicks: number
           unique_clicks: number
+        }[]
+      }
+      get_campaign_impression_stats: {
+        Args: { p_campaign_ids: string[] }
+        Returns: {
+          campaign_subscription_id: string
+          impression_date: string
+          total_impressions: number
+          unique_impressions: number
         }[]
       }
       get_campaign_unique_visits: {
