@@ -1277,6 +1277,8 @@ export type Database = {
           status: string | null
           tasks_imported_count: number | null
           updated_at: string | null
+          wallet_address: string | null
+          x_user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -1292,6 +1294,8 @@ export type Database = {
           status?: string | null
           tasks_imported_count?: number | null
           updated_at?: string | null
+          wallet_address?: string | null
+          x_user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -1307,6 +1311,8 @@ export type Database = {
           status?: string | null
           tasks_imported_count?: number | null
           updated_at?: string | null
+          wallet_address?: string | null
+          x_user_id?: string | null
         }
         Relationships: []
       }
