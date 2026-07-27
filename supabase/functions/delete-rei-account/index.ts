@@ -67,8 +67,21 @@ Deno.serve(async (req) => {
     await del("referral_conversions", "wallet_address", wallet_address);
     await del("referral_codes", "wallet_address", wallet_address);
     await del("campaign_clicks", "wallet_address", wallet_address);
-    await del("campaign_subscriptions", "wallet_address", wallet_address);
-    await del("campaign_subscriptions", "x_user_id", x_user_id);
+    // Preserve aggregated campaign_subscriptions (bounty-feed data attached to
+    // this account by the attach_aggregated_task_to_wayne trigger). They are
+    // platform data, not user-owned, and must survive account deletion.
+    const deleteUserCampaigns = async (column: string, value: string | null | undefined) => {
+      if (!value) return;
+      const { error, count } = await supabase
+        .from("campaign_subscriptions")
+        .delete({ count: "exact" })
+        .eq(column, value)
+        .not("source", "like", "aggregated:%");
+      if (error) errors[`campaign_subscriptions.${column}`] = error.message;
+      else deleted[`campaign_subscriptions.${column}`] = count ?? 0;
+    };
+    await deleteUserCampaigns("wallet_address", wallet_address);
+    await deleteUserCampaigns("x_user_id", x_user_id);
     await del("community_submissions", "wallet_address", wallet_address);
     await del("subscriptions", "wallet_address", wallet_address);
     await del("agent_api_keys", "wallet_address", wallet_address);
