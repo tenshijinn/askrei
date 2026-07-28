@@ -23,13 +23,14 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { shortCode, referrer } = await req.json();
+    const { shortCode, referrer, guest } = await req.json();
     if (!shortCode || typeof shortCode !== "string") {
       return new Response(JSON.stringify({ error: "shortCode required" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    const isGuest = guest === true;
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
