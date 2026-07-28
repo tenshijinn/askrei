@@ -3,6 +3,16 @@ import { Link } from "react-router-dom";
 import { Loader2, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import reiLogo from "@/assets/joinrei/rei-logo.png";
+
+const PLACEHOLDER_QUERIES = [
+  "find USDC bounties",
+  "show me Solana jobs",
+  "find airdrops I can farm",
+  "what content bounties are live?",
+  "biggest bounty this week",
+];
+
 
 
 interface Bounty {
@@ -37,6 +47,7 @@ const Ask = () => {
     assistant: "",
   });
   const inputRef = useRef<HTMLInputElement>(null);
+  const [placeholder, setPlaceholder] = useState("");
 
   useEffect(() => {
     document.title = "Ask Rei — rei.chat";
@@ -49,6 +60,39 @@ const Ask = () => {
     } catch {}
     inputRef.current?.focus();
   }, []);
+
+  // Rotating typewriter placeholder when input is empty
+  useEffect(() => {
+    if (query || loading) {
+      setPlaceholder("");
+      return;
+    }
+    let cancelled = false;
+    let idx = 0;
+    const type = async () => {
+      while (!cancelled) {
+        const phrase = PLACEHOLDER_QUERIES[idx % PLACEHOLDER_QUERIES.length];
+        for (let i = 1; i <= phrase.length && !cancelled; i++) {
+          setPlaceholder(phrase.slice(0, i));
+          await new Promise((r) => setTimeout(r, 55));
+        }
+        await new Promise((r) => setTimeout(r, 1400));
+        for (let i = phrase.length; i >= 0 && !cancelled; i--) {
+          setPlaceholder(phrase.slice(0, i));
+          await new Promise((r) => setTimeout(r, 25));
+        }
+        await new Promise((r) => setTimeout(r, 250));
+        idx++;
+      }
+    };
+    type();
+    return () => {
+      cancelled = true;
+    };
+  }, [query, loading]);
+
+  const hasQuery = query.trim().length > 0;
+
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -110,7 +154,7 @@ const Ask = () => {
             ref={isHero ? inputRef : undefined}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="type a question or /command..."
+            placeholder={placeholder ? `${placeholder}▌` : ""}
             disabled={loading}
             className="flex-1 bg-transparent outline-none disabled:opacity-60 min-w-0"
             style={{
@@ -122,33 +166,24 @@ const Ask = () => {
           />
           <button
             type="submit"
-            disabled={loading || !query.trim()}
+            disabled={loading || !hasQuery}
             aria-label="Ask"
             className="shrink-0 rounded-md cursor-pointer"
             style={{
-              opacity: loading || !query.trim() ? 0.4 : 1,
+              opacity: loading ? 0.4 : 1,
               background: "transparent",
-              border: "0.5px solid hsla(0,0%,100%,0.08)",
-              color: "#4a4845",
+              border: `0.5px solid ${hasQuery ? "hsla(18, 52%, 82%, 0.4)" : "hsla(0,0%,100%,0.08)"}`,
+              color: hasQuery ? "hsl(18, 52%, 82%)" : "#4a4845",
               fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
               fontSize: "11px",
               padding: "4px 10px",
               letterSpacing: "0.05em",
               transition: "color 0.15s, border-color 0.15s",
             }}
-            onMouseEnter={(e) => {
-              if (!loading && query.trim()) {
-                e.currentTarget.style.color = "hsl(18, 52%, 82%)";
-                e.currentTarget.style.borderColor = "hsla(18, 52%, 82%, 0.3)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "#4a4845";
-              e.currentTarget.style.borderColor = "hsla(0,0%,100%,0.08)";
-            }}
           >
             {loading ? "..." : "send"}
           </button>
+
         </div>
       </form>
     );
@@ -161,10 +196,10 @@ const Ask = () => {
     >
       {/* Header — term-bar style */}
       <header
-        className="flex items-center justify-between px-5 py-3 md:px-8 shrink-0"
+        className="flex items-center justify-between px-5 py-3 md:px-8 shrink-0 relative z-20"
         style={{ background: "#0f0f0f", borderBottom: "0.5px solid hsla(0,0%,100%,0.08)" }}
       >
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/ask" className="flex items-center gap-2">
           <div className="flex items-center gap-2">
             <div className="flex gap-1.5">
               <div className="w-2 h-2 rounded-full" style={{ background: "#2a2826" }} />
@@ -179,21 +214,38 @@ const Ask = () => {
             </span>
           </div>
         </Link>
-        <Link to="/rei">
-          <Button
-            variant="ghost"
-            className="rounded-full h-9 px-4 text-xs gap-2 hover:opacity-80"
-            style={{
-              background: "transparent",
-              color: "#f0ede8",
-              border: "0.5px solid hsla(0,0%,100%,0.18)",
-              fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
-            }}
-          >
-            sign up
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link to="/">
+            <Button
+              variant="ghost"
+              className="rounded-full h-9 px-4 text-xs gap-2 hover:opacity-80"
+              style={{
+                background: "transparent",
+                color: "#a09e9a",
+                border: "0.5px solid hsla(0,0%,100%,0.12)",
+                fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
+              }}
+            >
+              how rei works
+            </Button>
+          </Link>
+          <Link to="/rei">
+            <Button
+              variant="ghost"
+              className="rounded-full h-9 px-4 text-xs gap-2 hover:opacity-80"
+              style={{
+                background: "transparent",
+                color: "#f0ede8",
+                border: "0.5px solid hsla(0,0%,100%,0.18)",
+                fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
+              }}
+            >
+              sign up
+            </Button>
+          </Link>
+        </div>
       </header>
+
 
       {/* Main content */}
       <main className="flex-1 flex flex-col px-4 md:px-6 relative">
@@ -201,17 +253,18 @@ const Ask = () => {
           <div className="flex-1 flex flex-col items-center justify-center pb-24 -mt-12">
             <div className="w-full max-w-2xl mx-auto text-center">
               <div
-                className="mx-auto mb-6 w-14 h-14 rounded-full flex items-center justify-center"
+                className="mx-auto mb-6 w-16 h-16 rounded-full flex items-center justify-center overflow-hidden"
                 style={{ background: "#141414", border: "0.5px solid hsla(0,0%,100%,0.08)" }}
               >
-                <span className="text-2xl">👁️</span>
+                <img src={reiLogo} alt="Rei" className="w-10 h-10 object-contain" />
               </div>
               <h1
                 className="text-4xl md:text-5xl font-semibold tracking-tight"
-                style={{ color: "#f0ede8" }}
+                style={{ color: "hsl(18, 52%, 82%)" }}
               >
-                Ask Rei anything.
+                Ask Rei for Bounties.
               </h1>
+
               <p className="mt-3" style={{ color: "#5c5a57" }}>
                 You get 1 free search.
               </p>
