@@ -36,6 +36,19 @@ const ReiChatbot = ({ walletAddress, userMode, twitterHandle }: ReiChatbotProps)
   useEffect(() => { if (messages.length > 0) localStorage.setItem(`rei_chat_${walletAddress}`, JSON.stringify(messages)); }, [messages, walletAddress]);
   useEffect(() => { if (conversationId) localStorage.setItem(`rei_chat_id_${walletAddress}`, conversationId); }, [conversationId, walletAddress]);
   useEffect(() => { if (messages.length === 0) loadConversation(); }, []);
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const raw = params.get("ask");
+      if (raw) {
+        const decoded = decodeURIComponent(raw);
+        if (decoded) setInput(decoded);
+        params.delete("ask");
+        const qs = params.toString();
+        window.history.replaceState({}, "", window.location.pathname + (qs ? `?${qs}` : ""));
+      }
+    } catch {}
+  }, []);
 
   const prevUserModeRef = useRef(userMode);
   useEffect(() => {
