@@ -92,7 +92,8 @@ serve(async (req) => {
         session_id: crypto.randomUUID(),
         click_date: today,
         is_unique: isUnique,
-        points_awarded: isUnique && !!campaign.wallet_address,
+        is_guest: isGuest,
+        points_awarded: isUnique && !!campaign.wallet_address && !isGuest,
       });
 
       if (!insErr) {
