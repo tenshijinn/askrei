@@ -63,10 +63,40 @@ const Ask = () => {
     }
   };
 
+  const renderInput = (variant: "hero" | "fixed") => {
+    const isHero = variant === "hero";
+    return (
+      <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto px-4">
+        <div
+          className={`flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2.5 focus-within:border-white/25 transition-colors ${
+            isHero ? "shadow-2xl" : ""
+          }`}
+        >
+          <input
+            ref={isHero ? inputRef : undefined}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Ask a question or search..."
+            disabled={loading}
+            className="flex-1 bg-transparent outline-none text-sm md:text-base placeholder:text-white/40 disabled:opacity-60"
+          />
+          <button
+            type="submit"
+            disabled={loading || !query.trim()}
+            aria-label="Ask"
+            className="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center disabled:opacity-40 hover:bg-white/90 transition shrink-0"
+          >
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUp className="w-4 h-4" />}
+          </button>
+        </div>
+      </form>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
       {/* Header */}
-      <header className="flex items-center justify-between px-5 py-4 md:px-8">
+      <header className="flex items-center justify-between px-5 py-4 md:px-8 shrink-0">
         <Link to="/" className="flex items-center gap-2">
           <img src="/placeholder.svg" alt="rei.chat" className="w-7 h-7 opacity-90" onError={(e) => ((e.target as HTMLImageElement).style.display = "none")} />
           <span className="text-sm md:text-base tracking-tight font-medium">rei.chat</span>
@@ -80,19 +110,20 @@ const Ask = () => {
       </header>
 
       {/* Main content */}
-      <main className={`flex-1 flex flex-col ${submitted ? "" : "items-center justify-center"} px-4 md:px-6`}>
-        {!submitted && (
-          <div className="w-full max-w-2xl mx-auto text-center pb-40">
-            <div className="mx-auto mb-6 w-14 h-14 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center">
-              <span className="text-2xl">👁️</span>
+      <main className="flex-1 flex flex-col px-4 md:px-6 relative">
+        {!submitted ? (
+          <div className="flex-1 flex flex-col items-center justify-center pb-24 -mt-12">
+            <div className="w-full max-w-2xl mx-auto text-center">
+              <div className="mx-auto mb-6 w-14 h-14 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center">
+                <span className="text-2xl">👁️</span>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">Ask Rei anything.</h1>
+              <p className="mt-3 text-white/60">You get 1 free search.</p>
+              <div className="mt-10">{renderInput("hero")}</div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">Ask Rei anything.</h1>
-            <p className="mt-3 text-white/60">You get 1 free search.</p>
           </div>
-        )}
-
-        {submitted && (
-          <div className="flex-1 w-full max-w-2xl mx-auto pt-4 pb-40 space-y-6">
+        ) : (
+          <div className="flex-1 w-full max-w-2xl mx-auto pt-4 pb-40 space-y-6 overflow-y-auto">
             {/* User bubble */}
             <div className="flex justify-end">
               <div className="rounded-2xl bg-white/[0.06] border border-white/10 px-4 py-3 max-w-[85%] text-sm">
@@ -179,33 +210,26 @@ const Ask = () => {
         )}
       </main>
 
-      {/* Composer */}
-      <div className={`${submitted ? "fixed" : "absolute"} left-0 right-0 bottom-0 pb-6 pt-4 bg-gradient-to-t from-black via-black/95 to-transparent`}>
-        <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto px-4">
-          <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2.5 focus-within:border-white/25 transition-colors">
-            <input
-              ref={inputRef}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Ask a question or search..."
-              disabled={loading}
-              className="flex-1 bg-transparent outline-none text-sm md:text-base placeholder:text-white/40 disabled:opacity-60"
-            />
-            <button
-              type="submit"
-              disabled={loading || !query.trim()}
-              aria-label="Ask"
-              className="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center disabled:opacity-40 hover:bg-white/90 transition"
-            >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowUp className="w-4 h-4" />}
-            </button>
-          </div>
+      {/* Composer — fixed at bottom only after submission */}
+      {submitted && (
+        <div className="fixed left-0 right-0 bottom-0 pb-6 pt-4 bg-gradient-to-t from-black via-black/95 to-transparent z-10">
+          {renderInput("fixed")}
           <p className="mt-3 text-center text-xs text-white/40 flex items-center justify-center gap-1.5">
             <Lock className="w-3 h-3" />
             <Link to="/rei" className="underline hover:text-white/70">Sign up</Link> to continue chatting, earn points, and unlock all features.
           </p>
-        </form>
-      </div>
+        </div>
+      )}
+
+      {/* Footer hint for empty state */}
+      {!submitted && (
+        <div className="absolute left-0 right-0 bottom-0 pb-6 pt-4 bg-gradient-to-t from-black via-black/95 to-transparent pointer-events-none">
+          <p className="text-center text-xs text-white/40 flex items-center justify-center gap-1.5">
+            <Lock className="w-3 h-3" />
+            <Link to="/rei" className="underline hover:text-white/70 pointer-events-auto">Sign up</Link> to continue chatting, earn points, and unlock all features.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
