@@ -331,7 +331,8 @@ const Ask = () => {
 
               {!loading && bounty && (
                 <a
-                  href={bounty.link ?? "#"}
+                  ref={impressionRef as React.RefObject<HTMLAnchorElement>}
+                  href={bounty.tracking_short_code ? `/c/${bounty.tracking_short_code}?g=1` : (bounty.link ?? "#")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block overflow-hidden transition-colors rei-surface-2 hover:opacity-90"
