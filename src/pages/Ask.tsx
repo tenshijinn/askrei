@@ -40,6 +40,13 @@ const Ask = () => {
 
   useEffect(() => {
     document.title = "Ask Rei — rei.chat";
+    try {
+      const raw = new URLSearchParams(window.location.search).get("ask");
+      if (raw) {
+        const decoded = decodeURIComponent(raw);
+        if (decoded) setQuery(decoded);
+      }
+    } catch {}
     inputRef.current?.focus();
   }, []);
 
