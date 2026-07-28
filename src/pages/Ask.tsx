@@ -212,50 +212,28 @@ const Ask = () => {
             </div>
           </div>
         ) : (
-          <div className="flex-1 w-full max-w-2xl mx-auto pt-4 pb-40 space-y-6 overflow-y-auto">
+          <div
+            className="rei-terminal flex-1 w-full max-w-2xl mx-auto pt-4 pb-40 overflow-y-auto"
+            style={{ border: "none", borderRadius: 0, padding: "16px 20px" }}
+          >
             {/* User line */}
-            <div className="chat-line" style={{ fontSize: "13px", lineHeight: 1.9 }}>
-              <span
-                className="chat-ts"
-                style={{ color: "#3d3b38", fontSize: "11px", minWidth: "76px" }}
-              >
-                [{timestamps.user || nowTs()}]
-              </span>
-              <span
-                className="chat-handle"
-                style={{ color: "hsl(18, 52%, 82%)", minWidth: "72px", fontSize: "12px" }}
-              >
-                @you
-              </span>
-              <span className="chat-msg" style={{ color: "#f0ede8" }}>
-                {query}
-              </span>
+            <div className="chat-line">
+              <span className="chat-ts">[{timestamps.user || nowTs()}]</span>
+              <span className="chat-handle handle-user">@you</span>
+              <span className="chat-msg">{query}</span>
             </div>
 
-            <div className="line-gap" style={{ height: "3px" }} />
-            <div
-              className="term-divider"
-              style={{ height: "0.5px", background: "hsla(0,0%,100%,0.08)" }}
-            />
-            <div className="line-gap" style={{ height: "3px" }} />
+            <div className="line-gap" />
+            <div className="term-divider" />
+            <div className="line-gap" />
 
             {/* Assistant reply */}
             <div className="space-y-4">
               {loading && (
-                <div className="chat-line" style={{ fontSize: "13px", lineHeight: 1.9 }}>
-                  <span
-                    className="chat-ts"
-                    style={{ color: "#3d3b38", fontSize: "11px", minWidth: "76px" }}
-                  >
-                    [...]
-                  </span>
-                  <span
-                    className="chat-handle"
-                    style={{ color: "#7a7874", minWidth: "72px", fontSize: "12px" }}
-                  >
-                    @rei
-                  </span>
-                  <span className="chat-msg" style={{ color: "#4a4845", display: "flex", alignItems: "center", gap: "8px" }}>
+                <div className="chat-line">
+                  <span className="chat-ts">[...]</span>
+                  <span className="chat-handle handle-ai">@rei</span>
+                  <span className="chat-msg msg-ai" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                     <Loader2 className="h-3 w-3 animate-spin" style={{ color: "#7a7874" }} />
                     thinking…
                   </span>
@@ -263,10 +241,7 @@ const Ask = () => {
               )}
 
               {!loading && errorMsg && (
-                <div
-                  className="rei-surface-2 p-4 text-sm"
-                  style={{ color: "#f0ede8" }}
-                >
+                <div className="rei-surface-2 p-4 text-sm" style={{ color: "#f0ede8" }}>
                   {errorMsg}
                   <div className="mt-3">
                     <Link to="/rei">
@@ -282,22 +257,10 @@ const Ask = () => {
               )}
 
               {!loading && reply && (
-                <div className="chat-line" style={{ fontSize: "13px", lineHeight: 1.9 }}>
-                  <span
-                    className="chat-ts"
-                    style={{ color: "#3d3b38", fontSize: "11px", minWidth: "76px" }}
-                  >
-                    [{timestamps.assistant || nowTs()}]
-                  </span>
-                  <span
-                    className="chat-handle"
-                    style={{ color: "#7a7874", minWidth: "72px", fontSize: "12px" }}
-                  >
-                    @rei
-                  </span>
-                  <span className="chat-msg" style={{ color: "#b8b5b0" }}>
-                    {reply}
-                  </span>
+                <div className="chat-line">
+                  <span className="chat-ts">[{timestamps.assistant || nowTs()}]</span>
+                  <span className="chat-handle handle-ai">@rei</span>
+                  <span className="chat-msg msg-ai">{reply}</span>
                 </div>
               )}
 
