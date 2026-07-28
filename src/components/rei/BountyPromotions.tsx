@@ -310,23 +310,27 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
       });
       const totalClicks = myClicks.reduce((s, k) => s + k.total_clicks, 0);
       const uniqueClicks = myClicks.reduce((s, k) => s + k.unique_clicks, 0);
+      const guestClicks = myClicks.reduce((s, k) => s + k.guest_clicks, 0);
+      const guestUniqueClicks = myClicks.reduce((s, k) => s + k.guest_unique_clicks, 0);
       const totalImpressions = myImpressions.reduce((s, k) => s + k.total_impressions, 0);
       const uniqueImpressions = myImpressions.reduce((s, k) => s + k.unique_impressions, 0);
-      // CTR = unique clicks / unique impressions (fallback to click-based when no impressions tracked yet)
+      const guestImpressions = myImpressions.reduce((s, k) => s + k.guest_impressions, 0);
+      const guestUniqueImpressions = myImpressions.reduce((s, k) => s + k.guest_unique_impressions, 0);
       const ctr = uniqueImpressions > 0
         ? (uniqueClicks / uniqueImpressions) * 100
         : (totalClicks ? (uniqueClicks / totalClicks) * 100 : 0);
 
-      // Build daily buckets (clicks + impressions)
-      const dayMap = new Map<string, { clicks: number; impressions: number }>();
+      const dayMap = new Map<string, { clicks: number; impressions: number; guestClicks: number; guestImpressions: number }>();
       for (const k of myClicks) {
-        const cur = dayMap.get(k.click_date) || { clicks: 0, impressions: 0 };
+        const cur = dayMap.get(k.click_date) || { clicks: 0, impressions: 0, guestClicks: 0, guestImpressions: 0 };
         cur.clicks += k.total_clicks;
+        cur.guestClicks += k.guest_clicks;
         dayMap.set(k.click_date, cur);
       }
       for (const k of myImpressions) {
-        const cur = dayMap.get(k.impression_date) || { clicks: 0, impressions: 0 };
+        const cur = dayMap.get(k.impression_date) || { clicks: 0, impressions: 0, guestClicks: 0, guestImpressions: 0 };
         cur.impressions += k.total_impressions;
+        cur.guestImpressions += k.guest_impressions;
         dayMap.set(k.impression_date, cur);
       }
       const series = Array.from(dayMap.entries())
@@ -335,6 +339,8 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
           date: new Date(date).toLocaleDateString(undefined, { month: 'short', day: '2-digit' }),
           clicks: v.clicks,
           impressions: v.impressions,
+          guestClicks: v.guestClicks,
+          guestImpressions: v.guestImpressions,
         }));
 
       const status = statusFor(c.status, c.expires_at);
@@ -353,6 +359,10 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
         uniqueClicks,
         totalImpressions,
         uniqueImpressions,
+        guestClicks,
+        guestUniqueClicks,
+        guestImpressions,
+        guestUniqueImpressions,
         ctr,
         series,
       };
