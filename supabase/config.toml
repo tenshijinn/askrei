@@ -38,3 +38,6 @@ verify_jwt = false
 
 [functions.track-campaign-impression]
 verify_jwt = false
+
+[functions.ask-rei-public]
+verify_jwt = false
