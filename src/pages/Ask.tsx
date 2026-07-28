@@ -241,19 +241,21 @@ const Ask = () => {
               )}
 
               {!loading && errorMsg && (
-                <div className="rei-surface-2 p-4 text-sm" style={{ color: "#f0ede8" }}>
-                  {errorMsg}
-                  <div className="mt-3">
+                <>
+                  <div className="chat-line">
+                    <span className="chat-ts">[--:--:--]</span>
+                    <span className="chat-handle handle-sys">* system</span>
+                    <span className="chat-msg msg-sys">{errorMsg}</span>
+                  </div>
+                  <div className="mt-2 ml-[148px]">
                     <Link to="/rei">
-                      <Button
-                        className="rounded-full h-9 px-4 text-xs hover:opacity-80"
-                        style={{ background: "#f0ede8", color: "#0a0a0a" }}
-                      >
+                      <button className="rei-chip">
+                        <span className="rei-chip-dot" />
                         Sign up free
-                      </Button>
+                      </button>
                     </Link>
                   </div>
-                </div>
+                </>
               )}
 
               {!loading && reply && (
