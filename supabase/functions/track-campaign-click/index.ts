@@ -109,7 +109,7 @@ serve(async (req) => {
     // Award 1 point per unique click to promoter's wallet (if known).
     // Skip points for aggregated/platform-owned promotions — analytics still recorded.
     const isAggregated = typeof campaign.source === "string" && campaign.source.startsWith("aggregated:");
-    if (inserted && isUnique && campaign.wallet_address && !isAggregated) {
+    if (inserted && isUnique && campaign.wallet_address && !isAggregated && !isGuest) {
       const { error: pointsErr } = await supabase.rpc("increment_user_points", {
         p_wallet_address: campaign.wallet_address,
         p_points: POINTS_PER_UNIQUE_CLICK,
