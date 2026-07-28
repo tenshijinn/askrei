@@ -50,6 +50,7 @@ const Ask = () => {
   });
   const inputRef = useRef<HTMLInputElement>(null);
   const [placeholder, setPlaceholder] = useState("");
+  const impressionRef = useImpressionTracker(bounty?.tracking_short_code ?? null, { guest: true });
 
   useEffect(() => {
     document.title = "Ask Rei — rei.chat";
