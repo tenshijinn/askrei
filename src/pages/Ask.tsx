@@ -1,8 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Loader2, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import reiLogo from "@/assets/joinrei/rei-logo.png";
+
+const PLACEHOLDER_QUERIES = [
+  "find USDC bounties",
+  "show me Solana jobs",
+  "find airdrops I can farm",
+  "what content bounties are live?",
+  "biggest bounty this week",
+];
+
 
 
 interface Bounty {
