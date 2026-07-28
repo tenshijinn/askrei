@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function CampaignRedirect() {
   const { code } = useParams<{ code: string }>();
+  const [searchParams] = useSearchParams();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -14,9 +15,10 @@ export default function CampaignRedirect() {
         return;
       }
       try {
+        const guest = searchParams.get("g") === "1";
         const { data, error: invokeErr } = await supabase.functions.invoke(
           "track-campaign-click",
-          { body: { shortCode: code, referrer: document.referrer || null } }
+          { body: { shortCode: code, referrer: document.referrer || null, guest } }
         );
         if (cancelled) return;
         if (invokeErr || !data?.redirect) {
@@ -32,7 +34,7 @@ export default function CampaignRedirect() {
     return () => {
       cancelled = true;
     };
-  }, [code]);
+  }, [code, searchParams]);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-cream font-mono flex items-center justify-center px-6">
