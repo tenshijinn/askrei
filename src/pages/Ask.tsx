@@ -117,8 +117,28 @@ const Ask = () => {
             type="submit"
             disabled={loading || !query.trim()}
             aria-label="Ask"
-            className="send-btn shrink-0"
-            style={{ opacity: loading || !query.trim() ? 0.4 : 1 }}
+            className="shrink-0 rounded-md cursor-pointer"
+            style={{
+              opacity: loading || !query.trim() ? 0.4 : 1,
+              background: "transparent",
+              border: "0.5px solid hsla(0,0%,100%,0.08)",
+              color: "#4a4845",
+              fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
+              fontSize: "11px",
+              padding: "4px 10px",
+              letterSpacing: "0.05em",
+              transition: "color 0.15s, border-color 0.15s",
+            }}
+            onMouseEnter={(e) => {
+              if (!loading && query.trim()) {
+                e.currentTarget.style.color = "hsl(18, 52%, 82%)";
+                e.currentTarget.style.borderColor = "hsla(18, 52%, 82%, 0.3)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "#4a4845";
+              e.currentTarget.style.borderColor = "hsla(0,0%,100%,0.08)";
+            }}
           >
             {loading ? "..." : "send"}
           </button>
