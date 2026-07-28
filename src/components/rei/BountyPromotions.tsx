@@ -111,10 +111,14 @@ const StatusPill = ({ status }: { status: Status }) => {
   );
 };
 
+const GUEST_COLOR = '#8ec7d1';
+
 const ChartCard = ({ campaign }: { campaign: CampaignView }) => (
   <div className="rei-surface" style={{ padding: '20px', minHeight: 320 }}>
     <h4 style={{ fontSize: '15px', fontWeight: 500, color: '#f0ede8', margin: 0 }}>Clickthroughs Over Time</h4>
-    <p style={{ fontSize: '11px', color: '#5c5a57', margin: '2px 0 12px' }}>Daily Clicks</p>
+    <p style={{ fontSize: '11px', color: '#5c5a57', margin: '2px 0 12px' }}>
+      Daily activity · <span style={{ color: GUEST_COLOR }}>guest</span> shown in teal
+    </p>
     <div style={{ width: '100%', height: 240 }}>
       {campaign.series.length === 0 ? (
         <div className="flex items-center justify-center h-full" style={{ color: '#5c5a57', fontSize: 12 }}>
@@ -140,6 +144,8 @@ const ChartCard = ({ campaign }: { campaign: CampaignView }) => (
             <Legend wrapperStyle={{ fontSize: 11, color: '#a09e9a' }} iconType="plainline" />
             <Line type="monotone" dataKey="impressions" name="Impressions" stroke="#a09e9a" strokeWidth={1.5} dot={false} activeDot={{ r: 3, fill: '#a09e9a' }} />
             <Line type="monotone" dataKey="clicks" name="Clicks" stroke="#e8c4b8" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: '#e8c4b8' }} />
+            <Line type="monotone" dataKey="guestImpressions" name="Guest Impressions" stroke={GUEST_COLOR} strokeWidth={1.25} strokeDasharray="3 3" dot={false} />
+            <Line type="monotone" dataKey="guestClicks" name="Guest Clicks" stroke={GUEST_COLOR} strokeWidth={2} strokeDasharray="5 3" dot={false} activeDot={{ r: 4, fill: GUEST_COLOR }} />
           </LineChart>
         </ResponsiveContainer>
       )}
