@@ -19,6 +19,7 @@ import ButtonLab from "./pages/ButtonLab";
 import NotFound from "./pages/NotFound";
 import OAuthConsent from "./pages/OAuthConsent";
 import Login from "./pages/Login";
+import Ask from "./pages/Ask";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
               <Route path="/c/:code" element={<CampaignRedirect />} />
               <Route path="/button-lab" element={<ButtonLab />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/ask" element={<Ask />} />
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

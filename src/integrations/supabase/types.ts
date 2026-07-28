@@ -130,6 +130,27 @@ export type Database = {
           },
         ]
       }
+      ask_public_usage: {
+        Row: {
+          ask_count: number
+          id: string
+          ip_hash: string
+          last_asked_at: string
+        }
+        Insert: {
+          ask_count?: number
+          id?: string
+          ip_hash: string
+          last_asked_at?: string
+        }
+        Update: {
+          ask_count?: number
+          id?: string
+          ip_hash?: string
+          last_asked_at?: string
+        }
+        Relationships: []
+      }
       campaign_clicks: {
         Row: {
           campaign_subscription_id: string
