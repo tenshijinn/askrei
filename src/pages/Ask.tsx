@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Loader2, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
