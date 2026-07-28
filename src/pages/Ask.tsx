@@ -253,17 +253,18 @@ const Ask = () => {
           <div className="flex-1 flex flex-col items-center justify-center pb-24 -mt-12">
             <div className="w-full max-w-2xl mx-auto text-center">
               <div
-                className="mx-auto mb-6 w-14 h-14 rounded-full flex items-center justify-center"
+                className="mx-auto mb-6 w-16 h-16 rounded-full flex items-center justify-center overflow-hidden"
                 style={{ background: "#141414", border: "0.5px solid hsla(0,0%,100%,0.08)" }}
               >
-                <span className="text-2xl">👁️</span>
+                <img src={reiLogo} alt="Rei" className="w-10 h-10 object-contain" />
               </div>
               <h1
                 className="text-4xl md:text-5xl font-semibold tracking-tight"
-                style={{ color: "#f0ede8" }}
+                style={{ color: "hsl(18, 52%, 82%)" }}
               >
-                Ask Rei anything.
+                Ask Rei for Bounties.
               </h1>
+
               <p className="mt-3" style={{ color: "#5c5a57" }}>
                 You get 1 free search.
               </p>
