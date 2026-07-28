@@ -196,10 +196,10 @@ const Ask = () => {
     >
       {/* Header — term-bar style */}
       <header
-        className="flex items-center justify-between px-5 py-3 md:px-8 shrink-0"
+        className="flex items-center justify-between px-5 py-3 md:px-8 shrink-0 relative z-20"
         style={{ background: "#0f0f0f", borderBottom: "0.5px solid hsla(0,0%,100%,0.08)" }}
       >
-        <Link to="/" className="flex items-center gap-2">
+        <Link to="/ask" className="flex items-center gap-2">
           <div className="flex items-center gap-2">
             <div className="flex gap-1.5">
               <div className="w-2 h-2 rounded-full" style={{ background: "#2a2826" }} />
@@ -214,21 +214,38 @@ const Ask = () => {
             </span>
           </div>
         </Link>
-        <Link to="/rei">
-          <Button
-            variant="ghost"
-            className="rounded-full h-9 px-4 text-xs gap-2 hover:opacity-80"
-            style={{
-              background: "transparent",
-              color: "#f0ede8",
-              border: "0.5px solid hsla(0,0%,100%,0.18)",
-              fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
-            }}
-          >
-            sign up
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link to="/">
+            <Button
+              variant="ghost"
+              className="rounded-full h-9 px-4 text-xs gap-2 hover:opacity-80"
+              style={{
+                background: "transparent",
+                color: "#a09e9a",
+                border: "0.5px solid hsla(0,0%,100%,0.12)",
+                fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
+              }}
+            >
+              how rei works
+            </Button>
+          </Link>
+          <Link to="/rei">
+            <Button
+              variant="ghost"
+              className="rounded-full h-9 px-4 text-xs gap-2 hover:opacity-80"
+              style={{
+                background: "transparent",
+                color: "#f0ede8",
+                border: "0.5px solid hsla(0,0%,100%,0.18)",
+                fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
+              }}
+            >
+              sign up
+            </Button>
+          </Link>
+        </div>
       </header>
+
 
       {/* Main content */}
       <main className="flex-1 flex flex-col px-4 md:px-6 relative">
