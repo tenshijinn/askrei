@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Loader2, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { useImpressionTracker } from "@/hooks/useImpressionTracker";
 import reiLogo from "@/assets/joinrei/rei-logo.png";
 
 const PLACEHOLDER_QUERIES = [
@@ -25,6 +26,7 @@ interface Bounty {
   og_image: string | null;
   opportunity_type: string | null;
   role_tags: string[] | null;
+  tracking_short_code?: string | null;
 }
 
 const nowTs = () =>
