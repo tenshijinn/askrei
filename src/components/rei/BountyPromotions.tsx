@@ -254,19 +254,23 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
             supabase.rpc('get_campaign_impression_stats', { p_campaign_ids: ids }),
           ]);
           if (ckErr) throw ckErr;
-          const rows: ClickRow[] = (ck || []).map((r: { campaign_subscription_id: string; click_date: string; total_clicks: number | string; unique_clicks: number | string }) => ({
+          const rows: ClickRow[] = (ck || []).map((r: any) => ({
             campaign_subscription_id: r.campaign_subscription_id,
             click_date: r.click_date,
             total_clicks: Number(r.total_clicks) || 0,
             unique_clicks: Number(r.unique_clicks) || 0,
+            guest_clicks: Number(r.guest_clicks) || 0,
+            guest_unique_clicks: Number(r.guest_unique_clicks) || 0,
           }));
           if (!cancelled) setClicks(rows);
           if (!imErr) {
-            const iRows: ImpressionRow[] = (im || []).map((r: { campaign_subscription_id: string; impression_date: string; total_impressions: number | string; unique_impressions: number | string }) => ({
+            const iRows: ImpressionRow[] = (im || []).map((r: any) => ({
               campaign_subscription_id: r.campaign_subscription_id,
               impression_date: r.impression_date,
               total_impressions: Number(r.total_impressions) || 0,
               unique_impressions: Number(r.unique_impressions) || 0,
+              guest_impressions: Number(r.guest_impressions) || 0,
+              guest_unique_impressions: Number(r.guest_unique_impressions) || 0,
             }));
             if (!cancelled) setImpressions(iRows);
           }
