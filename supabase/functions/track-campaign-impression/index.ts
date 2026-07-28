@@ -89,6 +89,7 @@ serve(async (req) => {
       session_id: crypto.randomUUID(),
       impression_date: today,
       is_unique: isUnique,
+      is_guest: isGuest,
     });
 
     if (insErr) console.error("campaign_impressions insert failed:", insErr);
