@@ -31,6 +31,8 @@ interface ClickRow {
   click_date: string;
   total_clicks: number;
   unique_clicks: number;
+  guest_clicks: number;
+  guest_unique_clicks: number;
 }
 
 interface ImpressionRow {
@@ -38,6 +40,8 @@ interface ImpressionRow {
   impression_date: string;
   total_impressions: number;
   unique_impressions: number;
+  guest_impressions: number;
+  guest_unique_impressions: number;
 }
 
 interface CampaignRow {
@@ -61,8 +65,12 @@ interface CampaignView {
   uniqueClicks: number;
   totalImpressions: number;
   uniqueImpressions: number;
+  guestClicks: number;
+  guestUniqueClicks: number;
+  guestImpressions: number;
+  guestUniqueImpressions: number;
   ctr: number;
-  series: { date: string; clicks: number; impressions: number }[];
+  series: { date: string; clicks: number; impressions: number; guestClicks: number; guestImpressions: number }[];
 }
 
 const numFmt = (n: number) => n.toLocaleString();
