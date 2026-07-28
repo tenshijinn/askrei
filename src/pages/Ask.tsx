@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Loader2, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { useImpressionTracker } from "@/hooks/useImpressionTracker";
 import reiLogo from "@/assets/joinrei/rei-logo.png";
 
 const PLACEHOLDER_QUERIES = [
@@ -25,6 +26,7 @@ interface Bounty {
   og_image: string | null;
   opportunity_type: string | null;
   role_tags: string[] | null;
+  tracking_short_code?: string | null;
 }
 
 const nowTs = () =>
@@ -48,6 +50,7 @@ const Ask = () => {
   });
   const inputRef = useRef<HTMLInputElement>(null);
   const [placeholder, setPlaceholder] = useState("");
+  const impressionRef = useImpressionTracker(bounty?.tracking_short_code ?? null, { guest: true });
 
   useEffect(() => {
     document.title = "Ask Rei — rei.chat";
@@ -328,7 +331,8 @@ const Ask = () => {
 
               {!loading && bounty && (
                 <a
-                  href={bounty.link ?? "#"}
+                  ref={impressionRef as React.RefObject<HTMLAnchorElement>}
+                  href={bounty.tracking_short_code ? `/c/${bounty.tracking_short_code}?g=1` : (bounty.link ?? "#")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block overflow-hidden transition-colors rei-surface-2 hover:opacity-90"

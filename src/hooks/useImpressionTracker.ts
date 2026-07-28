@@ -29,8 +29,12 @@ function markSeen(code: string) {
  * Fires a bounty impression event once per session per short_code when the
  * element becomes >=50% visible for at least 500ms.
  */
-export function useImpressionTracker(shortCode: string | null | undefined) {
+export function useImpressionTracker(
+  shortCode: string | null | undefined,
+  options?: { guest?: boolean }
+) {
   const ref = useRef<HTMLElement | null>(null);
+  const guest = options?.guest === true;
 
   useEffect(() => {
     if (!shortCode) return;
@@ -49,7 +53,7 @@ export function useImpressionTracker(shortCode: string | null | undefined) {
               markSeen(shortCode);
               observer.disconnect();
               supabase.functions
-                .invoke("track-campaign-impression", { body: { shortCode } })
+                .invoke("track-campaign-impression", { body: { shortCode, guest } })
                 .catch(() => {
                   /* ignore */
                 });
@@ -68,7 +72,7 @@ export function useImpressionTracker(shortCode: string | null | undefined) {
       if (timer) clearTimeout(timer);
       observer.disconnect();
     };
-  }, [shortCode]);
+  }, [shortCode, guest]);
 
   return ref;
 }

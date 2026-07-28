@@ -23,13 +23,14 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { shortCode, referrer } = await req.json();
+    const { shortCode, referrer, guest } = await req.json();
     if (!shortCode || typeof shortCode !== "string") {
       return new Response(JSON.stringify({ error: "shortCode required" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    const isGuest = guest === true;
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -91,7 +92,8 @@ serve(async (req) => {
         session_id: crypto.randomUUID(),
         click_date: today,
         is_unique: isUnique,
-        points_awarded: isUnique && !!campaign.wallet_address,
+        is_guest: isGuest,
+        points_awarded: isUnique && !!campaign.wallet_address && !isGuest,
       });
 
       if (!insErr) {
@@ -107,7 +109,7 @@ serve(async (req) => {
     // Award 1 point per unique click to promoter's wallet (if known).
     // Skip points for aggregated/platform-owned promotions — analytics still recorded.
     const isAggregated = typeof campaign.source === "string" && campaign.source.startsWith("aggregated:");
-    if (inserted && isUnique && campaign.wallet_address && !isAggregated) {
+    if (inserted && isUnique && campaign.wallet_address && !isAggregated && !isGuest) {
       const { error: pointsErr } = await supabase.rpc("increment_user_points", {
         p_wallet_address: campaign.wallet_address,
         p_points: POINTS_PER_UNIQUE_CLICK,

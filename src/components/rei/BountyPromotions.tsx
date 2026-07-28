@@ -31,6 +31,8 @@ interface ClickRow {
   click_date: string;
   total_clicks: number;
   unique_clicks: number;
+  guest_clicks: number;
+  guest_unique_clicks: number;
 }
 
 interface ImpressionRow {
@@ -38,6 +40,8 @@ interface ImpressionRow {
   impression_date: string;
   total_impressions: number;
   unique_impressions: number;
+  guest_impressions: number;
+  guest_unique_impressions: number;
 }
 
 interface CampaignRow {
@@ -61,8 +65,12 @@ interface CampaignView {
   uniqueClicks: number;
   totalImpressions: number;
   uniqueImpressions: number;
+  guestClicks: number;
+  guestUniqueClicks: number;
+  guestImpressions: number;
+  guestUniqueImpressions: number;
   ctr: number;
-  series: { date: string; clicks: number; impressions: number }[];
+  series: { date: string; clicks: number; impressions: number; guestClicks: number; guestImpressions: number }[];
 }
 
 const numFmt = (n: number) => n.toLocaleString();
@@ -103,10 +111,14 @@ const StatusPill = ({ status }: { status: Status }) => {
   );
 };
 
+const GUEST_COLOR = '#8ec7d1';
+
 const ChartCard = ({ campaign }: { campaign: CampaignView }) => (
   <div className="rei-surface" style={{ padding: '20px', minHeight: 320 }}>
     <h4 style={{ fontSize: '15px', fontWeight: 500, color: '#f0ede8', margin: 0 }}>Clickthroughs Over Time</h4>
-    <p style={{ fontSize: '11px', color: '#5c5a57', margin: '2px 0 12px' }}>Daily Clicks</p>
+    <p style={{ fontSize: '11px', color: '#5c5a57', margin: '2px 0 12px' }}>
+      Daily activity · <span style={{ color: GUEST_COLOR }}>guest</span> shown in teal
+    </p>
     <div style={{ width: '100%', height: 240 }}>
       {campaign.series.length === 0 ? (
         <div className="flex items-center justify-center h-full" style={{ color: '#5c5a57', fontSize: 12 }}>
@@ -132,6 +144,8 @@ const ChartCard = ({ campaign }: { campaign: CampaignView }) => (
             <Legend wrapperStyle={{ fontSize: 11, color: '#a09e9a' }} iconType="plainline" />
             <Line type="monotone" dataKey="impressions" name="Impressions" stroke="#a09e9a" strokeWidth={1.5} dot={false} activeDot={{ r: 3, fill: '#a09e9a' }} />
             <Line type="monotone" dataKey="clicks" name="Clicks" stroke="#e8c4b8" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: '#e8c4b8' }} />
+            <Line type="monotone" dataKey="guestImpressions" name="Guest Impressions" stroke={GUEST_COLOR} strokeWidth={1.25} strokeDasharray="3 3" dot={false} />
+            <Line type="monotone" dataKey="guestClicks" name="Guest Clicks" stroke={GUEST_COLOR} strokeWidth={2} strokeDasharray="5 3" dot={false} activeDot={{ r: 4, fill: GUEST_COLOR }} />
           </LineChart>
         </ResponsiveContainer>
       )}
@@ -160,10 +174,10 @@ const CampaignInfoCard = ({ campaign }: { campaign: CampaignView }) => (
     <div className="rei-stat-card" style={{ padding: '14px 16px' }}>
       <div className="grid grid-cols-4 gap-3">
         {[
-          { label: 'Impressions', value: numFmt(campaign.uniqueImpressions) },
-          { label: 'Total Clicks', value: numFmt(campaign.totalClicks) },
-          { label: 'Unique Clicks', value: numFmt(campaign.uniqueClicks) },
-          { label: 'CTR', value: `${campaign.ctr.toFixed(2)}%` },
+          { label: 'Impressions', value: numFmt(campaign.uniqueImpressions), guest: campaign.guestUniqueImpressions },
+          { label: 'Total Clicks', value: numFmt(campaign.totalClicks), guest: campaign.guestClicks },
+          { label: 'Unique Clicks', value: numFmt(campaign.uniqueClicks), guest: campaign.guestUniqueClicks },
+          { label: 'CTR', value: `${campaign.ctr.toFixed(2)}%`, guest: 0 },
         ].map((stat) => (
           <div key={stat.label}>
             <p style={{ fontSize: '10px', color: '#5c5a57', margin: 0, letterSpacing: '0.04em' }}>{stat.label}</p>
@@ -179,6 +193,20 @@ const CampaignInfoCard = ({ campaign }: { campaign: CampaignView }) => (
             >
               {stat.value}
             </p>
+            {stat.guest > 0 && (
+              <p
+                title="Guest (logged-out) visitors from /ask"
+                style={{
+                  fontSize: '10px',
+                  color: GUEST_COLOR,
+                  margin: '2px 0 0',
+                  letterSpacing: '0.02em',
+                  fontFamily: "'SF Mono', 'Consolas', monospace",
+                }}
+              >
+                +{numFmt(stat.guest)} guest
+              </p>
+            )}
           </div>
         ))}
       </div>
@@ -246,19 +274,23 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
             supabase.rpc('get_campaign_impression_stats', { p_campaign_ids: ids }),
           ]);
           if (ckErr) throw ckErr;
-          const rows: ClickRow[] = (ck || []).map((r: { campaign_subscription_id: string; click_date: string; total_clicks: number | string; unique_clicks: number | string }) => ({
+          const rows: ClickRow[] = (ck || []).map((r: any) => ({
             campaign_subscription_id: r.campaign_subscription_id,
             click_date: r.click_date,
             total_clicks: Number(r.total_clicks) || 0,
             unique_clicks: Number(r.unique_clicks) || 0,
+            guest_clicks: Number(r.guest_clicks) || 0,
+            guest_unique_clicks: Number(r.guest_unique_clicks) || 0,
           }));
           if (!cancelled) setClicks(rows);
           if (!imErr) {
-            const iRows: ImpressionRow[] = (im || []).map((r: { campaign_subscription_id: string; impression_date: string; total_impressions: number | string; unique_impressions: number | string }) => ({
+            const iRows: ImpressionRow[] = (im || []).map((r: any) => ({
               campaign_subscription_id: r.campaign_subscription_id,
               impression_date: r.impression_date,
               total_impressions: Number(r.total_impressions) || 0,
               unique_impressions: Number(r.unique_impressions) || 0,
+              guest_impressions: Number(r.guest_impressions) || 0,
+              guest_unique_impressions: Number(r.guest_unique_impressions) || 0,
             }));
             if (!cancelled) setImpressions(iRows);
           }
@@ -298,23 +330,27 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
       });
       const totalClicks = myClicks.reduce((s, k) => s + k.total_clicks, 0);
       const uniqueClicks = myClicks.reduce((s, k) => s + k.unique_clicks, 0);
+      const guestClicks = myClicks.reduce((s, k) => s + k.guest_clicks, 0);
+      const guestUniqueClicks = myClicks.reduce((s, k) => s + k.guest_unique_clicks, 0);
       const totalImpressions = myImpressions.reduce((s, k) => s + k.total_impressions, 0);
       const uniqueImpressions = myImpressions.reduce((s, k) => s + k.unique_impressions, 0);
-      // CTR = unique clicks / unique impressions (fallback to click-based when no impressions tracked yet)
+      const guestImpressions = myImpressions.reduce((s, k) => s + k.guest_impressions, 0);
+      const guestUniqueImpressions = myImpressions.reduce((s, k) => s + k.guest_unique_impressions, 0);
       const ctr = uniqueImpressions > 0
         ? (uniqueClicks / uniqueImpressions) * 100
         : (totalClicks ? (uniqueClicks / totalClicks) * 100 : 0);
 
-      // Build daily buckets (clicks + impressions)
-      const dayMap = new Map<string, { clicks: number; impressions: number }>();
+      const dayMap = new Map<string, { clicks: number; impressions: number; guestClicks: number; guestImpressions: number }>();
       for (const k of myClicks) {
-        const cur = dayMap.get(k.click_date) || { clicks: 0, impressions: 0 };
+        const cur = dayMap.get(k.click_date) || { clicks: 0, impressions: 0, guestClicks: 0, guestImpressions: 0 };
         cur.clicks += k.total_clicks;
+        cur.guestClicks += k.guest_clicks;
         dayMap.set(k.click_date, cur);
       }
       for (const k of myImpressions) {
-        const cur = dayMap.get(k.impression_date) || { clicks: 0, impressions: 0 };
+        const cur = dayMap.get(k.impression_date) || { clicks: 0, impressions: 0, guestClicks: 0, guestImpressions: 0 };
         cur.impressions += k.total_impressions;
+        cur.guestImpressions += k.guest_impressions;
         dayMap.set(k.impression_date, cur);
       }
       const series = Array.from(dayMap.entries())
@@ -323,6 +359,8 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
           date: new Date(date).toLocaleDateString(undefined, { month: 'short', day: '2-digit' }),
           clicks: v.clicks,
           impressions: v.impressions,
+          guestClicks: v.guestClicks,
+          guestImpressions: v.guestImpressions,
         }));
 
       const status = statusFor(c.status, c.expires_at);
@@ -341,6 +379,10 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
         uniqueClicks,
         totalImpressions,
         uniqueImpressions,
+        guestClicks,
+        guestUniqueClicks,
+        guestImpressions,
+        guestUniqueImpressions,
         ctr,
         series,
       };

@@ -22,13 +22,14 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { shortCode } = await req.json();
+    const { shortCode, guest } = await req.json();
     if (!shortCode || typeof shortCode !== "string") {
       return new Response(JSON.stringify({ error: "shortCode required" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    const isGuest = guest === true;
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -88,6 +89,7 @@ serve(async (req) => {
       session_id: crypto.randomUUID(),
       impression_date: today,
       is_unique: isUnique,
+      is_guest: isGuest,
     });
 
     if (insErr) console.error("campaign_impressions insert failed:", insErr);

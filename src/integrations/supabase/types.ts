@@ -159,6 +159,7 @@ export type Database = {
           created_at: string
           id: string
           ip_hash: string | null
+          is_guest: boolean
           is_unique: boolean
           points_awarded: boolean
           referrer: string | null
@@ -173,6 +174,7 @@ export type Database = {
           created_at?: string
           id?: string
           ip_hash?: string | null
+          is_guest?: boolean
           is_unique?: boolean
           points_awarded?: boolean
           referrer?: string | null
@@ -187,6 +189,7 @@ export type Database = {
           created_at?: string
           id?: string
           ip_hash?: string | null
+          is_guest?: boolean
           is_unique?: boolean
           points_awarded?: boolean
           referrer?: string | null
@@ -218,6 +221,7 @@ export type Database = {
           id: string
           impression_date: string
           ip_hash: string | null
+          is_guest: boolean
           is_unique: boolean
           session_id: string | null
           short_code: string
@@ -230,6 +234,7 @@ export type Database = {
           id?: string
           impression_date?: string
           ip_hash?: string | null
+          is_guest?: boolean
           is_unique?: boolean
           session_id?: string | null
           short_code: string
@@ -242,6 +247,7 @@ export type Database = {
           id?: string
           impression_date?: string
           ip_hash?: string | null
+          is_guest?: boolean
           is_unique?: boolean
           session_id?: string | null
           short_code?: string
@@ -1504,6 +1510,8 @@ export type Database = {
         Returns: {
           campaign_subscription_id: string
           click_date: string
+          guest_clicks: number
+          guest_unique_clicks: number
           total_clicks: number
           unique_clicks: number
         }[]
@@ -1512,6 +1520,8 @@ export type Database = {
         Args: { p_campaign_ids: string[] }
         Returns: {
           campaign_subscription_id: string
+          guest_impressions: number
+          guest_unique_impressions: number
           impression_date: string
           total_impressions: number
           unique_impressions: number
