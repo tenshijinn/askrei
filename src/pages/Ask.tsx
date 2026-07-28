@@ -154,7 +154,7 @@ const Ask = () => {
             ref={isHero ? inputRef : undefined}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="type a question or /command..."
+            placeholder={placeholder ? `${placeholder}▌` : ""}
             disabled={loading}
             className="flex-1 bg-transparent outline-none disabled:opacity-60 min-w-0"
             style={{
@@ -166,33 +166,24 @@ const Ask = () => {
           />
           <button
             type="submit"
-            disabled={loading || !query.trim()}
+            disabled={loading || !hasQuery}
             aria-label="Ask"
             className="shrink-0 rounded-md cursor-pointer"
             style={{
-              opacity: loading || !query.trim() ? 0.4 : 1,
+              opacity: loading ? 0.4 : 1,
               background: "transparent",
-              border: "0.5px solid hsla(0,0%,100%,0.08)",
-              color: "#4a4845",
+              border: `0.5px solid ${hasQuery ? "hsla(18, 52%, 82%, 0.4)" : "hsla(0,0%,100%,0.08)"}`,
+              color: hasQuery ? "hsl(18, 52%, 82%)" : "#4a4845",
               fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
               fontSize: "11px",
               padding: "4px 10px",
               letterSpacing: "0.05em",
               transition: "color 0.15s, border-color 0.15s",
             }}
-            onMouseEnter={(e) => {
-              if (!loading && query.trim()) {
-                e.currentTarget.style.color = "hsl(18, 52%, 82%)";
-                e.currentTarget.style.borderColor = "hsla(18, 52%, 82%, 0.3)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "#4a4845";
-              e.currentTarget.style.borderColor = "hsla(0,0%,100%,0.08)";
-            }}
           >
             {loading ? "..." : "send"}
           </button>
+
         </div>
       </form>
     );
