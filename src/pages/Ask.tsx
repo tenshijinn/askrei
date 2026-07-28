@@ -214,7 +214,7 @@ const Ask = () => {
         ) : (
           <div
             className="rei-terminal flex-1 w-full max-w-2xl mx-auto pt-4 pb-40 overflow-y-auto"
-            style={{ border: "none", borderRadius: 0, padding: "16px 20px" }}
+            style={{ border: "none", borderRadius: 0, padding: "16px 20px", overflowY: "auto" }}
           >
             {/* User line */}
             <div className="chat-line">
