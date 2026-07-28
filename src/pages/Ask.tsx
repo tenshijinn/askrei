@@ -47,6 +47,7 @@ const Ask = () => {
     assistant: "",
   });
   const inputRef = useRef<HTMLInputElement>(null);
+  const [placeholder, setPlaceholder] = useState("");
 
   useEffect(() => {
     document.title = "Ask Rei — rei.chat";
@@ -59,6 +60,39 @@ const Ask = () => {
     } catch {}
     inputRef.current?.focus();
   }, []);
+
+  // Rotating typewriter placeholder when input is empty
+  useEffect(() => {
+    if (query || loading) {
+      setPlaceholder("");
+      return;
+    }
+    let cancelled = false;
+    let idx = 0;
+    const type = async () => {
+      while (!cancelled) {
+        const phrase = PLACEHOLDER_QUERIES[idx % PLACEHOLDER_QUERIES.length];
+        for (let i = 1; i <= phrase.length && !cancelled; i++) {
+          setPlaceholder(phrase.slice(0, i));
+          await new Promise((r) => setTimeout(r, 55));
+        }
+        await new Promise((r) => setTimeout(r, 1400));
+        for (let i = phrase.length; i >= 0 && !cancelled; i--) {
+          setPlaceholder(phrase.slice(0, i));
+          await new Promise((r) => setTimeout(r, 25));
+        }
+        await new Promise((r) => setTimeout(r, 250));
+        idx++;
+      }
+    };
+    type();
+    return () => {
+      cancelled = true;
+    };
+  }, [query, loading]);
+
+  const hasQuery = query.trim().length > 0;
+
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
