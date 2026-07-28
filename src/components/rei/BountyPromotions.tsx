@@ -174,10 +174,10 @@ const CampaignInfoCard = ({ campaign }: { campaign: CampaignView }) => (
     <div className="rei-stat-card" style={{ padding: '14px 16px' }}>
       <div className="grid grid-cols-4 gap-3">
         {[
-          { label: 'Impressions', value: numFmt(campaign.uniqueImpressions) },
-          { label: 'Total Clicks', value: numFmt(campaign.totalClicks) },
-          { label: 'Unique Clicks', value: numFmt(campaign.uniqueClicks) },
-          { label: 'CTR', value: `${campaign.ctr.toFixed(2)}%` },
+          { label: 'Impressions', value: numFmt(campaign.uniqueImpressions), guest: campaign.guestUniqueImpressions },
+          { label: 'Total Clicks', value: numFmt(campaign.totalClicks), guest: campaign.guestClicks },
+          { label: 'Unique Clicks', value: numFmt(campaign.uniqueClicks), guest: campaign.guestUniqueClicks },
+          { label: 'CTR', value: `${campaign.ctr.toFixed(2)}%`, guest: 0 },
         ].map((stat) => (
           <div key={stat.label}>
             <p style={{ fontSize: '10px', color: '#5c5a57', margin: 0, letterSpacing: '0.04em' }}>{stat.label}</p>
@@ -193,6 +193,20 @@ const CampaignInfoCard = ({ campaign }: { campaign: CampaignView }) => (
             >
               {stat.value}
             </p>
+            {stat.guest > 0 && (
+              <p
+                title="Guest (logged-out) visitors from /ask"
+                style={{
+                  fontSize: '10px',
+                  color: GUEST_COLOR,
+                  margin: '2px 0 0',
+                  letterSpacing: '0.02em',
+                  fontFamily: "'SF Mono', 'Consolas', monospace",
+                }}
+              >
+                +{numFmt(stat.guest)} guest
+              </p>
+            )}
           </div>
         ))}
       </div>
