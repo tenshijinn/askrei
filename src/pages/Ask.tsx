@@ -330,13 +330,21 @@ const Ask = () => {
               )}
 
               {!loading && (reply || bounty) && (
-                <p className="pt-2 text-sm" style={{ color: "#5c5a57" }}>
-                  Want more?{" "}
-                  <Link to="/rei" className="underline hover:opacity-80" style={{ color: "hsl(18, 52%, 82%)" }}>
-                    Sign up
-                  </Link>{" "}
-                  to keep chatting with Rei.
-                </p>
+                <>
+                  <div className="chat-line">
+                    <span className="chat-ts">[--:--:--]</span>
+                    <span className="chat-handle handle-sys">* system</span>
+                    <span className="chat-msg msg-sys">Want more? Sign up to keep chatting with Rei.</span>
+                  </div>
+                  <div className="mt-2 ml-[148px]">
+                    <Link to="/rei">
+                      <button className="rei-chip">
+                        <span className="rei-chip-dot" />
+                        Sign up
+                      </button>
+                    </Link>
+                  </div>
+                </>
               )}
             </div>
           </div>
