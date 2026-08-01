@@ -4,6 +4,7 @@ import { ALOGO, PLOGO } from './logos';
 import {
   type AssetSeries,
   type TokenRow,
+  ASSET_LOGO_URL,
   FREQ,
   LETTER,
   PLATFORMS,
@@ -28,11 +29,11 @@ async function callFn(body: Record<string, string>) {
   return res.json();
 }
 
-function fallbackLogo(sym: string) {
-  return `<span class="fallback">${sym.replace(/^w/, '').slice(0, 3)}</span>`;
-}
-function miniLogo(t: TokenRow) {
-  return t.data ? ALOGO[t.data] : fallbackLogo(t.sym);
+function MiniLogo({ t }: { t?: TokenRow }) {
+  if (!t) return null;
+  const src = t.logo ?? (t.data ? ASSET_LOGO_URL[t.data] : undefined);
+  if (src) return <img src={src} alt={t.sym} loading="lazy" />;
+  return <span className="fallback">{t.sym.replace(/^w/, '').slice(0, 3)}</span>;
 }
 
 type Mode = 'DeFi' | 'Tokens';
@@ -43,7 +44,7 @@ const PERIODS: { value: string; label: string }[] = [
 ];
 
 export default function BountyDefiCard() {
-  const [amount, setAmount] = useState(450);
+  const [amount, setAmount] = useState(100);
   const [frequency, setFrequency] = useState('Monthly');
   const [mode, setMode] = useState<Mode>('DeFi');
   const [platform, setPlatform] = useState('Jito');
@@ -81,12 +82,17 @@ export default function BountyDefiCard() {
       .then((data) => {
         if (!alive || !Array.isArray(data?.tokens) || !data.tokens.length) return;
         const seedBySym = Object.fromEntries(SEED_TOKENS.map((t) => [t.sym, t]));
-        const live: TokenRow[] = data.tokens.map((t: { id: string; sym: string; name: string }) => ({
-          sym: t.sym,
-          name: t.name,
-          id: t.id,
-          data: seedBySym[t.sym]?.data,
-        }));
+        const live: TokenRow[] = data.tokens.map(
+          (t: { id?: string; sym: string; name: string; logo?: string; cmcId?: number; mcap?: number }) => ({
+            sym: t.sym,
+            name: t.name,
+            id: t.id,
+            cmcId: t.cmcId,
+            mcap: t.mcap,
+            logo: t.logo ?? seedBySym[t.sym]?.logo,
+            data: seedBySym[t.sym]?.data,
+          }),
+        );
         setTokens(live);
       })
       .catch(() => {/* seed list stays */});
@@ -107,10 +113,10 @@ export default function BountyDefiCard() {
 
   // ----- live per-token history + TGE on select -----
   useEffect(() => {
-    if (mode !== 'Tokens' || !token?.id || tokenSeries[token.sym]) return;
+    if (mode !== 'Tokens' || !token || token.data || tokenSeries[token.sym]) return;
     let alive = true;
     setLoadingToken(true);
-    callFn({ action: 'history', id: token.id })
+    callFn({ action: 'history', id: token.id ?? '', sym: token.sym })
       .then((data) => {
         if (!alive || !data?.prices?.length) return;
         setTokenSeries((prev) => ({
@@ -164,7 +170,7 @@ export default function BountyDefiCard() {
 
   // ----- header / title -----
   const platformLogo = PLOGO[platform];
-  const assetLogoHtml = isTokens ? miniLogo(token) : ALOGO[asset];
+  const assetLogoUrl = isTokens ? (token?.logo ?? (token?.data ? ASSET_LOGO_URL[token.data] : undefined)) : ASSET_LOGO_URL[asset];
   const assetLogoBg = isTokens
     ? (token?.data ? assets[token.data]?.logoBg ?? 'transparent' : 'transparent')
     : assets[asset]?.logoBg ?? 'transparent';
@@ -233,7 +239,13 @@ export default function BountyDefiCard() {
                 <div className="sep" />
               </>
             )}
-            <div className="logo" style={{ background: assetLogoBg }} dangerouslySetInnerHTML={{ __html: assetLogoHtml }} />
+            <div className="logo" style={{ background: assetLogoBg }}>
+              {assetLogoUrl ? (
+                <img src={assetLogoUrl} alt={isTokens ? token?.sym : asset} />
+              ) : (
+                <span dangerouslySetInnerHTML={{ __html: ALOGO[isTokens ? (token?.data ?? '') : asset] ?? '' }} />
+              )}
+            </div>
             <div className="title">
               <h1>{title}</h1>
               <p>{sub}</p>
@@ -328,7 +340,7 @@ export default function BountyDefiCard() {
               <div className="token-dd" ref={ddRef}>
                 <button type="button" className="token-btn" onClick={() => setDdOpen((v) => !v)}>
                   <span className="tk">
-                    <span dangerouslySetInnerHTML={{ __html: miniLogo(token) }} />
+                    <MiniLogo t={token} />
                     <span className="tsym">{token?.sym}</span>
                     <span className="tname">{token?.name}</span>
                   </span>
@@ -356,7 +368,7 @@ export default function BountyDefiCard() {
                             className={`token-item${t.sym === selectedToken ? ' sel' : ''}`}
                             onClick={() => { setSelectedToken(t.sym); setDdOpen(false); setSearch(''); }}
                           >
-                            <span dangerouslySetInnerHTML={{ __html: miniLogo(t) }} />
+                            <MiniLogo t={t} />
                             <span className="tsym">{t.sym}</span>
                             <span className="tname">{t.name}</span>
                           </div>
