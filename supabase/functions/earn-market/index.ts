@@ -7,7 +7,7 @@ import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 //   "history" per-token monthly closes + TGE, served from the DB cache
 //   "warm"    one-off/cron job that fills the DB cache for every token
 //   "nlo"     live Ultra-Safe APR
-// Sources are tried in order: CoinGecko -> CoinMarketCap -> Coinbase -> Dextools.
+// Sources are tried in order: CoinGecko -> Coinbase -> CoinMarketCap.
 
 const MEM_TTL_MS = 60 * 60 * 1000; // 1h in-memory
 const DB_TTL_MS = 24 * 60 * 60 * 1000; // 24h persistent
@@ -32,7 +32,7 @@ const json = (body: unknown, status = 200) =>
 const SB_URL = Deno.env.get('SUPABASE_URL')!;
 const SB_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const CMC_KEY = Deno.env.get('COINMARKETCAP_API_KEY') ?? '';
-const DEXTOOLS_KEY = Deno.env.get('DEXTOOLS_API_KEY') ?? '';
+
 
 // ---------- persistent cache ----------
 async function dbGet(key: string): Promise<{ data: unknown; updated_at: string } | null> {
@@ -230,37 +230,6 @@ async function cmcHistory(cmcId: number) {
   return monthly;
 }
 
-// ---------- Dextools ----------
-async function dextoolsHistory(sym: string) {
-  if (!DEXTOOLS_KEY) throw new Error('no Dextools key');
-  const find = await fetch(
-    `https://public-api.dextools.io/trial/v2/token/solana/search?query=${encodeURIComponent(sym)}`,
-    { headers: { 'X-API-KEY': DEXTOOLS_KEY, Accept: 'application/json' } },
-  );
-  if (!find.ok) throw new Error(`dextools search HTTP ${find.status}`);
-  const found = (await find.json()) as { data?: Array<{ address: string }> };
-  const address = found.data?.[0]?.address;
-  if (!address) throw new Error('dextools token not found');
-
-  const to = new Date();
-  const from = new Date(Date.UTC(to.getUTCFullYear(), to.getUTCMonth() - (MONTHS_BACK - 1), 1));
-  const res = await fetch(
-    `https://public-api.dextools.io/trial/v2/token/solana/${address}/price` +
-      `?from=${from.toISOString()}&to=${to.toISOString()}`,
-    { headers: { 'X-API-KEY': DEXTOOLS_KEY, Accept: 'application/json' } },
-  );
-  if (!res.ok) throw new Error(`dextools price HTTP ${res.status}`);
-  const body = (await res.json()) as { data?: { price?: number } };
-  const px = Number(body.data?.price);
-  if (!Number.isFinite(px)) throw new Error('dextools price empty');
-  // Only a spot price is available on the public tier: flat single-point series.
-  return {
-    prices: [px],
-    current: px,
-    startYear: to.getUTCFullYear(),
-    startMonth: to.getUTCMonth(),
-  };
-}
 
 const COINBASE_SYMS = new Set(['SOL', 'ETH', 'BTC', 'WBTC', 'WETH', 'JUP', 'JTO', 'BONK', 'RENDER', 'HNT', 'PYTH', 'RAY', 'ORCA', 'W', 'IO', 'MOBILE', 'DRIFT', 'TNSR', 'WIF', 'POPCAT', 'MEW', 'PENGU', 'SHDW', 'MPLX']);
 
@@ -273,7 +242,6 @@ async function tokenHistory(t: { id?: string; sym: string; cmcId?: number }) {
     attempts.push(() => coinbaseMonthly(product));
   }
   if (t.cmcId) attempts.push(() => cmcHistory(t.cmcId!));
-  attempts.push(() => dextoolsHistory(t.sym));
 
   let lastErr = 'no source';
   for (const run of attempts) {

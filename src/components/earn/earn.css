@@ -1,8 +1,8 @@
 
   .earn-root{
-    /* Rei.chat warm palette: near-black + cream/peach accent (brand red intentionally omitted) */
+    /* Rei.chat palette: near-black + brand blue highlight (#2596be) */
     --bg:#0b0a09;--card:#161311;--card-border:#2a2521;--track:#2a2521;
-    --green:#eddccb;--green-soft:#f4e7d8;--contrib:#8a7f74;--red:#d08063;
+    --green:#2596be;--green-soft:#5cb6d6;--contrib:#ed565a;--red:#ed565a;
     --text:#f1e8dd;--muted:#9b9088;--muted-2:#6f665e;--field:#151210;--field-b:#2c2721;
     --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
     --mono:ui-monospace,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace;
@@ -32,11 +32,11 @@
   .earn-root .mval{font-size:40px;font-weight:600;letter-spacing:-1.5px;line-height:1;font-family:var(--sans);}
   .earn-root .reward{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin-top:9px;}
   .earn-root .badge{width:20px;height:20px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;}
-  .earn-root .badge svg{width:11px;height:11px;stroke:#2e2418;}
+  .earn-root .badge svg{width:11px;height:11px;stroke:#08222c;}
   .earn-root .badge.down{background:var(--red);}
-  .earn-root .badge.down svg{stroke:#3a1a10;}
+  .earn-root .badge.down svg{stroke:#3a1010;}
   .earn-root .delta{color:var(--green-soft);font-size:15px;font-weight:600;}
-  .earn-root .delta.down{color:#e6a992;}
+  .earn-root .delta.down{color:#f08c8e;}
   /* one-sentence summary, edge to edge */
   .earn-root .sentence{font-family:var(--sans);font-size:23px;line-height:1.5;letter-spacing:-.3px;color:var(--muted);margin-top:22px;}
   .earn-root .sentence .num{color:var(--green);font-weight:600;white-space:nowrap;}
@@ -61,8 +61,8 @@
   .earn-root .yield-out .yv{font-size:20px;font-weight:600;color:var(--green-soft);line-height:1;}
   .earn-root .yield-out .yl{font-size:11px;color:var(--muted);}
   .earn-root .live-wrap{display:flex;align-items:center;gap:7px;margin-left:auto;color:var(--muted);font-size:13px;align-self:center;}
-  .earn-root .live{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(237,220,203,.55);animation:pulse 1.8s infinite;}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(237,220,203,.5);}70%{box-shadow:0 0 0 7px rgba(237,220,203,0);}100%{box-shadow:0 0 0 0 rgba(237,220,203,0);}}
+  .earn-root .live{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(37,150,190,.55);animation:pulse 1.8s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(37,150,190,.5);}70%{box-shadow:0 0 0 7px rgba(37,150,190,0);}100%{box-shadow:0 0 0 0 rgba(37,150,190,0);}}
   .earn-root .hidden{display:none !important;}
 
   /* investment-type toggle */
@@ -99,7 +99,7 @@
   .earn-root .legend{display:flex;gap:22px;margin-top:18px;font-size:13px;color:var(--muted);}
   .earn-root .legend span{display:flex;align-items:center;}
   .earn-root .swatch{width:16px;height:0;border-top:3px solid var(--green);display:inline-block;margin-right:8px;}
-  .earn-root .swatch.dash{border-top:2px dashed var(--contrib);}
+  .earn-root .swatch.dash{border-top:2px dashed #ed565a;}
 
   /* chart */
   .earn-root .chart{flex:1;display:flex;gap:16px;min-height:0;margin-top:8px;}
@@ -107,7 +107,7 @@
   .earn-root .plot{flex:1;display:flex;flex-direction:column;}
   .earn-root .bars{flex:1;min-height:0;position:relative;}
   .earn-root .linechart{width:100%;height:100%;display:block;}
-  .earn-root .enddot{position:absolute;width:13px;height:13px;border-radius:50%;background:var(--green-soft);transform:translate(-50%,-50%);box-shadow:0 0 0 4px rgba(237,220,203,.2);}
+  .earn-root .enddot{position:absolute;width:13px;height:13px;border-radius:50%;background:var(--green-soft);transform:translate(-50%,-50%);box-shadow:0 0 0 4px rgba(37,150,190,.2);}
   .earn-root .xaxis{display:flex;gap:5px;margin-top:14px;height:16px;}
   .earn-root .xaxis span{flex:1;text-align:center;color:var(--muted);font-size:12px;}
   .earn-root .xaxis span.year{color:#cfc3b6;font-weight:600;}
