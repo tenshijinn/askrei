@@ -14,7 +14,9 @@ import {
   fmt,
   resolveWindow,
   smoothPath,
+  PLATFORM_X,
 } from './data';
+import PostToXButton from './PostToXButton';
 
 const FN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/earn-market`;
 const FN_HEADERS = {
@@ -61,6 +63,7 @@ export default function BountyDefiCard() {
   const [syncedAt, setSyncedAt] = useState<string | null>(null);
   const [nloApr, setNloApr] = useState<number | null>(null);
   const ddRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   // ----- live prices (Coinbase, via edge function) -----
   useEffect(() => {
@@ -225,9 +228,32 @@ export default function BountyDefiCard() {
     return `synced ${hrs}h ago`;
   })();
 
+  const periodLine =
+    period === 'cycle'
+      ? '\u23f0 During Bear Market bottom to Bull Market Top'
+      : `\u23f0 Over the last ${period} months`;
+
+  const buildTweet = () => {
+    const where = isTokens
+      ? `And bought $${token?.sym}`
+      : `And invested it into $${asset} on ${PLATFORM_X[platform] ?? platform}`;
+    return [
+      `If I had earned $${fmt(amount)} bounty ${freq.per}.`,
+      where,
+      '',
+      periodLine,
+      '',
+      'Then would have made:',
+      `\ud83d\udcb0 $${fmt(finalVal)}`,
+      '',
+      'Earn Bounties to DCA in Crypto',
+      'Find a 1000 bounties in your chat from @AskRei_',
+    ].join('\n');
+  };
+
   return (
     <div className="earn-root">
-      <div className="card">
+      <div className="card" ref={cardRef}>
         {/* header */}
         <div className="head">
           <div className="brand">
@@ -251,6 +277,7 @@ export default function BountyDefiCard() {
               <p>{sub}</p>
             </div>
           </div>
+          <PostToXButton targetRef={cardRef} buildText={buildTweet} />
         </div>
 
         {/* one natural sentence, edge to edge */}
@@ -418,13 +445,13 @@ export default function BountyDefiCard() {
                   <svg className="linechart" viewBox={`0 0 ${chart.W} ${chart.H}`} preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                       <linearGradient id="earnfillg" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0" stopColor="#2596be" stopOpacity="0.30" />
-                        <stop offset="1" stopColor="#2596be" stopOpacity="0.02" />
+                        <stop offset="0" stopColor="#e9c8ba" stopOpacity="0.30" />
+                        <stop offset="1" stopColor="#e9c8ba" stopOpacity="0.02" />
                       </linearGradient>
                     </defs>
                     <path d={chart.areaD} fill="url(#earnfillg)" />
                     <path d={chart.conD} fill="none" stroke="#ed565a" strokeWidth={1.6} strokeDasharray="5 5" vectorEffect="non-scaling-stroke" />
-                    <path d={chart.valD} fill="none" stroke="#2596be" strokeWidth={2.6} strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+                    <path d={chart.valD} fill="none" stroke="#e9c8ba" strokeWidth={2.6} strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
                   </svg>
                   <div
                     className="enddot"

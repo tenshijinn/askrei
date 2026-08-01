@@ -153,3 +153,12 @@ export function computeSeries(a: AssetSeries, apyPct: number, startIdx: number, 
   }
   return { value, contrib, invested: monthlyContribution * n, startIdx, n };
 }
+
+/** X handles for the DeFi platforms (used by the Post-to-X share text) */
+export const PLATFORM_X: Record<string, string> = {
+  'Jito': '@jito_sol',
+  'Kamino': '@KaminoFinance',
+  'Marinade': '@MarinadeFinance',
+  'marginfi': '@marginfi',
+  'NLO by L1X': '@L1X_HQ',
+};
