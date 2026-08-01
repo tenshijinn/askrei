@@ -20,6 +20,7 @@ import NotFound from "./pages/NotFound";
 import OAuthConsent from "./pages/OAuthConsent";
 import Login from "./pages/Login";
 import Ask from "./pages/Ask";
+import Earn from "./pages/Earn";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => (
               <Route path="/button-lab" element={<ButtonLab />} />
               <Route path="/login" element={<Login />} />
               <Route path="/ask" element={<Ask />} />
+              <Route path="/earn" element={<Earn />} />
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -41,3 +41,6 @@ verify_jwt = false
 
 [functions.ask-rei-public]
 verify_jwt = false
+
+[functions.earn-market]
+verify_jwt = false
