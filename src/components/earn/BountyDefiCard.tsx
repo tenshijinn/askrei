@@ -418,13 +418,13 @@ export default function BountyDefiCard() {
                   <svg className="linechart" viewBox={`0 0 ${chart.W} ${chart.H}`} preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                       <linearGradient id="earnfillg" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0" stopColor="#2596be" stopOpacity="0.30" />
-                        <stop offset="1" stopColor="#2596be" stopOpacity="0.02" />
+                        <stop offset="0" stopColor="#e9c8ba" stopOpacity="0.30" />
+                        <stop offset="1" stopColor="#e9c8ba" stopOpacity="0.02" />
                       </linearGradient>
                     </defs>
                     <path d={chart.areaD} fill="url(#earnfillg)" />
                     <path d={chart.conD} fill="none" stroke="#ed565a" strokeWidth={1.6} strokeDasharray="5 5" vectorEffect="non-scaling-stroke" />
-                    <path d={chart.valD} fill="none" stroke="#2596be" strokeWidth={2.6} strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+                    <path d={chart.valD} fill="none" stroke="#e9c8ba" strokeWidth={2.6} strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
                   </svg>
                   <div
                     className="enddot"
