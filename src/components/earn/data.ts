@@ -73,13 +73,28 @@ export interface TokenRow {
   data?: string;
   /** coingecko id when loaded live */
   id?: string;
+  /** square icon url (same size for every asset) */
+  logo?: string;
+  cmcId?: number;
+  mcap?: number;
 }
+
+/** square, equally-proportioned icons for the built-in assets */
+export const ASSET_LOGO_URL: Record<string, string> = {
+  SOL: 'https://assets.coingecko.com/coins/images/4128/large/solana.png',
+  BTC: 'https://assets.coingecko.com/coins/images/1/large/bitcoin.png',
+  ETH: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png',
+  USDC: 'https://assets.coingecko.com/coins/images/6319/large/usdc.png',
+  USDT: 'https://assets.coingecko.com/coins/images/325/large/Tether.png',
+};
 
 // Top SVM tokens (seed list). `data` = embedded series; the rest load live.
 export const SEED_TOKENS: TokenRow[] = [
-  { sym: 'SOL', name: 'Solana', data: 'SOL' }, { sym: 'wBTC', name: 'Bitcoin (Wormhole)', data: 'BTC' },
-  { sym: 'wETH', name: 'Ethereum (Wormhole)', data: 'ETH' }, { sym: 'USDC', name: 'USD Coin', data: 'USDC' },
-  { sym: 'USDT', name: 'Tether', data: 'USDT' },
+  { sym: 'SOL', name: 'Solana', data: 'SOL', logo: ASSET_LOGO_URL.SOL },
+  { sym: 'wBTC', name: 'Bitcoin (Wormhole)', data: 'BTC', logo: ASSET_LOGO_URL.BTC },
+  { sym: 'wETH', name: 'Ethereum (Wormhole)', data: 'ETH', logo: ASSET_LOGO_URL.ETH },
+  { sym: 'USDC', name: 'USD Coin', data: 'USDC', logo: ASSET_LOGO_URL.USDC },
+  { sym: 'USDT', name: 'Tether', data: 'USDT', logo: ASSET_LOGO_URL.USDT },
   { sym: 'JUP', name: 'Jupiter' }, { sym: 'JTO', name: 'Jito' }, { sym: 'BONK', name: 'Bonk' }, { sym: 'WIF', name: 'dogwifhat' },
   { sym: 'PYTH', name: 'Pyth Network' }, { sym: 'RAY', name: 'Raydium' }, { sym: 'JLP', name: 'Jupiter LP' },
   { sym: 'RENDER', name: 'Render' }, { sym: 'HNT', name: 'Helium' }, { sym: 'W', name: 'Wormhole' }, { sym: 'PYUSD', name: 'PayPal USD' },
