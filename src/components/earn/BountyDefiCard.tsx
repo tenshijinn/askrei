@@ -482,6 +482,23 @@ export default function BountyDefiCard() {
           period-average estimates unless a live source is connected.
         </p>
       </div>
+
+      {/* off-screen node captured for the tweet image */}
+      <div style={{ position: 'fixed', left: -10000, top: 0, pointerEvents: 'none', opacity: 0 }} aria-hidden>
+        <div ref={shareRef}>
+          <ShareImage
+            amount={amount}
+            per={freq.per}
+            targetLabel={isTokens ? `$${token?.sym} (buy & hold)` : `$${asset} on ${platform}`}
+            periodLabel={period === 'cycle' ? 'Bear bottom → Bull top' : `Last ${period} months`}
+            invested={invested}
+            finalVal={finalVal}
+            yieldValue={yieldValue}
+            chart={chart ? { W: chart.W, H: chart.H, valD: chart.valD, conD: chart.conD, areaD: chart.areaD } : null}
+          />
+        </div>
+      </div>
     </div>
   );
 }
+
