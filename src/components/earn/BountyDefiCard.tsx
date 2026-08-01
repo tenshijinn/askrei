@@ -249,9 +249,9 @@ export default function BountyDefiCard() {
       '',
       'New Meta:',
       '✅ Earn Bounties',
-      '✅ DCA into DeFi',
+      '✅ Stake in DeFi',
       '',
-      'Find 1000s of bounties from across crypto from Rei AI @AskRei_',
+      'Use Rei AI @AskRei_ to find you 1000s of bounties.',
     ].join('\n');
   };
 
