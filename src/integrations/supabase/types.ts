@@ -456,6 +456,24 @@ export type Database = {
         }
         Relationships: []
       }
+      earn_market_cache: {
+        Row: {
+          data: Json
+          key: string
+          updated_at: string
+        }
+        Insert: {
+          data: Json
+          key: string
+          updated_at?: string
+        }
+        Update: {
+          data?: Json
+          key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       jobs: {
         Row: {
           apply_url: string | null
