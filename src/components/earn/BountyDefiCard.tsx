@@ -17,6 +17,7 @@ import {
   PLATFORM_X,
 } from './data';
 import PostToXButton from './PostToXButton';
+import ShareImage from './ShareImage';
 
 const FN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/earn-market`;
 const FN_HEADERS = {
@@ -64,6 +65,7 @@ export default function BountyDefiCard() {
   const [nloApr, setNloApr] = useState<number | null>(null);
   const ddRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const shareRef = useRef<HTMLDivElement>(null);
 
   // ----- live prices (Coinbase, via edge function) -----
   useEffect(() => {
@@ -281,7 +283,7 @@ export default function BountyDefiCard() {
               <p>{sub}</p>
             </div>
           </div>
-          <PostToXButton targetRef={cardRef} buildText={buildTweet} />
+          <PostToXButton targetRef={shareRef} buildText={buildTweet} />
         </div>
 
         {/* one natural sentence, edge to edge */}
