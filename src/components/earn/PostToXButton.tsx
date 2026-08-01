@@ -50,7 +50,14 @@ export default function PostToXButton({ targetRef, buildText }: Props) {
     try {
       const node = targetRef.current;
       if (node) {
-        const dataUrl = await toPng(node, { pixelRatio: 2, backgroundColor: '#0b0a09' });
+        const dataUrl = await toPng(node, { pixelRatio: 2, backgroundColor: '#0b0a09', cacheBust: true });
+        const blob = await (await fetch(dataUrl)).blob();
+        // copy to clipboard so it can be pasted straight into the X composer
+        try {
+          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        } catch {
+          /* clipboard unsupported — the download below is the fallback */
+        }
         const a = document.createElement('a');
         a.href = dataUrl;
         a.download = 'rei-bounty-dca.png';

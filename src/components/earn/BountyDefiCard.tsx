@@ -17,6 +17,7 @@ import {
   PLATFORM_X,
 } from './data';
 import PostToXButton from './PostToXButton';
+import ShareImage from './ShareImage';
 
 const FN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/earn-market`;
 const FN_HEADERS = {
@@ -64,6 +65,7 @@ export default function BountyDefiCard() {
   const [nloApr, setNloApr] = useState<number | null>(null);
   const ddRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const shareRef = useRef<HTMLDivElement>(null);
 
   // ----- live prices (Coinbase, via edge function) -----
   useEffect(() => {
@@ -281,7 +283,7 @@ export default function BountyDefiCard() {
               <p>{sub}</p>
             </div>
           </div>
-          <PostToXButton targetRef={cardRef} buildText={buildTweet} />
+          <PostToXButton targetRef={shareRef} buildText={buildTweet} />
         </div>
 
         {/* one natural sentence, edge to edge */}
@@ -480,6 +482,23 @@ export default function BountyDefiCard() {
           period-average estimates unless a live source is connected.
         </p>
       </div>
+
+      {/* off-screen node captured for the tweet image */}
+      <div style={{ position: 'fixed', left: -10000, top: 0, pointerEvents: 'none', opacity: 0 }} aria-hidden>
+        <div ref={shareRef}>
+          <ShareImage
+            amount={amount}
+            per={freq.per}
+            targetLabel={isTokens ? `$${token?.sym} (buy & hold)` : `$${asset} on ${platform}`}
+            periodLabel={period === 'cycle' ? 'Bear bottom → Bull top' : `Last ${period} months`}
+            invested={invested}
+            finalVal={finalVal}
+            yieldValue={yieldValue}
+            chart={chart ? { W: chart.W, H: chart.H, valD: chart.valD, conD: chart.conD, areaD: chart.areaD } : null}
+          />
+        </div>
+      </div>
     </div>
   );
 }
+
