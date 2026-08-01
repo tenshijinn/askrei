@@ -92,14 +92,25 @@ async function cgTokens() {
 }
 
 async function cgHistory(id: string) {
-  const res = await fetch(
-    `https://api.coingecko.com/api/v3/coins/${encodeURIComponent(id)}/market_chart?vs_currency=usd&days=max&interval=daily`,
-    { headers: { Accept: 'application/json' } },
-  );
-  if (!res.ok) throw new Error(`coingecko chart HTTP ${res.status}`);
-  const data = (await res.json()) as { prices: [number, number][] };
-  const rows = data.prices ?? [];
-  if (!rows.length) throw new Error('no history');
+  // The free CoinGecko API rejects `days=max` and the `interval` param (401,
+  // paid-plan only). Try the widest allowed window first, then fall back.
+  const windows = ['365', '180', '90'];
+  let rows: [number, number][] = [];
+  let lastStatus = 0;
+  for (const days of windows) {
+    const res = await fetch(
+      `https://api.coingecko.com/api/v3/coins/${encodeURIComponent(id)}/market_chart?vs_currency=usd&days=${days}`,
+      { headers: { Accept: 'application/json' } },
+    );
+    if (!res.ok) {
+      lastStatus = res.status;
+      continue;
+    }
+    const data = (await res.json()) as { prices: [number, number][] };
+    rows = data.prices ?? [];
+    if (rows.length) break;
+  }
+  if (!rows.length) throw new Error(`coingecko chart unavailable${lastStatus ? ` (HTTP ${lastStatus})` : ''}`);
 
   // first price of each month = monthly close series anchored at the token's TGE month
   const byMonth = new Map<string, number>();
@@ -149,8 +160,13 @@ Deno.serve(async (req) => {
     if (action === 'tokens') {
       const hit = cached('tokens');
       if (hit) return json(hit);
-      const tokens = await cgTokens();
-      return json(put('tokens', { tokens, syncedAt: new Date().toISOString() }));
+      try {
+        const tokens = await cgTokens();
+        return json(put('tokens', { tokens, syncedAt: new Date().toISOString() }));
+      } catch (e) {
+        console.warn('[earn-market] tokens failed:', (e as Error).message);
+        return json({ tokens: [], unavailable: true });
+      }
     }
 
     if (action === 'history') {
@@ -158,8 +174,13 @@ Deno.serve(async (req) => {
       const key = `history:${id}`;
       const hit = cached(key);
       if (hit) return json(hit);
-      const series = await cgHistory(id);
-      return json(put(key, { ...series, syncedAt: new Date().toISOString() }));
+      try {
+        const series = await cgHistory(id);
+        return json(put(key, { ...series, syncedAt: new Date().toISOString() }));
+      } catch (e) {
+        console.warn('[earn-market] history failed:', (e as Error).message);
+        return json({ unavailable: true, error: (e as Error).message });
+      }
     }
 
     if (action === 'nlo') {
