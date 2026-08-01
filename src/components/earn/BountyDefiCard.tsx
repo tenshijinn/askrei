@@ -14,7 +14,9 @@ import {
   fmt,
   resolveWindow,
   smoothPath,
+  PLATFORM_X,
 } from './data';
+import PostToXButton from './PostToXButton';
 
 const FN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/earn-market`;
 const FN_HEADERS = {
@@ -61,6 +63,7 @@ export default function BountyDefiCard() {
   const [syncedAt, setSyncedAt] = useState<string | null>(null);
   const [nloApr, setNloApr] = useState<number | null>(null);
   const ddRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   // ----- live prices (Coinbase, via edge function) -----
   useEffect(() => {
@@ -225,9 +228,32 @@ export default function BountyDefiCard() {
     return `synced ${hrs}h ago`;
   })();
 
+  const periodLine =
+    period === 'cycle'
+      ? '\u23f0 During Bear Market bottom to Bull Market Top'
+      : `\u23f0 Over the last ${period} months`;
+
+  const buildTweet = () => {
+    const where = isTokens
+      ? `And bought $${token?.sym}`
+      : `And invested it into $${asset} on ${PLATFORM_X[platform] ?? platform}`;
+    return [
+      `If I had earned $${fmt(amount)} bounty ${freq.per}.`,
+      where,
+      '',
+      periodLine,
+      '',
+      'Then would have made:',
+      `\ud83d\udcb0 $${fmt(finalVal)}`,
+      '',
+      'Earn Bounties to DCA in Crypto',
+      'Find a 1000 bounties in your chat from @AskRei_',
+    ].join('\n');
+  };
+
   return (
     <div className="earn-root">
-      <div className="card">
+      <div className="card" ref={cardRef}>
         {/* header */}
         <div className="head">
           <div className="brand">
@@ -251,6 +277,7 @@ export default function BountyDefiCard() {
               <p>{sub}</p>
             </div>
           </div>
+          <PostToXButton targetRef={cardRef} buildText={buildTweet} />
         </div>
 
         {/* one natural sentence, edge to edge */}
