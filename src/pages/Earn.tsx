@@ -1,4 +1,3 @@
-import { Helmet } from "react-helmet-async";
 import BountyDefiCard from "@/components/earn/BountyDefiCard";
 
 export default function Earn() {
