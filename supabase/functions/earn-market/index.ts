@@ -111,9 +111,6 @@ async function cgHistory(id: string) {
     if (rows.length) break;
   }
   if (!rows.length) throw new Error(`coingecko chart unavailable${lastStatus ? ` (HTTP ${lastStatus})` : ''}`);
-  const data = { prices: rows };
-  const rows = data.prices ?? [];
-  if (!rows.length) throw new Error('no history');
 
   // first price of each month = monthly close series anchored at the token's TGE month
   const byMonth = new Map<string, number>();
