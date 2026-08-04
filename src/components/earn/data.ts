@@ -156,9 +156,9 @@ export function computeSeries(a: AssetSeries, apyPct: number, startIdx: number, 
 
 /** X handles for the DeFi platforms (used by the Post-to-X share text) */
 export const PLATFORM_X: Record<string, string> = {
-  'Jito': '@jito_sol',
-  'Kamino': '@KaminoFinance',
+  'Jito': '@jito',
+  'Kamino': '@Kamino',
   'Marinade': '@MarinadeFinance',
   'marginfi': '@marginfi',
-  'NLO by L1X': '@L1X_HQ',
+  'NLO by L1X': '@NLOFinance',
 };
