@@ -57,9 +57,14 @@ export default function ShareImage({
         style={{
           position: 'absolute', top: 0, right: 0, width: '60%', height: '100%',
           clipPath: 'polygon(15% 0, 100% 0, 100% 100%, 3% 100%)',
-          background: `#15130f url(${reiArt.url}) 50% 26% / cover no-repeat`,
+          background: '#15130f', overflow: 'hidden',
         }}
       >
+        <img
+          src={reiArt.url}
+          alt=""
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 26%' }}
+        />
         <div
           style={{
             position: 'absolute', inset: 0,
