@@ -485,13 +485,13 @@ export default function BountyDefiCard() {
       <div style={{ position: 'fixed', left: -10000, top: 0, pointerEvents: 'none', opacity: 0 }} aria-hidden>
         <div ref={shareRef}>
           <ShareImage
-            amount={amount}
-            per={freq.per}
-            targetLabel={isTokens ? `$${token?.sym} (buy & hold)` : `$${asset} on ${platform}`}
-            periodLabel={period === 'cycle' ? 'Bear bottom → Bull top' : `Last ${period} months`}
+            assetSym={isTokens ? (token?.sym ?? '') : asset}
+            assetLogoUrl={assetLogoUrl}
+            platformName={isTokens ? null : platform}
+            platformLogoUrl={isTokens ? undefined : platformLogo?.url}
             invested={invested}
             finalVal={finalVal}
-            yieldValue={yieldValue}
+            windowLabel={period === 'cycle' ? 'Bear → Bull top' : `Last ${period} months`}
             chart={chart ? { W: chart.W, H: chart.H, valD: chart.valD, conD: chart.conD, areaD: chart.areaD } : null}
           />
         </div>
