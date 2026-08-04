@@ -236,24 +236,22 @@ export default function BountyDefiCard() {
       : `\u23f0 Over the last ${period} months`;
 
   const buildTweet = () => {
-    const step2 = isTokens
-      ? `bought $${token?.sym}`
-      : `Invested it into $${asset} on ${PLATFORM_X[platform] ?? platform}`;
-    const periodText = period === 'cycle'
-      ? 'During the Bear Market bottom to Bull Market Top'
-      : `Over the last ${period} months`;
+    const step3 = isTokens
+      ? `Buy $${token?.sym} and hold`
+      : `Buy $${asset} stake on ${PLATFORM_X[platform] ?? platform}`;
+    const step4 = period === 'cycle'
+      ? 'Repeat from Bear Market bottom to Bull Market Top'
+      : `Repeat for ${period} months`;
     return [
-      `I just estimated that I could've made $${fmt(finalVal)} if...`,
+      `My estimated earnings is $${fmt(finalVal)} from crypto bounties`,
       '',
-      `1️⃣ I had earned $${fmt(amount)} bounty ${freq.per}.`,
-      `2️⃣ ${step2}`,
-      `3️⃣ ${periodText}`,
+      'New Bounty Meta:',
+      '1️⃣ Search bounties on @AskRei_',
+      `2️⃣ Earn a $${fmt(amount)} bounty ${freq.per}`,
+      `3️⃣ ${step3}`,
+      `4️⃣ ${step4}`,
       '',
-      'New Meta:',
-      '✅ Earn Bounties',
-      '✅ Stake in DeFi',
-      '',
-      'Use Rei AI @AskRei_ to find you 1000s of bounties.',
+      'Check yours on rei.chat/earn',
     ].join('\n');
   };
 
