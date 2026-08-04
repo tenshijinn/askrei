@@ -47,29 +47,59 @@ export default function PostToXButton({ targetRef, buildText }: Props) {
   const handleClick = async () => {
     if (busy) return;
     setBusy(true);
+    const body = buildText();
+    let file: File | null = null;
+    let dataUrl: string | null = null;
+
     try {
       const node = targetRef.current;
       if (node) {
-        const dataUrl = await toPng(node, { pixelRatio: 2, backgroundColor: '#0b0a09', cacheBust: true });
+        dataUrl = await toPng(node, { pixelRatio: 2, backgroundColor: '#0b0a09', cacheBust: true });
         const blob = await (await fetch(dataUrl)).blob();
-        // copy to clipboard so it can be pasted straight into the X composer
-        try {
-          await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-        } catch {
-          /* clipboard unsupported — the download below is the fallback */
-        }
-        const a = document.createElement('a');
-        a.href = dataUrl;
-        a.download = 'rei-bounty-dca.png';
-        a.click();
+        file = new File([blob], 'rei-bounty-earnings.png', { type: 'image/png' });
       }
     } catch {
-      /* image is a bonus — still open the composer */
-    } finally {
-      setBusy(false);
-      const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(buildText())}`;
-      window.open(url, '_blank', 'noopener,noreferrer');
+      /* image is a bonus — still post the text */
     }
+
+    // 1) One-click: native share sheet with the image + text attached together
+    try {
+      const nav = navigator as Navigator & {
+        canShare?: (data: ShareData & { files?: File[] }) => boolean;
+      };
+      if (file && nav.share && nav.canShare?.({ files: [file] })) {
+        await nav.share({ files: [file], text: body });
+        setBusy(false);
+        return;
+      }
+    } catch (err) {
+      if ((err as DOMException)?.name === 'AbortError') {
+        setBusy(false);
+        return;
+      }
+      /* fall through to composer */
+    }
+
+    // 2) Fallback: put the image on the clipboard (paste into composer) + open X
+    try {
+      if (file) {
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': file })]);
+      }
+    } catch {
+      if (dataUrl) {
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = 'rei-bounty-earnings.png';
+        a.click();
+      }
+    }
+
+    setBusy(false);
+    window.open(
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(body)}`,
+      '_blank',
+      'noopener,noreferrer',
+    );
   };
 
   return (
