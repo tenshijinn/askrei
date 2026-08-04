@@ -1,14 +1,15 @@
 import reiLogo from '@/assets/rei-logo.png';
+import reiArt from '@/assets/rei-share-art.png.asset.json';
 import { fmt } from './data';
 
 export interface ShareImageProps {
-  amount: number;
-  per: string;
-  targetLabel: string;   // "$SOL on Jito" | "$BONK (buy & hold)"
-  periodLabel: string;   // "Bear bottom → Bull top" | "Last 24 months"
+  assetSym: string;
+  assetLogoUrl?: string;
+  platformName: string | null; // null => buy & hold
+  platformLogoUrl?: string;
   invested: number;
   finalVal: number;
-  yieldValue: string;
+  windowLabel: string;
   chart: {
     W: number;
     H: number;
@@ -18,90 +19,153 @@ export interface ShareImageProps {
   } | null;
 }
 
-const ACCENT = '#e9c8ba';
+const TEXT = '#f1e8dd';
+const MUTED = '#8f8579';
+const MUTED2 = '#5f574f';
+const CREAM = '#eddccb';
+const GREEN = '#7fe0a3';
 const RED = '#ed565a';
+const MONO = "ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace";
+const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
-/** Off-screen 1200x675 (16:9) tweet image. Rendered with inline styles only so
- *  html-to-image can serialise it without any external stylesheet. */
+/** Off-screen 1600x900 (16:9) tweet image. Inline styles only so html-to-image
+ *  can serialise it without any external stylesheet. */
 export default function ShareImage({
-  amount, per, targetLabel, periodLabel, invested, finalVal, yieldValue, chart,
+  assetSym, assetLogoUrl, platformName, platformLogoUrl, invested, finalVal, windowLabel, chart,
 }: ShareImageProps) {
   const gain = finalVal - invested;
   const pct = invested > 0 ? (gain / invested) * 100 : 0;
   const down = gain < 0;
+  const accent = down ? RED : GREEN;
 
-  const row = (label: string, value: string, color = '#f4ece7') => (
-    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 16, padding: '9px 0', borderBottom: '1px solid rgba(233,200,186,0.14)' }}>
-      <span style={{ fontSize: 19, letterSpacing: '0.06em', textTransform: 'uppercase', color: 'rgba(244,236,231,0.55)' }}>{label}</span>
-      <span style={{ fontSize: 23, fontWeight: 700, color }}>{value}</span>
+  const stat = (k: string, v: string) => (
+    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 24, alignItems: 'baseline' }}>
+      <span style={{ color: MUTED }}>{k}</span>
+      <span style={{ color: TEXT, fontWeight: 600 }}>{v}</span>
     </div>
   );
 
   return (
     <div
       style={{
-        width: 1200, height: 675, background: '#0b0a09', color: '#f4ece7',
-        fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-        padding: 44, boxSizing: 'border-box', display: 'flex', flexDirection: 'column',
-        border: `1px solid rgba(233,200,186,0.22)`, position: 'relative', overflow: 'hidden',
+        position: 'relative', width: 1600, height: 900, overflow: 'hidden',
+        background: '#0a0a09', color: TEXT, fontFamily: MONO,
       }}
     >
-      {/* header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div>
-          <div style={{ fontSize: 15, letterSpacing: '0.28em', textTransform: 'uppercase', color: 'rgba(244,236,231,0.5)' }}>
-            Rei.chat / Bounty DCA Backtest
-          </div>
-          <div style={{ fontSize: 34, fontWeight: 700, marginTop: 8, color: ACCENT }}>
-            ${fmt(amount)} bounty {per} → {targetLabel}
-          </div>
-        </div>
-        <img src={reiLogo} alt="Rei" width={132} height={132} style={{ width: 132, height: 132, objectFit: 'contain', opacity: 0.95 }} />
+      {/* right art panel, diagonal seam */}
+      <div
+        style={{
+          position: 'absolute', top: 0, right: 0, width: '60%', height: '100%',
+          clipPath: 'polygon(15% 0, 100% 0, 100% 100%, 3% 100%)',
+          background: '#15130f', overflow: 'hidden',
+        }}
+      >
+        <img
+          src={reiArt.url}
+          alt=""
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 26%' }}
+        />
+        <div
+          style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(100deg, #0a0a09 0%, rgba(10,9,8,0.5) 20%, rgba(10,9,8,0) 44%)',
+          }}
+        />
       </div>
 
-      {/* body: itemised numbers + chart */}
-      <div style={{ display: 'flex', gap: 36, marginTop: 26, flex: 1 }}>
-        <div style={{ width: 430, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ fontSize: 15, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(244,236,231,0.45)' }}>
-            Total value
-          </div>
-          <div style={{ fontSize: 68, fontWeight: 800, lineHeight: 1.05, color: down ? RED : ACCENT }}>
-            ${fmt(finalVal)}
-          </div>
-          <div style={{ marginTop: 14 }}>
-            {row('Bounties staked', `$${fmt(invested)}`, RED)}
-            {row('Profit', `${down ? '-' : '+'}$${fmt(Math.abs(gain))}`, down ? RED : '#9fe6b4')}
-            {row('Return', `${down ? '' : '+'}${pct.toFixed(1)}%`, down ? RED : '#9fe6b4')}
-            {row('Yield', yieldValue)}
-            {row('Window', periodLabel)}
+      {/* sparkline across the full card */}
+      {chart && (
+        <svg
+          viewBox={`0 0 ${chart.W} ${chart.H}`}
+          preserveAspectRatio="none"
+          style={{ position: 'absolute', left: 0, bottom: 0, width: '100%', height: '46%' }}
+        >
+          <defs>
+            <linearGradient id="shareFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={CREAM} stopOpacity="0.22" />
+              <stop offset="100%" stopColor={CREAM} stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <path d={chart.areaD} fill="url(#shareFill)" />
+          <path d={chart.conD} fill="none" stroke={RED} strokeWidth={5} strokeDasharray="14 12" opacity={0.55} />
+          <path d={chart.valD} fill="none" stroke={CREAM} strokeWidth={6} opacity={0.9} />
+        </svg>
+      )}
+
+      {/* left info panel */}
+      <div
+        style={{
+          position: 'absolute', left: 0, top: 0, width: '60%', height: '100%',
+          padding: '70px 80px', display: 'flex', flexDirection: 'column', boxSizing: 'border-box',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+          <img src={reiLogo} alt="Rei" style={{ width: 64, height: 64, borderRadius: 14, objectFit: 'cover' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 34, color: MUTED }}>
+            <b style={{ color: TEXT, fontWeight: 700, letterSpacing: 2 }}>REI</b>
+            <span style={{ color: MUTED2 }}>›</span>Bounties<span style={{ color: MUTED2 }}>›</span>DeFi
           </div>
         </div>
 
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-          {chart && (
-            <svg viewBox={`0 0 ${chart.W} ${chart.H}`} preserveAspectRatio="none" style={{ width: '100%', height: 300 }}>
-              <defs>
-                <linearGradient id="shareFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={ACCENT} stopOpacity="0.34" />
-                  <stop offset="100%" stopColor={ACCENT} stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <path d={chart.areaD} fill="url(#shareFill)" />
-              <path d={chart.conD} fill="none" stroke={RED} strokeWidth={5} strokeDasharray="14 10" />
-              <path d={chart.valD} fill="none" stroke={ACCENT} strokeWidth={6} />
-            </svg>
+        <div style={{ height: 1, background: 'rgba(237,220,203,0.12)', margin: '34px 0 40px' }} />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 13, fontSize: 40, fontWeight: 600, color: TEXT }}>
+            {assetLogoUrl && (
+              <img src={assetLogoUrl} alt="" style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover' }} />
+            )}
+            ${assetSym}
+          </span>
+          {platformName ? (
+            <>
+              <span style={{ fontSize: 30, color: MUTED }}>on</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 40, fontWeight: 600, color: TEXT }}>
+                {platformLogoUrl && (
+                  <img src={platformLogoUrl} alt="" style={{ width: 46, height: 46, borderRadius: 10, objectFit: 'contain' }} />
+                )}
+                {platformName}
+              </span>
+            </>
+          ) : (
+            <span style={{ fontSize: 30, color: MUTED }}>buy &amp; hold</span>
           )}
-          <div style={{ display: 'flex', gap: 22, marginTop: 12, fontSize: 16, color: 'rgba(244,236,231,0.6)' }}>
-            <span><span style={{ color: ACCENT }}>━</span> Portfolio value</span>
-            <span><span style={{ color: RED }}>┄</span> Total bounties staked</span>
-          </div>
+        </div>
+
+        <div style={{ fontFamily: SANS, fontWeight: 700, fontSize: 118, lineHeight: 1, letterSpacing: -3, color: accent, marginTop: 26 }}>
+          {down ? '' : '+'}{pct.toFixed(0)}%
+        </div>
+        <div style={{ fontSize: 44, color: accent, marginTop: 12, opacity: 0.9 }}>
+          ${fmt(finalVal)} · from ${fmt(invested)}
+        </div>
+
+        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 18, fontSize: 27, maxWidth: 660 }}>
+          {stat('Bounties Earned', `$${fmt(invested)}`)}
+          {stat('DeFi Invested Bounties', `$${fmt(finalVal)}`)}
+          {stat('Window', windowLabel)}
         </div>
       </div>
 
-      {/* footer */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 18, fontSize: 17, color: 'rgba(244,236,231,0.55)' }}>
-        <span>Earn bounties → stake in DeFi</span>
-        <span style={{ color: ACCENT }}>rei.chat · @AskRei_</span>
+      {/* top-right creds */}
+      <div style={{ position: 'absolute', top: 64, right: 70, display: 'flex', gap: 34, fontSize: 26, color: CREAM, zIndex: 3 }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <svg viewBox="0 0 24 24" fill={CREAM} width={24} height={24} style={{ width: 24, height: 24 }}>
+            <path d="M18.9 1.2h3.6l-7.9 9 9.3 12.3h-7.3l-5.7-7.5-6.6 7.5H.7l8.4-9.6L0 1.2h7.5l5.2 6.8zM17.6 20.4h2L6.5 3.2H4.4z" />
+          </svg>
+          @AskRei_
+        </span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>rei.chat</span>
+      </div>
+
+      {/* bottom-right chip */}
+      <div
+        style={{
+          position: 'absolute', bottom: 56, right: 64, display: 'flex', alignItems: 'center', gap: 12,
+          background: 'rgba(10,9,8,0.7)', border: '1px solid rgba(237,220,203,0.18)', borderRadius: 999,
+          padding: '12px 22px 12px 14px', fontSize: 26, color: TEXT, zIndex: 3,
+        }}
+      >
+        <img src={reiLogo} alt="" style={{ width: 38, height: 38, borderRadius: 9, objectFit: 'cover' }} />
+        Find crypto's bounties aggregated by Rei AI
       </div>
     </div>
   );
