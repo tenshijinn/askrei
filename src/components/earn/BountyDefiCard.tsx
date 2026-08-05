@@ -317,8 +317,15 @@ export default function BountyDefiCard() {
                   on{' '}
                   <span className="plat" style={{ color: platformColor(platform) }}>
                     {platformLogo?.url && <img className="inline-ico sq" src={platformLogo.url} alt="" />}
-                    {platformLabel(platform)}
+                    {platformUrl(platform) ? (
+                      <a className="plat-link" href={platformUrl(platform)} target="_blank" rel="noopener noreferrer">
+                        {platformLabel(platform)}
+                      </a>
+                    ) : (
+                      platformLabel(platform)
+                    )}
                   </span>
+
                 </>
               )}
               , then your total bounties earned is <span className="num">${fmt(invested)}</span>, and the total made from{' '}
