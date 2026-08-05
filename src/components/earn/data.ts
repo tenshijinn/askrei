@@ -175,3 +175,17 @@ export const PLATFORM_X: Record<string, string> = {
   'marginfi': '@marginfi',
   'NLO by L1X': '@NLOFinance',
 };
+
+/** display names + brand colours for the DeFi platforms (used in the sentence) */
+export const PLATFORM_LABEL: Record<string, string> = {
+  'marginfi': 'MarginFi',
+};
+
+export const PLATFORM_COLOR: Record<string, string> = {
+  'NLO by L1X': '#f5872b',
+  'marginfi': '#eddccb',
+  'Marinade': '#0c9790',
+};
+
+export const platformLabel = (p: string) => PLATFORM_LABEL[p] ?? p;
+export const platformColor = (p: string) => PLATFORM_COLOR[p] ?? '#e9c8ba';
