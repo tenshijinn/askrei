@@ -15,6 +15,7 @@ import {
   resolveWindow,
   smoothPath,
   PLATFORM_X,
+  tokenColor,
 } from './data';
 import PostToXButton from './PostToXButton';
 import ShareImage from './ShareImage';
