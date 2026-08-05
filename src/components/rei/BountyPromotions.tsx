@@ -269,12 +269,16 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
           setClicks([]);
           setImpressions([]);
         } else {
-          const [{ data: ck, error: ckErr }, { data: im, error: imErr }] = await Promise.all([
-            supabase.rpc('get_campaign_click_stats', { p_campaign_ids: ids }),
-            supabase.rpc('get_campaign_impression_stats', { p_campaign_ids: ids }),
-          ]);
-          if (ckErr) throw ckErr;
+          const { data: stats, error: statsErr } = await supabase.functions.invoke(
+            'campaign-stats',
+            { body: { campaignIds: ids } }
+          );
+          if (statsErr) throw statsErr;
+          const ck = stats?.clicks ?? [];
+          const im = stats?.impressions ?? [];
+          const imErr = null;
           const rows: ClickRow[] = (ck || []).map((r: any) => ({
+
             campaign_subscription_id: r.campaign_subscription_id,
             click_date: r.click_date,
             total_clicks: Number(r.total_clicks) || 0,
