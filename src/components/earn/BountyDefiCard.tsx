@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import reiLogo from '@/assets/rei-logo.png';
 import './earn.css';
 import { ALOGO, PLOGO } from './logos';
 import {
@@ -261,6 +262,10 @@ export default function BountyDefiCard() {
 
   return (
     <div className="earn-root">
+      <div className="earn-page-head">
+        <img src={reiLogo} alt="Rei" />
+        <span>Bounty Earning Calculator</span>
+      </div>
       <div className="card" ref={cardRef}>
         {/* header */}
         <div className="head">
