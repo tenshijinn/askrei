@@ -450,8 +450,8 @@ export default function BountyDefiCard() {
 
         {/* legend */}
         <div className="legend">
-          <span><i className="swatch" />What it's worth now</span>
-          <span><i className="swatch dash" />Total bounties staked</span>
+          <span><i className="swatch" />Staked Bounties ROI</span>
+          <span><i className="swatch dash" />Bounties Earned</span>
           {cycleTag && <span className="cycle-tag">valued at cycle peak</span>}
           {!isTokens && apyVal > 100 && <span className="cycle-tag">very high APR — compounded flat</span>}
         </div>
