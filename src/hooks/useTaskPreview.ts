@@ -100,10 +100,13 @@ async function fetchUniqueVisits(shortCode: string): Promise<number | null> {
         .eq("short_code", shortCode)
         .maybeSingle();
       if (subErr || !sub) return null;
-      const { data: unique, error: clickErr } = await supabase
-        .rpc("get_campaign_unique_visits", { p_short_code: shortCode });
+      const { data: stats, error: clickErr } = await supabase.functions.invoke(
+        "campaign-stats",
+        { body: { shortCode } }
+      );
       if (clickErr) return null;
-      const uniqueCount = typeof unique === "number" ? unique : 0;
+      const uniqueCount = Number(stats?.uniqueVisits) || 0;
+
       writeVisitsCache(shortCode, uniqueCount);
       return uniqueCount;
     } catch {
