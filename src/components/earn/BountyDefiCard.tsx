@@ -18,6 +18,7 @@ import {
   tokenColor,
   platformLabel,
   platformColor,
+  platformUrl,
 } from './data';
 import PostToXButton from './PostToXButton';
 import ShareImage from './ShareImage';
@@ -495,6 +496,18 @@ export default function BountyDefiCard() {
             </div>
           </div>
         </div>
+
+        <p className="cta-line">
+          <a href="https://rei.chat" target="_blank" rel="noopener noreferrer">Signup to Rei</a> to Find a 1000+ Bounties &gt; Stake Winnings here on{' '}
+          {platformUrl(platform) ? (
+            <a href={platformUrl(platform)} target="_blank" rel="noopener noreferrer" style={{ color: platformColor(platform) }}>
+              {platformLabel(platform)}
+            </a>
+          ) : (
+            <span style={{ color: platformColor(platform) }}>{platformLabel(platform)}</span>
+          )}{' '}
+          DeFi.
+        </p>
 
         <p className="footnote">
           Backtest over the selected past period — not a forecast. Prices are real market data; DeFi yields are
