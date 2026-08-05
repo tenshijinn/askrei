@@ -271,6 +271,49 @@ async function buildTokens(): Promise<TokenRow[]> {
   return [...bySym.values()].sort((a, b) => (b.mcap ?? 0) - (a.mcap ?? 0));
 }
 
+// ---------- NLO live yield ----------
+const FIRECRAWL_KEY = Deno.env.get('FIRECRAWL_API_KEY') ?? '';
+
+function pickYield(text: string): number | null {
+  // markdown: "Verified accuracy ... ~84.2% ... verified in hindsight"
+  const near = text.match(/Verified accuracy[\s\S]{0,400}?~?(\d{1,3}(?:\.\d+)?)\s*%/i);
+  const wire = text.match(/data-wire="accuracy\.pct"[^>]*>~?(\d{1,3}(?:\.\d+)?)\s*%/i);
+  const raw = Number(wire?.[1] ?? near?.[1]);
+  return Number.isFinite(raw) && raw > 0 && raw <= 1000 ? raw : null;
+}
+
+async function scrapeNloYield(): Promise<number | null> {
+  // 1) Firecrawl (renders the live JS value)
+  if (FIRECRAWL_KEY) {
+    try {
+      const res = await fetch('https://api.firecrawl.dev/v2/scrape', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${FIRECRAWL_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: 'https://nlo.finance/live', formats: ['markdown'], onlyMainContent: false, waitFor: 4000 }),
+      });
+      if (res.ok) {
+        const body = await res.json();
+        const md = body?.markdown ?? body?.data?.markdown ?? '';
+        const v = pickYield(String(md));
+        if (v !== null) return v;
+      } else {
+        console.warn('[earn-market] firecrawl nlo HTTP', res.status, await res.text());
+      }
+    } catch (e) {
+      console.warn('[earn-market] firecrawl nlo failed:', (e as Error).message);
+    }
+  }
+  // 2) plain HTML fallback (server-rendered baseline)
+  try {
+    const res = await fetch('https://nlo.finance/live', { headers: { 'User-Agent': 'rei-earn' } });
+    if (res.ok) return pickYield(await res.text());
+  } catch (e) {
+    console.warn('[earn-market] nlo html failed:', (e as Error).message);
+  }
+  return null;
+}
+
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
@@ -382,24 +425,40 @@ Deno.serve(async (req) => {
       return json({ tokens: tokens.length, warmed: ok, failed });
     }
 
+    // NLO by L1X yield: sampled once per day from nlo.finance/live ("Verified
+    // accuracy" card) and returned as a rolling 30-day average.
     if (action === 'nlo') {
       const hit = memGet('nlo');
       if (hit) return json(hit);
-      let apr: number | null = null;
-      try {
-        const res = await fetch('https://api.nlo.finance/v1/vaults', { headers: { Accept: 'application/json' } });
-        if (res.ok) {
-          const data = await res.json();
-          const list = Array.isArray(data) ? data : (data?.vaults ?? []);
-          const ultra = list.find((v: Record<string, unknown>) =>
-            String(v?.name ?? v?.strategy ?? '').toLowerCase().includes('ultra'),
-          );
-          const raw = Number(ultra?.apr ?? ultra?.apy);
-          if (Number.isFinite(raw) && raw > 0) apr = raw;
+
+      const today = new Date().toISOString().slice(0, 10);
+      const row = await dbGet('nlo:samples');
+      const store = (row?.data as { samples?: Array<{ date: string; apr: number }> } | undefined) ?? {};
+      let samples = (store.samples ?? []).filter((s) => Number.isFinite(s.apr));
+
+      if (!samples.some((s) => s.date === today)) {
+        const live = await scrapeNloYield();
+        if (live !== null) {
+          samples = [...samples.filter((s) => s.date !== today), { date: today, apr: live }];
+          const cutoff = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+          samples = samples.filter((s) => s.date >= cutoff).sort((a, b) => a.date.localeCompare(b.date));
+          await dbPut('nlo:samples', { samples });
         }
-      } catch (_) { /* placeholder APR stays */ }
-      return json(memPut('nlo', { apr, syncedAt: new Date().toISOString() }));
+      }
+
+      const apr = samples.length
+        ? samples.reduce((a, s) => a + s.apr, 0) / samples.length
+        : null;
+      const payload = {
+        apr,
+        latest: samples.length ? samples[samples.length - 1].apr : null,
+        samples: samples.length,
+        windowDays: 30,
+        syncedAt: new Date().toISOString(),
+      };
+      return json(memPut('nlo', payload));
     }
+
 
     return json({ error: 'unknown action' }, 400);
   } catch (e) {

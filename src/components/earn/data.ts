@@ -51,7 +51,7 @@ export const PLATFORMS: Record<string, Platform> = {
   'Kamino':     { assets: ['USDC','USDT','SOL','BTC','ETH'],  apy: { USDC: 7.5, USDT: 7.0, SOL: 3.0, BTC: 0.5, ETH: 1.5 },  verb: 'Lent on Kamino',         yieldNote: 'avg lending yield' },
   'Marinade':   { assets: ['SOL'],                            apy: { SOL: 7.2 },                                            verb: 'Staked with Marinade',   yieldNote: 'avg staking yield' },
   'marginfi':   { assets: ['USDC','USDT','SOL','BTC','ETH'],  apy: { USDC: 5.5, USDT: 5.0, SOL: 2.5, BTC: 0.4, ETH: 1.2 },  verb: 'Lent on marginfi',       yieldNote: 'avg lending yield' },
-  'NLO by L1X': { assets: ['USDC'],                           apy: { USDC: 273.37 },                                        verb: 'Auto-compounded on NLO', yieldNote: 'live Ultra-Safe APR' },
+  'NLO by L1X': { assets: ['USDC'],                           apy: { USDC: 273.37 },                                        verb: 'Auto-compounded on NLO', yieldNote: '30-day avg verified yield' },
 };
 
 export const LETTER = ['J','F','M','A','M','J','J','A','S','O','N','D'];
