@@ -314,9 +314,9 @@ export default function BountyDefiCard() {
                     ${asset}
                   </span>{' '}
                   on{' '}
-                  <span className="plat">
+                  <span className="plat" style={{ color: platformColor(platform) }}>
                     {platformLogo?.url && <img className="inline-ico sq" src={platformLogo.url} alt="" />}
-                    {platform}
+                    {platformLabel(platform)}
                   </span>
                 </>
               )}
