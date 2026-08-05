@@ -296,16 +296,34 @@ export default function BountyDefiCard() {
             <>
               If you earned a <span className="num">${fmt(amount)}</span> bounty {freq.per} and{' '}
               {isTokens ? (
-                <>bought <span className="num">${token?.sym}</span></>
+                <>
+                  bought{' '}
+                  <span className="tok" style={{ color: tokenColor(token?.sym) }}>
+                    {assetLogoUrl && <img className="inline-ico round" src={assetLogoUrl} alt="" />}
+                    ${token?.sym}
+                  </span>
+                </>
               ) : (
-                <>invested it into <span className="num">${asset}</span> on <span className="plat">{platform}</span></>
+                <>
+                  invested it into{' '}
+                  <span className="tok" style={{ color: tokenColor(asset) }}>
+                    {assetLogoUrl && <img className="inline-ico round" src={assetLogoUrl} alt="" />}
+                    ${asset}
+                  </span>{' '}
+                  on{' '}
+                  <span className="plat">
+                    {platformLogo?.url && <img className="inline-ico sq" src={platformLogo.url} alt="" />}
+                    {platform}
+                  </span>
+                </>
               )}
               , then your total bounties earned is <span className="num">${fmt(invested)}</span>, and the total made from{' '}
-              {isTokens ? 'holding' : 'investing'} them is{' '}
+              {isTokens ? 'holding' : 'staking'} them is{' '}
               <span className={`made ${down ? 'down' : 'up'}`}>${fmt(finalVal)}</span>.
             </>
           )}
         </div>
+
 
         {/* controls */}
         <div className="controls">
