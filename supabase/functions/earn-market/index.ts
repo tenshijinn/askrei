@@ -382,24 +382,40 @@ Deno.serve(async (req) => {
       return json({ tokens: tokens.length, warmed: ok, failed });
     }
 
+    // NLO by L1X yield: sampled once per day from nlo.finance/live ("Verified
+    // accuracy" card) and returned as a rolling 30-day average.
     if (action === 'nlo') {
       const hit = memGet('nlo');
       if (hit) return json(hit);
-      let apr: number | null = null;
-      try {
-        const res = await fetch('https://api.nlo.finance/v1/vaults', { headers: { Accept: 'application/json' } });
-        if (res.ok) {
-          const data = await res.json();
-          const list = Array.isArray(data) ? data : (data?.vaults ?? []);
-          const ultra = list.find((v: Record<string, unknown>) =>
-            String(v?.name ?? v?.strategy ?? '').toLowerCase().includes('ultra'),
-          );
-          const raw = Number(ultra?.apr ?? ultra?.apy);
-          if (Number.isFinite(raw) && raw > 0) apr = raw;
+
+      const today = new Date().toISOString().slice(0, 10);
+      const row = await dbGet('nlo:samples');
+      const store = (row?.data as { samples?: Array<{ date: string; apr: number }> } | undefined) ?? {};
+      let samples = (store.samples ?? []).filter((s) => Number.isFinite(s.apr));
+
+      if (!samples.some((s) => s.date === today)) {
+        const live = await scrapeNloYield();
+        if (live !== null) {
+          samples = [...samples.filter((s) => s.date !== today), { date: today, apr: live }];
+          const cutoff = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+          samples = samples.filter((s) => s.date >= cutoff).sort((a, b) => a.date.localeCompare(b.date));
+          await dbPut('nlo:samples', { samples });
         }
-      } catch (_) { /* placeholder APR stays */ }
-      return json(memPut('nlo', { apr, syncedAt: new Date().toISOString() }));
+      }
+
+      const apr = samples.length
+        ? samples.reduce((a, s) => a + s.apr, 0) / samples.length
+        : null;
+      const payload = {
+        apr,
+        latest: samples.length ? samples[samples.length - 1].apr : null,
+        samples: samples.length,
+        windowDays: 30,
+        syncedAt: new Date().toISOString(),
+      };
+      return json(memPut('nlo', payload));
     }
+
 
     return json({ error: 'unknown action' }, 400);
   } catch (e) {
