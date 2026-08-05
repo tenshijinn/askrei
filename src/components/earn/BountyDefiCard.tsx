@@ -16,6 +16,8 @@ import {
   smoothPath,
   PLATFORM_X,
   tokenColor,
+  platformLabel,
+  platformColor,
 } from './data';
 import PostToXButton from './PostToXButton';
 import ShareImage from './ShareImage';
