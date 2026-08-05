@@ -130,10 +130,23 @@
   }
 
   .earn-root .cycle-tag{color:var(--muted-2);font-size:12px;border:1px solid var(--field-b);border-radius:100px;padding:2px 10px;}
-  .earn-root .cta-line{margin-top:14px;font-size:13px;color:var(--muted);line-height:1.5;}
-.earn-root .cta-line a{color:var(--accent, #e9c8ba);text-decoration:underline;text-underline-offset:2px;}
-.earn-root .cta-line a:hover{opacity:.8;}
-.earn-root .footnote{margin-top:12px;font-size:11px;color:var(--muted-2);line-height:1.5;}
+  .earn-root .footnote{margin-top:12px;font-size:11px;color:var(--muted-2);line-height:1.5;}
+  .earn-root .sentence .plat-link{color:inherit;text-decoration:none;transition:filter .16s ease;}
+  .earn-root .sentence .plat-link:hover{filter:brightness(1.25);}
+
+  /* actions row under the card */
+  .earn-root .earn-actions{width:min(1040px,94vw);display:flex;flex-wrap:wrap;gap:14px;margin-top:20px;}
+  .earn-root .earn-btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:14px;
+    letter-spacing:.02em;padding:14px 22px;border-radius:12px;text-decoration:none;transition:filter .16s ease,border-color .16s ease;}
+  .earn-root .earn-btn.primary{background:var(--green);color:#1a1310;font-weight:600;}
+  .earn-root .earn-btn.primary:hover{filter:brightness(1.06);}
+  .earn-root .earn-btn.ghost{background:var(--card);border:1px solid var(--card-border);color:var(--text);}
+  .earn-root .earn-btn.ghost:hover{border-color:var(--green);filter:brightness(1.12);}
+  .earn-root .earn-btn .apy{color:#6ee7a8;font-weight:600;}
+
+  /* page footer */
+  .earn-root .earn-footer{width:min(1040px,94vw);margin-top:24px;font-size:11px;color:var(--muted-2);line-height:1.6;}
+
   .earn-root .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
 
   /* Post to X — terminal style */
