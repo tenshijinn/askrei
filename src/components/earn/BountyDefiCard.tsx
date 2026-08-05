@@ -317,8 +317,15 @@ export default function BountyDefiCard() {
                   on{' '}
                   <span className="plat" style={{ color: platformColor(platform) }}>
                     {platformLogo?.url && <img className="inline-ico sq" src={platformLogo.url} alt="" />}
-                    {platformLabel(platform)}
+                    {platformUrl(platform) ? (
+                      <a className="plat-link" href={platformUrl(platform)} target="_blank" rel="noopener noreferrer">
+                        {platformLabel(platform)}
+                      </a>
+                    ) : (
+                      platformLabel(platform)
+                    )}
                   </span>
+
                 </>
               )}
               , then your total bounties earned is <span className="num">${fmt(invested)}</span>, and the total made from{' '}
@@ -497,23 +504,25 @@ export default function BountyDefiCard() {
           </div>
         </div>
 
-        <p className="cta-line">
-          <a href="https://rei.chat" target="_blank" rel="noopener noreferrer">Signup to Rei</a> to Find a 1000+ Bounties &gt; Stake Winnings here on{' '}
-          {platformUrl(platform) ? (
-            <a href={platformUrl(platform)} target="_blank" rel="noopener noreferrer" style={{ color: platformColor(platform) }}>
-              {platformLabel(platform)}
-            </a>
-          ) : (
-            <span style={{ color: platformColor(platform) }}>{platformLabel(platform)}</span>
-          )}{' '}
-          DeFi.
-        </p>
-
-        <p className="footnote">
-          Backtest over the selected past period — not a forecast. Prices are real market data; DeFi yields are
-          period-average estimates unless a live source is connected.
-        </p>
       </div>
+
+      <div className="earn-actions">
+        <a className="earn-btn primary" href="https://rei.chat" target="_blank" rel="noopener noreferrer">
+          Find 1,000+ bounties on Rei →
+        </a>
+        {!isTokens && platform === 'NLO by L1X' && platformUrl(platform) && (
+          <a className="earn-btn ghost" href={platformUrl(platform)} target="_blank" rel="noopener noreferrer">
+            Stake Bounty Earnings on {platformLabel(platform)} for{' '}
+            <span className="apy">{apyVal % 1 === 0 ? apyVal.toFixed(0) : apyVal.toFixed(2)}% APY</span> ↗
+          </a>
+        )}
+      </div>
+
+      <footer className="earn-footer">
+        Backtest over the selected past period — not a forecast. Prices are real market data; DeFi yields are
+        period-average estimates unless a live source is connected. — Arubaito Labs
+      </footer>
+
 
       {/* off-screen node captured for the tweet image */}
       <div style={{ position: 'fixed', left: -10000, top: 0, pointerEvents: 'none', opacity: 0 }} aria-hidden>
