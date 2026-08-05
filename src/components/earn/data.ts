@@ -88,6 +88,19 @@ export const ASSET_LOGO_URL: Record<string, string> = {
   USDT: 'https://assets.coingecko.com/coins/images/325/large/Tether.png',
 };
 
+/** predominant brand colour of each token icon (used to tint $SYM in the sentence) */
+export const TOKEN_COLOR: Record<string, string> = {
+  SOL: '#9945ff', BTC: '#f7931a', wBTC: '#f7931a', ETH: '#8a92b2', wETH: '#8a92b2',
+  USDC: '#2775ca', USDT: '#26a17b', PYUSD: '#0070ba', USDG: '#4c6ef5',
+  JUP: '#c7f284', JTO: '#2bd4c4', BONK: '#f5a623', WIF: '#d9a679', PYTH: '#7c5cff',
+  RAY: '#3b7cf6', JLP: '#4ecfb0', RENDER: '#f0524a', HNT: '#474dff', W: '#dfe4ef',
+  MNDE: '#f5b942', ORCA: '#ffd15c', TNSR: '#e6e6e6', DRIFT: '#a259ff', KMNO: '#4f7cff',
+  MEW: '#f2a0c0', POPCAT: '#e8a33d', BOME: '#e04a3f', SHDW: '#2ee6a8', HELIUM: '#474dff',
+};
+
+export const tokenColor = (sym?: string) =>
+  (sym && TOKEN_COLOR[sym]) || '#e9c8ba';
+
 // Top SVM tokens (seed list). `data` = embedded series; the rest load live.
 export const SEED_TOKENS: TokenRow[] = [
   { sym: 'SOL', name: 'Solana', data: 'SOL', logo: ASSET_LOGO_URL.SOL },

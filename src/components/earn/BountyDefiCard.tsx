@@ -15,6 +15,7 @@ import {
   resolveWindow,
   smoothPath,
   PLATFORM_X,
+  tokenColor,
 } from './data';
 import PostToXButton from './PostToXButton';
 import ShareImage from './ShareImage';
@@ -296,16 +297,34 @@ export default function BountyDefiCard() {
             <>
               If you earned a <span className="num">${fmt(amount)}</span> bounty {freq.per} and{' '}
               {isTokens ? (
-                <>bought <span className="num">${token?.sym}</span></>
+                <>
+                  bought{' '}
+                  <span className="tok" style={{ color: tokenColor(token?.sym) }}>
+                    {assetLogoUrl && <img className="inline-ico round" src={assetLogoUrl} alt="" />}
+                    ${token?.sym}
+                  </span>
+                </>
               ) : (
-                <>invested it into <span className="num">${asset}</span> on <span className="plat">{platform}</span></>
+                <>
+                  invested it into{' '}
+                  <span className="tok" style={{ color: tokenColor(asset) }}>
+                    {assetLogoUrl && <img className="inline-ico round" src={assetLogoUrl} alt="" />}
+                    ${asset}
+                  </span>{' '}
+                  on{' '}
+                  <span className="plat">
+                    {platformLogo?.url && <img className="inline-ico sq" src={platformLogo.url} alt="" />}
+                    {platform}
+                  </span>
+                </>
               )}
               , then your total bounties earned is <span className="num">${fmt(invested)}</span>, and the total made from{' '}
-              {isTokens ? 'holding' : 'investing'} them is{' '}
+              {isTokens ? 'holding' : 'staking'} them is{' '}
               <span className={`made ${down ? 'down' : 'up'}`}>${fmt(finalVal)}</span>.
             </>
           )}
         </div>
+
 
         {/* controls */}
         <div className="controls">
@@ -431,8 +450,8 @@ export default function BountyDefiCard() {
 
         {/* legend */}
         <div className="legend">
-          <span><i className="swatch" />What it's worth now</span>
-          <span><i className="swatch dash" />Total bounties staked</span>
+          <span><i className="swatch" />Staked Bounties ROI</span>
+          <span><i className="swatch dash" />Bounties Earned</span>
           {cycleTag && <span className="cycle-tag">valued at cycle peak</span>}
           {!isTokens && apyVal > 100 && <span className="cycle-tag">very high APR — compounded flat</span>}
         </div>
