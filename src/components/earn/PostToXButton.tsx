@@ -72,7 +72,8 @@ export default function PostToXButton({ targetRef, buildText, buildState }: Prop
       // render twice — the first pass warms images/fonts in the clone
       await toPng(node, { pixelRatio: 1, backgroundColor: '#0b0a09', cacheBust: true });
       return await toPng(node, { pixelRatio: 1.5, backgroundColor: '#0b0a09', cacheBust: true });
-    } catch {
+    } catch (err) {
+      console.error('share image render failed', err);
       return null;
     }
   };
