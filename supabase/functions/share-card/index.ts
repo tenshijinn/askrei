@@ -2,6 +2,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const BUCKET = 'earn-share-cards';
 const SITE = 'https://rei.chat';
+const FN_BASE = `${Deno.env.get('SUPABASE_URL')}/functions/v1`;
 
 const esc = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -73,8 +74,8 @@ Deno.serve(async (req) => {
     ? `$${assetSym} on ${platform}: ${pct >= 0 ? '+' : ''}${pct.toFixed(0)}% on bounty earnings`
     : `$${assetSym}: ${pct >= 0 ? '+' : ''}${pct.toFixed(0)}% on bounty earnings`;
   const description = `$${fmt(invested)} of bounties staked grew to $${fmt(finalVal)} — ${windowLabel}. Run your own backtest on Rei's Bounty Earning Calculator.`;
-  const pageUrl = `${SITE}/functions/v1/share-card?id=${id}`;
-  const imageUrl = row.image_path ? `${SITE}/functions/v1/share-card/image?id=${id}` : '';
+  const pageUrl = `${FN_BASE}/share-card?id=${id}`;
+  const imageUrl = row.image_path ? `${FN_BASE}/share-card/image?id=${id}` : '';
   const appUrl = `${SITE}/earn?share=${id}`;
 
   const html = `<!doctype html>
