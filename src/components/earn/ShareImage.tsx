@@ -25,6 +25,10 @@ const MUTED2 = '#5f574f';
 const CREAM = '#eddccb';
 const GREEN = '#7fe0a3';
 const RED = '#ed565a';
+const PROXY = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/img-proxy?u=`;
+/** Remote logos must be CORS-readable for html-to-image; route them via our proxy. */
+const cors = (u?: string) => (u && /^https?:\/\//i.test(u) ? `${PROXY}${encodeURIComponent(u)}` : u);
+
 const MONO = "ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace";
 const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
@@ -112,7 +116,7 @@ export default function ShareImage({
         <div style={{ display: 'flex', alignItems: 'center', gap: 18, flexWrap: 'wrap' }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: 13, fontSize: 40, fontWeight: 600, color: TEXT }}>
             {assetLogoUrl && (
-              <img src={assetLogoUrl} alt="" style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover' }} />
+              <img src={cors(assetLogoUrl)} crossOrigin="anonymous" alt="" style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover' }} />
             )}
             ${assetSym}
           </span>
@@ -121,7 +125,7 @@ export default function ShareImage({
               <span style={{ fontSize: 30, color: MUTED }}>on</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 40, fontWeight: 600, color: TEXT }}>
                 {platformLogoUrl && (
-                  <img src={platformLogoUrl} alt="" style={{ width: 46, height: 46, borderRadius: 10, objectFit: 'contain' }} />
+                  <img src={cors(platformLogoUrl)} crossOrigin="anonymous" alt="" style={{ width: 46, height: 46, borderRadius: 10, objectFit: 'contain' }} />
                 )}
                 {platformName}
               </span>
