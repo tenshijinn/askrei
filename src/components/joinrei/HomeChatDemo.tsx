@@ -51,7 +51,7 @@ interface FrameProps {
 const Frame = ({ title, children, speed = 0.04, delay = 0, extra }: FrameProps) => (
   <ParallaxWrapper speed={speed}>
     <ScrollFadeIn delay={delay}>
-      <div className="rei-terminal rounded-2xl border-[0.5px] border-white/10 p-8 md:p-10 bg-[#141414]/60 backdrop-blur-sm h-full flex flex-col min-h-[260px]">
+      <div className="rei-terminal rounded-2xl border-[0.5px] border-white/10 p-8 md:p-10 bg-[#141414]/60 backdrop-blur-xs h-full flex flex-col min-h-[260px]">
         <h3 className="text-xl md:text-2xl lg:text-3xl font-light text-primary leading-tight mb-4">
           {title}
         </h3>

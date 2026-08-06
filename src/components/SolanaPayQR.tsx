@@ -86,14 +86,14 @@ export const SolanaPayQR = ({ qrCodeUrl, reference, paymentUrl, amount, recipien
   }, [status, reference, onPaymentComplete, toast]);
 
   return (
-    <div className="my-4 border border-primary/30 bg-background/50 p-4 rounded font-mono text-sm">
+    <div className="my-4 border border-primary/30 bg-background/50 p-4 rounded-[4px] font-mono text-sm">
       <div className="mb-3">
         <div className="text-primary mb-1">&gt; PAYMENT REQUIRED</div>
         <div className="text-muted-foreground text-xs mb-2">Scan QR code or click to open wallet</div>
         {!connected && <div className="mt-2 text-xs text-yellow-500 flex items-center gap-2"><div className="w-2 h-2 bg-yellow-500 rounded-full" />Wallet not connected</div>}
         {connected && <div className="mt-2 text-xs text-green-500 flex items-center gap-2"><div className="w-2 h-2 bg-green-500 rounded-full" />Wallet connected</div>}
       </div>
-      <div className="flex justify-center my-4"><img src={qrCodeUrl} alt="Solana Pay QR Code" className="w-48 h-48 border border-primary/20 rounded" /></div>
+      <div className="flex justify-center my-4"><img src={qrCodeUrl} alt="Solana Pay QR Code" className="w-48 h-48 border border-primary/20 rounded-[4px]" /></div>
       <div className="space-y-2 text-xs mb-4">
         <div className="flex justify-between"><span className="text-muted-foreground">Amount:</span><span className="text-primary font-bold">${amount.toFixed(2)} USD</span></div>
         <div className="flex justify-between items-center gap-2"><span className="text-muted-foreground">Destination:</span><div className="flex items-center gap-1"><span className="text-primary">{truncateAddress(recipient)}</span><button onClick={copyToClipboard} className="text-muted-foreground hover:text-primary transition-colors" title="Copy address">{copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}</button></div></div>

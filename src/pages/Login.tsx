@@ -77,7 +77,7 @@ export default function Login() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg bg-black/40 border border-white/10 px-3 py-2 text-sm outline-none focus:border-primary/60"
+            className="w-full rounded-lg bg-black/40 border border-white/10 px-3 py-2 text-sm outline-hidden focus:border-primary/60"
           />
         </div>
         <div className="space-y-2">
@@ -88,7 +88,7 @@ export default function Login() {
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg bg-black/40 border border-white/10 px-3 py-2 text-sm outline-none focus:border-primary/60"
+            className="w-full rounded-lg bg-black/40 border border-white/10 px-3 py-2 text-sm outline-hidden focus:border-primary/60"
           />
         </div>
         {msg && <p className="text-xs text-cream/70">{msg}</p>}

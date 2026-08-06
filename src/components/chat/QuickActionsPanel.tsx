@@ -12,7 +12,7 @@ export const QuickActionsPanel = ({ isOpen, onClose, categories, onSelect }: Qui
     <>
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40"
           onClick={onClose}
         />
       )}

@@ -81,13 +81,13 @@ const M1_AskRei = ({ active, reduced }: { active: boolean; reduced: boolean }) =
       <div className="flex-1 p-5 flex flex-col gap-3 overflow-hidden">
         {phase >= 1 && (
           <div className="flex items-start gap-2 animate-fade-in">
-            <span className="text-[9px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono border border-blue-500/30">You</span>
+            <span className="text-[9px] px-2 py-0.5 rounded-[4px] bg-blue-500/20 text-blue-300 font-mono border border-blue-500/30">You</span>
             <p className="text-[12px] text-cream/80 font-mono leading-relaxed">Got any Solana design bounties this week?</p>
           </div>
         )}
         {phase >= 2 && (
           <div className="flex items-start gap-2 animate-fade-in">
-            <span className="text-[9px] px-2 py-0.5 rounded bg-[#ed565a]/20 text-[#ed565a] font-mono border border-[#ed565a]/30">Rei</span>
+            <span className="text-[9px] px-2 py-0.5 rounded-[4px] bg-[#ed565a]/20 text-[#ed565a] font-mono border border-[#ed565a]/30">Rei</span>
             <p className="text-[12px] text-cream/80 font-mono leading-relaxed">Found 4. Top match below ↓</p>
           </div>
         )}
@@ -106,12 +106,12 @@ const M1_AskRei = ({ active, reduced }: { active: boolean; reduced: boolean }) =
         {phase >= 5 && (
           <div className="flex items-start gap-2 justify-end animate-fade-in">
             <p className="text-[12px] text-blue-300 font-mono">Apply to Phantom</p>
-            <span className="text-[9px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono border border-blue-500/30">You</span>
+            <span className="text-[9px] px-2 py-0.5 rounded-[4px] bg-blue-500/20 text-blue-300 font-mono border border-blue-500/30">You</span>
           </div>
         )}
         {phase >= 6 && (
           <div className="flex items-start gap-2 animate-fade-in">
-            <span className="text-[9px] px-2 py-0.5 rounded bg-[#ed565a]/20 text-[#ed565a] font-mono border border-[#ed565a]/30">Rei</span>
+            <span className="text-[9px] px-2 py-0.5 rounded-[4px] bg-[#ed565a]/20 text-[#ed565a] font-mono border border-[#ed565a]/30">Rei</span>
             <div className="px-2.5 py-1.5 rounded-lg bg-[#ed565a]/10 border border-[#ed565a]/30">
               <p className="text-[10px] text-[#ed565a] font-mono">Application drafted ✓</p>
               <p className="text-[9px] text-cream/60 font-mono mt-0.5">Sent with verified portfolio</p>
@@ -125,7 +125,7 @@ const M1_AskRei = ({ active, reduced }: { active: boolean; reduced: boolean }) =
         </div>
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
           <span className="text-[10px] text-gray-500 font-mono flex-1 text-left">Ask Rei anything<Caret /></span>
-          <div className="w-5 h-5 rounded bg-[#ed565a]/20 flex items-center justify-center">
+          <div className="w-5 h-5 rounded-[4px] bg-[#ed565a]/20 flex items-center justify-center">
             <svg className="w-3 h-3 text-[#ed565a]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" /></svg>
           </div>
         </div>
@@ -212,7 +212,7 @@ const M3_PostTask = ({ active, reduced }: { active: boolean; reduced: boolean })
           <span className="text-[10px] text-cream/40 font-mono mb-1.5 block">Type</span>
           <div className="flex gap-1.5">
             {types.map((t,i)=>(
-              <span key={t} className={`px-2 py-0.5 rounded text-[10px] font-mono ${i===tIdx?'bg-[#ed565a]/20 border border-[#ed565a]/40 text-[#ed565a]':'bg-white/5 border border-white/10 text-cream/50'}`}>{t}</span>
+              <span key={t} className={`px-2 py-0.5 rounded-[4px] text-[10px] font-mono ${i===tIdx?'bg-[#ed565a]/20 border border-[#ed565a]/40 text-[#ed565a]':'bg-white/5 border border-white/10 text-cream/50'}`}>{t}</span>
             ))}
           </div>
         </div>
@@ -235,7 +235,7 @@ const M3_PostTask = ({ active, reduced }: { active: boolean; reduced: boolean })
           <span className="text-[10px] text-cream/40 font-mono mb-1.5 block">Role tags</span>
           <div className="flex flex-wrap gap-1">
             {['Community','Content','Designer','Web3'].map((t,i)=>(
-              <span key={t} className={`px-2 py-0.5 rounded text-[10px] font-mono ${i<tags?'bg-[#ed565a]/20 border border-[#ed565a]/40 text-[#ed565a]':'bg-white/5 border border-white/10 text-cream/50'}`}>{t}</span>
+              <span key={t} className={`px-2 py-0.5 rounded-[4px] text-[10px] font-mono ${i<tags?'bg-[#ed565a]/20 border border-[#ed565a]/40 text-[#ed565a]':'bg-white/5 border border-white/10 text-cream/50'}`}>{t}</span>
             ))}
           </div>
         </div>
@@ -286,11 +286,11 @@ const M4_SkillSync = ({ active, reduced }: { active: boolean; reduced: boolean }
                 <span className="text-[11px] text-cream/80 font-mono">{t.name}</span>
                 <span className="text-[10px] text-green-400 font-mono">{t.match}%</span>
               </div>
-              <div className="mt-1 h-1 bg-white/5 rounded overflow-hidden">
+              <div className="mt-1 h-1 bg-white/5 rounded-[4px] overflow-hidden">
                 <div className="h-full bg-gradient-to-r from-[#ed565a] to-orange-400" style={{ width: `${t.match}%` }} />
               </div>
               <div className="flex gap-1 mt-1.5">
-                {t.skill.map(s=>(<span key={s} className="text-[9px] px-1.5 py-0.5 rounded bg-[#ed565a]/10 text-[#ed565a]/80 font-mono">{s}</span>))}
+                {t.skill.map(s=>(<span key={s} className="text-[9px] px-1.5 py-0.5 rounded-[4px] bg-[#ed565a]/10 text-[#ed565a]/80 font-mono">{s}</span>))}
               </div>
             </div>
           ))}
@@ -409,7 +409,7 @@ const M7_Feed = ({ active, reduced }: { active: boolean; reduced: boolean }) => 
         </div>
         <div className="flex gap-1.5 flex-wrap">
           {['All','Bounty','Job','Quest','Grant'].map((t,i)=>(
-            <span key={t} className={`px-2 py-0.5 rounded text-[10px] font-mono ${i===0?'bg-[#ed565a]/20 border border-[#ed565a]/40 text-[#ed565a]':'bg-white/5 border border-white/10 text-cream/50'}`}>{t}</span>
+            <span key={t} className={`px-2 py-0.5 rounded-[4px] text-[10px] font-mono ${i===0?'bg-[#ed565a]/20 border border-[#ed565a]/40 text-[#ed565a]':'bg-white/5 border border-white/10 text-cream/50'}`}>{t}</span>
           ))}
         </div>
         <div className="space-y-2 flex-1 overflow-hidden">
@@ -417,13 +417,13 @@ const M7_Feed = ({ active, reduced }: { active: boolean; reduced: boolean }) => 
             <div key={it.name} className={`px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 transition-all ${phase>=i?'opacity-100 translate-y-0':'opacity-0 translate-y-2'}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#ed565a]/10 text-[#ed565a] font-mono">{it.src}</span>
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-[4px] bg-[#ed565a]/10 text-[#ed565a] font-mono">{it.src}</span>
                   <span className="text-[11px] text-cream/80 font-mono">{it.name}</span>
                 </div>
                 <span className="text-[10px] text-green-400 font-mono">{it.pay}</span>
               </div>
               <div className="flex justify-between mt-1.5">
-                <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-cream/50 font-mono">{it.tag}</span>
+                <span className="text-[9px] px-1.5 py-0.5 rounded-[4px] bg-white/5 text-cream/50 font-mono">{it.tag}</span>
                 {i===0 && <span className="text-[9px] text-[#ed565a] font-mono animate-pulse">NEW</span>}
               </div>
             </div>
@@ -566,7 +566,7 @@ const M10_Leaderboard = ({ active, reduced }: { active: boolean; reduced: boolea
             <div key={r.n} className={`flex items-center gap-3 px-3 py-2 rounded-lg border ${r.me?'border-[#ed565a]/50 bg-[#ed565a]/10':'border-white/10 bg-white/5'} transition-all ${phase>=i?'opacity-100':'opacity-30'}`}>
               <span className="text-[10px] text-cream/40 font-mono w-4">{r.r}</span>
               <span className="text-[11px] text-cream/80 font-mono flex-1">{r.n}</span>
-              <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-cream/50 font-mono">{r.t}</span>
+              <span className="text-[9px] px-1.5 py-0.5 rounded-[4px] bg-white/5 text-cream/50 font-mono">{r.t}</span>
               <span className="text-[10px] text-[#ed565a] font-mono">{r.xp}</span>
             </div>
           ))}
@@ -576,7 +576,7 @@ const M10_Leaderboard = ({ active, reduced }: { active: boolean; reduced: boolea
             <span className="text-cream/50">Next reward</span>
             <span className="text-[#ed565a]">5 SOL + Gold NFT</span>
           </div>
-          <div className="mt-1 h-1.5 bg-white/5 rounded overflow-hidden">
+          <div className="mt-1 h-1.5 bg-white/5 rounded-[4px] overflow-hidden">
             <div className="h-full bg-gradient-to-r from-[#ed565a] to-orange-400 transition-all" style={{ width: `${40+phase*8}%` }} />
           </div>
         </div>

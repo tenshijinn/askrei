@@ -159,7 +159,7 @@ const Ask = () => {
             onChange={(e) => setQuery(e.target.value)}
             placeholder={placeholder ? `${placeholder}▌` : ""}
             disabled={loading}
-            className="flex-1 bg-transparent outline-none disabled:opacity-60 min-w-0"
+            className="flex-1 bg-transparent outline-hidden disabled:opacity-60 min-w-0"
             style={{
               fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
               fontSize: "13px",
