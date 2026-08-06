@@ -4,14 +4,34 @@ import { toPng } from 'html-to-image';
 const CHARS = '01#$%&*<>/\\|=+ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const LABEL = 'Post to X';
 
+const SHARE_FN = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/earn-share`;
+const SHARE_HEADERS = {
+  'Content-Type': 'application/json',
+  apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string,
+  Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+};
+
+export interface ShareState {
+  assetSym: string;
+  platform: string | null;
+  amount: number;
+  frequency: string;
+  period: string;
+  invested: number;
+  finalVal: number;
+  windowLabel: string;
+}
+
 interface Props {
-  /** element to snapshot into the tweet image */
+  /** element to snapshot into the share image */
   targetRef: React.RefObject<HTMLElement>;
   /** tweet body text */
   buildText: () => string;
+  /** card state persisted with the share link */
+  buildState: () => ShareState;
 }
 
-export default function PostToXButton({ targetRef, buildText }: Props) {
+export default function PostToXButton({ targetRef, buildText, buildState }: Props) {
   const [text, setText] = useState(LABEL);
   const [busy, setBusy] = useState(false);
   const timer = useRef<number | null>(null);
@@ -44,59 +64,75 @@ export default function PostToXButton({ targetRef, buildText }: Props) {
     setText(LABEL);
   };
 
+  const renderPng = async (): Promise<string | null> => {
+    const node = targetRef.current;
+    if (!node) return null;
+    try {
+      if (document.fonts?.ready) await document.fonts.ready;
+      // render twice — the first pass warms images/fonts in the clone
+      await toPng(node, { pixelRatio: 1, backgroundColor: '#0b0a09', cacheBust: true });
+      return await toPng(node, { pixelRatio: 1.5, backgroundColor: '#0b0a09', cacheBust: true });
+    } catch {
+      return null;
+    }
+  };
+
   const handleClick = async () => {
     if (busy) return;
     setBusy(true);
     const body = buildText();
-    let file: File | null = null;
-    let dataUrl: string | null = null;
 
+    const dataUrl = await renderPng();
+
+    // Save the state + rendered image so the share link can serve an OG card.
+    let shareUrl: string | null = null;
     try {
-      const node = targetRef.current;
-      if (node) {
-        dataUrl = await toPng(node, { pixelRatio: 2, backgroundColor: '#0b0a09', cacheBust: true });
-        const blob = await (await fetch(dataUrl)).blob();
-        file = new File([blob], 'rei-bounty-earnings.png', { type: 'image/png' });
+      const res = await fetch(SHARE_FN, {
+        method: 'POST',
+        headers: SHARE_HEADERS,
+        body: JSON.stringify({ ...buildState(), image: dataUrl ?? undefined }),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (typeof json?.url === 'string') shareUrl = json.url;
+      } else {
+        console.error('earn-share failed', res.status, await res.text());
       }
-    } catch {
-      /* image is a bonus — still post the text */
+    } catch (err) {
+      console.error('earn-share error', err);
     }
 
-    // 1) One-click: native share sheet with the image + text attached together
+    // Mobile: native share sheet attaches the real image file alongside the text.
     try {
       const nav = navigator as Navigator & {
         canShare?: (data: ShareData & { files?: File[] }) => boolean;
       };
-      if (file && nav.share && nav.canShare?.({ files: [file] })) {
-        await nav.share({ files: [file], text: body });
-        setBusy(false);
-        return;
+      if (dataUrl && nav.share) {
+        const blob = await (await fetch(dataUrl)).blob();
+        const file = new File([blob], 'rei-bounty-earnings.png', { type: 'image/png' });
+        if (nav.canShare?.({ files: [file] })) {
+          await nav.share({
+            files: [file],
+            text: shareUrl ? `${body}\n\n${shareUrl}` : body,
+          });
+          setBusy(false);
+          return;
+        }
       }
     } catch (err) {
       if ((err as DOMException)?.name === 'AbortError') {
         setBusy(false);
         return;
       }
-      /* fall through to composer */
-    }
-
-    // 2) Fallback: put the image on the clipboard (paste into composer) + open X
-    try {
-      if (file) {
-        await navigator.clipboard.write([new ClipboardItem({ 'image/png': file })]);
-      }
-    } catch {
-      if (dataUrl) {
-        const a = document.createElement('a');
-        a.href = dataUrl;
-        a.download = 'rei-bounty-earnings.png';
-        a.click();
-      }
+      /* fall through to the intent link */
     }
 
     setBusy(false);
+    // Desktop: tweet the share link — X renders it as a large image card.
+    const params = new URLSearchParams({ text: body });
+    if (shareUrl) params.set('url', shareUrl);
     window.open(
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(body)}`,
+      `https://twitter.com/intent/tweet?${params.toString()}`,
       '_blank',
       'noopener,noreferrer',
     );
