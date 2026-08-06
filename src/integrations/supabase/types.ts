@@ -474,6 +474,27 @@ export type Database = {
         }
         Relationships: []
       }
+      earn_shares: {
+        Row: {
+          created_at: string
+          id: string
+          image_path: string | null
+          state: Json
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          image_path?: string | null
+          state: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_path?: string | null
+          state?: Json
+        }
+        Relationships: []
+      }
       jobs: {
         Row: {
           apply_url: string | null
