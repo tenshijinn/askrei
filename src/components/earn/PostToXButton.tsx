@@ -69,14 +69,34 @@ export default function PostToXButton({ targetRef, buildText, buildState }: Prop
     if (!node) return null;
     try {
       if (document.fonts?.ready) await document.fonts.ready;
-      // render twice — the first pass warms images/fonts in the clone
-      await toPng(node, { pixelRatio: 1, backgroundColor: '#0b0a09', cacheBust: true });
-      return await toPng(node, { pixelRatio: 1.5, backgroundColor: '#0b0a09', cacheBust: true });
+
+      // wait for every image in the card, then drop any that failed so a single
+      // broken logo can't abort the whole capture
+      const imgs = Array.from(node.querySelectorAll('img'));
+      await Promise.all(
+        imgs.map(
+          (img) =>
+            new Promise<void>((resolve) => {
+              if (img.complete) return resolve();
+              img.addEventListener('load', () => resolve(), { once: true });
+              img.addEventListener('error', () => resolve(), { once: true });
+              window.setTimeout(resolve, 4000);
+            }),
+        ),
+      );
+      const filter = (n: HTMLElement) =>
+        !(n instanceof HTMLImageElement && n.complete && n.naturalWidth === 0);
+
+      const opts = { backgroundColor: '#0b0a09', filter } as const;
+      // first pass warms the clone's images/fonts
+      await toPng(node, { ...opts, pixelRatio: 1 });
+      return await toPng(node, { ...opts, pixelRatio: 1.5 });
     } catch (err) {
       console.error('share image render failed', err);
       return null;
     }
   };
+
 
   const handleClick = async () => {
     if (busy) return;
