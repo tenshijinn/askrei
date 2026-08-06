@@ -290,7 +290,20 @@ export default function BountyDefiCard() {
               <p>{sub}</p>
             </div>
           </div>
-          <PostToXButton targetRef={shareRef} buildText={buildTweet} />
+          <PostToXButton
+            targetRef={shareRef}
+            buildText={buildTweet}
+            buildState={() => ({
+              assetSym: isTokens ? (token?.sym ?? '') : asset,
+              platform: isTokens ? null : platform,
+              amount,
+              frequency,
+              period,
+              invested,
+              finalVal,
+              windowLabel: period === 'cycle' ? 'Bear → Bull top' : `Last ${period} months`,
+            })}
+          />
         </div>
 
         {/* one natural sentence, edge to edge */}
