@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
     : `$${assetSym}: ${pct >= 0 ? '+' : ''}${pct.toFixed(0)}% on bounty earnings`;
   const description = `$${fmt(invested)} of bounties staked grew to $${fmt(finalVal)} — ${windowLabel}. Run your own backtest on Rei's Bounty Earning Calculator.`;
   const pageUrl = `${SITE}/functions/v1/share-card?id=${id}`;
-  const imageUrl = row.image_path ? `${pageUrl}&x=1`.replace('/share-card?', '/share-card/image?') : '';
+  const imageUrl = row.image_path ? `${SITE}/functions/v1/share-card/image?id=${id}` : '';
   const appUrl = `${SITE}/earn?share=${id}`;
 
   const html = `<!doctype html>
