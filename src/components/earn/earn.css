@@ -178,4 +178,10 @@
   .earn-root .post-x span{min-width:74px;text-align:left;}
   .earn-root .post-x:hover{background:var(--green);color:#1a120e;box-shadow:0 0 0 3px rgba(233,200,186,.14);}
   .earn-root .post-x:active{transform:translateY(1px);}
-  .earn-root .post-x:disabled{opacity:.6;cursor:default;}
+   .earn-root .post-x:disabled{opacity:.6;cursor:default;}
+
+   @media (min-width:901px) and (max-height:800px){
+     .earn-root .earn-page-head{margin-bottom:8px;}
+     .earn-root .earn-actions{margin-top:8px;}
+     .earn-root .earn-footer{margin-top:8px;}
+   }
