@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 
 // Same-origin relative path validator so `next` cannot redirect off-site.

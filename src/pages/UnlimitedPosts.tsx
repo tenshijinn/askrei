@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { ArrowLeft, Upload, Loader2, Check, Settings } from "lucide-react";
 import flowImage from "@/assets/unlimited-posts-flow.png.asset.json";
 import { toast } from "sonner";

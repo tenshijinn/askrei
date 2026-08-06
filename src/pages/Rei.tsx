@@ -14,7 +14,7 @@ import { PostToRei } from '@/components/PostToRei';
 import { useToast } from '@/hooks/use-toast';
 import { Check, Twitter, Shield, AlertCircle, Info, Sparkles, Briefcase, CheckCircle2, Edit2, LogOut, UserCircle, Loader2, X as XIcon, Trash2, Gem, Share2 } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "@/lib/router-compat";
 import { ReiEarningsHub } from '@/components/ReiEarningsHub';
 import { NotificationsBellButton } from '@/components/rei/NotificationsBellButton';
 import { Progress } from '@/components/ui/progress';

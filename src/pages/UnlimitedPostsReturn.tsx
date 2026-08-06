@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link } from "@/lib/router-compat";
 import { Check, ExternalLink, Loader2, Settings, ListChecks, Calendar, RefreshCw } from "lucide-react";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { supabase } from "@/integrations/supabase/client";
