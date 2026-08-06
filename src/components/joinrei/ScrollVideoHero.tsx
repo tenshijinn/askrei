@@ -134,7 +134,7 @@ const LatestBountyCard = () => {
   }, []);
 
   return (
-    <div className="rounded-xl border-[0.5px] border-white/10 bg-[#141414]/60 backdrop-blur-sm px-5 py-3 min-w-[180px] flex flex-col justify-between">
+    <div className="rounded-xl border-[0.5px] border-white/10 bg-[#141414]/60 backdrop-blur-xs px-5 py-3 min-w-[180px] flex flex-col justify-between">
       <div>
         <p className="text-[10px] font-mono text-white/40 tracking-wider mb-1">Latest Bounty</p>
         <p className="text-2xl font-light text-white/70 tabular-nums whitespace-nowrap">{data?.amount ?? '—'}</p>
@@ -150,7 +150,7 @@ const PlatformTicker = () => {
   const [paused, setPaused] = useState(false);
   return (
     <div
-      className="rounded-xl border-[0.5px] border-white/10 bg-[#141414]/60 backdrop-blur-sm px-5 py-3 flex-1 min-w-0 overflow-hidden flex flex-col justify-start"
+      className="rounded-xl border-[0.5px] border-white/10 bg-[#141414]/60 backdrop-blur-xs px-5 py-3 flex-1 min-w-0 overflow-hidden flex flex-col justify-start"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -323,7 +323,7 @@ const MiniFrame = ({
   children: React.ReactNode;
   extra?: React.ReactNode;
 }) => (
-  <div className="rounded-xl border-[0.5px] border-white/10 p-4 bg-[#141414]/60 backdrop-blur-sm">
+  <div className="rounded-xl border-[0.5px] border-white/10 p-4 bg-[#141414]/60 backdrop-blur-xs">
     <h3 className="text-sm md:text-base font-light text-primary leading-tight mb-1">{title}</h3>
     <p className="text-[11px] md:text-xs font-mono text-primary/70 leading-relaxed">{children}</p>
     {extra && <div className="mt-2 flex flex-wrap gap-2">{extra}</div>}

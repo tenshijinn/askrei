@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { ArrowLeft, Upload, Loader2, Check, Settings } from "lucide-react";
 import flowImage from "@/assets/unlimited-posts-flow.png.asset.json";
 import { toast } from "sonner";
@@ -212,7 +212,7 @@ export default function UnlimitedPosts() {
                     <div className="rei-surface-2 border-dashed border border-white/15 hover:border-primary/40 transition-colors rounded-xl p-5 cursor-pointer text-center">
                       {screenshotPreview ? (
                         <div className="space-y-3">
-                          <img src={screenshotPreview} alt="preview" className="max-h-32 mx-auto rounded border border-white/10" />
+                          <img src={screenshotPreview} alt="preview" className="max-h-32 mx-auto rounded-[4px] border border-white/10" />
                           <div className="text-xs text-cream/60">{screenshot?.name} — click to change</div>
                         </div>
                       ) : (

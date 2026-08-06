@@ -26,25 +26,26 @@
           "openWorldHint": true
         },
         "inputSchema": {
-          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
             "query": {
-              "description": "Case-insensitive match on title / description / company_name.",
-              "type": "string"
+              "type": "string",
+              "description": "Case-insensitive match on title / description / company_name."
             },
             "role": {
-              "description": "Role tag, e.g. developer, designer, kol, writer, or platform tag like scribble, zealy.",
-              "type": "string"
+              "type": "string",
+              "description": "Role tag, e.g. developer, designer, kol, writer, or platform tag like scribble, zealy."
             },
             "limit": {
-              "default": 20,
-              "description": "Max rows to return (1-50).",
               "type": "integer",
               "minimum": 1,
-              "maximum": 50
+              "maximum": 50,
+              "default": 20,
+              "description": "Max rows to return (1-50)."
             }
-          }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
         },
         "outputSchema": null
       },
@@ -58,23 +59,24 @@
           "openWorldHint": true
         },
         "inputSchema": {
-          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
             "query": {
               "type": "string"
             },
             "role": {
-              "description": "Role tag, e.g. developer, designer, marketing.",
-              "type": "string"
+              "type": "string",
+              "description": "Role tag, e.g. developer, designer, marketing."
             },
             "limit": {
-              "default": 20,
               "type": "integer",
               "minimum": 1,
-              "maximum": 50
+              "maximum": 50,
+              "default": 20
             }
-          }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
         },
         "outputSchema": null
       },
@@ -88,14 +90,15 @@
           "openWorldHint": false
         },
         "inputSchema": {
-          "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
             "query": {
-              "description": "Optional name filter (case-insensitive).",
-              "type": "string"
+              "type": "string",
+              "description": "Optional name filter (case-insensitive)."
             }
-          }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
         },
         "outputSchema": null
       },
