@@ -2,13 +2,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const BUCKET = 'earn-share-cards';
 const SITE = 'https://rei.chat';
-const FN_BASE = `${Deno.env.get('SUPABASE_URL')}/functions/v1`;
 
-const esc = (s: string) =>
-  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
-const fmt = (n: number) =>
-  n >= 1000 ? Math.round(n).toLocaleString('en-US') : n.toFixed(n % 1 === 0 ? 0 : 2);
 
 Deno.serve(async (req) => {
   const url = new URL(req.url);
