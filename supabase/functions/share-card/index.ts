@@ -49,6 +49,18 @@ Deno.serve(async (req) => {
     });
   }
 
+  if (url.searchParams.get('json') === '1') {
+    return new Response(JSON.stringify({ id: row.id, state: row.state }), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'public, max-age=300',
+      },
+    });
+  }
+
+
+
   const s = (row.state ?? {}) as Record<string, unknown>;
   const assetSym = String(s.assetSym ?? '');
   const platform = String(s.platform ?? '');
