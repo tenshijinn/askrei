@@ -1,35 +1,39 @@
-# Fix the /earn "Post to X" share
+# Dynamic OG card for /earn shares — what's possible and the route I recommend
 
-## What's actually wrong
+## The blocker, stated plainly
 
-Two separate problems, both confirmed just now:
+Verified just now:
 
-1. **The share page can never work on that URL.** The functions gateway rewrites the response: the page is returned as `content-type: text/plain` with `content-security-policy: default-src 'none'; sandbox`. That's why you saw raw HTML source and mangled characters (`â€”`) — and it also means X's crawler will never read the Open Graph tags from it. The plan assumed `rei.chat/functions/v1/*` proxied to the backend; it does not — that path returns the normal app HTML, so the button had to fall back to the raw backend domain. Hence the scam-looking link.
-2. **The desktop button does nothing.** `window.open` runs after several `await`s (render PNG, upload), so the browser no longer treats it as a user gesture and silently blocks the popup.
+- `https://rei.chat/functions/v1/share-card?id=...` does **not** reach the backend — Lovable hosting returns the normal app HTML for that path. There is no proxy from rei.chat to backend functions.
+- The backend function's own URL returns the page as `content-type: text/plain` with `content-security-policy: default-src 'none'; sandbox`. That's the platform refusing to serve HTML from that domain (anti-phishing). It's why you saw raw source and mangled dashes — and it means X's crawler would never parse those tags even if the URL looked nice.
 
-## The better way
+So the current architecture cannot produce a dynamic Twitter card, on either domain. Not a bug to patch — a dead end.
 
-Stop sending people to an intermediate page. The tweet should link to **rei.chat** itself, and the image should be attached to the tweet as a real file.
+## What dynamic OG on rei.chat actually requires
 
-New flow when the button is clicked:
+X's crawler doesn't run JavaScript. It reads the HTML the server sends. This app is a static single-page site: every URL ships the same `index.html` head, so `rei.chat/s/xyz` can never carry per-share tags today.
 
-1. Open the X compose tab immediately (synchronous, so it's never blocked) — desktop only.
-2. In the background, render the card PNG and save the share state, returning a short id.
-3. Tweet text + link `https://rei.chat/earn?share=<id>` — a real page on your own domain that restores the exact calculator state, which already works.
-4. The PNG is placed on the clipboard, and the button confirms "Image copied — paste into the tweet". One Cmd/Ctrl+V and the image is in the post.
-5. On mobile, unchanged and better: the OS share sheet attaches image + text + link in one tap.
-6. The intermediate `share-card` page and the raw backend URL disappear from anything a user sees.
+The one real fix is server-side rendering — the app renders `rei.chat/s/<id>` on the server, injects that share's title, description and `og:image`, and serves it to crawler and human alike. Lovable supports this by upgrading the project to the latest template (TanStack Start): [what the upgrade gives you](https://lovable.dev/blog/building-apps-using-tanstack-start). With SSR, everything on your list works exactly as described:
 
-Net result: trusted rei.chat link, working button, image in the tweet, no redirect page.
+1. Form state kept — stored per share id, restored on load.
+2. `og:image` is the rendered calculator PNG for that specific share.
+3. `rei.chat/s/xyz` — short, on your domain, opens the calculator prefilled.
 
-## What changes
+Option 3-alternative (long URL encoding the config, then shortened) is worth skipping: a self-describing short id in the database is simpler, shorter, and lets the image live alongside it. Encoding config in the URL buys nothing here and makes links ugly again.
 
-- **`PostToXButton.tsx`**: open the compose window up front and navigate it once the id is ready; write the PNG to the clipboard (`ClipboardItem`) with a download fallback for browsers that refuse; button label reflects state ("Rendering…" → "Image copied — paste it in").
-- **`earn-share` function**: return `https://rei.chat/earn?share=<id>` as the share URL instead of the backend `share-card` URL.
-- **`share-card` function**: no longer used for sharing. Keep only its `?json=1` branch (that's what restores state on `/earn?share=`), or leave it as-is and simply stop linking to the HTML page.
-- **`index.html`**: make sure the sitewide title/description and social preview are accurate, since `rei.chat/earn` is now what gets unfurled.
-- No database or storage changes; the stored PNG is still used, just delivered via clipboard/native share rather than as a crawler-facing og:image.
+## What I'd do, in two stages
 
-## One honest limitation
+**Stage 1 — ship now, no migration.** Everything except the crawler-visible head, built so nothing is thrown away later:
 
-A per-share image rendered by X's own link preview isn't possible on this stack — the app is a static single-page site, so crawlers only ever see the one static `<head>`, and the backend function route can't serve HTML the crawler will parse. That's why the image goes into the tweet as an attachment instead. If you want X to unfurl a unique image per share automatically, the app would need server-side rendering — that's available by upgrading to Lovable's latest template ([what the upgrade gives you](https://lovable.dev/blog/building-apps-using-tanstack-start)); happy to do that separately.
+- Pretty share URLs: `rei.chat/s/<id>`, a real client route that loads the saved state and shows the calculator prefilled. Humans get a clean, trustworthy link on your domain — no redirect page, no backend URL.
+- `earn-share` returns `https://rei.chat/s/<id>` instead of the backend URL.
+- The rendered PNG goes into the tweet as an actual image: native share sheet on mobile, clipboard-copy with a "paste it in" prompt on desktop (the desktop button also gets fixed — it's currently blocked because `window.open` fires after several awaits, so the browser drops the user gesture).
+- Retire the `share-card` HTML page; keep only its JSON branch used for state restore.
+
+**Stage 2 — the migration.** Move to the SSR template, then `rei.chat/s/<id>` renders server-side with that share's OG/Twitter tags pointing at the stored PNG. Tweeting the link alone then unfurls a large dynamic card, and the clipboard step becomes unnecessary.
+
+## My recommendation
+
+Do Stage 1 now — it removes the scam-looking link, fixes the broken button, and gets an image into the tweet today. Then decide on the migration; it's the only path to a true dynamic Twitter card, and Stage 1's data model and share ids carry over unchanged.
+
+Tell me if you'd rather go straight to the migration and do both in one pass.
