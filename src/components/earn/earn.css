@@ -180,8 +180,9 @@
   .earn-root .post-x:active{transform:translateY(1px);}
    .earn-root .post-x:disabled{opacity:.6;cursor:default;}
 
-   @media (min-width:901px) and (max-height:800px){
-     .earn-root .earn-page-head{margin-bottom:8px;}
-     .earn-root .earn-actions{margin-top:8px;}
-     .earn-root .earn-footer{margin-top:8px;}
-   }
+    @media (min-width:901px) and (max-height:800px){
+      .earn-root .earn-page-head{margin-bottom:8px;}
+      /* Keep the action row balanced, while leaving the disclaimer below the fold. */
+      .earn-root .earn-actions{margin-top:24px;}
+      .earn-root .earn-footer{margin-top:24px;}
+    }
