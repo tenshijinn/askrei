@@ -6,7 +6,7 @@ import whoami from "./tools/whoami";
 
 // Build issuer from the project ref so it survives publish and matches the
 // direct Supabase auth issuer that discovery advertises.
-const projectRef = import.meta.env.VITE_SUPABASE_PROJECT_ID ?? "project-ref-unset";
+const projectRef = import.meta.env["VITE_SUPABASE_PROJECT_ID"] ?? "project-ref-unset";
 
 export default defineMcp({
   name: "rei-chat-mcp",

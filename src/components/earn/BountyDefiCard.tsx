@@ -24,11 +24,11 @@ import {
 import PostToXButton from './PostToXButton';
 import ShareImage from './ShareImage';
 
-const FN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/earn-market`;
+const FN_URL = `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1/earn-market`;
 const FN_HEADERS = {
   'Content-Type': 'application/json',
-  apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string,
-  Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+  apikey: import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] as string,
+  Authorization: `Bearer ${import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"]}`,
 };
 
 async function callFn(body: Record<string, string>) {
@@ -77,7 +77,7 @@ export default function BountyDefiCard() {
     const fromPath = window.location.pathname.match(/^\/s\/([a-zA-Z0-9]{1,16})$/)?.[1];
     const id = fromPath ?? new URLSearchParams(window.location.search).get('share');
     if (!id) return;
-    fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/share-card?id=${encodeURIComponent(id)}&json=1`)
+    fetch(`${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1/share-card?id=${encodeURIComponent(id)}&json=1`)
       .then((r) => (r.ok ? r.json() : null))
       .then((json) => {
         const s = json?.state;

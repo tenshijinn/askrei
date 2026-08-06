@@ -66,7 +66,7 @@ export const SolanaPayQR = ({ qrCodeUrl, reference, paymentUrl, amount, recipien
     setStatus('verifying'); setErrorMessage('');
     try {
       if (!walletAddress) throw new Error('No wallet connected');
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-solana-pay`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` }, body: JSON.stringify({ reference, walletAddress }) });
+      const response = await fetch(`${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1/verify-solana-pay`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"]}` }, body: JSON.stringify({ reference, walletAddress }) });
       const data = await response.json();
       if (data.verified) { setStatus('confirmed'); toast({ title: "Payment Verified! ✓", description: `Your payment of $${data.amount.toFixed(2)} has been confirmed` }); onPaymentComplete(reference); }
       else { setStatus('error'); setErrorMessage(data.error || 'Payment verification failed'); toast({ title: "Verification Failed", description: data.error || 'Unable to verify payment', variant: "destructive" }); }
@@ -77,7 +77,7 @@ export const SolanaPayQR = ({ qrCodeUrl, reference, paymentUrl, amount, recipien
     if (status !== 'pending' || !walletAddress) return;
     const interval = setInterval(async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-solana-pay`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` }, body: JSON.stringify({ reference, walletAddress }) });
+        const response = await fetch(`${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1/verify-solana-pay`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"]}` }, body: JSON.stringify({ reference, walletAddress }) });
         const data = await response.json();
         if (data.verified) { setStatus('confirmed'); toast({ title: "Payment Detected! ✓", description: `Your payment of $${data.amount.toFixed(2)} has been confirmed` }); onPaymentComplete(reference); clearInterval(interval); }
       } catch (error) { console.error('Auto-poll error:', error); }
