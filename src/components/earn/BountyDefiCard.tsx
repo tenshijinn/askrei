@@ -72,9 +72,10 @@ export default function BountyDefiCard() {
   const cardRef = useRef<HTMLDivElement>(null);
   const shareRef = useRef<HTMLDivElement>(null);
 
-  // ----- restore a shared result (?share=<id>) -----
+  // ----- restore a shared result (/s/<id> or legacy ?share=<id>) -----
   useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get('share');
+    const fromPath = window.location.pathname.match(/^\/s\/([a-zA-Z0-9]{1,16})$/)?.[1];
+    const id = fromPath ?? new URLSearchParams(window.location.search).get('share');
     if (!id) return;
     fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/share-card?id=${encodeURIComponent(id)}&json=1`)
       .then((r) => (r.ok ? r.json() : null))

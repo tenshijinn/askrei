@@ -2,7 +2,7 @@ import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const BUCKET = 'earn-share-cards';
-const FN_BASE = `${Deno.env.get('SUPABASE_URL')}/functions/v1`;
+const SITE = 'https://rei.chat';
 
 function shortId() {
   const alphabet = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -95,7 +95,7 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ id, url: `${FN_BASE}/share-card?id=${id}` }),
+      JSON.stringify({ id, url: `${SITE}/s/${id}` }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
   } catch (e) {
