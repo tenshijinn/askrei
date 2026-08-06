@@ -6,6 +6,7 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/supabase/vite";
+import { fileURLToPath } from "node:url";
 
 export default defineConfig({
   tanstackStart: {
@@ -15,5 +16,15 @@ export default defineConfig({
   },
   vite: {
     plugins: [mcpPlugin()],
+    resolve: {
+      alias: {
+        // rpc-websockets (via @solana/web3.js) only exports "browser"/"node"
+        // conditions; the workerd server build matches neither, so point it
+        // straight at the browser ESM build.
+        "rpc-websockets": fileURLToPath(
+          new URL("./node_modules/rpc-websockets/dist/index.browser.mjs", import.meta.url),
+        ),
+      },
+    },
   },
 });
