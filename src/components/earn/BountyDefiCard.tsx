@@ -72,9 +72,10 @@ export default function BountyDefiCard() {
   const cardRef = useRef<HTMLDivElement>(null);
   const shareRef = useRef<HTMLDivElement>(null);
 
-  // ----- restore a shared result (?share=<id>) -----
+  // ----- restore a shared result (/s/<id> or legacy ?share=<id>) -----
   useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get('share');
+    const fromPath = window.location.pathname.match(/^\/s\/([a-zA-Z0-9]{1,16})$/)?.[1];
+    const id = fromPath ?? new URLSearchParams(window.location.search).get('share');
     if (!id) return;
     fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/share-card?id=${encodeURIComponent(id)}&json=1`)
       .then((r) => (r.ok ? r.json() : null))
@@ -82,12 +83,12 @@ export default function BountyDefiCard() {
         const s = json?.state;
         if (!s) return;
         if (typeof s.amount === 'number' && s.amount > 0) setAmount(s.amount);
-        if (typeof s.frequency === 'string' && s.frequency) setFrequency(s.frequency);
+        if (typeof s.frequency === 'string' && s.frequency in FREQ) setFrequency(s.frequency);
         if (typeof s.period === 'string' && s.period) setPeriod(s.period);
-        if (s.platform) {
+        if (s.platform && s.platform in PLATFORMS) {
           setMode('DeFi');
           setPlatform(s.platform);
-          if (s.assetSym) setAsset(s.assetSym);
+          if (s.assetSym && PLATFORMS[s.platform].assets.includes(s.assetSym)) setAsset(s.assetSym);
         } else if (s.assetSym) {
           setMode('Tokens');
           setSelectedToken(s.assetSym);

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
+import { toast } from 'sonner';
 
 const CHARS = '01#$%&*<>/\\|=+ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const LABEL = 'Post to X';
@@ -103,6 +104,14 @@ export default function PostToXButton({ targetRef, buildText, buildState }: Prop
     setBusy(true);
     const body = buildText();
 
+    // Open the tab up-front: popup blockers reject window.open once the click
+    // gesture has been consumed by awaits.
+    const nav = navigator as Navigator & {
+      canShare?: (data: ShareData & { files?: File[] }) => boolean;
+    };
+    const canNativeShare = typeof nav.share === 'function';
+    const tab = canNativeShare ? null : window.open('', '_blank');
+
     const dataUrl = await renderPng();
 
     // Save the state + rendered image so the share link can serve an OG card.
@@ -124,40 +133,54 @@ export default function PostToXButton({ targetRef, buildText, buildState }: Prop
     }
 
     // Mobile: native share sheet attaches the real image file alongside the text.
-    try {
-      const nav = navigator as Navigator & {
-        canShare?: (data: ShareData & { files?: File[] }) => boolean;
-      };
-      if (dataUrl && nav.share) {
-        const blob = await (await fetch(dataUrl)).blob();
-        const file = new File([blob], 'rei-bounty-earnings.png', { type: 'image/png' });
-        if (nav.canShare?.({ files: [file] })) {
-          await nav.share({
-            files: [file],
-            text: shareUrl ? `${body}\n\n${shareUrl}` : body,
-          });
+    if (canNativeShare) {
+      try {
+        if (dataUrl) {
+          const blob = await (await fetch(dataUrl)).blob();
+          const file = new File([blob], 'rei-bounty-earnings.png', { type: 'image/png' });
+          if (nav.canShare?.({ files: [file] })) {
+            await nav.share({
+              files: [file],
+              text: shareUrl ? `${body}\n\n${shareUrl}` : body,
+            });
+            setBusy(false);
+            return;
+          }
+        }
+      } catch (err) {
+        if ((err as DOMException)?.name === 'AbortError') {
           setBusy(false);
           return;
         }
+        /* fall through to the intent link */
       }
-    } catch (err) {
-      if ((err as DOMException)?.name === 'AbortError') {
-        setBusy(false);
-        return;
-      }
-      /* fall through to the intent link */
     }
 
+    // Desktop: copy the PNG so it can be pasted straight into the composer.
+    let copied = false;
+    if (dataUrl) {
+      try {
+        const blob = await (await fetch(dataUrl)).blob();
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+        copied = true;
+      } catch {
+        /* clipboard images unsupported — the link card still carries the image */
+      }
+    }
+    toast(
+      copied
+        ? 'Card image copied — paste it into the tweet (⌘V)'
+        : 'Tweet opened — the link unfurls your card',
+    );
+
     setBusy(false);
-    // Desktop: tweet the share link — X renders it as a large image card.
     const params = new URLSearchParams({ text: body });
     if (shareUrl) params.set('url', shareUrl);
-    window.open(
-      `https://twitter.com/intent/tweet?${params.toString()}`,
-      '_blank',
-      'noopener,noreferrer',
-    );
+    const intent = `https://twitter.com/intent/tweet?${params.toString()}`;
+    if (tab) tab.location.replace(intent);
+    else window.open(intent, '_blank', 'noopener,noreferrer');
   };
+
 
   return (
     <button
