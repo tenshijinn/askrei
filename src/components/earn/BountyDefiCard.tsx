@@ -524,8 +524,7 @@ export default function BountyDefiCard() {
       </div>
 
       <footer className="earn-footer">
-        Backtest over the selected past period — not a forecast. Prices are real market data; DeFi yields are
-        period-average estimates unless a live source is connected. — Arubaito Labs
+        Backtest over the selected past period, not a forecast, past performance isn't indicative of future performance. Prices are real market data from DeFi LLama and native platform sources; DeFi yields are period-average estimates unless a live source is connected. Nothing on this page is to taken as financial advice — Rei AI by Arubaito Labs
       </footer>
 
 
