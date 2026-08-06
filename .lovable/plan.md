@@ -1,30 +1,35 @@
-# Fix the /earn share card: Open Graph link-card + mobile native share
+# Fix the /earn "Post to X" share
 
-The current button tries to attach a PNG to X's tweet intent. That can't work — `twitter.com/intent/tweet` has no media parameter. Replacing it with the OG link-card pattern, plus the Web Share API on mobile.
+## What's actually wrong
 
-## How it will work
+Two separate problems, both confirmed just now:
 
-1. User clicks **Post to X** on the calculator card.
-2. The app renders the existing 1600x900 share graphic to a PNG in the browser (already built), uploads it to a public storage bucket, and saves the card's state (asset, platform, amount, window, earned, final value, %) as a short share ID.
-3. On mobile, if the device supports native file sharing, the OS share sheet opens with the image + text attached — one tap into X.
-4. Everywhere else, X opens prefilled with the tweet text plus a share link: `https://rei.chat/functions/v1/share-card?id=<shortId>`.
-5. That link is served by a backend function that returns real HTML with Open Graph / Twitter meta tags pointing at the uploaded PNG, so X renders a large image card. Humans hitting the link get bounced straight to `/earn` with the same state prefilled.
+1. **The share page can never work on that URL.** The functions gateway rewrites the response: the page is returned as `content-type: text/plain` with `content-security-policy: default-src 'none'; sandbox`. That's why you saw raw HTML source and mangled characters (`â€”`) — and it also means X's crawler will never read the Open Graph tags from it. The plan assumed `rei.chat/functions/v1/*` proxied to the backend; it does not — that path returns the normal app HTML, so the button had to fall back to the raw backend domain. Hence the scam-looking link.
+2. **The desktop button does nothing.** `window.open` runs after several `await`s (render PNG, upload), so the browser no longer treats it as a user gesture and silently blocks the popup.
 
-Result: one click, a big image in the tweet, and a clickable link back to rei.chat that carries the referral — which the file-attachment approach never gave us.
+## The better way
+
+Stop sending people to an intermediate page. The tweet should link to **rei.chat** itself, and the image should be attached to the tweet as a real file.
+
+New flow when the button is clicked:
+
+1. Open the X compose tab immediately (synchronous, so it's never blocked) — desktop only.
+2. In the background, render the card PNG and save the share state, returning a short id.
+3. Tweet text + link `https://rei.chat/earn?share=<id>` — a real page on your own domain that restores the exact calculator state, which already works.
+4. The PNG is placed on the clipboard, and the button confirms "Image copied — paste into the tweet". One Cmd/Ctrl+V and the image is in the post.
+5. On mobile, unchanged and better: the OS share sheet attaches image + text + link in one tap.
+6. The intermediate `share-card` page and the raw backend URL disappear from anything a user sees.
+
+Net result: trusted rei.chat link, working button, image in the tweet, no redirect page.
 
 ## What changes
 
-- **New public storage bucket** for rendered share images (immutable, cache-friendly filenames).
-- **New table `earn_shares`**: short id, card state JSON, image path, created_at. Public read of non-sensitive columns, writes only through the function.
-- **New backend function `earn-share`**: accepts the card state + PNG, stores both, returns the short id and share URL.
-- **New backend function `share-card`**: `GET ?id=<shortId>` returns static HTML containing `og:title`, `og:description`, `og:image`, `og:url`, `twitter:card=summary_large_image`, `twitter:image`, plus a redirect for real visitors to `/earn?share=<id>`.
-- **`PostToXButton.tsx`**: drop the clipboard/download fallback path as the primary flow; render PNG → upload → then either native share (mobile) or intent-with-URL (desktop). Keep a graceful text-only tweet if upload fails.
-- **`BountyDefiCard.tsx`**: append the share URL to the tweet text; read `?share=` on load to restore state when someone arrives from a shared link.
-- **`ShareImage.tsx`**: unchanged layout; ensure fonts and the Rei art are loaded and CORS-safe before capture so the PNG never comes out blank.
+- **`PostToXButton.tsx`**: open the compose window up front and navigate it once the id is ready; write the PNG to the clipboard (`ClipboardItem`) with a download fallback for browsers that refuse; button label reflects state ("Rendering…" → "Image copied — paste it in").
+- **`earn-share` function**: return `https://rei.chat/earn?share=<id>` as the share URL instead of the backend `share-card` URL.
+- **`share-card` function**: no longer used for sharing. Keep only its `?json=1` branch (that's what restores state on `/earn?share=`), or leave it as-is and simply stop linking to the HTML page.
+- **`index.html`**: make sure the sitewide title/description and social preview are accurate, since `rei.chat/earn` is now what gets unfurled.
+- No database or storage changes; the stored PNG is still used, just delivered via clipboard/native share rather than as a crawler-facing og:image.
 
-## Technical notes
+## One honest limitation
 
-- This project is a client-side Vite SPA, so meta tags injected by React are invisible to Twitterbot. Serving the share page from an edge function is what makes the crawler see the tags. `rei.chat/functions/v1/*` already proxies to backend functions (the MCP server uses it), so the share URL stays on the rei.chat domain — I'll confirm the proxy responds for the new function before wiring the button to it.
-- Rendering happens client-side with the existing `html-to-image` code rather than adding a server-side Satori/Playwright renderer — the graphic is already built and validated, and uploading the finished PNG gives X a stable, cacheable image URL.
-- Each share gets a unique id, so X's per-URL image cache never serves one user's numbers to another.
-- No `_redirects`-style hosting config is involved; nothing in the existing `/earn` layout or copy changes.
+A per-share image rendered by X's own link preview isn't possible on this stack — the app is a static single-page site, so crawlers only ever see the one static `<head>`, and the backend function route can't serve HTML the crawler will parse. That's why the image goes into the tweet as an attachment instead. If you want X to unfurl a unique image per share automatically, the app would need server-side rendering — that's available by upgrading to Lovable's latest template ([what the upgrade gives you](https://lovable.dev/blog/building-apps-using-tanstack-start)); happy to do that separately.
