@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { withOpsHttpJob } from "../_shared/ops.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
