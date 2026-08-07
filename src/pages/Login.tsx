@@ -12,7 +12,11 @@ function safeNext(raw: string | null): string {
 export default function Login() {
   const [params] = useSearchParams();
   const next = useMemo(() => safeNext(params.get("next")), [params]);
-  const returnUrl = window.location.origin + next;
+  // Computed lazily: `window` does not exist during server rendering.
+  const returnUrl = useMemo(
+    () => (typeof window === "undefined" ? next : window.location.origin + next),
+    [next],
+  );
 
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
