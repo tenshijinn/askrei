@@ -165,7 +165,7 @@ function mapBounty(b: Bounty) {
   };
 }
 
-Deno.serve(async (req) => {
+Deno.serve(withOpsHttpJob("sync-drive-tasks", async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
