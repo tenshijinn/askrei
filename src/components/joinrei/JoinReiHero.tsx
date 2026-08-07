@@ -36,7 +36,7 @@ export const JoinReiHero = () => {
     if (target) {
       target.scrollIntoView({ behavior: 'smooth' });
     } else if (sections.length > 1) {
-      sections[1].scrollIntoView({ behavior: 'smooth' });
+      sections[1]!.scrollIntoView({ behavior: 'smooth' });
     }
   };
 

@@ -56,7 +56,7 @@ const parseLatestBountyAmount = (
   // Dollar / fiat, e.g. "$1,800", "$1.5K", "$2M"
   const dm = s.match(/^\$\s?([\d,]+(?:\.\d+)?)\s?([KkMm])?/);
   if (dm) {
-    let n = Number(dm[1].replace(/,/g, ''));
+    let n = Number(dm[1]!.replace(/,/g, ''));
     if (!isFinite(n)) return null;
     const suf = dm[2]?.toUpperCase();
     if (suf === 'M') n *= 1_000_000;
@@ -66,9 +66,9 @@ const parseLatestBountyAmount = (
   // Amount + token, e.g. "1 USDC", "5,000 USDG", "10 EVM", "0.5 SOL"
   const cm = s.match(/^([\d,]+(?:\.\d+)?)\s+\$?([A-Za-z][A-Za-z0-9]{1,15})/);
   if (cm) {
-    const n = Number(cm[1].replace(/,/g, ''));
+    const n = Number(cm[1]!.replace(/,/g, ''));
     if (!isFinite(n)) return null;
-    const sym = cm[2].toUpperCase();
+    const sym = cm[2]!.toUpperCase();
     const rate = USD_RANK[sym] ?? 0;
     return { display: `${formatNumber(n)} $${sym}`, usd: n * rate };
   }
@@ -104,7 +104,7 @@ const useLatestBounty = () => {
       if (cancelled || !data || data.length === 0) return;
 
       // Newest batch = rows sharing the max created_at timestamp.
-      const newest = data[0].created_at;
+      const newest = data[0]!.created_at;
       const batch = data.filter((r) => r.created_at === newest);
 
       let best: { display: string; usd: number } | null = null;
