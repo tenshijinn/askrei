@@ -306,7 +306,7 @@ const Ask = () => {
               {!loading && errorMsg && (
                 <>
                   <div className="chat-line">
-                    <span className="chat-ts">[--:--:--]</span>
+                    <span className="chat-ts">{"\u005B--:--:--]"}</span>
                     <span className="chat-handle handle-sys">* system</span>
                     <span className="chat-msg msg-sys">{errorMsg}</span>
                   </div>
@@ -396,7 +396,7 @@ const Ask = () => {
               {!loading && (reply || bounty) && (
                 <>
                   <div className="chat-line">
-                    <span className="chat-ts">[--:--:--]</span>
+                    <span className="chat-ts">{"\u005B--:--:--]"}</span>
                     <span className="chat-handle handle-sys">* system</span>
                     <span className="chat-msg msg-sys">Want more? Sign up to keep chatting with Rei.</span>
                   </div>
