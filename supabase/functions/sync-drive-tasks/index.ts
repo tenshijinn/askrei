@@ -367,4 +367,4 @@ Deno.serve(withOpsHttpJob("sync-drive-tasks", async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-});
+}));
