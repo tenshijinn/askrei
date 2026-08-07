@@ -456,6 +456,14 @@ Deno.serve(async (req) => {
         windowDays: 30,
         syncedAt: new Date().toISOString(),
       };
+      // Scheduled daily sample — record it for the monitoring dashboard.
+      await logOpsEvent({
+        kind: 'job',
+        source: 'sample-nlo-yield',
+        status: apr === null ? 'failure' : 'success',
+        message: apr === null ? 'No NLO yield samples available' : undefined,
+        detail: { apr, samples: samples.length },
+      });
       return json(memPut('nlo', payload));
     }
 
