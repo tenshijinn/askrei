@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { createStripeClient, getWebhookSecret, type StripeEnv } from "../_shared/stripe.ts";
+import { logOpsEvent } from "../_shared/ops.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
