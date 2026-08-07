@@ -92,7 +92,7 @@ async function priceFor(symbol: string, cache: Map<string, number>): Promise<{ p
   return null;
 }
 
-Deno.serve(async (req) => {
+Deno.serve(withOpsHttpJob("price-bounties", async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   const supabase = createClient(
