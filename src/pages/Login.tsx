@@ -26,7 +26,7 @@ export default function Login() {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) window.location.href = getReturnUrl();
     });
-  }, [getReturnUrl()]);
+  }, [getReturnUrl]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
