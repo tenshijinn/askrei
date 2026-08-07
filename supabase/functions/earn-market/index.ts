@@ -1,4 +1,5 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { logOpsEvent } from '../_shared/ops.ts';
 
 // earn-market: proxy + persistent cache for the /earn bounty->DeFi backtest card.
 // actions:
