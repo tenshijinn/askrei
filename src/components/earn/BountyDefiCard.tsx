@@ -183,17 +183,16 @@ export default function BountyDefiCard() {
     return () => document.removeEventListener('mousedown', onDown);
   }, [ddOpen]);
 
-  const freq = FREQ[frequency];
+  const freq = FREQ[frequency] ?? Object.values(FREQ)[0]!;
   const monthlyContribution = Math.max(0, amount || 0) * freq.k;
 
   // ----- resolve the active series -----
   const isTokens = mode === 'Tokens';
-  const platformCfg = PLATFORMS[platform];
   const rawApy = platformCfg.apy[asset] ?? 0;
   const apyVal = isTokens ? 0 : (platform === 'NLO by L1X' && nloApr ? nloApr : rawApy);
 
   const series: AssetSeries | null = isTokens
-    ? (token?.data ? assets[token.data] : tokenSeries[token?.sym] ?? null)
+    ? (token.data ? assets[token.data] ?? null : tokenSeries[token.sym] ?? null)
     : assets[asset] ?? null;
 
   const hasData = !!series?.prices?.length;
@@ -232,12 +231,12 @@ export default function BountyDefiCard() {
     const conPts = contrib.map((v, j) => [px(j), py(v)] as [number, number]);
     const valD = smoothPath(valPts);
     const areaD = `${valD} L${px(N - 1).toFixed(1)},${H.toFixed(1)} L${px(0).toFixed(1)},${H.toFixed(1)} Z`;
-    const end = valPts[N - 1];
+    const end = valPts[N - 1] ?? ([0, 0] as [number, number]);
     const labels: { text: string; year: boolean }[] = [];
     for (let i = 0; i < N; i++) {
       const d = new Date(series!.startYear, series!.startMonth + startIdx + i, 1);
       if (d.getMonth() === 0) labels.push({ text: `'${String(d.getFullYear()).slice(-2)}`, year: true });
-      else labels.push({ text: LETTER[d.getMonth()], year: false });
+      else labels.push({ text: LETTER[d.getMonth()] ?? '', year: false });
     }
     return {
       W, H, yMax, valD, conD: smoothPath(conPts), areaD,
@@ -246,7 +245,7 @@ export default function BountyDefiCard() {
     };
   }, [computed, series]);
 
-  const finalVal = computed ? computed.value[computed.value.length - 1] : 0;
+  const finalVal = (computed ? computed.value[computed.value.length - 1] : 0) ?? 0;
   const invested = computed?.invested ?? 0;
   const down = finalVal - invested < 0;
 
