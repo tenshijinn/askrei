@@ -14,7 +14,7 @@ export interface WalkthroughCopy {
 
 const strong = (s: string) => <strong style={{ color: '#f0ede8' }}>{s}</strong>;
 
-export const walkthroughCopy: Record<string, WalkthroughCopy> = {
+export const walkthroughCopy = {
   voiceIntro: {
     title: 'Record your voice intro',
     body: (
@@ -84,4 +84,4 @@ export const walkthroughCopy: Record<string, WalkthroughCopy> = {
       </p>
     ),
   },
-};
+} satisfies Record<string, WalkthroughCopy>;

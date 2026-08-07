@@ -74,7 +74,7 @@ const Ask = () => {
     let idx = 0;
     const type = async () => {
       while (!cancelled) {
-        const phrase = PLACEHOLDER_QUERIES[idx % PLACEHOLDER_QUERIES.length];
+        const phrase = PLACEHOLDER_QUERIES[idx % PLACEHOLDER_QUERIES.length] ?? '';
         for (let i = 1; i <= phrase.length && !cancelled; i++) {
           setPlaceholder(phrase.slice(0, i));
           await new Promise((r) => setTimeout(r, 55));
