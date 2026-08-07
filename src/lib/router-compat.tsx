@@ -18,15 +18,16 @@ import { useMemo, useCallback, forwardRef, type ComponentProps, type ReactNode }
 // ---------- shared URL parsing ----------
 
 function parseTo(to: string): { pathname: string; search?: Record<string, string>; hash?: string } {
-  const [beforeHash, hashStr] = (to ?? "").split("#");
-  const [pathname, searchStr] = beforeHash.split("?");
-  return {
+  const [beforeHash = "", hashStr = ""] = (to ?? "").split("#");
+  const [pathname = "", searchStr = ""] = beforeHash.split("?");
+  const out: { pathname: string; search?: Record<string, string>; hash?: string } = {
     // react-router keeps the current path for search-only ("?a=1") and
     // hash-only ("#section") targets; TanStack's "." means current route.
     pathname: pathname || ".",
-    search: searchStr ? Object.fromEntries(new URLSearchParams(searchStr)) : undefined,
-    hash: hashStr || undefined,
   };
+  if (searchStr) out.search = Object.fromEntries(new URLSearchParams(searchStr));
+  if (hashStr) out.hash = hashStr;
+  return out;
 }
 
 // ---------- useNavigate ----------

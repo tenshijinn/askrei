@@ -4,9 +4,9 @@ import { fmt } from './data';
 
 export interface ShareImageProps {
   assetSym: string;
-  assetLogoUrl?: string;
+  assetLogoUrl?: string | undefined;
   platformName: string | null; // null => buy & hold
-  platformLogoUrl?: string;
+  platformLogoUrl?: string | undefined;
   invested: number;
   finalVal: number;
   windowLabel: string;
