@@ -37,8 +37,7 @@ export function WalkthroughTour({ steps, open, onClose }: Props) {
   const resolvedStep = useMemo(() => {
     if (!open) return null;
     for (let i = index; i < steps.length; i++) {
-      const s = steps[i];
-      if (s && findTarget(s.selector)) return { ...s, _i: i };
+      if (findTarget(steps[i].selector)) return { ...steps[i], _i: i };
     }
     return null;
   }, [open, index, steps]);

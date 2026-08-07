@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "@/lib/router-compat";
+import { Link } from "react-router-dom";
 import { Loader2, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -74,7 +74,7 @@ const Ask = () => {
     let idx = 0;
     const type = async () => {
       while (!cancelled) {
-        const phrase = PLACEHOLDER_QUERIES[idx % PLACEHOLDER_QUERIES.length] ?? '';
+        const phrase = PLACEHOLDER_QUERIES[idx % PLACEHOLDER_QUERIES.length];
         for (let i = 1; i <= phrase.length && !cancelled; i++) {
           setPlaceholder(phrase.slice(0, i));
           await new Promise((r) => setTimeout(r, 55));
@@ -159,7 +159,7 @@ const Ask = () => {
             onChange={(e) => setQuery(e.target.value)}
             placeholder={placeholder ? `${placeholder}▌` : ""}
             disabled={loading}
-            className="flex-1 bg-transparent outline-hidden disabled:opacity-60 min-w-0"
+            className="flex-1 bg-transparent outline-none disabled:opacity-60 min-w-0"
             style={{
               fontFamily: "'SF Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace",
               fontSize: "13px",
@@ -306,7 +306,7 @@ const Ask = () => {
               {!loading && errorMsg && (
                 <>
                   <div className="chat-line">
-                    <span className="chat-ts">{"\u005B--:--:--]"}</span>
+                    <span className="chat-ts">[--:--:--]</span>
                     <span className="chat-handle handle-sys">* system</span>
                     <span className="chat-msg msg-sys">{errorMsg}</span>
                   </div>
@@ -396,7 +396,7 @@ const Ask = () => {
               {!loading && (reply || bounty) && (
                 <>
                   <div className="chat-line">
-                    <span className="chat-ts">{"\u005B--:--:--]"}</span>
+                    <span className="chat-ts">[--:--:--]</span>
                     <span className="chat-handle handle-sys">* system</span>
                     <span className="chat-msg msg-sys">Want more? Sign up to keep chatting with Rei.</span>
                   </div>

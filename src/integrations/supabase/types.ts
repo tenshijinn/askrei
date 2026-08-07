@@ -570,72 +570,6 @@ export type Database = {
         }
         Relationships: []
       }
-      ops_events: {
-        Row: {
-          created_at: string
-          detail: Json
-          duration_ms: number | null
-          id: string
-          kind: string
-          message: string | null
-          source: string
-          status: string
-        }
-        Insert: {
-          created_at?: string
-          detail?: Json
-          duration_ms?: number | null
-          id?: string
-          kind: string
-          message?: string | null
-          source: string
-          status: string
-        }
-        Update: {
-          created_at?: string
-          detail?: Json
-          duration_ms?: number | null
-          id?: string
-          kind?: string
-          message?: string | null
-          source?: string
-          status?: string
-        }
-        Relationships: []
-      }
-      ops_monitors: {
-        Row: {
-          created_at: string
-          enabled: boolean
-          id: string
-          kind: string
-          label: string
-          max_silence_hours: number
-          source: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          enabled?: boolean
-          id?: string
-          kind: string
-          label: string
-          max_silence_hours?: number
-          source: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          enabled?: boolean
-          id?: string
-          kind?: string
-          label?: string
-          max_silence_hours?: number
-          source?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       payment_references: {
         Row: {
           amount: number
@@ -1650,43 +1584,6 @@ export type Database = {
           p_x_user_id?: string
         }
         Returns: undefined
-      }
-      log_ops_event: {
-        Args: {
-          p_detail?: Json
-          p_duration_ms?: number
-          p_kind: string
-          p_message?: string
-          p_source: string
-          p_status: string
-        }
-        Returns: string
-      }
-      ops_cron_health: {
-        Args: never
-        Returns: {
-          active: boolean
-          failures_7d: number
-          jobname: string
-          last_run: string
-          last_status: string
-          schedule: string
-        }[]
-      }
-      ops_health: {
-        Args: never
-        Returns: {
-          failures_24h: number
-          hours_since_success: number
-          kind: string
-          label: string
-          last_failure_at: string
-          last_success_at: string
-          max_silence_hours: number
-          source: string
-          state: string
-          successes_24h: number
-        }[]
       }
     }
     Enums: {

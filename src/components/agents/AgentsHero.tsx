@@ -70,7 +70,7 @@ export const AgentsHero = () => {
         <div className="absolute inset-0 opacity-20">
           <img src={reiHero} alt="" className="w-full h-full object-cover object-center" />
         </div>
-        <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/10 bg-[#0d0d0d]/95 shadow-2xl backdrop-blur-xs">
+        <div className="relative z-10 w-full max-w-md rounded-2xl border border-white/10 bg-[#0d0d0d]/95 shadow-2xl backdrop-blur-sm">
           <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/10">
             <div className="flex gap-1.5">
               <span className="h-2.5 w-2.5 rounded-full bg-red-500/60" />

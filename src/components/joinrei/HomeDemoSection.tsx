@@ -219,7 +219,7 @@ const ChatMockup = ({ active, reduced }: { active: boolean; reduced: boolean }) 
         <div className="flex items-center justify-between px-4 py-2 border-b border-white/5">
           <span className="text-[10px] text-cream/40 font-mono">rei://chat</span>
           <div className="flex gap-1.5">
-            <span className="text-[9px] px-2 py-0.5 rounded-[4px] bg-[#ed565a]/20 text-[#ed565a] font-mono">Talent</span>
+            <span className="text-[9px] px-2 py-0.5 rounded bg-[#ed565a]/20 text-[#ed565a] font-mono">Talent</span>
           </div>
         </div>
 
@@ -228,7 +228,7 @@ const ChatMockup = ({ active, reduced }: { active: boolean; reduced: boolean }) 
 
           {phase >= 1 && (
             <div className="flex items-start gap-2 animate-fade-in">
-              <span className="shrink-0 text-[9px] px-2 py-0.5 rounded-[4px] bg-[#ed565a]/20 text-[#ed565a] font-mono border border-[#ed565a]/30">Rei</span>
+              <span className="shrink-0 text-[9px] px-2 py-0.5 rounded bg-[#ed565a]/20 text-[#ed565a] font-mono border border-[#ed565a]/30">Rei</span>
               <p className="text-[11px] text-cream/80 font-mono leading-relaxed text-left">Hey! I found 3 tasks matching your skills in Community & Design.</p>
             </div>
           )}
@@ -257,7 +257,7 @@ const ChatMockup = ({ active, reduced }: { active: boolean; reduced: boolean }) 
           {phase >= 4 && (
             <div className="flex items-start gap-2 justify-end animate-fade-in">
               <p className="text-[11px] text-blue-300 font-mono leading-relaxed text-right">Show me the Galxe quest details</p>
-              <span className="shrink-0 text-[9px] px-2 py-0.5 rounded-[4px] bg-blue-500/20 text-blue-300 font-mono border border-blue-500/30">You</span>
+              <span className="shrink-0 text-[9px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono border border-blue-500/30">You</span>
             </div>
           )}
 
@@ -265,14 +265,14 @@ const ChatMockup = ({ active, reduced }: { active: boolean; reduced: boolean }) 
 
           {phase >= 6 && (
             <div className="flex items-start gap-2 animate-fade-in">
-              <span className="shrink-0 text-[9px] px-2 py-0.5 rounded-[4px] bg-[#ed565a]/20 text-[#ed565a] font-mono border border-[#ed565a]/30">Rei</span>
+              <span className="shrink-0 text-[9px] px-2 py-0.5 rounded bg-[#ed565a]/20 text-[#ed565a] font-mono border border-[#ed565a]/30">Rei</span>
               <p className="text-[11px] text-cream/80 font-mono leading-relaxed text-left">Sure! Here's the breakdown...</p>
             </div>
           )}
 
           {phase >= 7 && (
             <div className="flex items-start gap-2 animate-fade-in">
-              <span className="shrink-0 text-[9px] px-2 py-0.5 rounded-[4px] bg-[#ed565a]/20 text-[#ed565a] font-mono border border-[#ed565a]/30">Rei</span>
+              <span className="shrink-0 text-[9px] px-2 py-0.5 rounded bg-[#ed565a]/20 text-[#ed565a] font-mono border border-[#ed565a]/30">Rei</span>
               <div className="px-2.5 py-1.5 rounded-lg bg-[#ed565a]/10 border border-[#ed565a]/30">
                 <p className="text-[10px] text-[#ed565a] font-mono leading-relaxed text-left underline">galxe.com/quest/dao-activation</p>
                 <p className="text-[9px] text-green-400/80 font-mono mt-0.5 text-left">0.5 SOL + 250 XP</p>
@@ -292,7 +292,7 @@ const ChatMockup = ({ active, reduced }: { active: boolean; reduced: boolean }) 
             <span className="text-[10px] text-gray-500 font-mono flex-1 text-left">
               Ask Rei anything<span className="animate-pulse">▌</span>
             </span>
-            <div className="w-5 h-5 rounded-[4px] bg-[#ed565a]/20 flex items-center justify-center">
+            <div className="w-5 h-5 rounded bg-[#ed565a]/20 flex items-center justify-center">
               <svg className="w-3 h-3 text-[#ed565a]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
               </svg>
@@ -356,7 +356,7 @@ const PostTaskMockup = ({ active, reduced }: { active: boolean; reduced: boolean
         <div className="flex items-center justify-between px-4 py-2 border-b border-white/5">
           <span className="text-[10px] text-cream/40 font-mono">rei://post-task</span>
           <div className="flex gap-1.5">
-            <span className="text-[9px] px-2 py-0.5 rounded-[4px] bg-blue-500/20 text-blue-400 font-mono">Employer</span>
+            <span className="text-[9px] px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-mono">Employer</span>
           </div>
         </div>
 
@@ -367,7 +367,7 @@ const PostTaskMockup = ({ active, reduced }: { active: boolean; reduced: boolean
               {types.map((type, i) => (
                 <span
                   key={type}
-                  className={`px-2 py-0.5 rounded-[4px] text-[9px] font-mono transition-all duration-300 ${
+                  className={`px-2 py-0.5 rounded text-[9px] font-mono transition-all duration-300 ${
                     i === typeIdx ? 'bg-[#ed565a]/20 border border-[#ed565a]/40 text-[#ed565a] scale-105' : 'bg-white/5 border border-white/10 text-cream/50'
                   }`}
                 >
@@ -420,7 +420,7 @@ const PostTaskMockup = ({ active, reduced }: { active: boolean; reduced: boolean
                 return (
                   <span
                     key={tag}
-                    className={`px-2 py-0.5 rounded-[4px] text-[9px] font-mono transition-all duration-300 ${
+                    className={`px-2 py-0.5 rounded text-[9px] font-mono transition-all duration-300 ${
                       on ? 'bg-[#ed565a]/20 border border-[#ed565a]/40 text-[#ed565a] scale-105' : 'bg-white/5 border border-white/10 text-cream/50'
                     }`}
                   >
@@ -455,7 +455,7 @@ export const HomeDemoSection = () => {
   useEffect(() => {
     if (!sectionRef.current) return;
     const observer = new IntersectionObserver(
-      ([entry]) => setIsActive(!!entry?.isIntersecting),
+      ([entry]) => setIsActive(entry.isIntersecting),
       { threshold: 0.25 }
     );
     observer.observe(sectionRef.current);

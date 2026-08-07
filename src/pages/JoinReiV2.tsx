@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate } from "@/lib/router-compat";
+import { useNavigate } from 'react-router-dom';
 import { ScrollVideoHero } from '@/components/joinrei/ScrollVideoHero';
 import { HomeValueProp } from '@/components/joinrei/HomeValueProp';
 import { HomeAggregation } from '@/components/joinrei/HomeAggregation';

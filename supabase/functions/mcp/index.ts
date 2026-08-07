@@ -8,9 +8,9 @@ import { auth, defineMcp } from "npm:@lovable.dev/mcp-js@0.23.0";
 // src/lib/mcp/tools/search-bounties.ts
 import { createClient } from "npm:@supabase/supabase-js@^2.102.1";
 import { defineTool } from "npm:@lovable.dev/mcp-js@0.23.0";
-import { z } from "npm:zod@^3.24.2";
+import { z } from "npm:zod@^4.4.3";
 function sb(ctx) {
-  return createClient(process.env["SUPABASE_URL"], process.env["SUPABASE_PUBLISHABLE_KEY"], {
+  return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
     global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
     auth: { persistSession: false, autoRefreshToken: false }
   });
@@ -44,9 +44,9 @@ var search_bounties_default = defineTool({
 // src/lib/mcp/tools/search-jobs.ts
 import { createClient as createClient2 } from "npm:@supabase/supabase-js@^2.102.1";
 import { defineTool as defineTool2 } from "npm:@lovable.dev/mcp-js@0.23.0";
-import { z as z2 } from "npm:zod@^3.24.2";
+import { z as z2 } from "npm:zod@^4.4.3";
 function sb2(ctx) {
-  return createClient2(process.env["SUPABASE_URL"], process.env["SUPABASE_PUBLISHABLE_KEY"], {
+  return createClient2(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
     global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
     auth: { persistSession: false, autoRefreshToken: false }
   });
@@ -78,9 +78,9 @@ var search_jobs_default = defineTool2({
 // src/lib/mcp/tools/list-skill-categories.ts
 import { createClient as createClient3 } from "npm:@supabase/supabase-js@^2.102.1";
 import { defineTool as defineTool3 } from "npm:@lovable.dev/mcp-js@0.23.0";
-import { z as z3 } from "npm:zod@^3.24.2";
+import { z as z3 } from "npm:zod@^4.4.3";
 function sb3(ctx) {
-  return createClient3(process.env["SUPABASE_URL"], process.env["SUPABASE_PUBLISHABLE_KEY"], {
+  return createClient3(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
     global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
     auth: { persistSession: false, autoRefreshToken: false }
   });
@@ -139,8 +139,6 @@ var mcp_default = defineMcp({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated"
   }),
-  // The mcp-js ToolDefinition type marks outputSchema as required under
-  // exactOptionalPropertyTypes even though it's optional at runtime.
   tools: [search_bounties_default, search_jobs_default, list_skill_categories_default, whoami_default]
 });
 

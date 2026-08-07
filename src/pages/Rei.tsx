@@ -14,7 +14,7 @@ import { PostToRei } from '@/components/PostToRei';
 import { useToast } from '@/hooks/use-toast';
 import { Check, Twitter, Shield, AlertCircle, Info, Sparkles, Briefcase, CheckCircle2, Edit2, LogOut, UserCircle, Loader2, X as XIcon, Trash2, Gem, Share2 } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { useNavigate } from "@/lib/router-compat";
+import { useNavigate } from 'react-router-dom';
 import { ReiEarningsHub } from '@/components/ReiEarningsHub';
 import { NotificationsBellButton } from '@/components/rei/NotificationsBellButton';
 import { Progress } from '@/components/ui/progress';
@@ -438,7 +438,7 @@ export default function Rei() {
     return (
       <div className="rei-theme flex flex-col h-screen overflow-hidden" style={{ background: '#0a0a0a' }}>
         {(registrationData?.wallet_address || publicKey) && (
-          <ReiEarningsHub registrationWallet={registrationData?.wallet_address} {...(publicKey ? { connectedWallet: publicKey.toString() } : {})} {...(twitterUser?.x_user_id ? { xUserId: twitterUser.x_user_id } : {})} />
+          <ReiEarningsHub registrationWallet={registrationData?.wallet_address} connectedWallet={publicKey?.toString()} xUserId={twitterUser?.x_user_id} />
         )}
         <div className="fixed top-0 left-0 right-0 z-50" style={{ background: '#0a0a0a', borderBottom: '0.5px solid hsla(0,0%,100%,0.08)' }}>
           <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -544,7 +544,7 @@ export default function Rei() {
                   subscores={(registrationData.wallet_behaviour as any)?.subscores}
                 />
 
-                <BountyPromotions xUserId={twitterUser?.x_user_id ?? null} walletAddress={effectiveWallet || registrationData?.wallet_address} />
+                <BountyPromotions xUserId={twitterUser?.x_user_id} walletAddress={effectiveWallet || registrationData?.wallet_address} />
                 <button data-tour="edit-profile" onClick={() => setIsEditMode(true)} className="btn-manga btn-manga-outline w-full" style={{ borderRadius: '28px', padding: '11px 22px', fontSize: '13px', cursor: 'pointer' }}>Edit Profile</button>
                 <button onClick={walkthrough.replay} className="w-full" style={{ background: 'none', border: 'none', color: '#a09e9a', fontSize: '12px', textDecoration: 'underline', textUnderlineOffset: 3, cursor: 'pointer', paddingTop: 4 }}>Replay walkthrough</button>
                 <div style={{ marginTop: 24, paddingTop: 16, borderTop: '0.5px solid hsla(0,0%,100%,0.06)' }}>
@@ -575,7 +575,7 @@ export default function Rei() {
               </div>
             </div>
           )}
-          {activeTab === 'askrei' && <div className="overflow-y-auto h-full scrollbar-hide"><div className="max-w-4xl mx-auto px-4 pb-20" style={{ borderLeft: '0.5px solid hsla(0,0%,100%,0.08)', borderRight: '0.5px solid hsla(0,0%,100%,0.08)', minHeight: '100%' }}><ReiChatbot walletAddress={registrationData.wallet_address} userMode="talent" {...(twitterUser?.handle ? { twitterHandle: twitterUser.handle } : {})} /></div></div>}
+          {activeTab === 'askrei' && <div className="overflow-y-auto h-full scrollbar-hide"><div className="max-w-4xl mx-auto px-4 pb-20" style={{ borderLeft: '0.5px solid hsla(0,0%,100%,0.08)', borderRight: '0.5px solid hsla(0,0%,100%,0.08)', minHeight: '100%' }}><ReiChatbot walletAddress={registrationData.wallet_address} userMode="talent" twitterHandle={twitterUser?.handle} /></div></div>}
           {activeTab === 'post' && <div className="overflow-y-auto h-full scrollbar-hide"><div className="max-w-4xl mx-auto px-4 pb-20"><PostToRei /></div></div>}
         </div>
         <WalkthroughTour steps={tourSteps} open={walkthrough.open} onClose={walkthrough.markSeen} />

@@ -25,7 +25,7 @@ export const MessageContent = ({ content }: MessageContentProps) => {
   });
 
   // Also detect rei.chat/task/<id> URLs but keep the URL visible.
-  for (const m of content.matchAll(TASK_URL_RE)) { if (m[1]) collect(m[1]); }
+  for (const m of content.matchAll(TASK_URL_RE)) collect(m[1]);
   // Tidy: collapse stray double spaces left behind by stripped markers.
   cleanContent = cleanContent
     .replace(/[ \t]{2,}/g, " ")
@@ -35,7 +35,7 @@ export const MessageContent = ({ content }: MessageContentProps) => {
 
 
   const parseContent = (text: string) => {
-    const elements: (string | React.ReactElement)[] = [];
+    const elements: (string | JSX.Element)[] = [];
     let keyIndex = 0;
 
     const lines = text.split('\n');
@@ -51,7 +51,7 @@ export const MessageContent = ({ content }: MessageContentProps) => {
       const titleMatch = line.match(/^(\d+)\.\s+(.+)$/);
       if (titleMatch) {
         const number = titleMatch[1];
-        const titleContent = titleMatch[2] ?? '';
+        const titleContent = titleMatch[2];
         const parsedTitle = parseLine(titleContent, keyIndex);
         keyIndex += parsedTitle.keyCount;
         elements.push(
@@ -104,7 +104,7 @@ export const MessageContent = ({ content }: MessageContentProps) => {
   };
 
   const parseLine = (line: string, startKey: number) => {
-    const elements: (string | React.ReactElement)[] = [];
+    const elements: (string | JSX.Element)[] = [];
     let keyCount = 0;
 
     const combinedRegex = /(\[([^\]]+)\]\(([^)]+)\)|\*\*([^*]+)\*\*)/g;
@@ -117,8 +117,8 @@ export const MessageContent = ({ content }: MessageContentProps) => {
         elements.push(line.substring(lastIndex, match.index));
       }
 
-      const fullMatch = match[1] ?? match[0];
-
+      const fullMatch = match[1];
+      
       if (fullMatch.startsWith('[')) {
         const linkText = match[2];
         const url = match[3];

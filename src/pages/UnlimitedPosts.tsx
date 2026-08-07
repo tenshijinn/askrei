@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "@/lib/router-compat";
+import { Link } from "react-router-dom";
 import { ArrowLeft, Upload, Loader2, Check, Settings } from "lucide-react";
 import flowImage from "@/assets/unlimited-posts-flow.png.asset.json";
 import { toast } from "sonner";
@@ -89,8 +89,8 @@ export default function UnlimitedPosts() {
         const { data: { session } } = await supabase.auth.getSession();
         const claims = session?.user?.user_metadata as Record<string, unknown> | undefined;
         if (claims) {
-          if (typeof claims['x_user_id'] === "string") xUserId = claims['x_user_id'];
-          if (typeof claims['wallet_address'] === "string") walletAddress = claims['wallet_address'];
+          if (typeof claims.x_user_id === "string") xUserId = claims.x_user_id;
+          if (typeof claims.wallet_address === "string") walletAddress = claims.wallet_address;
         }
         if (xUserId && !walletAddress) {
           const { data: reg } = await supabase
@@ -212,7 +212,7 @@ export default function UnlimitedPosts() {
                     <div className="rei-surface-2 border-dashed border border-white/15 hover:border-primary/40 transition-colors rounded-xl p-5 cursor-pointer text-center">
                       {screenshotPreview ? (
                         <div className="space-y-3">
-                          <img src={screenshotPreview} alt="preview" className="max-h-32 mx-auto rounded-[4px] border border-white/10" />
+                          <img src={screenshotPreview} alt="preview" className="max-h-32 mx-auto rounded border border-white/10" />
                           <div className="text-xs text-cream/60">{screenshot?.name} — click to change</div>
                         </div>
                       ) : (

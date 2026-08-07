@@ -56,7 +56,7 @@ const parseLatestBountyAmount = (
   // Dollar / fiat, e.g. "$1,800", "$1.5K", "$2M"
   const dm = s.match(/^\$\s?([\d,]+(?:\.\d+)?)\s?([KkMm])?/);
   if (dm) {
-    let n = Number(dm[1]!.replace(/,/g, ''));
+    let n = Number(dm[1].replace(/,/g, ''));
     if (!isFinite(n)) return null;
     const suf = dm[2]?.toUpperCase();
     if (suf === 'M') n *= 1_000_000;
@@ -66,9 +66,9 @@ const parseLatestBountyAmount = (
   // Amount + token, e.g. "1 USDC", "5,000 USDG", "10 EVM", "0.5 SOL"
   const cm = s.match(/^([\d,]+(?:\.\d+)?)\s+\$?([A-Za-z][A-Za-z0-9]{1,15})/);
   if (cm) {
-    const n = Number(cm[1]!.replace(/,/g, ''));
+    const n = Number(cm[1].replace(/,/g, ''));
     if (!isFinite(n)) return null;
-    const sym = cm[2]!.toUpperCase();
+    const sym = cm[2].toUpperCase();
     const rate = USD_RANK[sym] ?? 0;
     return { display: `${formatNumber(n)} $${sym}`, usd: n * rate };
   }
@@ -104,7 +104,7 @@ const useLatestBounty = () => {
       if (cancelled || !data || data.length === 0) return;
 
       // Newest batch = rows sharing the max created_at timestamp.
-      const newest = data[0]!.created_at;
+      const newest = data[0].created_at;
       const batch = data.filter((r) => r.created_at === newest);
 
       let best: { display: string; usd: number } | null = null;
@@ -134,7 +134,7 @@ const LatestBountyCard = () => {
   }, []);
 
   return (
-    <div className="rounded-xl border-[0.5px] border-white/10 bg-[#141414]/60 backdrop-blur-xs px-5 py-3 min-w-[180px] flex flex-col justify-between">
+    <div className="rounded-xl border-[0.5px] border-white/10 bg-[#141414]/60 backdrop-blur-sm px-5 py-3 min-w-[180px] flex flex-col justify-between">
       <div>
         <p className="text-[10px] font-mono text-white/40 tracking-wider mb-1">Latest Bounty</p>
         <p className="text-2xl font-light text-white/70 tabular-nums whitespace-nowrap">{data?.amount ?? '—'}</p>
@@ -150,7 +150,7 @@ const PlatformTicker = () => {
   const [paused, setPaused] = useState(false);
   return (
     <div
-      className="rounded-xl border-[0.5px] border-white/10 bg-[#141414]/60 backdrop-blur-xs px-5 py-3 flex-1 min-w-0 overflow-hidden flex flex-col justify-start"
+      className="rounded-xl border-[0.5px] border-white/10 bg-[#141414]/60 backdrop-blur-sm px-5 py-3 flex-1 min-w-0 overflow-hidden flex flex-col justify-start"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -323,7 +323,7 @@ const MiniFrame = ({
   children: React.ReactNode;
   extra?: React.ReactNode;
 }) => (
-  <div className="rounded-xl border-[0.5px] border-white/10 p-4 bg-[#141414]/60 backdrop-blur-xs">
+  <div className="rounded-xl border-[0.5px] border-white/10 p-4 bg-[#141414]/60 backdrop-blur-sm">
     <h3 className="text-sm md:text-base font-light text-primary leading-tight mb-1">{title}</h3>
     <p className="text-[11px] md:text-xs font-mono text-primary/70 leading-relaxed">{children}</p>
     {extra && <div className="mt-2 flex flex-wrap gap-2">{extra}</div>}
@@ -620,7 +620,7 @@ const LeftPanelTrack = () => (
 
 );
 
-const LeftTrackController = ({ sectionRef }: { sectionRef: React.RefObject<HTMLDivElement | null> }) => {
+const LeftTrackController = ({ sectionRef }: { sectionRef: React.RefObject<HTMLDivElement> }) => {
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;

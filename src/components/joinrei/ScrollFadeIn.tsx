@@ -17,7 +17,7 @@ export const ScrollFadeIn = ({
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry?.isIntersecting) {
+        if (entry.isIntersecting) {
           setTimeout(() => setIsVisible(true), delay);
         }
       },

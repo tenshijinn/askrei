@@ -4,9 +4,9 @@ import { fmt } from './data';
 
 export interface ShareImageProps {
   assetSym: string;
-  assetLogoUrl?: string | undefined;
+  assetLogoUrl?: string;
   platformName: string | null; // null => buy & hold
-  platformLogoUrl?: string | undefined;
+  platformLogoUrl?: string;
   invested: number;
   finalVal: number;
   windowLabel: string;
@@ -25,7 +25,7 @@ const MUTED2 = '#5f574f';
 const CREAM = '#eddccb';
 const GREEN = '#7fe0a3';
 const RED = '#ed565a';
-const PROXY = `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1/img-proxy?u=`;
+const PROXY = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/img-proxy?u=`;
 /** Remote logos must be CORS-readable for html-to-image; route them via our proxy. */
 const cors = (u?: string) => (u && /^https?:\/\//i.test(u) ? `${PROXY}${encodeURIComponent(u)}` : u);
 

@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { ScrollFadeIn } from '../joinrei/ScrollFadeIn';
 import { Copy, Check } from 'lucide-react';
 
-const SUPABASE_URL = import.meta.env["VITE_SUPABASE_URL"];
-const ANON = import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"];
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const ANON = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 const samples: Record<string, string> = {
   curl: `curl -s "${SUPABASE_URL}/functions/v1/public-feed/feed?limit=10" \\
@@ -41,7 +41,7 @@ export const AgentsCodeDemo = () => {
   const [copied, setCopied] = useState(false);
 
   const copy = () => {
-    navigator.clipboard.writeText(samples[tab] ?? '');
+    navigator.clipboard.writeText(samples[tab]);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };

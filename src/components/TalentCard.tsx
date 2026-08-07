@@ -46,7 +46,7 @@ const TalentCard = ({ xUserId, handle, displayName, profileImageUrl, roleTags, p
         <div className="flex items-start gap-4">
           <Avatar className="h-16 w-16">
             <AvatarImage src={profileImageUrl} alt={displayName || handle} />
-            <AvatarFallback>{(displayName || handle || '?').charAt(0).toUpperCase()}</AvatarFallback>
+            <AvatarFallback>{(displayName || handle || '?')[0].toUpperCase()}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2 flex-wrap">

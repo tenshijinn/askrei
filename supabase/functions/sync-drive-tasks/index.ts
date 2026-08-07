@@ -5,7 +5,6 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { z } from "https://esm.sh/zod@3.23.8";
-import { withOpsHttpJob } from "../_shared/ops.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -165,7 +164,7 @@ function mapBounty(b: Bounty) {
   };
 }
 
-Deno.serve(withOpsHttpJob("sync-drive-tasks", async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -367,4 +366,4 @@ Deno.serve(withOpsHttpJob("sync-drive-tasks", async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-}));
+});

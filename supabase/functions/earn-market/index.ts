@@ -1,5 +1,4 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
-import { logOpsEvent } from '../_shared/ops.ts';
 
 // earn-market: proxy + persistent cache for the /earn bounty->DeFi backtest card.
 // actions:
@@ -457,14 +456,6 @@ Deno.serve(async (req) => {
         windowDays: 30,
         syncedAt: new Date().toISOString(),
       };
-      // Scheduled daily sample — record it for the monitoring dashboard.
-      await logOpsEvent({
-        kind: 'job',
-        source: 'sample-nlo-yield',
-        status: apr === null ? 'failure' : 'success',
-        message: apr === null ? 'No NLO yield samples available' : undefined,
-        detail: { apr, samples: samples.length },
-      });
       return json(memPut('nlo', payload));
     }
 

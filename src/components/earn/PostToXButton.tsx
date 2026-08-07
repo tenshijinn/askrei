@@ -5,11 +5,11 @@ import { toast } from 'sonner';
 const CHARS = '01#$%&*<>/\\|=+ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const LABEL = 'Post to X';
 
-const SHARE_FN = `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1/earn-share`;
+const SHARE_FN = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/earn-share`;
 const SHARE_HEADERS = {
   'Content-Type': 'application/json',
-  apikey: import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] as string,
-  Authorization: `Bearer ${import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"]}`,
+  apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string,
+  Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
 };
 
 export interface ShareState {
@@ -25,7 +25,7 @@ export interface ShareState {
 
 interface Props {
   /** element to snapshot into the share image */
-  targetRef: React.RefObject<HTMLElement | null>;
+  targetRef: React.RefObject<HTMLElement>;
   /** tweet body text */
   buildText: () => string;
   /** card state persisted with the share link */

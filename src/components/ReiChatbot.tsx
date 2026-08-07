@@ -153,7 +153,7 @@ const ReiChatbot = ({ walletAddress, userMode, twitterHandle }: ReiChatbotProps)
     const intervals: NodeJS.Timeout[] = [];
     const newMessageIndex = messages.length - 1;
     const newMessage = messages[newMessageIndex];
-    if (newMessage && newMessage.role === "assistant" && !displayedContent[newMessageIndex]) {
+    if (newMessage.role === "assistant" && !displayedContent[newMessageIndex]) {
       const content = newMessage.content; let currentIndex = 0;
       const intervalId = setInterval(() => { if (currentIndex <= content.length) { setDisplayedContent((prev) => ({ ...prev, [newMessageIndex]: content.substring(0, currentIndex) })); currentIndex++; } else { clearInterval(intervalId); } }, 15);
       intervals.push(intervalId);
@@ -223,7 +223,7 @@ const ReiChatbot = ({ walletAddress, userMode, twitterHandle }: ReiChatbotProps)
       <div className="log-area flex-1 overflow-y-auto pb-20 scrollbar-hide">
         {messages.length === 0 && (
           <>
-            <div className="chat-line"><span className="chat-ts">{"\u005B--:--:--]"}</span><span className="chat-handle handle-sys">* system</span><span className="chat-msg msg-sys">session started. select a command or type a message.</span></div>
+            <div className="chat-line"><span className="chat-ts">[--:--:--]</span><span className="chat-handle handle-sys">* system</span><span className="chat-msg msg-sys">session started. select a command or type a message.</span></div>
             <div className="line-gap" /><div className="term-divider" /><div className="line-gap" />
             <div data-tour="askrei-presets" className="flex flex-wrap gap-2 px-2">{getWelcomePresets(userMode).map((preset, idx) => <PresetButton key={idx} text={preset} onClick={() => handlePresetSelect(preset)} />)}</div>
           </>

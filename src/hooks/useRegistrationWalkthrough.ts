@@ -15,17 +15,16 @@ export function useRegistrationWalkthrough(
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (!enabled) return undefined;
+    if (!enabled) return;
     const k = keyFor(userId);
-    if (!k) return undefined;
-    if (typeof window === 'undefined') return undefined;
+    if (!k) return;
+    if (typeof window === 'undefined') return;
     try {
       if (!localStorage.getItem(k)) {
         const t = setTimeout(() => setOpen(true), 800);
         return () => clearTimeout(t);
       }
     } catch {}
-    return undefined;
   }, [userId, enabled]);
 
   const markSeen = useCallback(() => {

@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "@/lib/router-compat";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 // Same-origin relative path validator so `next` cannot redirect off-site.
@@ -12,8 +12,7 @@ function safeNext(raw: string | null): string {
 export default function Login() {
   const [params] = useSearchParams();
   const next = useMemo(() => safeNext(params.get("next")), [params]);
-  // Resolved on demand: `window` does not exist during server rendering.
-  const getReturnUrl = useCallback(() => window.location.origin + next, [next]);
+  const returnUrl = window.location.origin + next;
 
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -24,9 +23,9 @@ export default function Login() {
   // If already signed in, hop straight to the redirect target (usually the consent URL).
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) window.location.href = getReturnUrl();
+      if (data.session) window.location.href = returnUrl;
     });
-  }, [getReturnUrl]);
+  }, [returnUrl]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -37,20 +36,20 @@ export default function Login() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: getReturnUrl() },
+          options: { emailRedirectTo: returnUrl },
         });
         if (error) throw error;
         // With auto_confirm_email on, a session is set immediately.
         const { data } = await supabase.auth.getSession();
         if (data.session) {
-          window.location.href = getReturnUrl();
+          window.location.href = returnUrl;
           return;
         }
         setMsg("Check your email to confirm your account, then return here.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        window.location.href = getReturnUrl();
+        window.location.href = returnUrl;
       }
     } catch (err) {
       setMsg((err as Error).message);
@@ -78,7 +77,7 @@ export default function Login() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg bg-black/40 border border-white/10 px-3 py-2 text-sm outline-hidden focus:border-primary/60"
+            className="w-full rounded-lg bg-black/40 border border-white/10 px-3 py-2 text-sm outline-none focus:border-primary/60"
           />
         </div>
         <div className="space-y-2">
@@ -89,7 +88,7 @@ export default function Login() {
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg bg-black/40 border border-white/10 px-3 py-2 text-sm outline-hidden focus:border-primary/60"
+            className="w-full rounded-lg bg-black/40 border border-white/10 px-3 py-2 text-sm outline-none focus:border-primary/60"
           />
         </div>
         {msg && <p className="text-xs text-cream/70">{msg}</p>}

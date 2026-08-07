@@ -6,7 +6,7 @@ import whoami from "./tools/whoami";
 
 // Build issuer from the project ref so it survives publish and matches the
 // direct Supabase auth issuer that discovery advertises.
-const projectRef = import.meta.env["VITE_SUPABASE_PROJECT_ID"] ?? "project-ref-unset";
+const projectRef = import.meta.env.VITE_SUPABASE_PROJECT_ID ?? "project-ref-unset";
 
 export default defineMcp({
   name: "rei-chat-mcp",
@@ -18,9 +18,5 @@ export default defineMcp({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated",
   }),
-  // The mcp-js ToolDefinition type marks outputSchema as required under
-  // exactOptionalPropertyTypes even though it's optional at runtime.
-  tools: [searchBounties, searchJobs, listSkillCategories, whoami] as unknown as Parameters<
-    typeof defineMcp
-  >[0]["tools"],
+  tools: [searchBounties, searchJobs, listSkillCategories, whoami],
 });

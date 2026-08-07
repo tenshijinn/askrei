@@ -100,5 +100,5 @@ export const getPresetsForMode = (mode: 'talent' | 'employer'): PresetCategory[]
 
 export const getWelcomePresets = (mode: 'talent' | 'employer'): string[] => {
   const presets = getPresetsForMode(mode);
-  return presets.map(category => category.prompts[0] ?? '');
+  return presets.map(category => category.prompts[0]);
 };

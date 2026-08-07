@@ -103,11 +103,11 @@ export const tokenColor = (sym?: string) =>
 
 // Top SVM tokens (seed list). `data` = embedded series; the rest load live.
 export const SEED_TOKENS: TokenRow[] = [
-  { sym: 'SOL', name: 'Solana', data: 'SOL', logo: ASSET_LOGO_URL['SOL']! },
-  { sym: 'wBTC', name: 'Bitcoin (Wormhole)', data: 'BTC', logo: ASSET_LOGO_URL['BTC']! },
-  { sym: 'wETH', name: 'Ethereum (Wormhole)', data: 'ETH', logo: ASSET_LOGO_URL['ETH']! },
-  { sym: 'USDC', name: 'USD Coin', data: 'USDC', logo: ASSET_LOGO_URL['USDC']! },
-  { sym: 'USDT', name: 'Tether', data: 'USDT', logo: ASSET_LOGO_URL['USDT']! },
+  { sym: 'SOL', name: 'Solana', data: 'SOL', logo: ASSET_LOGO_URL.SOL },
+  { sym: 'wBTC', name: 'Bitcoin (Wormhole)', data: 'BTC', logo: ASSET_LOGO_URL.BTC },
+  { sym: 'wETH', name: 'Ethereum (Wormhole)', data: 'ETH', logo: ASSET_LOGO_URL.ETH },
+  { sym: 'USDC', name: 'USD Coin', data: 'USDC', logo: ASSET_LOGO_URL.USDC },
+  { sym: 'USDT', name: 'Tether', data: 'USDT', logo: ASSET_LOGO_URL.USDT },
   { sym: 'JUP', name: 'Jupiter' }, { sym: 'JTO', name: 'Jito' }, { sym: 'BONK', name: 'Bonk' }, { sym: 'WIF', name: 'dogwifhat' },
   { sym: 'PYTH', name: 'Pyth Network' }, { sym: 'RAY', name: 'Raydium' }, { sym: 'JLP', name: 'Jupiter LP' },
   { sym: 'RENDER', name: 'Render' }, { sym: 'HNT', name: 'Helium' }, { sym: 'W', name: 'Wormhole' }, { sym: 'PYUSD', name: 'PayPal USD' },
@@ -127,11 +127,9 @@ export const SEED_TOKENS: TokenRow[] = [
 export function smoothPath(p: [number, number][]): string {
   if (!p.length) return '';
   if (p.length < 3) return 'M' + p.map((q) => q[0].toFixed(1) + ',' + q[1].toFixed(1)).join(' L');
-  let d = 'M' + p[0]![0].toFixed(1) + ',' + p[0]![1].toFixed(1);
+  let d = 'M' + p[0][0].toFixed(1) + ',' + p[0][1].toFixed(1);
   for (let i = 0; i < p.length - 1; i++) {
-    // loop bounds guarantee p[i] and p[i+1] exist; edges fall back to neighbours
-    const p1 = p[i]!, p2 = p[i + 1]!;
-    const p0 = p[i - 1] ?? p1, p3 = p[i + 2] ?? p2;
+    const p0 = p[i - 1] || p[i], p1 = p[i], p2 = p[i + 1], p3 = p[i + 2] || p2;
     const c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6;
     const c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
     d += ' C' + c1x.toFixed(1) + ',' + c1y.toFixed(1) + ' ' + c2x.toFixed(1) + ',' + c2y.toFixed(1) + ' ' + p2[0].toFixed(1) + ',' + p2[1].toFixed(1);
@@ -143,10 +141,10 @@ export function smoothPath(p: [number, number][]): string {
 export function resolveWindow(periodVal: string, a: AssetSeries): [number, number] {
   const L = a.prices.length, tge = 0;
   if (periodVal === 'cycle') {
-    let bi = tge, mn = a.prices[tge] ?? 0;
-    for (let i = tge; i < L; i++) { const v = a.prices[i]!; if (v < mn) { mn = v; bi = i; } }
-    let ti = bi, mx = a.prices[bi] ?? 0;
-    for (let i = bi; i < L; i++) { const v = a.prices[i]!; if (v > mx) { mx = v; ti = i; } }
+    let bi = tge, mn = a.prices[tge];
+    for (let i = tge; i < L; i++) { if (a.prices[i] < mn) { mn = a.prices[i]; bi = i; } }
+    let ti = bi, mx = a.prices[bi];
+    for (let i = bi; i < L; i++) { if (a.prices[i] > mx) { mx = a.prices[i]; ti = i; } }
     if (ti <= bi) { bi = tge; ti = L - 1; }   // flat (e.g. stablecoin): full range
     return [bi, ti];
   }
@@ -161,9 +159,8 @@ export function computeSeries(a: AssetSeries, apyPct: number, startIdx: number, 
   const value: number[] = [], contrib: number[] = [];
   for (let i = 0; i < n; i++) {
     const gi = startIdx + i;
-    const price = a.prices[gi] ?? a.current;
-    qty = (qty + monthlyContribution / price) * (1 + r);
-    const mark = (gi === a.prices.length - 1) ? a.current : (a.prices[gi] ?? a.current);  // latest month at current price
+    qty = (qty + monthlyContribution / a.prices[gi]) * (1 + r);
+    const mark = (gi === a.prices.length - 1) ? a.current : a.prices[gi];  // latest month at current price
     value.push(qty * mark);
     contrib.push(monthlyContribution * (i + 1));
   }
