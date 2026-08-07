@@ -29,7 +29,8 @@ export type OpsEvent = {
   source: string;
   status: string;
   message: string | null;
-  detail: Record<string, unknown> | null;
+  // Kept to JSON scalars so the payload stays serializable across the RPC boundary.
+  detail: Record<string, string | number | boolean | null> | null;
   duration_ms: number | null;
   created_at: string;
 };
