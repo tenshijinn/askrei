@@ -10,6 +10,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { fetchSolPriceUsd } from "../_shared/sol-price.ts";
+import { withOpsHttpJob } from "../_shared/ops.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -91,7 +92,7 @@ async function priceFor(symbol: string, cache: Map<string, number>): Promise<{ p
   return null;
 }
 
-Deno.serve(async (req) => {
+Deno.serve(withOpsHttpJob("price-bounties", async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   const supabase = createClient(
@@ -164,4 +165,4 @@ Deno.serve(async (req) => {
     priced, skipped,
     total_bounties: totalBounties, total_value_usd: totalValueUsd, priced_count: pricedCount,
   }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-});
+}));

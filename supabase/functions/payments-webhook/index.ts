@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { createStripeClient, getWebhookSecret, type StripeEnv } from "../_shared/stripe.ts";
+import { logOpsEvent } from "../_shared/ops.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -15,12 +16,20 @@ const supabase = createClient(
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
+  const startedAt = Date.now();
   const url = new URL(req.url);
   const envParam = url.searchParams.get("env");
   const env: StripeEnv = envParam === "live" ? "live" : "sandbox";
 
   const signature = req.headers.get("stripe-signature");
   if (!signature) {
+    await logOpsEvent({
+      kind: "webhook",
+      source: "payments-webhook",
+      status: "failure",
+      message: "Missing stripe-signature header",
+      detail: { env },
+    });
     return new Response("Missing stripe-signature header", { status: 400 });
   }
 
@@ -31,6 +40,14 @@ Deno.serve(async (req) => {
     event = await stripe.webhooks.constructEventAsync(body, signature, getWebhookSecret(env));
   } catch (err) {
     console.error("Webhook signature verification failed:", err);
+    await logOpsEvent({
+      kind: "webhook",
+      source: "payments-webhook",
+      status: "failure",
+      message: `Signature verification failed: ${err instanceof Error ? err.message : "unknown"}`,
+      detail: { env, stage: "verify" },
+      durationMs: Date.now() - startedAt,
+    });
     return new Response(`Webhook Error: ${err instanceof Error ? err.message : "unknown"}`, {
       status: 400,
     });
@@ -55,22 +72,47 @@ Deno.serve(async (req) => {
         break;
       case "invoice.payment_failed":
         console.log("Invoice payment failed:", event.data.object.id);
+        await logOpsEvent({
+          kind: "webhook",
+          source: "payments-webhook",
+          status: "warning",
+          message: `Invoice payment failed: ${event.data.object.id}`,
+          detail: { env, eventType: event.type, eventId: event.id },
+        });
         break;
       default:
         console.log("Unhandled event:", event.type);
     }
   } catch (err) {
     console.error("Webhook handler error:", err);
+    await logOpsEvent({
+      kind: "webhook",
+      source: "payments-webhook",
+      status: "failure",
+      message: `Handler error: ${err instanceof Error ? err.message : "unknown"}`,
+      detail: { env, eventType: event.type, eventId: event.id, stage: "handler" },
+      durationMs: Date.now() - startedAt,
+    });
     return new Response(`Handler error: ${err instanceof Error ? err.message : "unknown"}`, {
       status: 500,
     });
   }
+
+  await logOpsEvent({
+    kind: "webhook",
+    source: "payments-webhook",
+    status: "success",
+    message: event.type,
+    detail: { env, eventType: event.type, eventId: event.id },
+    durationMs: Date.now() - startedAt,
+  });
 
   return new Response(JSON.stringify({ received: true }), {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
     status: 200,
   });
 });
+
 
 async function handleCheckoutCompleted(session: any, env: StripeEnv) {
   const subscriptionId: string | null = session.subscription;

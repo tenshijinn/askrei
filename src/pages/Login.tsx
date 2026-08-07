@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -12,7 +12,8 @@ function safeNext(raw: string | null): string {
 export default function Login() {
   const [params] = useSearchParams();
   const next = useMemo(() => safeNext(params.get("next")), [params]);
-  const returnUrl = window.location.origin + next;
+  // Resolved on demand: `window` does not exist during server rendering.
+  const getReturnUrl = useCallback(() => window.location.origin + next, [next]);
 
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -23,9 +24,9 @@ export default function Login() {
   // If already signed in, hop straight to the redirect target (usually the consent URL).
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) window.location.href = returnUrl;
+      if (data.session) window.location.href = getReturnUrl();
     });
-  }, [returnUrl]);
+  }, [getReturnUrl]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -36,20 +37,20 @@ export default function Login() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: returnUrl },
+          options: { emailRedirectTo: getReturnUrl() },
         });
         if (error) throw error;
         // With auto_confirm_email on, a session is set immediately.
         const { data } = await supabase.auth.getSession();
         if (data.session) {
-          window.location.href = returnUrl;
+          window.location.href = getReturnUrl();
           return;
         }
         setMsg("Check your email to confirm your account, then return here.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        window.location.href = returnUrl;
+        window.location.href = getReturnUrl();
       }
     } catch (err) {
       setMsg((err as Error).message);

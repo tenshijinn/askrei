@@ -1,5 +1,11 @@
 import { useRef, useState } from 'react';
-import Lottie, { LottieRefCurrentProps } from 'lottie-react';
+import LottieImport, { type LottieRefCurrentProps } from 'lottie-react';
+
+// lottie-react ships CJS; under the current bundler the default import can land
+// on the module namespace object instead of the component.
+const Lottie = ((LottieImport as unknown as { default?: typeof LottieImport })
+  .default ?? LottieImport) as typeof LottieImport;
+
 import caret from '@/assets/lottie/caret.json';
 import scanline from '@/assets/lottie/scanline.json';
 import loader from '@/assets/lottie/loader-dots.json';
