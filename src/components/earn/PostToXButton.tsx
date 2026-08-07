@@ -1,16 +1,6 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
 import { toast } from 'sonner';
-
-const CHARS = '01#$%&*<>/\\|=+ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const LABEL = 'Post to X';
-
-const SHARE_FN = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/earn-share`;
-const SHARE_HEADERS = {
-  'Content-Type': 'application/json',
-  apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string,
-  Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-};
 
 export interface ShareState {
   assetSym: string;
@@ -28,68 +18,38 @@ interface Props {
   targetRef: React.RefObject<HTMLElement>;
   /** tweet body text */
   buildText: () => string;
-  /** card state persisted with the share link */
-  buildState: () => ShareState;
+  /** card state (unused by the dropdown flow, kept for callers) */
+  buildState?: () => ShareState;
 }
 
-export default function PostToXButton({ targetRef, buildText, buildState }: Props) {
-  const [text, setText] = useState(LABEL);
-  const [busy, setBusy] = useState(false);
-  const timer = useRef<number | null>(null);
+export default function PostToXButton({ targetRef, buildText }: Props) {
+  const [open, setOpen] = useState(false);
+  const [img, setImg] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
 
-  const scramble = () => {
-    if (timer.current) window.clearInterval(timer.current);
-    let frame = 0;
-    timer.current = window.setInterval(() => {
-      frame += 1;
-      setText(
-        LABEL.split('')
-          .map((c, i) => {
-            if (c === ' ') return ' ';
-            if (i < frame / 2) return LABEL[i];
-            return CHARS[Math.floor(Math.random() * CHARS.length)];
-          })
-          .join(''),
-      );
-      if (frame / 2 >= LABEL.length) {
-        window.clearInterval(timer.current!);
-        timer.current = null;
-        setText(LABEL);
-      }
-    }, 35);
-  };
-
-  const stop = () => {
-    if (timer.current) window.clearInterval(timer.current);
-    timer.current = null;
-    setText(LABEL);
-  };
+  const loading = open && !img && !failed;
 
   const renderPng = async (): Promise<string | null> => {
     const node = targetRef.current;
     if (!node) return null;
     try {
       if (document.fonts?.ready) await document.fonts.ready;
-
-      // wait for every image in the card, then drop any that failed so a single
-      // broken logo can't abort the whole capture
       const imgs = Array.from(node.querySelectorAll('img'));
       await Promise.all(
         imgs.map(
-          (img) =>
+          (i) =>
             new Promise<void>((resolve) => {
-              if (img.complete) return resolve();
-              img.addEventListener('load', () => resolve(), { once: true });
-              img.addEventListener('error', () => resolve(), { once: true });
+              if (i.complete) return resolve();
+              i.addEventListener('load', () => resolve(), { once: true });
+              i.addEventListener('error', () => resolve(), { once: true });
               window.setTimeout(resolve, 4000);
             }),
         ),
       );
       const filter = (n: HTMLElement) =>
         !(n instanceof HTMLImageElement && n.complete && n.naturalWidth === 0);
-
       const opts = { backgroundColor: '#0b0a09', filter } as const;
-      // first pass warms the clone's images/fonts
       await toPng(node, { ...opts, pixelRatio: 1 });
       return await toPng(node, { ...opts, pixelRatio: 1.5 });
     } catch (err) {
@@ -98,107 +58,117 @@ export default function PostToXButton({ targetRef, buildText, buildState }: Prop
     }
   };
 
-
-  const handleClick = async () => {
-    if (busy) return;
-    setBusy(true);
-    const body = buildText();
-
-    // Open the tab up-front: popup blockers reject window.open once the click
-    // gesture has been consumed by awaits.
-    const nav = navigator as Navigator & {
-      canShare?: (data: ShareData & { files?: File[] }) => boolean;
+  // render (or re-render) whenever the panel opens
+  useEffect(() => {
+    if (!open) return;
+    let alive = true;
+    setImg(null);
+    setFailed(false);
+    (async () => {
+      const url = await renderPng();
+      if (!alive) return;
+      if (url) setImg(url);
+      else setFailed(true);
+    })();
+    return () => {
+      alive = false;
     };
-    const canNativeShare = typeof nav.share === 'function';
-    const tab = canNativeShare ? null : window.open('', '_blank');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
-    const dataUrl = await renderPng();
+  // close on outside click / escape
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
 
-    // Save the state + rendered image so the share link can serve an OG card.
-    let shareUrl: string | null = null;
+  const copy = async () => {
+    if (!img) return;
     try {
-      const res = await fetch(SHARE_FN, {
-        method: 'POST',
-        headers: SHARE_HEADERS,
-        body: JSON.stringify({ ...buildState(), image: dataUrl ?? undefined }),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        if (typeof json?.url === 'string') shareUrl = json.url;
-      } else {
-        console.error('earn-share failed', res.status, await res.text());
-      }
-    } catch (err) {
-      console.error('earn-share error', err);
+      const blob = await (await fetch(img)).blob();
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+      toast('Card image copied — paste it into the tweet (⌘V)');
+    } catch {
+      toast.error('Clipboard images not supported here — use Download');
     }
-
-    // Mobile: native share sheet attaches the real image file alongside the text.
-    if (canNativeShare) {
-      try {
-        if (dataUrl) {
-          const blob = await (await fetch(dataUrl)).blob();
-          const file = new File([blob], 'rei-bounty-earnings.png', { type: 'image/png' });
-          if (nav.canShare?.({ files: [file] })) {
-            await nav.share({
-              files: [file],
-              text: shareUrl ? `${body}\n\n${shareUrl}` : body,
-            });
-            setBusy(false);
-            return;
-          }
-        }
-      } catch (err) {
-        if ((err as DOMException)?.name === 'AbortError') {
-          setBusy(false);
-          return;
-        }
-        /* fall through to the intent link */
-      }
-    }
-
-    // Desktop: copy the PNG so it can be pasted straight into the composer.
-    let copied = false;
-    if (dataUrl) {
-      try {
-        const blob = await (await fetch(dataUrl)).blob();
-        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-        copied = true;
-      } catch {
-        /* clipboard images unsupported — the link card still carries the image */
-      }
-    }
-    toast(
-      copied
-        ? 'Card image copied — paste it into the tweet (⌘V)'
-        : 'Tweet opened — the link unfurls your card',
-    );
-
-    setBusy(false);
-    const params = new URLSearchParams({ text: body });
-    if (shareUrl) params.set('url', shareUrl);
-    const intent = `https://twitter.com/intent/tweet?${params.toString()}`;
-    if (tab) tab.location.replace(intent);
-    else window.open(intent, '_blank', 'noopener,noreferrer');
   };
 
+  const download = () => {
+    if (!img) return;
+    const a = document.createElement('a');
+    a.href = img;
+    a.download = 'rei-bounty-earnings.png';
+    a.click();
+    toast('Card image saved');
+  };
+
+  const post = () => {
+    const intent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(buildText())}`;
+    window.open(intent, '_blank', 'noopener,noreferrer');
+  };
 
   return (
-    <button
-      type="button"
-      className="post-x"
-      onMouseEnter={scramble}
-      onMouseLeave={stop}
-      onClick={handleClick}
-      disabled={busy}
-      aria-label="Post this backtest to X"
-    >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path
-          fill="currentColor"
-          d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
-        />
-      </svg>
-      <span>{busy ? 'Rendering…' : text}</span>
-    </button>
+    <div className="post-x-wrap" ref={wrapRef}>
+      <button
+        type="button"
+        className="post-x"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-label="Share this backtest to X"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+          />
+        </svg>
+        <span>Share to X</span>
+      </button>
+
+      {open && (
+        <div className="post-x-pop" role="dialog" aria-label="Share card">
+          <div className="post-x-preview">
+            {img ? (
+              <img src={img} alt="Share card preview" />
+            ) : failed ? (
+              <div className="post-x-load">Couldn't render the card</div>
+            ) : (
+              <div className="post-x-load">
+                <div className="post-x-bar"><i /></div>
+                <span>Loading your share card</span>
+              </div>
+            )}
+          </div>
+
+          <div className="post-x-acts">
+            <button type="button" className="post-x-act" onClick={copy} disabled={!img}>
+              {loading ? 'Loading' : 'Copy'}
+            </button>
+            <button type="button" className="post-x-act" onClick={download} disabled={!img}>
+              {loading ? 'Loading' : 'Download'}
+            </button>
+            <button
+              type="button"
+              className="post-x-act post-x-act-primary"
+              onClick={post}
+              disabled={loading}
+            >
+              {loading ? 'Loading' : 'Post to X'}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
