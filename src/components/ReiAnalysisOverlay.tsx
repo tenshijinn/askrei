@@ -55,8 +55,8 @@ export const ReiAnalysisOverlay: React.FC<Props> = ({ stage, uploadPercent = 0, 
           (stage === 'uploading' ? Math.min(25, (uploadPercent / 100) * 25) : activeIdx >= 0 ? 12 : 0),
       );
 
-  const pool = stage in THINKING_LINES ? THINKING_LINES[stage as keyof typeof THINKING_LINES] : [];
-  const thinkingLine = pool.length ? pool[thinkingIdx % pool.length] : '';
+  const pool = (stage in THINKING_LINES ? THINKING_LINES[stage as keyof typeof THINKING_LINES] : []) ?? [];
+  const thinkingLine = pool.length ? pool[thinkingIdx % pool.length] ?? '' : '';
 
   return (
     <div
