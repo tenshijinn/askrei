@@ -12,11 +12,8 @@ function safeNext(raw: string | null): string {
 export default function Login() {
   const [params] = useSearchParams();
   const next = useMemo(() => safeNext(params.get("next")), [params]);
-  // Computed lazily: `window` does not exist during server rendering.
-  const returnUrl = useMemo(
-    () => (typeof window === "undefined" ? next : window.location.origin + next),
-    [next],
-  );
+  // Resolved on demand: `window` does not exist during server rendering.
+  const getReturnUrl = useCallback(() => window.location.origin + next, [next]);
 
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
