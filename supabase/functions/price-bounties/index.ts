@@ -165,4 +165,4 @@ Deno.serve(withOpsHttpJob("price-bounties", async (req) => {
     priced, skipped,
     total_bounties: totalBounties, total_value_usd: totalValueUsd, priced_count: pricedCount,
   }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
-});
+}));
