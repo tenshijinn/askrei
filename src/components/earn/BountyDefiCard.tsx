@@ -296,7 +296,7 @@ export default function BountyDefiCard() {
         {/* header */}
         <div className="head">
           <div className="brand">
-            {!isTokens && (
+            {!isTokens && platformLogo && (
               <>
                 <div className="logo" style={{ background: '#0e0b09' }}>
                   <img src={platformLogo.url} alt={platform} />
