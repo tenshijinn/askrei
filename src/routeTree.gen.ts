@@ -19,6 +19,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ReiRouteImport } from './routes/rei'
 import { Route as V1RouteImport } from './routes/v1'
 import { Route as AdminMockupsRouteImport } from './routes/admin/mockups'
+import { Route as AdminOpsRouteImport } from './routes/admin/ops'
 import { Route as CCodeRouteImport } from './routes/c/$code'
 import { Route as RCodeRouteImport } from './routes/r/$code'
 import { Route as SShareIdRouteImport } from './routes/s/$shareId'
@@ -76,6 +77,11 @@ const AdminMockupsRoute = AdminMockupsRouteImport.update({
   path: '/admin/mockups',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminOpsRoute = AdminOpsRouteImport.update({
+  id: '/admin/ops',
+  path: '/admin/ops',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CCodeRoute = CCodeRouteImport.update({
   id: '/c/$code',
   path: '/c/$code',
@@ -118,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/rei': typeof ReiRoute
   '/v1': typeof V1Route
   '/admin/mockups': typeof AdminMockupsRoute
+  '/admin/ops': typeof AdminOpsRoute
   '/c/$code': typeof CCodeRoute
   '/r/$code': typeof RCodeRoute
   '/s/$shareId': typeof SShareIdRoute
@@ -136,6 +143,7 @@ export interface FileRoutesByTo {
   '/rei': typeof ReiRoute
   '/v1': typeof V1Route
   '/admin/mockups': typeof AdminMockupsRoute
+  '/admin/ops': typeof AdminOpsRoute
   '/c/$code': typeof CCodeRoute
   '/r/$code': typeof RCodeRoute
   '/s/$shareId': typeof SShareIdRoute
@@ -155,6 +163,7 @@ export interface FileRoutesById {
   '/rei': typeof ReiRoute
   '/v1': typeof V1Route
   '/admin/mockups': typeof AdminMockupsRoute
+  '/admin/ops': typeof AdminOpsRoute
   '/c/$code': typeof CCodeRoute
   '/r/$code': typeof RCodeRoute
   '/s/$shareId': typeof SShareIdRoute
@@ -175,6 +184,7 @@ export interface FileRouteTypes {
     | '/rei'
     | '/v1'
     | '/admin/mockups'
+    | '/admin/ops'
     | '/c/$code'
     | '/r/$code'
     | '/s/$shareId'
@@ -193,6 +203,7 @@ export interface FileRouteTypes {
     | '/rei'
     | '/v1'
     | '/admin/mockups'
+    | '/admin/ops'
     | '/c/$code'
     | '/r/$code'
     | '/s/$shareId'
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
     | '/rei'
     | '/v1'
     | '/admin/mockups'
+    | '/admin/ops'
     | '/c/$code'
     | '/r/$code'
     | '/s/$shareId'
@@ -230,6 +242,7 @@ export interface RootRouteChildren {
   ReiRoute: typeof ReiRoute
   V1Route: typeof V1Route
   AdminMockupsRoute: typeof AdminMockupsRoute
+  AdminOpsRoute: typeof AdminOpsRoute
   CCodeRoute: typeof CCodeRoute
   RCodeRoute: typeof RCodeRoute
   SShareIdRoute: typeof SShareIdRoute
@@ -310,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMockupsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/ops': {
+      id: '/admin/ops'
+      path: '/admin/ops'
+      fullPath: '/admin/ops'
+      preLoaderRoute: typeof AdminOpsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/c/$code': {
       id: '/c/$code'
       path: '/c/$code'
@@ -366,6 +386,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReiRoute: ReiRoute,
   V1Route: V1Route,
   AdminMockupsRoute: AdminMockupsRoute,
+  AdminOpsRoute: AdminOpsRoute,
   CCodeRoute: CCodeRoute,
   RCodeRoute: RCodeRoute,
   SShareIdRoute: SShareIdRoute,
