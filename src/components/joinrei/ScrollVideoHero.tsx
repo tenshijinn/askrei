@@ -620,7 +620,7 @@ const LeftPanelTrack = () => (
 
 );
 
-const LeftTrackController = ({ sectionRef }: { sectionRef: React.RefObject<HTMLDivElement> }) => {
+const LeftTrackController = ({ sectionRef }: { sectionRef: React.RefObject<HTMLDivElement | null> }) => {
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
