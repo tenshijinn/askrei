@@ -25,7 +25,9 @@ Every share gets a fresh id, so URLs are immutable and X can never serve a stale
 
 ## Tweet copy
 
-Unchanged framing: Rei finds/discovers bounties, never "earn on Rei". Text stays the current 4-step body; the appended link becomes the static share page.
+The tweet text stays exactly as it is today — no wording changes. Only the appended link changes, to the static share page.
+
+The card's title/description meta tags (crawler-only, not visible in the tweet body) are derived from the result:
 
 - `twitter:title`: `$<final value> from crypto bounties · Rei`
 - `twitter:description`: `Bounty DCA backtest: $<ASSET> on <platform> · <window>. Find 1,000+ bounties on Rei.`
