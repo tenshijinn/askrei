@@ -50,4 +50,4 @@ Deno.serve(withOpsHttpJob("refresh-active-campaigns", async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-});
+}));
