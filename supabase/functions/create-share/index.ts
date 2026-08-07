@@ -48,6 +48,7 @@ function page(title: string, desc: string, image: string, redirectUrl: string) {
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+  if (req.method === 'GET') return new Response('<!doctype html><html><head><meta name="twitter:card" content="summary_large_image"></head><body>hi</body></html>', { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
   if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
 
   try {
