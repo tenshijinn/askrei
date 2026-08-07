@@ -88,7 +88,7 @@ export default function BountyDefiCard() {
         if (s.platform && s.platform in PLATFORMS) {
           setMode('DeFi');
           setPlatform(s.platform);
-          if (s.assetSym && PLATFORMS[s.platform].assets.includes(s.assetSym)) setAsset(s.assetSym);
+          if (s.assetSym && PLATFORMS[s.platform]?.assets.includes(s.assetSym)) setAsset(s.assetSym);
         } else if (s.assetSym) {
           setMode('Tokens');
           setSelectedToken(s.assetSym);
@@ -138,13 +138,15 @@ export default function BountyDefiCard() {
   }, []);
 
   // keep asset valid for the selected platform
-  const platformAssets = PLATFORMS[platform].assets;
+  const platformCfg = PLATFORMS[platform] ?? Object.values(PLATFORMS)[0]!;
+  const platformAssets = platformCfg.assets;
   useEffect(() => {
-    if (!platformAssets.includes(asset)) setAsset(platformAssets[0]);
+    const first = platformAssets[0];
+    if (first && !platformAssets.includes(asset)) setAsset(first);
   }, [platform, platformAssets, asset]);
 
   const tokenBySym = useMemo(() => Object.fromEntries(tokens.map((t) => [t.sym, t])), [tokens]);
-  const token: TokenRow = tokenBySym[selectedToken] ?? tokens[0] ?? SEED_TOKENS[0];
+  const token: TokenRow = tokenBySym[selectedToken] ?? tokens[0] ?? SEED_TOKENS[0]!;
 
   // ----- live per-token history + TGE on select -----
   useEffect(() => {
