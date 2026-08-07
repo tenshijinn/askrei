@@ -70,3 +70,48 @@ export async function withOpsJob<T>(source: string, run: () => Promise<T>): Prom
     throw err;
   }
 }
+
+/**
+ * Wraps a Deno.serve handler for a scheduled function: records one ops_event
+ * per invocation based on the HTTP status it returns (or the error it throws).
+ * CORS preflights are ignored.
+ */
+export function withOpsHttpJob(
+  source: string,
+  handler: (req: Request) => Promise<Response>,
+): (req: Request) => Promise<Response> {
+  return async (req: Request) => {
+    if (req.method === "OPTIONS") return handler(req);
+    const startedAt = Date.now();
+    try {
+      const res = await handler(req);
+      const ok = res.ok;
+      let detail: Record<string, unknown> = { status: res.status };
+      if (!ok) {
+        try {
+          detail = { status: res.status, body: (await res.clone().text()).slice(0, 500) };
+        } catch {
+          /* body already consumed — keep the status only */
+        }
+      }
+      await logOpsEvent({
+        kind: "job",
+        source,
+        status: ok ? "success" : "failure",
+        message: ok ? undefined : `HTTP ${res.status}`,
+        detail,
+        durationMs: Date.now() - startedAt,
+      });
+      return res;
+    } catch (err) {
+      await logOpsEvent({
+        kind: "job",
+        source,
+        status: "failure",
+        message: err instanceof Error ? err.message : String(err),
+        durationMs: Date.now() - startedAt,
+      });
+      throw err;
+    }
+  };
+}
