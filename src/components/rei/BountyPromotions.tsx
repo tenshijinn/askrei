@@ -262,7 +262,21 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
           .order('created_at', { ascending: false });
         if (campErr) throw campErr;
         if (cancelled) return;
-        setCampaigns(camps || []);
+        setCampaigns(
+          (camps || []).flatMap((c) =>
+            c.id
+              ? [{
+                  id: c.id,
+                  project_name: c.project_name ?? '',
+                  project_link: c.project_link ?? '',
+                  short_code: c.short_code,
+                  status: c.status ?? '',
+                  created_at: c.created_at ?? '',
+                  expires_at: c.expires_at,
+                }]
+              : [],
+          ),
+        );
 
         const ids = (camps || []).map((c) => c.id);
         if (ids.length === 0) {

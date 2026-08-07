@@ -89,8 +89,8 @@ export default function UnlimitedPosts() {
         const { data: { session } } = await supabase.auth.getSession();
         const claims = session?.user?.user_metadata as Record<string, unknown> | undefined;
         if (claims) {
-          if (typeof claims.x_user_id === "string") xUserId = claims.x_user_id;
-          if (typeof claims.wallet_address === "string") walletAddress = claims.wallet_address;
+          if (typeof claims['x_user_id'] === "string") xUserId = claims['x_user_id'];
+          if (typeof claims['wallet_address'] === "string") walletAddress = claims['wallet_address'];
         }
         if (xUserId && !walletAddress) {
           const { data: reg } = await supabase

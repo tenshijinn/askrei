@@ -456,7 +456,7 @@ export const JoinReiDemoSection = () => {
   useEffect(() => {
     if (!sectionRef.current) return;
     const observer = new IntersectionObserver(
-      ([entry]) => setIsActive(entry.isIntersecting),
+      ([entry]) => setIsActive(!!entry?.isIntersecting),
       { threshold: 0.25 }
     );
     observer.observe(sectionRef.current);

@@ -41,7 +41,7 @@ export const AgentsCodeDemo = () => {
   const [copied, setCopied] = useState(false);
 
   const copy = () => {
-    navigator.clipboard.writeText(samples[tab]);
+    navigator.clipboard.writeText(samples[tab] ?? '');
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };

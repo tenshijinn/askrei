@@ -8,14 +8,15 @@ export function useFirstTimeWalkthrough(userId?: string | null) {
 
   useEffect(() => {
     const k = keyFor(userId);
-    if (!k) return;
-    if (typeof window === 'undefined') return;
+    if (!k) return undefined;
+    if (typeof window === 'undefined') return undefined;
     try {
       if (!localStorage.getItem(k)) {
         const t = setTimeout(() => setOpen(true), 600);
         return () => clearTimeout(t);
       }
     } catch {}
+    return undefined;
   }, [userId]);
 
   const markSeen = useCallback(() => {

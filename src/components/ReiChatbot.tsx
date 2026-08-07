@@ -153,7 +153,7 @@ const ReiChatbot = ({ walletAddress, userMode, twitterHandle }: ReiChatbotProps)
     const intervals: NodeJS.Timeout[] = [];
     const newMessageIndex = messages.length - 1;
     const newMessage = messages[newMessageIndex];
-    if (newMessage.role === "assistant" && !displayedContent[newMessageIndex]) {
+    if (newMessage && newMessage.role === "assistant" && !displayedContent[newMessageIndex]) {
       const content = newMessage.content; let currentIndex = 0;
       const intervalId = setInterval(() => { if (currentIndex <= content.length) { setDisplayedContent((prev) => ({ ...prev, [newMessageIndex]: content.substring(0, currentIndex) })); currentIndex++; } else { clearInterval(intervalId); } }, 15);
       intervals.push(intervalId);

@@ -499,7 +499,7 @@ const M9_Payments = ({ active, reduced }: { active: boolean; reduced: boolean })
         <div>
           <span className="text-[10px] text-cream/40 font-mono">Send payment</span>
           <div className="text-3xl font-light text-primary mt-1">$48.00</div>
-          <div className="text-[10px] text-cream/50 font-mono">≈ {chains[sel].sym==='SOL'?'0.21 SOL':chains[sel].sym==='ETH'?'0.014 ETH':chains[sel].sym==='MATIC'?'62.4 MATIC':'21 ARB'}</div>
+          <div className="text-[10px] text-cream/50 font-mono">≈ {chains[sel]!.sym==='SOL'?'0.21 SOL':chains[sel]!.sym==='ETH'?'0.014 ETH':chains[sel]!.sym==='MATIC'?'62.4 MATIC':'21 ARB'}</div>
         </div>
         <div className="grid grid-cols-2 gap-2">
           {chains.map((c,i)=>(
@@ -517,7 +517,7 @@ const M9_Payments = ({ active, reduced }: { active: boolean; reduced: boolean })
           </div>
           <div className="flex items-center justify-between mt-1">
             <span className="text-[10px] text-cream/40 font-mono">Network fee</span>
-            <span className="text-[10px] text-green-400 font-mono">{chains[sel].sym==='SOL'?'$0.0001':'$0.02'}</span>
+            <span className="text-[10px] text-green-400 font-mono">{chains[sel]!.sym==='SOL'?'$0.0001':'$0.02'}</span>
           </div>
         </div>
         <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${phase>=4?'bg-green-500/10 border border-green-500/40':'bg-white/5 border border-white/10'}`}>
@@ -595,7 +595,7 @@ const AdminMockups = () => {
 
   useEffect(() => {
     if (!ref.current) return;
-    const obs = new IntersectionObserver(([e]) => setActive(e.isIntersecting), { threshold: 0.05 });
+    const obs = new IntersectionObserver(([e]) => setActive(!!e?.isIntersecting), { threshold: 0.05 });
     obs.observe(ref.current);
     return () => obs.disconnect();
   }, []);

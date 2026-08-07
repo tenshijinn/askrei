@@ -18,5 +18,9 @@ export default defineMcp({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated",
   }),
-  tools: [searchBounties, searchJobs, listSkillCategories, whoami],
+  // The mcp-js ToolDefinition type marks outputSchema as required under
+  // exactOptionalPropertyTypes even though it's optional at runtime.
+  tools: [searchBounties, searchJobs, listSkillCategories, whoami] as unknown as Parameters<
+    typeof defineMcp
+  >[0]["tools"],
 });

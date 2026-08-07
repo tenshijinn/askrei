@@ -88,7 +88,7 @@ export default function BountyDefiCard() {
         if (s.platform && s.platform in PLATFORMS) {
           setMode('DeFi');
           setPlatform(s.platform);
-          if (s.assetSym && PLATFORMS[s.platform].assets.includes(s.assetSym)) setAsset(s.assetSym);
+          if (s.assetSym && PLATFORMS[s.platform]?.assets.includes(s.assetSym)) setAsset(s.assetSym);
         } else if (s.assetSym) {
           setMode('Tokens');
           setSelectedToken(s.assetSym);
@@ -138,13 +138,15 @@ export default function BountyDefiCard() {
   }, []);
 
   // keep asset valid for the selected platform
-  const platformAssets = PLATFORMS[platform].assets;
+  const platformCfg = PLATFORMS[platform] ?? Object.values(PLATFORMS)[0]!;
+  const platformAssets = platformCfg.assets;
   useEffect(() => {
-    if (!platformAssets.includes(asset)) setAsset(platformAssets[0]);
+    const first = platformAssets[0];
+    if (first && !platformAssets.includes(asset)) setAsset(first);
   }, [platform, platformAssets, asset]);
 
   const tokenBySym = useMemo(() => Object.fromEntries(tokens.map((t) => [t.sym, t])), [tokens]);
-  const token: TokenRow = tokenBySym[selectedToken] ?? tokens[0] ?? SEED_TOKENS[0];
+  const token: TokenRow = tokenBySym[selectedToken] ?? tokens[0] ?? SEED_TOKENS[0]!;
 
   // ----- live per-token history + TGE on select -----
   useEffect(() => {
@@ -181,17 +183,16 @@ export default function BountyDefiCard() {
     return () => document.removeEventListener('mousedown', onDown);
   }, [ddOpen]);
 
-  const freq = FREQ[frequency];
+  const freq = FREQ[frequency] ?? Object.values(FREQ)[0]!;
   const monthlyContribution = Math.max(0, amount || 0) * freq.k;
 
   // ----- resolve the active series -----
   const isTokens = mode === 'Tokens';
-  const platformCfg = PLATFORMS[platform];
   const rawApy = platformCfg.apy[asset] ?? 0;
   const apyVal = isTokens ? 0 : (platform === 'NLO by L1X' && nloApr ? nloApr : rawApy);
 
   const series: AssetSeries | null = isTokens
-    ? (token?.data ? assets[token.data] : tokenSeries[token?.sym] ?? null)
+    ? (token.data ? assets[token.data] ?? null : tokenSeries[token.sym] ?? null)
     : assets[asset] ?? null;
 
   const hasData = !!series?.prices?.length;
@@ -230,12 +231,12 @@ export default function BountyDefiCard() {
     const conPts = contrib.map((v, j) => [px(j), py(v)] as [number, number]);
     const valD = smoothPath(valPts);
     const areaD = `${valD} L${px(N - 1).toFixed(1)},${H.toFixed(1)} L${px(0).toFixed(1)},${H.toFixed(1)} Z`;
-    const end = valPts[N - 1];
+    const end = valPts[N - 1] ?? ([0, 0] as [number, number]);
     const labels: { text: string; year: boolean }[] = [];
     for (let i = 0; i < N; i++) {
       const d = new Date(series!.startYear, series!.startMonth + startIdx + i, 1);
       if (d.getMonth() === 0) labels.push({ text: `'${String(d.getFullYear()).slice(-2)}`, year: true });
-      else labels.push({ text: LETTER[d.getMonth()], year: false });
+      else labels.push({ text: LETTER[d.getMonth()] ?? '', year: false });
     }
     return {
       W, H, yMax, valD, conD: smoothPath(conPts), areaD,
@@ -244,7 +245,7 @@ export default function BountyDefiCard() {
     };
   }, [computed, series]);
 
-  const finalVal = computed ? computed.value[computed.value.length - 1] : 0;
+  const finalVal = (computed ? computed.value[computed.value.length - 1] : 0) ?? 0;
   const invested = computed?.invested ?? 0;
   const down = finalVal - invested < 0;
 
@@ -295,7 +296,7 @@ export default function BountyDefiCard() {
         {/* header */}
         <div className="head">
           <div className="brand">
-            {!isTokens && (
+            {!isTokens && platformLogo && (
               <>
                 <div className="logo" style={{ background: '#0e0b09' }}>
                   <img src={platformLogo.url} alt={platform} />

@@ -25,7 +25,7 @@ export interface ShareState {
 
 interface Props {
   /** element to snapshot into the share image */
-  targetRef: React.RefObject<HTMLElement>;
+  targetRef: React.RefObject<HTMLElement | null>;
   /** tweet body text */
   buildText: () => string;
   /** card state persisted with the share link */
