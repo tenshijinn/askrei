@@ -15,7 +15,13 @@ export interface Participant {
   confidence: number | null;
   trust: number | null;
   createdAt: string;
+  /** Engagement with the campaign this card is shown under. */
+  impressions?: number;
+  clicks?: number;
+  firstSeen?: string;
+  lastSeen?: string;
 }
+
 
 const PEACH = '#e8c4b8';
 const MUTED = '#5c5a57';
