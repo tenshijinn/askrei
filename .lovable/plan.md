@@ -1,50 +1,48 @@
-# Bounty Calculator: 5 free tries, then paywall
+# Rei User Participants section
 
-Gate the /earn calculator after 5 free calculations with a centred dialogue offering a free Rei membership route or a paid 100-calculation pack ($5 in SOL via x402, Stripe as an alternative).
+Add a collapsible "Rei User Participants" section directly below the existing Impressions/Clicks dashboard (rendered by `BountyPromotions` on the Rei page). The existing dashboard is untouched.
 
-## How it works for the user
+## What the user sees
 
-1. Anonymous visitor lands on /earn and can change inputs freely for 5 calculations.
-2. On the 6th change, the card blurs behind a centred modal with two side-by-side panels:
-   - Left: "20 Free Uses" — 20 calculations per week as a Rei member. Buttons: `Sign Up` and `Sign In`, both leading to rei.chat (landing page) / `/rei`.
-   - Right: "100 Uses for $5" — "$0.05 per calculation". Primary button `Connect to Use` (wallet not connected) which becomes `Pay $5 in SOL` once connected. Secondary text link: `Pay with card` (Stripe embedded checkout).
-3. x402 flow: connect wallet → server fetches live SOL price → builds a $5-equivalent SOL transfer → user signs → server verifies on-chain → 100 calculations credited to that wallet.
-4. Returning payer: clicking `Connect to Use` with the same wallet restores their remaining balance immediately — no new payment.
-5. While credits remain, a small counter chip on the card shows e.g. "87 calculations left". Free users see "3 free left".
+Collapsed by default: a card header reading **Rei User Participants**, a live count ("6 members" today), and a chevron that rotates on open.
 
-A calculation = a committed change to any input (amount, frequency, mode, platform, asset, period), debounced so typing "100" counts once. Loading the page, restoring a shared link, and sharing to X never consume credits.
+Expanded, top to bottom:
 
-## Modal design (matches page branding)
+1. **Search bar** — live filter across display name, X handle, and both wallet addresses (case-insensitive, partial match).
+2. **Sort row** — label "Sort by" with four toggles: Diamond Score, Community, Confidence, Trust. Clicking sorts highest-first and shows an active highlight plus a descending arrow; clicking again turns it off and returns to the default order (Diamond Score desc, then newest). Only one sort active at a time.
+3. **Export CSV** — right-aligned on the sort row, peach outline. Exports exactly the rows currently shown, in the current order, with columns: name, handle, sol_wallet, evm_wallet, diamond_score, tier, community, confidence, trust.
+4. **Participant cards** — one per member:
+   - X profile picture on the far left, circular, with an initial-letter fallback when the image is missing or fails to load.
+   - Display name + `@handle` with the peach diamond icon.
+   - Large Diamond Score "NN /100" plus tier label.
+   - Wallet chips: SOL address always, EVM address only when present, each truncated (`2gvg…HrBt`) with a small `SOL` / `EVM` network tag, and click-to-copy.
+   - Metric chips: Community, Confidence, Trust.
+5. Empty states: "No members yet" when the list is empty, and "No members match your search" when filtered to nothing. Skeleton rows while loading.
 
-- Warm near-black panel (`#0e0b09`), 1px hairline border, soft outer glow, rounded 18px, backdrop blur over the card.
-- Two panels split by a vertical hairline; stacks vertically on mobile.
-- Left panel: Rei logo mark, mono heading, peach outline button (`#e9c8ba`).
-- Right panel: Solana mark, mono heading, filled peach primary button (not purple — keeps Rei branding), with SOL amount + live SOL price shown under it once quoted.
-- Same type scale, mono labels, and peach accent already used on the card; no new fonts or colours.
-- Escape/backdrop click closes the modal but the calculator stays locked until credits exist.
+Cards stack their inner columns vertically on mobile, matching the reference's responsive behaviour.
+
+## Data
+
+Live data from our database `rei_registry`, not mock data.
+
+- Name, handle, avatar, SOL wallet, EVM wallet, and the stored `diamond_score` / `diamond_tier` come straight from the record — we already compute and persist Diamond Scores, so no recomputation.
+- Community and Confidence come from the stored wallet-behaviour subscores.
+- **Trust** is not stored as its own subscore. It is derived as `100 − risk` from the stored risk subscore (risk 0 = fully trusted). Members with no wallet scan yet show "—" for score and metrics.
+- Tier labels use our existing Diamond tiers (Coal, Emerald, Sapphire, Diamond, Rei's Diamond) rather than the reference file's placeholder tier names, so the section matches the rest of the app.
+
+Note: no member currently has an EVM wallet saved, so the EVM chip will simply not render until someone connects one — the card handles both cases.
 
 ## Technical notes
 
-Backend (Lovable Cloud):
+Backend:
 
-- New table `earn_calc_usage`: `id`, `ip_hash`, `wallet_address` (nullable), `free_used`, `free_window_start`, `paid_credits`, `credits_source`, `updated_at`. RLS enabled, no client access (service-role only), with GRANTs for `service_role`.
-- New edge function `earn-calc-quota` (`verify_jwt = false`): actions
-  - `status` — returns free-remaining / paid-remaining for the caller's IP hash and optional wallet.
-  - `consume` — atomically decrements paid credits, else free allowance; returns `{ allowed, remaining, reason }`.
-  Free allowance: 5 per IP for anonymous, 20 per week for wallets/handles present in `rei_registry`, reset weekly (same IP-hash pattern as `ask-rei-public`).
-- New edge function `earn-calc-purchase` (`verify_jwt = false`): verifies a completed `payment_references` row (`payment_type: 'x402'`, `amount` matching the $5 SOL quote, `status: 'completed'`) and credits 100 uses to that wallet. Idempotent per `tx_signature`.
-- Reuse existing `x402-create-payment` (already converts USD→SOL from the multi-source oracle) and `x402-verify-payment` unchanged; pass `amount: 5`, `memo: 'earn-calc-100'`.
-- Stripe path: reuse existing `create-checkout` with a new one-time price `earn_calc_100` ($5). A `payments-webhook` branch credits 100 uses against the session's email; the return page redirects back to /earn. This is the secondary option — x402 is primary.
+- New read-only view `public.v_public_rei_participants` over `rei_registry` exposing only the display fields listed above (handle, display name, avatar URL, `wallet_address`, `evm_wallet_address`, `diamond_score`, `diamond_tier`, and the `community` / `confidence` / `risk` subscores extracted from `wallet_behaviour`), ordered by score. `GRANT SELECT` to `anon` and `authenticated`, mirroring the existing `v_public_*` views. No emails, file paths, or raw analysis blobs are exposed.
+- No new edge function needed; the client reads the view via the Supabase client.
 
 Frontend:
 
-- `src/components/earn/CalcPaywallModal.tsx` — the dialogue, wallet connect/pay states, loading + error states, Stripe fallback.
-- `src/hooks/useCalcQuota.ts` — status fetch, debounced `consume` gate, local mirror for instant UI, wallet-change refresh.
-- `BountyDefiCard.tsx` — wrap input handlers through the quota gate, add remaining-uses chip, render the modal, blur/disable controls when locked.
-- `earn.css` — modal, panel, and chip styles reusing existing tokens; keeps everything above the fold on short viewports.
-- Wallet adapter is already provided app-wide (`WalletProvider` in `App.tsx`), so `/earn` can use the same connect flow as the rest of the app.
-
-## Notes
-
-- Server-side counting means clearing localStorage does not reset the free tries; IP hashing keeps it privacy-safe (no raw IPs stored).
-- Credits are tied to the paying wallet, so the same wallet works across devices.
+- `src/components/rei/ReiParticipants.tsx` — the accordion, search, sort toggles, CSV export, and card list. Local state only; sorting and filtering happen client-side on the fetched rows (member count is small).
+- `src/components/rei/ParticipantCard.tsx` — a single card (avatar, identity, score block, wallet chips, metric chips).
+- Styling reuses the existing dark card tokens and the peach accent already in `index.css` / Tailwind config (`#e8b4a0` maps to the existing peach token) — no hardcoded colour utilities and no new palette entries.
+- Rendered from `src/pages/Rei.tsx` immediately after `<BountyPromotions />` so it sits below the dashboard.
+- Search is debounced; CSV is generated in-browser via a Blob download.
