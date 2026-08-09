@@ -26,6 +26,7 @@ import { TypewriterCtaButton } from '@/components/buttons/TypewriterCtaButton';
 import { useRegistrationWalkthrough } from '@/hooks/useRegistrationWalkthrough';
 import { walkthroughCopy } from '@/components/joinrei/walkthroughContent';
 import { BountyPromotions } from '@/components/rei/BountyPromotions';
+import { ReiParticipants } from '@/components/rei/ReiParticipants';
 import { ConnectReiCard } from '@/components/rei/ConnectReiCard';
 import { ReiDiamondShareCard } from '@/components/rei/ReiDiamondShareCard';
 
