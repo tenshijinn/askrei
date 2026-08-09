@@ -115,6 +115,8 @@ serve(async (req) => {
         is_unique: isUnique,
         is_guest: isGuest,
         points_awarded: isUnique && !!campaign.wallet_address && !isGuest,
+        ...viewer,
+
       });
 
       if (!insErr) {
