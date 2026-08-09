@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { getViewerIdentity } from "@/lib/viewerIdentity";
 
 export default function CampaignRedirect() {
   const { code } = useParams<{ code: string }>();
@@ -16,10 +17,12 @@ export default function CampaignRedirect() {
       }
       try {
         const guest = searchParams.get("g") === "1";
+        const viewer = guest ? {} : getViewerIdentity();
         const { data, error: invokeErr } = await supabase.functions.invoke(
           "track-campaign-click",
-          { body: { shortCode: code, referrer: document.referrer || null, guest } }
+          { body: { shortCode: code, referrer: document.referrer || null, guest, ...viewer } }
         );
+
         if (cancelled) return;
         if (invokeErr || !data?.redirect) {
           setError(data?.error || invokeErr?.message || "Campaign link unavailable");

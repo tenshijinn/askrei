@@ -15,7 +15,13 @@ export interface Participant {
   confidence: number | null;
   trust: number | null;
   createdAt: string;
+  /** Engagement with the campaign this card is shown under. */
+  impressions?: number;
+  clicks?: number;
+  firstSeen?: string;
+  lastSeen?: string;
 }
+
 
 const PEACH = '#e8c4b8';
 const MUTED = '#5c5a57';
@@ -144,7 +150,14 @@ export function ParticipantCard({ p }: { p: Participant }) {
             {p.solWallet && <WalletChip address={p.solWallet} net="SOL" />}
             {p.evmWallet && <WalletChip address={p.evmWallet} net="EVM" />}
           </div>
+          {(p.impressions !== undefined || p.clicks !== undefined) && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
+              <MetricChip label="Impressions" value={p.impressions ?? 0} />
+              <MetricChip label="Clicks" value={p.clicks ?? 0} />
+            </div>
+          )}
         </div>
+
 
         <div className="rp-score" style={{ textAlign: 'right', flexShrink: 0, minWidth: 92 }}>
           <div style={{ fontSize: 26, color: TEXT, fontWeight: 600, letterSpacing: '-0.02em', lineHeight: 1 }}>

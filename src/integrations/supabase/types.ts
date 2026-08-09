@@ -166,6 +166,8 @@ export type Database = {
           session_id: string | null
           short_code: string
           user_agent_hash: string | null
+          viewer_wallet_address: string | null
+          viewer_x_user_id: string | null
         }
         Insert: {
           campaign_subscription_id: string
@@ -181,6 +183,8 @@ export type Database = {
           session_id?: string | null
           short_code: string
           user_agent_hash?: string | null
+          viewer_wallet_address?: string | null
+          viewer_x_user_id?: string | null
         }
         Update: {
           campaign_subscription_id?: string
@@ -196,6 +200,8 @@ export type Database = {
           session_id?: string | null
           short_code?: string
           user_agent_hash?: string | null
+          viewer_wallet_address?: string | null
+          viewer_x_user_id?: string | null
         }
         Relationships: [
           {
@@ -227,6 +233,8 @@ export type Database = {
           short_code: string
           user_agent_hash: string | null
           viewed_at: string
+          viewer_wallet_address: string | null
+          viewer_x_user_id: string | null
         }
         Insert: {
           campaign_subscription_id: string
@@ -240,6 +248,8 @@ export type Database = {
           short_code: string
           user_agent_hash?: string | null
           viewed_at?: string
+          viewer_wallet_address?: string | null
+          viewer_x_user_id?: string | null
         }
         Update: {
           campaign_subscription_id?: string
@@ -253,6 +263,8 @@ export type Database = {
           short_code?: string
           user_agent_hash?: string | null
           viewed_at?: string
+          viewer_wallet_address?: string | null
+          viewer_x_user_id?: string | null
         }
         Relationships: [
           {

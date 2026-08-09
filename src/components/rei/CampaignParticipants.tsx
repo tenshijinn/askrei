@@ -28,9 +28,17 @@ function csvCell(v: unknown) {
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
-export function ReiParticipants() {
+interface Props {
+  campaignId: string;
+  campaignName: string;
+  requesterXUserId?: string | null;
+  requesterWallet?: string | null;
+}
+
+export function CampaignParticipants({ campaignId, campaignName, requesterXUserId, requesterWallet }: Props) {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loaded, setLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [rows, setRows] = useState<Participant[]>([]);
   const [query, setQuery] = useState('');
@@ -42,14 +50,24 @@ export function ReiParticipants() {
     return () => clearTimeout(t);
   }, [query]);
 
+  // Fetch on first expand only.
   useEffect(() => {
+    if (!open || loaded || loading) return;
     let cancelled = false;
+    setLoading(true);
     (async () => {
       try {
-        const { data, error: fnErr } = await supabase.functions.invoke('rei-participants', { body: {} });
+        const { data, error: fnErr } = await supabase.functions.invoke('campaign-participants', {
+          body: {
+            campaignId,
+            requesterXUserId: requesterXUserId ?? null,
+            requesterWallet: requesterWallet ?? null,
+          },
+        });
         if (fnErr) throw fnErr;
         if (cancelled) return;
         setRows(Array.isArray(data?.participants) ? data.participants : []);
+        setLoaded(true);
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : 'Failed to load participants');
       } finally {
@@ -59,7 +77,7 @@ export function ReiParticipants() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [open, loaded, loading, campaignId, requesterXUserId, requesterWallet]);
 
   const visible = useMemo(() => {
     let list = rows;
@@ -94,6 +112,10 @@ export function ReiParticipants() {
       'community',
       'confidence',
       'trust',
+      'impressions',
+      'clicks',
+      'first_seen',
+      'last_seen',
     ];
     const lines = [
       header.join(','),
@@ -108,6 +130,10 @@ export function ReiParticipants() {
           p.community ?? '',
           p.confidence ?? '',
           p.trust ?? '',
+          p.impressions ?? '',
+          p.clicks ?? '',
+          p.firstSeen ?? '',
+          p.lastSeen ?? '',
         ]
           .map(csvCell)
           .join(',')
@@ -116,8 +142,9 @@ export function ReiParticipants() {
     const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
+    const slug = campaignName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'campaign';
     a.href = url;
-    a.download = `rei-participants-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `${slug}-participants-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -133,18 +160,18 @@ export function ReiParticipants() {
           display: 'flex',
           alignItems: 'center',
           gap: 12,
-          padding: '20px 24px',
+          padding: '16px 20px',
           background: 'none',
           border: 'none',
           cursor: 'pointer',
           textAlign: 'left',
         }}
       >
-        <span style={{ fontSize: 18, fontWeight: 500, color: TEXT, letterSpacing: '-0.02em' }}>
-          Rei User Participants
+        <span style={{ fontSize: 15, fontWeight: 500, color: TEXT, letterSpacing: '-0.01em' }}>
+          Participants{loaded ? ` (${rows.length})` : ''}
         </span>
-        <span style={{ fontSize: 12, color: MUTED, marginLeft: 'auto' }}>
-          {loading ? '…' : `${rows.length} member${rows.length === 1 ? '' : 's'}`}
+        <span style={{ fontSize: 11, color: MUTED, marginLeft: 'auto' }}>
+          Rei members who engaged with this campaign
         </span>
         <ChevronDown
           className="h-4 w-4"
@@ -153,7 +180,7 @@ export function ReiParticipants() {
       </button>
 
       {open && (
-        <div style={{ padding: '0 24px 24px' }}>
+        <div style={{ padding: '0 20px 20px' }}>
           {/* search */}
           <div
             className="rei-stat-card"
@@ -227,7 +254,7 @@ export function ReiParticipants() {
 
           {loading && (
             <div className="flex items-center gap-2 py-8 justify-center" style={{ color: MUTED, fontSize: 12 }}>
-              <Loader2 className="h-4 w-4 animate-spin" /> Loading members…
+              <Loader2 className="h-4 w-4 animate-spin" /> Loading participants…
             </div>
           )}
 
@@ -245,9 +272,18 @@ export function ReiParticipants() {
               {visible.length === 0 && (
                 <div
                   className="rei-stat-card"
-                  style={{ padding: '32px 24px', textAlign: 'center', color: MUTED, fontSize: 13 }}
+                  style={{ padding: '28px 24px', textAlign: 'center', color: MUTED, fontSize: 12, lineHeight: 1.6 }}
                 >
-                  {rows.length === 0 ? 'No members yet' : 'No members match your search'}
+                  {rows.length === 0 ? (
+                    <>
+                      No identified participants yet.
+                      <br />
+                      Only signed-in Rei members who view or click this campaign appear here — guest traffic stays
+                      anonymous and is counted in the totals above.
+                    </>
+                  ) : (
+                    'No participants match your search'
+                  )}
                 </div>
               )}
             </div>
@@ -266,4 +302,4 @@ export function ReiParticipants() {
   );
 }
 
-export default ReiParticipants;
+export default CampaignParticipants;

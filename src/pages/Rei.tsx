@@ -26,7 +26,7 @@ import { TypewriterCtaButton } from '@/components/buttons/TypewriterCtaButton';
 import { useRegistrationWalkthrough } from '@/hooks/useRegistrationWalkthrough';
 import { walkthroughCopy } from '@/components/joinrei/walkthroughContent';
 import { BountyPromotions } from '@/components/rei/BountyPromotions';
-import { ReiParticipants } from '@/components/rei/ReiParticipants';
+
 import { ConnectReiCard } from '@/components/rei/ConnectReiCard';
 import { ReiDiamondShareCard } from '@/components/rei/ReiDiamondShareCard';
 
@@ -546,7 +546,7 @@ export default function Rei() {
                 />
 
                 <BountyPromotions xUserId={twitterUser?.x_user_id} walletAddress={effectiveWallet || registrationData?.wallet_address} />
-                <ReiParticipants />
+                
                 <button data-tour="edit-profile" onClick={() => setIsEditMode(true)} className="btn-manga btn-manga-outline w-full" style={{ borderRadius: '28px', padding: '11px 22px', fontSize: '13px', cursor: 'pointer' }}>Edit Profile</button>
                 <button onClick={walkthrough.replay} className="w-full" style={{ background: 'none', border: 'none', color: '#a09e9a', fontSize: '12px', textDecoration: 'underline', textUnderlineOffset: 3, cursor: 'pointer', paddingTop: 4 }}>Replay walkthrough</button>
                 <div style={{ marginTop: 24, paddingTop: 16, borderTop: '0.5px solid hsla(0,0%,100%,0.06)' }}>

@@ -23,7 +23,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { shortCode, referrer, guest } = await req.json();
+    const { shortCode, referrer, guest, viewerXUserId } = await req.json();
     if (!shortCode || typeof shortCode !== "string") {
       return new Response(JSON.stringify({ error: "shortCode required" }), {
         status: 400,
@@ -36,6 +36,27 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
+
+    // Attribute to a Rei member only for non-guest clicks, and only when the
+    // claimed identity actually exists in the registry.
+    let viewer: { viewer_x_user_id: string | null; viewer_wallet_address: string | null } = {
+      viewer_x_user_id: null,
+      viewer_wallet_address: null,
+    };
+    if (!isGuest && typeof viewerXUserId === "string" && viewerXUserId && viewerXUserId.length <= 64) {
+      const { data: member } = await supabase
+        .from("rei_registry")
+        .select("x_user_id, wallet_address")
+        .eq("x_user_id", viewerXUserId)
+        .maybeSingle();
+      if (member) {
+        viewer = {
+          viewer_x_user_id: member.x_user_id,
+          viewer_wallet_address: member.wallet_address ?? null,
+        };
+      }
+    }
+
 
     const { data: campaign, error: campErr } = await supabase
       .from("campaign_subscriptions")
@@ -94,6 +115,8 @@ serve(async (req) => {
         is_unique: isUnique,
         is_guest: isGuest,
         points_awarded: isUnique && !!campaign.wallet_address && !isGuest,
+        ...viewer,
+
       });
 
       if (!insErr) {

@@ -11,6 +11,8 @@ import {
 } from 'recharts';
 import { ArrowRight, ChevronDown, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { CampaignParticipants } from './CampaignParticipants';
+
 
 /**
  * Live Bounty Promotions analytics for the Account page.
@@ -477,15 +479,24 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
       )}
 
       {!loading && !error && views.length > 0 && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6">
           {views.map((c) => (
-            <div key={c.id} className="grid gap-4 bp-row" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.6fr)' }}>
-              <CampaignInfoCard campaign={c} />
-              <ChartCard campaign={c} />
+            <div key={c.id} className="flex flex-col gap-4">
+              <div className="grid gap-4 bp-row" style={{ gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1.6fr)' }}>
+                <CampaignInfoCard campaign={c} />
+                <ChartCard campaign={c} />
+              </div>
+              <CampaignParticipants
+                campaignId={c.id}
+                campaignName={c.name}
+                requesterXUserId={xUserId}
+                requesterWallet={walletAddress}
+              />
             </div>
           ))}
         </div>
       )}
+
 
       <style>{`
         @media (max-width: 860px) {
