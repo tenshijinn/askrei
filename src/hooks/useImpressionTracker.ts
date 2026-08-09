@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getViewerIdentity } from "@/lib/viewerIdentity";
 
 const SESSION_KEY = "rei_impressions_seen";
 
@@ -52,8 +53,9 @@ export function useImpressionTracker(
               if (alreadySeen(shortCode)) return;
               markSeen(shortCode);
               observer.disconnect();
+              const viewer = guest ? {} : getViewerIdentity();
               supabase.functions
-                .invoke("track-campaign-impression", { body: { shortCode, guest } })
+                .invoke("track-campaign-impression", { body: { shortCode, guest, ...viewer } })
                 .catch(() => {
                   /* ignore */
                 });

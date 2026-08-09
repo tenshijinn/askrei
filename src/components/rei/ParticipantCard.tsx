@@ -150,7 +150,14 @@ export function ParticipantCard({ p }: { p: Participant }) {
             {p.solWallet && <WalletChip address={p.solWallet} net="SOL" />}
             {p.evmWallet && <WalletChip address={p.evmWallet} net="EVM" />}
           </div>
+          {(p.impressions !== undefined || p.clicks !== undefined) && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
+              <MetricChip label="Impressions" value={p.impressions ?? 0} />
+              <MetricChip label="Clicks" value={p.clicks ?? 0} />
+            </div>
+          )}
         </div>
+
 
         <div className="rp-score" style={{ textAlign: 'right', flexShrink: 0, minWidth: 92 }}>
           <div style={{ fontSize: 26, color: TEXT, fontWeight: 600, letterSpacing: '-0.02em', lineHeight: 1 }}>
