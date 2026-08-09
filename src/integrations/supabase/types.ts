@@ -1508,6 +1508,57 @@ export type Database = {
         }
         Relationships: []
       }
+      v_public_rei_participants: {
+        Row: {
+          community_score: number | null
+          confidence_score: number | null
+          created_at: string | null
+          diamond_score: number | null
+          diamond_tier: string | null
+          display_name: string | null
+          evm_wallet_address: string | null
+          handle: string | null
+          id: string | null
+          profile_image_url: string | null
+          risk_score: number | null
+          verified: boolean | null
+          wallet_address: string | null
+          x_user_id: string | null
+        }
+        Insert: {
+          community_score?: never
+          confidence_score?: never
+          created_at?: string | null
+          diamond_score?: number | null
+          diamond_tier?: string | null
+          display_name?: string | null
+          evm_wallet_address?: string | null
+          handle?: string | null
+          id?: string | null
+          profile_image_url?: string | null
+          risk_score?: never
+          verified?: boolean | null
+          wallet_address?: string | null
+          x_user_id?: string | null
+        }
+        Update: {
+          community_score?: never
+          confidence_score?: never
+          created_at?: string | null
+          diamond_score?: number | null
+          diamond_tier?: string | null
+          display_name?: string | null
+          evm_wallet_address?: string | null
+          handle?: string | null
+          id?: string | null
+          profile_image_url?: string | null
+          risk_score?: never
+          verified?: boolean | null
+          wallet_address?: string | null
+          x_user_id?: string | null
+        }
+        Relationships: []
+      }
       v_public_tasks: {
         Row: {
           company_name: string | null
