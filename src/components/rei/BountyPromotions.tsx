@@ -310,7 +310,7 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
           console.warn('[BountyPromotions] analytics load failed; preserving campaigns:', e);
           setClicks([]);
           setImpressions([]);
-          setError(campaigns.length === 0 ? 'Campaigns could not be loaded. Please try again.' : null);
+          setError(null);
         }
       } finally {
         if (!cancelled) setLoading(false);
