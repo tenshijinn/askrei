@@ -188,7 +188,7 @@ export const JoinReiHero = () => {
       </div>
 
       {/* Logo ticker */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 bg-[#0a0a0a]/90 py-4 overflow-hidden">
+      <div className="absolute bottom-0 left-0 right-0 z-20 py-4 overflow-hidden">
         <div className="flex w-max animate-[jr-ticker_28s_linear_infinite] gap-12 lg:gap-20 pr-12 lg:pr-20">
           {[0, 1].map((dup) => (
             <div key={dup} className="flex items-center gap-12 lg:gap-20 shrink-0" aria-hidden={dup === 1}>
