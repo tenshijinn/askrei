@@ -89,7 +89,9 @@ export const JoinReiHero = () => {
     }
   };
 
-  const pill = 'inline-block px-2.5 py-1 rounded-full bg-[#181818] font-bold whitespace-nowrap';
+  const pill =
+    'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-transparent border border-[#181818] text-[11px] font-normal whitespace-nowrap';
+
 
   return (
     <section className="h-screen snap-start relative flex overflow-hidden bg-[#0a0a0a]">
