@@ -446,7 +446,70 @@ const PostTaskMockup = ({ active, reduced }: { active: boolean; reduced: boolean
   );
 };
 
+const participants = [
+  { name: 'Kaito', handle: '@kaito_sol', score: 'Diamond 82', clicks: 4 },
+  { name: 'Mira', handle: '@miraonchain', score: 'Gold 61', clicks: 3 },
+  { name: 'Dev0x', handle: '@dev0x', score: 'Diamond 90', clicks: 6 },
+  { name: 'Nao', handle: '@naoquests', score: 'Silver 44', clicks: 2 },
+];
+
+const PromotionsMockup = () => (
+  <div className="w-full aspect-[552/816] rounded-2xl overflow-hidden border-[0.5px] border-white/10 bg-[#111]">
+    <div className="w-full h-full flex flex-col">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-white/5">
+        <span className="text-[10px] text-cream/40 font-mono">rei://bounty-promotions</span>
+        <span className="text-[9px] px-2 py-0.5 rounded bg-[#ed565a]/20 text-[#ed565a] font-mono">Live</span>
+      </div>
+
+      <div className="flex-1 p-4 flex flex-col gap-3 overflow-hidden text-left">
+        <div className="px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+          <p className="text-[11px] text-cream/80 font-mono truncate">Community Bounty Q2</p>
+          <p className="text-[9px] text-cream/40 font-mono">Superteam Earn • 2.5 SOL</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { label: 'Impressions', value: '12,480' },
+            { label: 'Total Clicks', value: '1,932' },
+            { label: 'Unique Clicks', value: '1,441' },
+            { label: 'CTR', value: '15.48%' },
+          ].map((s) => (
+            <div key={s.label} className="px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+              <p className="text-[8px] text-cream/40 font-mono uppercase tracking-wide truncate">{s.label}</p>
+              <p className="text-[13px] text-[#ed565a] font-mono mt-0.5">{s.value}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex items-end gap-1 h-14 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+          {[35, 52, 44, 68, 60, 82, 74, 91, 66, 78].map((h, i) => (
+            <div key={i} className="flex-1 rounded-t bg-[#ed565a]/60" style={{ height: `${h}%` }} />
+          ))}
+        </div>
+
+        <div className="flex-1 min-h-0 rounded-lg bg-white/5 border border-white/10 p-3 flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-cream/60 font-mono">Rei User Participants</span>
+            <span className="text-[9px] text-cream/40 font-mono">{participants.length}</span>
+          </div>
+          {participants.map((p) => (
+            <div key={p.handle} className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#ed565a]/50 to-[#2b2154] shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] text-cream/80 font-mono truncate">{p.name} <span className="text-cream/35">{p.handle}</span></p>
+                <p className="text-[8px] text-cream/40 font-mono truncate">{p.score} • {p.clicks} clicks</p>
+              </div>
+              <span className="text-[8px] px-1.5 py-0.5 rounded-full border border-[#ed565a]/40 text-[#ed565a] font-mono shrink-0">SOL</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 // ---------- Main section ----------
+
 
 export const JoinReiDemoSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -488,21 +551,22 @@ export const JoinReiDemoSection = () => {
           <ScrollFadeIn delay={150}>
             <div className="flex flex-col items-center text-center">
               <h3 className="text-xl font-light text-cream font-mono mb-4">
-                Find Tasks
+                Promote Bounty
               </h3>
-              <ChatMockup active={isActive} reduced={reduced} />
+              <PostTaskMockup active={isActive} reduced={reduced} />
             </div>
           </ScrollFadeIn>
 
           <ScrollFadeIn delay={300}>
             <div className="flex flex-col items-center text-center">
               <h3 className="text-xl font-light text-cream font-mono mb-4">
-                Promote Bounty
+                Track Performance
               </h3>
-              <PostTaskMockup active={isActive} reduced={reduced} />
+              <PromotionsMockup />
             </div>
           </ScrollFadeIn>
         </div>
+
 
         <ScrollFadeIn delay={500}>
           <div className="flex justify-center mt-8">

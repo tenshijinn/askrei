@@ -1,19 +1,18 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
 import { scrollToLastSection } from './scrollHelpers';
-import reiCrossPlatform from '@/assets/joinrei/rei-ui.png';
+import { ChatFeedMockup } from './ChatFeedMockup';
 import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
 
 export const JoinReiValueProp = () => {
   return (
     <section className="min-h-screen snap-start relative flex items-center overflow-hidden bg-[#0f0f0f]">
       <div className="grid lg:grid-cols-2 gap-0 items-center w-full">
-        <div className="hidden lg:flex order-1 relative h-screen items-center justify-center">
-          <img 
-            src={reiCrossPlatform}
-            alt="Rei cross-platform exposure"
-            className="max-w-full max-h-full object-contain"
-          />
+        <div className="hidden lg:flex order-1 relative items-center justify-center px-12 py-16">
+          <div className="w-full max-w-[520px]">
+            <ChatFeedMockup />
+          </div>
         </div>
+
 
         <div className="space-y-6 order-2 px-8 lg:px-16">
           <ScrollFadeIn>
