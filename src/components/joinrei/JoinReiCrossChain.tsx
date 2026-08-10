@@ -66,21 +66,21 @@ export const JoinReiCrossChain = () => {
 
   return (
     <section className="min-h-screen snap-start relative flex items-center overflow-hidden bg-black">
-      <div className="grid lg:grid-cols-2 gap-0 items-center w-full">
-        <div className="hidden lg:flex order-1 relative items-center justify-center px-12 py-16">
+      <div className="grid lg:grid-cols-[1.15fr_1fr] gap-0 items-center w-full">
+        <div className="hidden lg:flex order-1 relative items-center justify-center pl-4 pr-6 py-10">
           <img
             src={reiFlowDiagram}
             alt="Rei aggregation flow from blockchains and task platforms to talent"
-            className="w-full max-w-[560px] object-contain"
+            className="w-full max-w-none object-contain max-h-[88vh]"
           />
         </div>
 
-        <div className="space-y-6 order-2 px-8 lg:px-16">
+        <div className="space-y-6 order-2 px-8 lg:pr-16 lg:pl-4">
           <ScrollFadeIn>
             <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.2]">
-              Get Quality Users from
+              Find Quality Users
               <br />
-              Cross-
+              from Cross-
               <span
                 className={`inline-block transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}
                 style={{ color: '#ed565a' }}
@@ -96,9 +96,18 @@ export const JoinReiCrossChain = () => {
             </p>
           </ScrollFadeIn>
 
+          <ScrollFadeIn delay={150}>
+            <blockquote className="text-xs md:text-sm font-mono text-primary/50 leading-relaxed border-l border-primary/30 pl-4 italic">
+              "A user who only uses Zealy may be matched to your Task on QuestN, meaning your tasks
+              and community is now exposed to the traffic from every task platform, community and
+              project userbase that Rei works with."
+            </blockquote>
+          </ScrollFadeIn>
+
           <ScrollFadeIn delay={200}>
             <PlatformTicker />
           </ScrollFadeIn>
+
 
           <ScrollFadeIn delay={300}>
             <button className="btn-manga btn-manga-primary px-8 py-3 mt-4" onClick={scrollToLastSection}>
