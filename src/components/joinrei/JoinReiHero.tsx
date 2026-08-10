@@ -1,37 +1,78 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import reiLogo from '@/assets/joinrei/rei-logo.png';
-import desktopBgAsset from '@/assets/joinrei/joinrei-desktop-bg.png.asset.json';
-import mobileBgAsset from '@/assets/joinrei/joinrei-mobile-bg.png.asset.json';
+import desktopBgAsset from '@/assets/joinrei/joinrei-desktop-bg-2.png.asset.json';
+import mobileBgAsset from '@/assets/joinrei/joinrei-mobile-bg-2.png.asset.json';
+import arubaito from '@/assets/joinrei/logo-bar-arubaito.png';
+import ignyte from '@/assets/joinrei/logo-bar-ignyte.png';
+import solanaFoundation from '@/assets/joinrei/logo-bar-solana-foundation.png';
+import colossium from '@/assets/joinrei/logo-bar-colossium.png';
 import { scrollToLastSection } from './scrollHelpers';
 
 const desktopBg = desktopBgAsset.url;
 const mobileBg = mobileBgAsset.url;
 
-const outcomes = ['Reduces User Churn', 'Reduce CAC', 'Increase LTV'];
+const outcomes = ['Reduce User Churn', 'Reduce CAC', 'Increase LTV'];
 const campaignTypes = ['Bounty', 'Airdrop'];
 
-const useRotator = (items: string[], interval = 3000) => {
-  const [index, setIndex] = useState(0);
-  const [fade, setFade] = useState(true);
+const tickerLogos = [
+  { src: arubaito, alt: 'Arubaito - Private Members Network Club', href: 'https://arubaito.app' },
+  { src: ignyte, alt: 'IGNYTE - 1 of 15 Shortlisted / 3000 Applicants' },
+  { src: solanaFoundation, alt: 'Solana Foundation' },
+  { src: colossium, alt: 'Colosseum Frontier', href: 'https://arena.colosseum.org/projects/explore/rei' },
+];
+
+/** Types a word in, holds, types it out, then moves to the next word. */
+const useTypeRotator = (items: string[], typeSpeed = 55, eraseSpeed = 30, hold = 1600) => {
+  const [text, setText] = useState('');
+  const indexRef = useRef(0);
+  const charRef = useRef(0);
+  const phaseRef = useRef<'typing' | 'holding' | 'erasing'>('typing');
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setFade(false);
-      setTimeout(() => {
-        setIndex((prev) => (prev + 1) % items.length);
-        setFade(true);
-      }, 300);
-    }, interval);
-    return () => clearInterval(id);
-  }, [items.length, interval]);
+    let timer: ReturnType<typeof setTimeout>;
 
-  return { value: items[index], fade };
+    const step = () => {
+      const word = items[indexRef.current];
+      const phase = phaseRef.current;
+
+      if (phase === 'typing') {
+        charRef.current += 1;
+        setText(word.slice(0, charRef.current));
+        if (charRef.current >= word.length) {
+          phaseRef.current = 'holding';
+          timer = setTimeout(step, hold);
+          return;
+        }
+        timer = setTimeout(step, typeSpeed);
+        return;
+      }
+
+      if (phase === 'holding') {
+        phaseRef.current = 'erasing';
+        timer = setTimeout(step, eraseSpeed);
+        return;
+      }
+
+      charRef.current -= 1;
+      setText(word.slice(0, Math.max(charRef.current, 0)));
+      if (charRef.current <= 0) {
+        indexRef.current = (indexRef.current + 1) % items.length;
+        phaseRef.current = 'typing';
+      }
+      timer = setTimeout(step, eraseSpeed);
+    };
+
+    timer = setTimeout(step, typeSpeed);
+    return () => clearTimeout(timer);
+  }, [items, typeSpeed, eraseSpeed, hold]);
+
+  return text;
 };
 
 export const JoinReiHero = () => {
   const [headlineComplete, setHeadlineComplete] = useState(false);
-  const outcome = useRotator(outcomes, 3000);
-  const campaign = useRotator(campaignTypes, 3600);
+  const outcome = useTypeRotator(outcomes);
+  const campaign = useTypeRotator(campaignTypes, 70, 40, 2000);
 
   useEffect(() => {
     const timer = setTimeout(() => setHeadlineComplete(true), 1200);
@@ -50,6 +91,8 @@ export const JoinReiHero = () => {
     }
   };
 
+  const pill = 'inline-block px-2.5 py-1 rounded-full bg-[#181818] font-bold whitespace-nowrap';
+
   return (
     <section className="h-screen snap-start relative flex overflow-hidden bg-[#0a0a0a]">
       {/* Full-width background: desktop */}
@@ -61,41 +104,54 @@ export const JoinReiHero = () => {
         <img src={mobileBg} alt="Rei's Diamond wallet behaviour score" className="w-full h-full object-cover object-center" />
       </div>
 
-      <div className="w-full lg:w-[55%] h-full flex flex-col justify-between p-8 lg:p-12 xl:p-16 relative z-10">
+      <div className="w-full lg:w-[55%] h-full p-8 lg:p-12 xl:p-16 relative z-10">
         <div className="pt-2">
-          <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light leading-[1.15] tracking-tight" style={{ color: '#181818' }}>
-            <span>Grow Your Project with</span>
+          <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-bold leading-[1.15] tracking-tight" style={{ color: '#181818' }}>
+            <span>Your Crypto Growth AI.</span>
             <br />
-            <span>Diamond Handed Holders</span>
+            <span>Filters for Diamond Hand Holders.</span>
             <br />
             <span>to </span>
-            <span
-              className={`inline-block transition-opacity duration-300 ${outcome.fade ? 'opacity-100' : 'opacity-0'}`}
-              style={{ color: '#ed565a' }}
-            >
-              {outcome.value}
+            <span style={{ color: '#ed565a' }}>
+              {outcome}
+              <span className="animate-pulse">▌</span>
             </span>
           </h1>
 
-          <p
+          <div
             className={`mt-6 text-sm md:text-base font-mono leading-relaxed transition-opacity duration-500 max-w-lg ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}
             style={{ color: '#181818' }}
           >
-            Rei Filters out the JEETs &amp; Sybils that your{' '}
-            <span
-              className={`inline-block transition-opacity duration-300 ${campaign.fade ? 'opacity-100' : 'opacity-0'}`}
-              style={{ color: '#ed565a' }}
-            >
-              {campaign.value}
-            </span>{' '}
-            campaigns attract.
-          </p>
+            <p>
+              Rei AI <strong className="font-bold">reduces</strong> marketing budget
+              <br />
+              protects from <strong className="font-bold">token dumpers</strong>
+              <br />
+              by filtering out <strong className="font-bold">JEETs</strong> &amp; <strong className="font-bold">Sybils</strong>
+              <br />
+              and rewarding <strong className="font-bold">Diamond Hands</strong>.
+            </p>
+            <p className="mt-4 flex flex-wrap items-center gap-2">
+              <span>through</span>
+              <span className={pill} style={{ color: '#ed565a' }}>Premium X</span>
+              <span className={pill} style={{ color: '#ed565a' }}>Wallet Scanning</span>
+              <span className={pill} style={{ color: '#ed565a' }}>Skill-Sync</span>
+            </p>
+            <p className="mt-4 font-bold">
+              Rei filters out the JEETs &amp; Sybils that your{' '}
+              <span style={{ color: '#ed565a' }}>
+                {campaign}
+                <span className="animate-pulse">▌</span>
+              </span>{' '}
+              campaigns attract.
+            </p>
+          </div>
         </div>
 
-        <div className={`transition-all duration-500 delay-300 ${headlineComplete ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+        <div className={`absolute left-8 lg:left-12 xl:left-16 top-1/2 -translate-y-1/2 transition-all duration-500 delay-300 ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
           <div className="flex items-center gap-6 flex-wrap">
             <button
-              className="btn-manga"
+              className="btn-manga font-bold"
               style={{ backgroundColor: '#ed565a', borderColor: '#ed565a', color: '#181818' }}
               onClick={scrollToLastSection}
             >
@@ -103,7 +159,7 @@ export const JoinReiHero = () => {
             </button>
             <button
               onClick={scrollToHowItWorks}
-              className="btn-manga btn-manga-outline"
+              className="btn-manga btn-manga-outline font-bold"
               style={{ backgroundColor: '#181818', borderColor: '#181818' }}
             >
               How it Works
@@ -114,6 +170,26 @@ export const JoinReiHero = () => {
 
       <div className="absolute top-6 right-6 lg:top-8 lg:right-8 z-30 bg-[#0a0a0a] p-2 lg:p-3">
         <img src={reiLogo} alt="Rei" className="h-16 lg:h-20 xl:h-24 w-auto block" />
+      </div>
+
+      {/* Logo ticker */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 bg-[#0a0a0a]/90 py-4 overflow-hidden">
+        <div className="flex w-max animate-[jr-ticker_28s_linear_infinite] gap-12 lg:gap-20 pr-12 lg:pr-20">
+          {[0, 1].map((dup) => (
+            <div key={dup} className="flex items-center gap-12 lg:gap-20 shrink-0" aria-hidden={dup === 1}>
+              {tickerLogos.map((logo) =>
+                logo.href ? (
+                  <a key={logo.alt} href={logo.href} target="_blank" rel="noopener noreferrer" className="opacity-90 hover:opacity-100 transition-opacity">
+                    <img src={logo.src} alt={logo.alt} className="h-10 lg:h-14 w-auto object-contain" />
+                  </a>
+                ) : (
+                  <img key={logo.alt} src={logo.src} alt={logo.alt} className="h-10 lg:h-14 w-auto object-contain opacity-90" />
+                )
+              )}
+            </div>
+          ))}
+        </div>
+        <style>{`@keyframes jr-ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
       </div>
     </section>
   );
