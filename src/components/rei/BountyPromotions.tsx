@@ -174,23 +174,27 @@ const CampaignInfoCard = ({ campaign }: { campaign: CampaignView }) => (
     </div>
 
     <div className="rei-stat-card" style={{ padding: '14px 16px' }}>
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-4">
         {[
           { label: 'Impressions', value: numFmt(campaign.uniqueImpressions), guest: campaign.guestUniqueImpressions },
           { label: 'Total Clicks', value: numFmt(campaign.totalClicks), guest: campaign.guestClicks },
           { label: 'Unique Clicks', value: numFmt(campaign.uniqueClicks), guest: campaign.guestUniqueClicks },
           { label: 'CTR', value: `${campaign.ctr.toFixed(2)}%`, guest: 0 },
         ].map((stat) => (
-          <div key={stat.label}>
-            <p style={{ fontSize: '10px', color: '#5c5a57', margin: 0, letterSpacing: '0.04em' }}>{stat.label}</p>
+          <div key={stat.label} style={{ minWidth: 0 }}>
+            <p style={{ fontSize: '10px', color: '#5c5a57', margin: 0, letterSpacing: '0.04em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{stat.label}</p>
             <p
               style={{
-                fontSize: '20px',
+                fontSize: '18px',
                 fontWeight: 500,
                 color: '#f0ede8',
                 margin: '4px 0 0',
                 letterSpacing: '-0.02em',
+                lineHeight: 1.15,
                 fontFamily: "'SF Mono', 'Consolas', monospace",
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
               }}
             >
               {stat.value}
