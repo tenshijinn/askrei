@@ -1,6 +1,7 @@
 import { JoinReiHero } from '@/components/joinrei/JoinReiHero';
 import { JoinReiValueProp } from '@/components/joinrei/JoinReiValueProp';
 import { JoinReiExposure } from '@/components/joinrei/JoinReiExposure';
+import { JoinReiCrossChain } from '@/components/joinrei/JoinReiCrossChain';
 import { JoinReiAggregation } from '@/components/joinrei/JoinReiAggregation';
 import { JoinReiDemoSection } from '@/components/joinrei/JoinReiDemoSection';
 import { JoinReiChatDemo } from '@/components/joinrei/JoinReiChatDemo';
@@ -17,7 +18,7 @@ const JoinReiOriginal = () => {
       <JoinReiValueProp />
       <JoinReiCampaignTracking />
       <HomeVideoDemo />
-      <JoinReiExposure />
+      <JoinReiCrossChain />
       <JoinReiExposure />
       <JoinReiAggregation />
       <JoinReiDemoSection />
