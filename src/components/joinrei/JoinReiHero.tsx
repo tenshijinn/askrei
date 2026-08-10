@@ -133,11 +133,32 @@ export const JoinReiHero = () => {
             </p>
             <p className="mt-4 flex flex-wrap items-center gap-2">
               <span>through</span>
-              <span className={pill} style={{ color: '#ed565a' }}>Premium X</span>
-              <span className={pill} style={{ color: '#ed565a' }}>Wallet Scanning</span>
-              <span className={pill} style={{ color: '#ed565a' }}>Skill-Sync</span>
-            </p>
-          </div>
+              <span className={pill} style={{ color: '#181818' }}>
+                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                  <path d="M12 1.5l2.4 1.75 2.96-.05 1.05 2.77 2.44 1.68-.86 2.83.86 2.83-2.44 1.68-1.05 2.77-2.96-.05L12 21.5l-2.4-1.74-2.96.05-1.05-2.77-2.44-1.68.86-2.83-.86-2.83 2.44-1.68 1.05-2.77 2.96.05zm-1.03 13.02l5.13-5.13-1.24-1.24-3.89 3.89-1.79-1.79-1.24 1.24z" />
+                </svg>
+                Premium X
+              </span>
+              <span className={pill} style={{ color: '#181818' }}>
+                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+                  <circle cx="11" cy="11" r="6" />
+                  <path d="M11 8v6M8 11h6" opacity="0.5" />
+                  <path d="M20 20l-4.5-4.5" />
+                </svg>
+                Wallet Scanning
+              </span>
+              <span className={pill} style={{ color: '#181818' }}>
+                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+                  <path d="M4 7h10M18 7h2M4 17h4M12 17h8" />
+                  <circle cx="16" cy="7" r="2" />
+                  <circle cx="10" cy="17" r="2" />
+                </svg>
+                Skill-Sync
+              </span>
+
         </div>
 
         <div className={`absolute left-8 lg:left-12 xl:left-16 top-1/2 -translate-y-1/2 transition-all duration-500 delay-300 ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
