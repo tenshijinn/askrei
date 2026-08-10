@@ -271,16 +271,22 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
           setClicks([]);
           setImpressions([]);
         } else {
-          const { data: stats, error: statsErr } = await supabase.functions.invoke(
-            'campaign-stats',
-            { body: { campaignIds: ids } }
+          // campaign-stats intentionally accepts at most 100 IDs per request.
+          // Publishers with more campaigns must be fetched in batches.
+          const batches: string[][] = [];
+          for (let index = 0; index < ids.length; index += 100) {
+            batches.push(ids.slice(index, index + 100));
+          }
+          const results = await Promise.all(
+            batches.map((campaignIds) =>
+              supabase.functions.invoke('campaign-stats', { body: { campaignIds } })
+            )
           );
-          if (statsErr) throw statsErr;
-          const ck = stats?.clicks ?? [];
-          const im = stats?.impressions ?? [];
-          const imErr = null;
+          const failedResult = results.find((result) => result.error);
+          if (failedResult?.error) throw failedResult.error;
+          const ck = results.flatMap((result) => result.data?.clicks ?? []);
+          const im = results.flatMap((result) => result.data?.impressions ?? []);
           const rows: ClickRow[] = (ck || []).map((r: any) => ({
-
             campaign_subscription_id: r.campaign_subscription_id,
             click_date: r.click_date,
             total_clicks: Number(r.total_clicks) || 0,
@@ -289,22 +295,19 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
             guest_unique_clicks: Number(r.guest_unique_clicks) || 0,
           }));
           if (!cancelled) setClicks(rows);
-          if (!imErr) {
-            const iRows: ImpressionRow[] = (im || []).map((r: any) => ({
-              campaign_subscription_id: r.campaign_subscription_id,
-              impression_date: r.impression_date,
-              total_impressions: Number(r.total_impressions) || 0,
-              unique_impressions: Number(r.unique_impressions) || 0,
-              guest_impressions: Number(r.guest_impressions) || 0,
-              guest_unique_impressions: Number(r.guest_unique_impressions) || 0,
-            }));
-            if (!cancelled) setImpressions(iRows);
-          }
+          const iRows: ImpressionRow[] = (im || []).map((r: any) => ({
+            campaign_subscription_id: r.campaign_subscription_id,
+            impression_date: r.impression_date,
+            total_impressions: Number(r.total_impressions) || 0,
+            unique_impressions: Number(r.unique_impressions) || 0,
+            guest_impressions: Number(r.guest_impressions) || 0,
+            guest_unique_impressions: Number(r.guest_unique_impressions) || 0,
+          }));
+          if (!cancelled) setImpressions(iRows);
         }
       } catch (e) {
         if (!cancelled) {
-          console.warn('[BountyPromotions] load failed; showing empty state:', e);
-          setCampaigns([]);
+          console.warn('[BountyPromotions] analytics load failed; preserving campaigns:', e);
           setClicks([]);
           setImpressions([]);
           setError(null);
