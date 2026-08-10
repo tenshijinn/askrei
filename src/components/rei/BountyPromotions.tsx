@@ -230,7 +230,10 @@ const CampaignInfoCard = ({ campaign }: { campaign: CampaignView }) => (
 interface Props {
   xUserId?: string | null;
   walletAddress?: string | null;
+  /** When true, renders without its own card surface/title (parent supplies them). */
+  embedded?: boolean;
 }
+
 
 export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
   const [range, setRange] = useState<Range>('all');
