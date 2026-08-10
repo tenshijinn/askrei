@@ -1,6 +1,6 @@
 import { JoinReiHero } from '@/components/joinrei/JoinReiHero';
 import { JoinReiValueProp } from '@/components/joinrei/JoinReiValueProp';
-import { JoinReiExposure } from '@/components/joinrei/JoinReiExposure';
+
 import { JoinReiCrossChain } from '@/components/joinrei/JoinReiCrossChain';
 import { JoinReiDiamondScore } from '@/components/joinrei/JoinReiDiamondScore';
 import { JoinReiDemoSection } from '@/components/joinrei/JoinReiDemoSection';
