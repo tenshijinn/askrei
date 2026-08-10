@@ -488,21 +488,22 @@ export const JoinReiDemoSection = () => {
           <ScrollFadeIn delay={150}>
             <div className="flex flex-col items-center text-center">
               <h3 className="text-xl font-light text-cream font-mono mb-4">
-                Find Tasks
+                Promote Bounty
               </h3>
-              <ChatMockup active={isActive} reduced={reduced} />
+              <PostTaskMockup active={isActive} reduced={reduced} />
             </div>
           </ScrollFadeIn>
 
           <ScrollFadeIn delay={300}>
             <div className="flex flex-col items-center text-center">
               <h3 className="text-xl font-light text-cream font-mono mb-4">
-                Promote Bounty
+                Track Performance
               </h3>
-              <PostTaskMockup active={isActive} reduced={reduced} />
+              <PromotionsMockup />
             </div>
           </ScrollFadeIn>
         </div>
+
 
         <ScrollFadeIn delay={500}>
           <div className="flex justify-center mt-8">
