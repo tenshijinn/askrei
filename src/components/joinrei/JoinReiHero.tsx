@@ -12,7 +12,6 @@ const desktopBg = desktopBgAsset.url;
 const mobileBg = mobileBgAsset.url;
 
 const outcomes = ['Reduce User Churn', 'Reduce CAC', 'Increase LTV'];
-const campaignTypes = ['Bounty', 'Airdrop'];
 
 const tickerLogos = [
   { src: arubaito, alt: 'Arubaito - Private Members Network Club', href: 'https://arubaito.app' },
@@ -72,7 +71,6 @@ const useTypeRotator = (items: string[], typeSpeed = 55, eraseSpeed = 30, hold =
 export const JoinReiHero = () => {
   const [headlineComplete, setHeadlineComplete] = useState(false);
   const outcome = useTypeRotator(outcomes);
-  const campaign = useTypeRotator(campaignTypes, 70, 40, 2000);
 
   useEffect(() => {
     const timer = setTimeout(() => setHeadlineComplete(true), 1200);
@@ -136,14 +134,6 @@ export const JoinReiHero = () => {
               <span className={pill} style={{ color: '#ed565a' }}>Premium X</span>
               <span className={pill} style={{ color: '#ed565a' }}>Wallet Scanning</span>
               <span className={pill} style={{ color: '#ed565a' }}>Skill-Sync</span>
-            </p>
-            <p className="mt-4 font-bold">
-              Rei filters out the JEETs &amp; Sybils that your{' '}
-              <span style={{ color: '#ed565a' }}>
-                {campaign}
-                <span className="animate-pulse">▌</span>
-              </span>{' '}
-              campaigns attract.
             </p>
           </div>
         </div>
