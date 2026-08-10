@@ -15,6 +15,7 @@ const JoinReiOriginal = () => {
       <JoinReiHero />
       <LogoBar />
       <JoinReiChatDemo />
+      <JoinReiCampaignTracking />
       <HomeVideoDemo />
       <JoinReiValueProp />
       <JoinReiAggregation />
