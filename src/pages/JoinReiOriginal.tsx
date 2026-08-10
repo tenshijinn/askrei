@@ -16,6 +16,7 @@ const JoinReiOriginal = () => {
       <JoinReiCampaignTracking />
       <HomeVideoDemo />
       <JoinReiValueProp />
+      <JoinReiValueProp />
       <JoinReiAggregation />
       <JoinReiDemoSection />
       <JoinReiValueProp />
