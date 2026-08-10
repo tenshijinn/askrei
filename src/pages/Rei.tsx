@@ -486,8 +486,14 @@ export default function Rei() {
                   </div>
                   {analysis?.wallet_verification?.verified && <div className="flex items-center gap-2 mt-4 pt-3" style={{ borderTop: '0.5px solid hsla(0,0%,100%,0.06)' }}><Shield className="h-3.5 w-3.5" style={{ color: '#e8c4b8' }} /><span style={{ fontSize: '11px', color: '#a09e9a' }}>Wallet verified · {analysis.wallet_verification.chain} · {analysis.wallet_verification.account_age_days}d old · {analysis.wallet_verification.transaction_count} txns</span></div>}
                 </div>
-                {analysis && <div className="rei-surface" style={{ padding: '24px' }}>
+                {analysis && <AccountAccordionCard
+                  title="Your Diamond Hand Score"
+                  subtitle="Your onchain reputation and profile capabilities."
+                  open={openCard === 'diamond'}
+                  onToggle={() => setOpenCard(openCard === 'diamond' ? null : 'diamond')}
+                >
                   <span className="rei-section-label">Capabilities</span>
+
                   {(registrationData.diamond_score != null || registrationData.wallet_behaviour) && (() => {
                     const wb = registrationData.wallet_behaviour as any;
                     const sub = wb?.subscores || {};
