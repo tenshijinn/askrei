@@ -18,6 +18,7 @@ const JoinReiOriginal = () => {
       <JoinReiValueProp />
       <JoinReiAggregation />
       <JoinReiDemoSection />
+      <JoinReiValueProp />
       <JoinReiReferral />
       <JoinReiPricing />
     </div>
