@@ -26,6 +26,8 @@ import { TypewriterCtaButton } from '@/components/buttons/TypewriterCtaButton';
 import { useRegistrationWalkthrough } from '@/hooks/useRegistrationWalkthrough';
 import { walkthroughCopy } from '@/components/joinrei/walkthroughContent';
 import { BountyPromotions } from '@/components/rei/BountyPromotions';
+import { AccountAccordionCard } from '@/components/rei/AccountAccordionCard';
+
 
 import { ConnectReiCard } from '@/components/rei/ConnectReiCard';
 import { ReiDiamondShareCard } from '@/components/rei/ReiDiamondShareCard';
@@ -69,6 +71,8 @@ export default function Rei() {
   const [whitelistSubmitted, setWhitelistSubmitted] = useState(false);
   const [registrationData, setRegistrationData] = useState<any>(null);
   const [shareOpen, setShareOpen] = useState(false);
+  const [openCard, setOpenCard] = useState<'diamond' | 'promotions' | null>('diamond');
+
   const [isEditMode, setIsEditMode] = useState(false);
   const [isLoadingRegistration, setIsLoadingRegistration] = useState(false);
   const [useExistingTranscript, setUseExistingTranscript] = useState(false);
@@ -486,8 +490,14 @@ export default function Rei() {
                   </div>
                   {analysis?.wallet_verification?.verified && <div className="flex items-center gap-2 mt-4 pt-3" style={{ borderTop: '0.5px solid hsla(0,0%,100%,0.06)' }}><Shield className="h-3.5 w-3.5" style={{ color: '#e8c4b8' }} /><span style={{ fontSize: '11px', color: '#a09e9a' }}>Wallet verified · {analysis.wallet_verification.chain} · {analysis.wallet_verification.account_age_days}d old · {analysis.wallet_verification.transaction_count} txns</span></div>}
                 </div>
-                {analysis && <div className="rei-surface" style={{ padding: '24px' }}>
+                {analysis && <AccountAccordionCard
+                  title="Your Diamond Hand Score"
+                  subtitle="Your onchain reputation and profile capabilities."
+                  open={openCard === 'diamond'}
+                  onToggle={() => setOpenCard(openCard === 'diamond' ? null : 'diamond')}
+                >
                   <span className="rei-section-label">Capabilities</span>
+
                   {(registrationData.diamond_score != null || registrationData.wallet_behaviour) && (() => {
                     const wb = registrationData.wallet_behaviour as any;
                     const sub = wb?.subscores || {};
@@ -533,7 +543,7 @@ export default function Rei() {
                   })()}
                   {analysis.category_scores && <div className="grid grid-cols-2 gap-3 mb-5">{Object.entries(analysis.category_scores).map(([category, score]: [string, any]) => <div key={category} className="rei-stat-card" style={{ padding: '12px' }}><div className="flex justify-between items-center mb-2"><span style={{ fontSize: '11px', textTransform: 'capitalize', color: '#5c5a57', letterSpacing: '0.04em' }}>{category.replace('_', ' ')}</span><span style={{ fontSize: '13px', fontWeight: 500, color: '#f0ede8' }}>{score}/25</span></div><Progress value={(score / 25) * 100} className="h-1.5" /></div>)}</div>}
                   {analysis.key_strengths?.length > 0 && <div><div className="rei-section-label">Key Strengths</div><div className="space-y-1.5">{analysis.key_strengths.map((strength: string, idx: number) => <div key={idx} className="flex items-start gap-2" style={{ fontSize: '13px', color: '#a09e9a' }}><CheckCircle2 className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" style={{ color: '#e8c4b8' }} /><span>{strength}</span></div>)}</div></div>}
-                </div>}
+                </AccountAccordionCard>}
                 <ReiDiamondShareCard
                   open={shareOpen}
                   onClose={() => setShareOpen(false)}
@@ -545,7 +555,15 @@ export default function Rei() {
                   subscores={(registrationData.wallet_behaviour as any)?.subscores}
                 />
 
-                <BountyPromotions xUserId={twitterUser?.x_user_id} walletAddress={effectiveWallet || registrationData?.wallet_address} />
+                <AccountAccordionCard
+                  title="Bounty Promotions"
+                  subtitle="Bounties you've boosted with Rei and their performance."
+                  open={openCard === 'promotions'}
+                  onToggle={() => setOpenCard(openCard === 'promotions' ? null : 'promotions')}
+                >
+                  <BountyPromotions embedded xUserId={twitterUser?.x_user_id} walletAddress={effectiveWallet || registrationData?.wallet_address} />
+                </AccountAccordionCard>
+
                 
                 <button data-tour="edit-profile" onClick={() => setIsEditMode(true)} className="btn-manga btn-manga-outline w-full" style={{ borderRadius: '28px', padding: '11px 22px', fontSize: '13px', cursor: 'pointer' }}>Edit Profile</button>
                 <button onClick={walkthrough.replay} className="w-full" style={{ background: 'none', border: 'none', color: '#a09e9a', fontSize: '12px', textDecoration: 'underline', textUnderlineOffset: 3, cursor: 'pointer', paddingTop: 4 }}>Replay walkthrough</button>

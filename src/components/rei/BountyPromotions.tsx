@@ -230,9 +230,12 @@ const CampaignInfoCard = ({ campaign }: { campaign: CampaignView }) => (
 interface Props {
   xUserId?: string | null;
   walletAddress?: string | null;
+  /** When true, renders without its own card surface/title (parent supplies them). */
+  embedded?: boolean;
 }
 
-export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
+
+export const BountyPromotions = ({ xUserId, walletAddress, embedded = false }: Props) => {
   const [range, setRange] = useState<Range>('all');
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -399,16 +402,19 @@ export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
   }, [campaigns, clicks, impressions, range]);
 
   return (
-    <div className="rei-surface" style={{ padding: '24px' }}>
-      <div className="flex items-start justify-between gap-4 mb-5">
-        <div>
-          <h2 style={{ fontSize: '18px', fontWeight: 500, color: '#f0ede8', margin: 0, letterSpacing: '-0.02em' }}>
-            Bounty Promotions
-          </h2>
-          <p style={{ fontSize: '12px', color: '#5c5a57', margin: '4px 0 0' }}>
-            Bounties you've boosted with Rei and their performance.
-          </p>
-        </div>
+    <div className={embedded ? '' : 'rei-surface'} style={embedded ? undefined : { padding: '24px' }}>
+      <div className={embedded ? 'flex items-start justify-end gap-4 mb-4' : 'flex items-start justify-between gap-4 mb-5'}>
+        {!embedded && (
+          <div>
+            <h2 style={{ fontSize: '18px', fontWeight: 500, color: '#f0ede8', margin: 0, letterSpacing: '-0.02em' }}>
+              Bounty Promotions
+            </h2>
+            <p style={{ fontSize: '12px', color: '#5c5a57', margin: '4px 0 0' }}>
+              Bounties you've boosted with Rei and their performance.
+            </p>
+          </div>
+        )}
+
         <div style={{ position: 'relative' }}>
           <button
             type="button"
