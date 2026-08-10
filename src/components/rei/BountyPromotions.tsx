@@ -235,7 +235,7 @@ interface Props {
 }
 
 
-export const BountyPromotions = ({ xUserId, walletAddress }: Props) => {
+export const BountyPromotions = ({ xUserId, walletAddress, embedded = false }: Props) => {
   const [range, setRange] = useState<Range>('all');
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
