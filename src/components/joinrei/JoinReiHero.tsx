@@ -163,7 +163,7 @@ export const JoinReiHero = () => {
         </div>
 
 
-        <div className={`absolute left-8 lg:left-12 xl:left-16 top-1/2 -translate-y-1/2 transition-all duration-500 delay-300 ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`absolute left-8 lg:left-12 xl:left-16 top-[60%] -translate-y-1/2 transition-all duration-500 delay-300 ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
           <div className="flex items-center gap-6 flex-wrap">
             <button
               className="btn-manga font-bold"
