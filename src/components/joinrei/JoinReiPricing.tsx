@@ -27,8 +27,8 @@ interface PricingTier {
   price: PricingPoint;
   icon: string;
   premium: boolean;
-  positioning: string;
   totalValue: string;
+  yourPrice: string;
   usps: Usp[];
 }
 
@@ -40,7 +40,7 @@ const pricingTiers: PricingTier[] = [
     subtitle: 'Per Campaign',
     price: {
       price: '$500',
-      period: 'per campaign',
+      period: '',
       perDay: null,
       saveNote: 'Saving ~$16,500 vs total value',
       originalPrice: '$5,000',
@@ -48,9 +48,8 @@ const pricingTiers: PricingTier[] = [
     },
     icon: iconDIY,
     premium: false,
-    positioning:
-      'KOL activation + AI-powered Web3 distribution + Diamond Hand scoring and Anti-Sybil protection.',
     totalValue: '~$17,000',
+    yourPrice: '$5,000',
     usps: [
       { summary: 'Diamond Hand Score', detail: 'Rei scores users by their wallet activity and on-chain behavior to find stronger, more genuine contributors.', worth: '$2,000' },
       { summary: 'Anti-Sybil Protection', detail: 'Rei helps filter out fake, duplicate, farmed, and low-quality users before they waste your campaign budget.', worth: '$2,000' },
@@ -75,16 +74,17 @@ const pricingTiers: PricingTier[] = [
     leverage: 'Full-Spectrum Campaign',
     subtitle: 'Per Campaign',
     price: {
-      price: '$25,000',
-      period: 'per campaign',
+      price: '$2,500',
+      period: '',
       perDay: null,
       saveNote: 'Saving ~$16,750 vs total value',
+      originalPrice: '$25,000',
+      betaLabel: 'Beta Launch Price',
     },
     icon: iconAutomated,
     premium: false,
-    positioning:
-      'KOLs + Reddit Ads + Telegram Ads + experimental ChatGPT Ads + full Web3 distribution + Diamond Hand scoring and Anti-Sybil protection.',
     totalValue: '~$41,750',
+    yourPrice: '$25,000',
     usps: [
       { summary: 'Multi-Channel Ads', detail: 'Run paid campaigns across Reddit Ads, Telegram Ads, and experimental ChatGPT Ads to reach new audiences. ChatGPT Ads are Beta/Experimental and receive only a smaller share of the ad spend. This is paid advertising — it does not include access to Telegram groups or Reddit communities.', worth: '$9,000' },
       { summary: 'Diamond Hand Score', detail: 'Rei scores users by their wallet activity and on-chain behavior to find stronger, more genuine contributors.', worth: '$4,000' },
