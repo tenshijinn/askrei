@@ -228,6 +228,14 @@ export const JoinReiPricing = () => {
                         {tier.totalValue}
                       </span>
                     </div>
+
+                    <div className="mt-2 pt-2 flex items-center justify-between">
+                      <span className="text-cream/60 text-[11px] font-mono uppercase tracking-wider">Your Price</span>
+                      <span className={`text-base font-light font-mono ${isTeal ? 'text-cyan-300' : 'text-primary'}`}>
+                        {tier.yourPrice}
+                      </span>
+                    </div>
+
                   </div>
                 </div>
               </ScrollFadeIn>
