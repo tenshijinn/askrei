@@ -1,11 +1,7 @@
-import { useState } from 'react';
 import { ScrollFadeIn } from './ScrollFadeIn';
 import { Check } from 'lucide-react';
-import solanaBadges from '@/assets/joinrei/solana-badges.png';
 import iconDIY from '@/assets/pricing-diy.png';
 import iconAutomated from '@/assets/pricing-automated.png';
-
-type Interval = 'monthly' | 'yearly';
 
 interface PricingPoint {
   price: string;
@@ -25,14 +21,12 @@ interface Usp {
 interface PricingTier {
   name: string;
   nameAccent: string | null;
+  accentStyle?: 'primary' | 'teal';
   leverage: string | null;
   subtitle: string;
-  prices: { monthly: PricingPoint; yearly?: PricingPoint };
-  hasToggle: boolean;
+  price: PricingPoint;
   icon: string;
   premium: boolean;
-  bookCall: boolean;
-  showSolanaBadges?: boolean;
   positioning: string;
   totalValue: string;
   usps: Usp[];
@@ -40,63 +34,80 @@ interface PricingTier {
 
 const pricingTiers: PricingTier[] = [
   {
-    name: 'DIY Community Growth Engine',
+    name: 'AI Crypto Growth',
     nameAccent: null,
-    leverage: 'x10 Leverage User Growth',
-    subtitle: '1 Promotion Post',
-    prices: {
-      monthly: { price: '$5', period: 'Per Post', perDay: null, saveNote: null, originalPrice: '$50', betaLabel: 'Beta Launch Price' },
+    leverage: 'Web3 Distribution Campaign',
+    subtitle: 'Per Campaign',
+    price: {
+      price: '$500',
+      period: 'per campaign',
+      perDay: null,
+      saveNote: 'Saving ~$16,500 vs total value',
+      originalPrice: '$5,000',
+      betaLabel: 'Beta Launch Price',
     },
-    hasToggle: false,
     icon: iconDIY,
     premium: false,
-    bookCall: false,
-    showSolanaBadges: false,
-    positioning: 'One-off task amplification to relevant Web3 contributors.',
-    totalValue: '~$685',
+    positioning:
+      'KOL activation + AI-powered Web3 distribution + Diamond Hand scoring and Anti-Sybil protection.',
+    totalValue: '~$17,000',
     usps: [
-      { summary: 'Skill-matched contributors', detail: 'Matched by wallet history + declared skills so your task lands in front of the right people.', worth: '$120' },
-      { summary: 'Cross-platform task discovery', detail: 'Your post is discoverable across every quest platform Rei aggregates.', worth: '$90' },
-      { summary: 'Visibility across quest platforms', detail: 'Reach contributors on Galxe, Zealy, QuestN, TaskOn, and Layer3.', worth: '$150' },
-      { summary: 'Discovery beyond your own community', detail: 'Tap into Rei contributors who would never have found you otherwise.', worth: '$75' },
-      { summary: 'Cross-chain reach', detail: 'Solana, Ethereum, Polygon, Arbitrum, and Base contributors all included.', worth: '$100' },
-      { summary: 'AI-filtered relevance', detail: 'Rei filters out farmers and surfaces contributors who actually fit your task.', worth: '$60' },
-      { summary: 'No contributor onboarding required', detail: 'Contributors keep using their existing quest platforms — no signup friction.', worth: '$40' },
-      { summary: 'Traffic routed back to original platform', detail: 'All clicks land on your original task URL — your funnel stays intact.', worth: '$50' },
+      { summary: 'Diamond Hand Score', detail: 'Rei scores users by their wallet activity and on-chain behavior to find stronger, more genuine contributors.', worth: '$2,000' },
+      { summary: 'Anti-Sybil Protection', detail: 'Rei helps filter out fake, duplicate, farmed, and low-quality users before they waste your campaign budget.', worth: '$2,000' },
+      { summary: 'KOL Network Activation', detail: 'We find Web3 KOLs who fit your project and can help put it in front of the right people.', worth: '$3,000' },
+      { summary: 'KOL Campaign Management', detail: 'Rei handles KOL outreach, briefs, talks, and campaign setup for you.', worth: '$2,000' },
+      { summary: 'AI Audience Matching', detail: 'Rei uses AI to find people and groups that best match your campaign.', worth: '$1,000' },
+      { summary: 'Cross-Platform Distribution', detail: 'Your campaign is shared across multiple Web3 task and opportunity platforms.', worth: '$1,500' },
+      { summary: 'Quest Platform Amplification', detail: 'Get your campaign in front of people already looking for Web3 tasks and rewards.', worth: '$1,000' },
+      { summary: 'Cross-Chain Reach', detail: 'Reach Web3 users across different chains, not just your own chain.', worth: '$750' },
+      { summary: 'AI Relevance Filtering', detail: 'Rei filters the audience so your campaign reaches people who are more likely to care.', worth: '$500' },
+      { summary: 'Beyond Your Community', detail: 'Reach new people outside your own followers and community.', worth: '$750' },
+      { summary: 'No Contributor Onboarding', detail: 'Contributors do not need to join a new system before taking action.', worth: '$500' },
+      { summary: 'Campaign Analytics', detail: 'See how your campaign is being shared and how people are engaging with it.', worth: '$750' },
+      { summary: 'Post-Launch Amplification', detail: 'Keep your campaign moving after the first push instead of stopping after one post.', worth: '$750' },
+      { summary: 'Direct Traffic Routing', detail: 'People are sent straight back to your campaign, task, or platform.', worth: '$500' },
     ],
   },
   {
-    name: 'Community Growth Engine',
-    nameAccent: 'Automated',
-    leverage: 'x10 Leverage User Growth',
-    subtitle: 'Unlimited Promotion Posts',
-    prices: {
-      monthly: { price: '$99', period: 'p/m', perDay: 'Just $3.30 per day', saveNote: null },
-      yearly: { price: '$999', period: 'p/y', perDay: 'Just $2.73 per day', saveNote: 'Save 15.9% vs monthly' },
+    name: 'AI Crypto Growth',
+    nameAccent: '[Hyper]',
+    accentStyle: 'teal',
+    leverage: 'Full-Spectrum Campaign',
+    subtitle: 'Per Campaign',
+    price: {
+      price: '$25,000',
+      period: 'per campaign',
+      perDay: null,
+      saveNote: 'Saving ~$16,750 vs total value',
     },
-    hasToggle: true,
     icon: iconAutomated,
     premium: false,
-    bookCall: false,
-    positioning: 'Always-on distribution for teams running continuous tasks.',
-    totalValue: '~$2,010',
+    positioning:
+      'KOLs + Reddit Ads + Telegram Ads + experimental ChatGPT Ads + full Web3 distribution + Diamond Hand scoring and Anti-Sybil protection.',
+    totalValue: '~$41,750',
     usps: [
-      { summary: 'Auto-sync of campaign tasks', detail: 'Continuous sync across Galxe, Zealy, QuestN, TaskOn, Layer3 and custom sources.', worth: '$400' },
-      { summary: 'API ingestion', detail: 'Drop a link — Rei keeps the task fresh and re-indexed automatically.', worth: '$250' },
-      { summary: 'Auto-categorisation', detail: 'Tasks are tagged by skill, chain, and payout type so matching stays sharp.', worth: '$220' },
-      { summary: 'Continuous skill-matched distribution', detail: 'Always-on matching to skill-aligned wallets through AskRei + Agent Rei.', worth: '$300' },
-      { summary: 'Cross-chain reach', detail: 'Solana, Ethereum, Polygon, Arbitrum, and Base contributors all included.', worth: '$200' },
-      { summary: 'Reduced contributor overlap', detail: 'Priority freshness rotation ensures the same contributors are not spammed.', worth: '$180' },
-      { summary: 'Performance insights', detail: 'See tasks indexed, sync cycles, and last sync timestamps in real time.', worth: '$150' },
-      { summary: 'Monthly or yearly billing', detail: 'Switch any time — yearly plan saves 15.9% vs monthly.', worth: '$120' },
-      { summary: 'Lower effective cost per task', detail: 'Unlimited posting drives your per-task amplification cost toward zero.', worth: '$90' },
+      { summary: 'Multi-Channel Ads', detail: 'Run paid campaigns across Reddit Ads, Telegram Ads, and experimental ChatGPT Ads to reach new audiences. ChatGPT Ads are Beta/Experimental and receive only a smaller share of the ad spend. This is paid advertising — it does not include access to Telegram groups or Reddit communities.', worth: '$9,000' },
+      { summary: 'Diamond Hand Score', detail: 'Rei scores users by their wallet activity and on-chain behavior to find stronger, more genuine contributors.', worth: '$4,000' },
+      { summary: 'Anti-Sybil Protection', detail: 'Rei helps filter out fake, duplicate, farmed, and low-quality users before they waste your campaign budget.', worth: '$4,000' },
+      { summary: 'KOL Network Activation', detail: 'We find Web3 KOLs who fit your project and can help put it in front of the right people.', worth: '$5,000' },
+      { summary: 'KOL Campaign Management', detail: 'Rei handles KOL outreach, briefs, talks, and campaign setup for you.', worth: '$3,500' },
+      { summary: 'AI Audience Matching', detail: 'Rei uses AI to find people and groups that best match your campaign.', worth: '$2,000' },
+      { summary: 'Cross-Platform Distribution', detail: 'Your campaign is shared across multiple Web3 task and opportunity platforms.', worth: '$1,500' },
+      { summary: 'Quest Platform Amplification', detail: 'Get your campaign in front of people already looking for Web3 tasks and rewards.', worth: '$1,500' },
+      { summary: 'Cross-Chain Reach', detail: 'Reach Web3 users across different chains, not just your own chain.', worth: '$1,250' },
+      { summary: 'AI Relevance Filtering', detail: 'Rei filters the audience so your campaign reaches people who are more likely to care.', worth: '$1,000' },
+      { summary: 'Beyond Your Community', detail: 'Reach new people outside your own followers and community.', worth: '$1,250' },
+      { summary: 'No Contributor Onboarding', detail: 'Contributors do not need to join a new system before taking action.', worth: '$750' },
+      { summary: 'Campaign Analytics', detail: 'See how your campaign is being shared and how people are engaging with it.', worth: '$1,000' },
+      { summary: 'Post-Launch Amplification', detail: 'Keep your campaign moving after the first push instead of stopping after one post.', worth: '$1,250' },
+      { summary: 'Direct Traffic Routing', detail: 'People are sent straight back to your campaign, task, or platform.', worth: '$750' },
     ],
   },
 ];
 
-export const JoinReiPricing = () => {
-  const [intervals, setIntervals] = useState<Record<number, Interval>>({});
+const CALENDLY_URL = 'https://calendly.com/wayneanthonyd-thepipegdao/join-rei';
 
+export const JoinReiPricing = () => {
   return (
     <section className="min-h-screen snap-start relative flex items-center justify-center overflow-hidden bg-[#0a0a0a] py-20">
       <div className="container mx-auto px-4 lg:px-8">
@@ -108,23 +119,14 @@ export const JoinReiPricing = () => {
 
         <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto items-stretch">
           {pricingTiers.map((tier, index) => {
-            const isPremium = tier.premium;
-            const isAutomated = tier.nameAccent === 'Automated';
-            const isUnlimited = isAutomated;
-
-            const interval: Interval = intervals[index] ?? 'monthly';
-            const activePrice =
-              tier.hasToggle && interval === 'yearly' && tier.prices.yearly
-                ? tier.prices.yearly
-                : tier.prices.monthly;
+            const isTeal = tier.accentStyle === 'teal';
+            const activePrice = tier.price;
 
             return (
               <ScrollFadeIn key={`${tier.name}-${index}`} delay={index * 100}>
                 <div
-                  className={`relative h-full flex flex-col rounded-2xl border-[0.5px] overflow-hidden transition-all duration-300 hover:shadow-2xl ${
-                    isPremium
-                      ? 'border-amber-500/40 bg-[#141414] hover:shadow-amber-500/10'
-                      : 'border-white/10 bg-[#141414] hover:shadow-white/5'
+                  className={`relative h-full flex flex-col rounded-2xl border-[0.5px] overflow-hidden bg-[#141414] transition-all duration-300 hover:shadow-2xl ${
+                    isTeal ? 'border-cyan-400/40 hover:shadow-cyan-400/10' : 'border-white/10 hover:shadow-white/5'
                   }`}
                 >
                   {/* HEADER */}
@@ -134,71 +136,32 @@ export const JoinReiPricing = () => {
                         <img src={tier.icon} alt="" className="h-10 w-10 object-contain" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3
-                          className={`text-base font-light font-mono leading-snug ${
-                            isPremium ? 'text-amber-500' : 'text-primary'
-                          }`}
-                        >
+                        <h3 className="text-base font-light font-mono leading-snug text-primary">
+                          {tier.name}
                           {tier.nameAccent && (
                             <>
-                              <span className="pulse-glow">{tier.nameAccent}</span>{' '}
+                              {' '}
+                              <span className={isTeal ? 'teal-glow' : 'pulse-glow'}>{tier.nameAccent}</span>
                             </>
                           )}
-                          {tier.name}
                         </h3>
                         {tier.leverage && (
-                          <span className="block text-[10px] text-cream/50 tracking-wider mt-0.5 font-mono">
+                          <span className="block text-[10px] text-cream/50 tracking-wider mt-0.5 font-mono uppercase">
                             {tier.leverage}
                           </span>
                         )}
                       </div>
                     </div>
 
-                    {tier.hasToggle && tier.prices.yearly ? (
-                      <div className="inline-grid grid-cols-2 gap-1 p-1 rounded-full border border-white/10 bg-[#0f0f0f] mb-4">
-                        {(['monthly', 'yearly'] as Interval[]).map((opt) => {
-                          const active = interval === opt;
-                          return (
-                            <button
-                              key={opt}
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setIntervals((prev) => ({ ...prev, [index]: opt }));
-                              }}
-                              className={`px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-mono transition-all ${
-                                active ? 'bg-primary text-[#0a0a0a] font-medium' : 'text-cream/60 hover:text-cream'
-                              }`}
-                            >
-                              {opt === 'monthly' ? 'Monthly' : 'Yearly'}
-                              {opt === 'yearly' && (
-                                <span
-                                  className={`ml-1 px-1 py-0.5 rounded-full text-[8px] ${
-                                    active ? 'bg-[#0a0a0a]/20 text-[#0a0a0a]' : 'bg-primary/20 text-primary'
-                                  }`}
-                                >
-                                  -15.9%
-                                </span>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <div aria-hidden className="mb-4 h-[30px]" />
-                    )}
-
-                    <div className="flex items-baseline gap-2 mb-1">
+                    <div className="min-h-[18px] mb-1">
                       {activePrice.betaLabel && (
                         <span className="text-[10px] font-mono uppercase tracking-wider text-primary/90">
                           {activePrice.betaLabel}
                         </span>
                       )}
                     </div>
-                    <div className="flex items-baseline gap-2 mb-1">
-                      <span
-                        className={`text-4xl font-light font-mono ${isPremium ? 'text-amber-500' : 'text-cream'}`}
-                      >
+                    <div className="flex items-baseline gap-2 mb-1 flex-wrap">
+                      <span className={`text-4xl font-light font-mono ${isTeal ? 'text-cyan-300' : 'text-cream'}`}>
                         {activePrice.price}
                       </span>
                       {activePrice.originalPrice && (
@@ -210,9 +173,6 @@ export const JoinReiPricing = () => {
                     </div>
 
                     <div className="min-h-[18px] mb-3">
-                      {activePrice.perDay && (
-                        <p className="text-[11px] text-primary/90 font-mono">{activePrice.perDay}</p>
-                      )}
                       {activePrice.saveNote && (
                         <p className="text-[10px] text-cream/50 font-mono">{activePrice.saveNote}</p>
                       )}
@@ -222,28 +182,14 @@ export const JoinReiPricing = () => {
 
                     <button
                       className={`w-full font-mono py-2.5 rounded-full transition-all duration-300 text-sm ${
-                        isPremium
-                          ? 'bg-amber-500 text-[#0a0a0a] hover:bg-amber-400'
+                        isTeal
+                          ? 'bg-cyan-400 text-[#0a0a0a] hover:bg-cyan-300'
                           : 'btn-manga btn-manga-primary'
                       }`}
-                      onClick={() => {
-                        if (isUnlimited) {
-                          window.location.href = `/unlimited-posts?interval=${interval}`;
-                        } else if (tier.bookCall) {
-                          window.open('https://calendly.com/wayneanthonyd-thepipegdao/join-rei', '_blank');
-                        } else {
-                          window.location.href = '/rei';
-                        }
-                      }}
+                      onClick={() => window.open(CALENDLY_URL, '_blank')}
                     >
-                      {isUnlimited ? 'Start Subscription' : 'Get Started'}
+                      Book a Call
                     </button>
-
-                    {tier.showSolanaBadges && (
-                      <div className="flex justify-center mt-4">
-                        <img src={solanaBadges} alt="Solana Pay & x402" className="h-6 w-auto object-contain opacity-80" />
-                      </div>
-                    )}
                   </div>
 
                   {/* FEATURES */}
@@ -262,7 +208,7 @@ export const JoinReiPricing = () => {
                           <div className="flex items-start gap-2.5">
                             <Check
                               className={`h-3.5 w-3.5 mt-0.5 flex-shrink-0 ${
-                                isPremium ? 'text-amber-500' : 'text-primary'
+                                isTeal ? 'text-cyan-300' : 'text-primary'
                               }`}
                             />
                             <span className="text-cream/85 text-xs font-mono leading-relaxed flex-1">
@@ -283,7 +229,7 @@ export const JoinReiPricing = () => {
 
                     <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-between">
                       <span className="text-cream/60 text-[11px] font-mono uppercase tracking-wider">Total Value</span>
-                      <span className={`text-base font-light font-mono ${isPremium ? 'text-amber-500' : 'text-primary'}`}>
+                      <span className={`text-base font-light font-mono ${isTeal ? 'text-cyan-300' : 'text-primary'}`}>
                         {tier.totalValue}
                       </span>
                     </div>
