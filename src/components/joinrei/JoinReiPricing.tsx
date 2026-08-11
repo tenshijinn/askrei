@@ -153,32 +153,27 @@ export const JoinReiPricing = () => {
                       </div>
                     </div>
 
-                    <div className="min-h-[18px] mb-1">
+                    <div className="min-h-[18px] mb-1 text-center">
                       {activePrice.betaLabel && (
                         <span className="text-[10px] font-mono uppercase tracking-wider text-primary/90">
                           {activePrice.betaLabel}
                         </span>
                       )}
                     </div>
-                    <div className="flex items-baseline gap-2 mb-1 flex-wrap">
-                      <span className={`text-4xl font-light font-mono ${isTeal ? 'text-cyan-300' : 'text-cream'}`}>
+                    <div className="text-center mb-4">
+                      <div className={`text-5xl font-light font-mono ${isTeal ? 'text-cyan-300' : 'text-cream'}`}>
                         {activePrice.price}
-                      </span>
+                      </div>
                       {activePrice.originalPrice && (
-                        <span className="text-lg font-mono text-cream/40 line-through decoration-cream/40">
+                        <div className="mt-1 text-xl font-mono text-cream/40 line-through decoration-cream/40">
                           {activePrice.originalPrice}
-                        </span>
+                        </div>
                       )}
-                      <span className="text-cream/60 font-mono text-xs">{activePrice.period}</span>
-                    </div>
-
-                    <div className="min-h-[18px] mb-3">
                       {activePrice.saveNote && (
-                        <p className="text-[10px] text-cream/50 font-mono">{activePrice.saveNote}</p>
+                        <p className="mt-1 text-[10px] text-cream/50 font-mono">{activePrice.saveNote}</p>
                       )}
                     </div>
 
-                    <p className="text-cream/70 text-xs font-mono leading-relaxed mb-5">{tier.positioning}</p>
 
                     <button
                       className={`w-full font-mono py-2.5 rounded-full transition-all duration-300 text-sm ${
