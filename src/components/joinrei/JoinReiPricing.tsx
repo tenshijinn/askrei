@@ -27,8 +27,8 @@ interface PricingTier {
   price: PricingPoint;
   icon: string;
   premium: boolean;
-  positioning: string;
   totalValue: string;
+  yourPrice: string;
   usps: Usp[];
 }
 
@@ -40,7 +40,7 @@ const pricingTiers: PricingTier[] = [
     subtitle: 'Per Campaign',
     price: {
       price: '$500',
-      period: 'per campaign',
+      period: '',
       perDay: null,
       saveNote: 'Saving ~$16,500 vs total value',
       originalPrice: '$5,000',
@@ -48,9 +48,8 @@ const pricingTiers: PricingTier[] = [
     },
     icon: iconDIY,
     premium: false,
-    positioning:
-      'KOL activation + AI-powered Web3 distribution + Diamond Hand scoring and Anti-Sybil protection.',
     totalValue: '~$17,000',
+    yourPrice: '$5,000',
     usps: [
       { summary: 'Diamond Hand Score', detail: 'Rei scores users by their wallet activity and on-chain behavior to find stronger, more genuine contributors.', worth: '$2,000' },
       { summary: 'Anti-Sybil Protection', detail: 'Rei helps filter out fake, duplicate, farmed, and low-quality users before they waste your campaign budget.', worth: '$2,000' },
@@ -75,16 +74,17 @@ const pricingTiers: PricingTier[] = [
     leverage: 'Full-Spectrum Campaign',
     subtitle: 'Per Campaign',
     price: {
-      price: '$25,000',
-      period: 'per campaign',
+      price: '$2,500',
+      period: '',
       perDay: null,
       saveNote: 'Saving ~$16,750 vs total value',
+      originalPrice: '$25,000',
+      betaLabel: 'Beta Launch Price',
     },
     icon: iconAutomated,
     premium: false,
-    positioning:
-      'KOLs + Reddit Ads + Telegram Ads + experimental ChatGPT Ads + full Web3 distribution + Diamond Hand scoring and Anti-Sybil protection.',
     totalValue: '~$41,750',
+    yourPrice: '$25,000',
     usps: [
       { summary: 'Multi-Channel Ads', detail: 'Run paid campaigns across Reddit Ads, Telegram Ads, and experimental ChatGPT Ads to reach new audiences. ChatGPT Ads are Beta/Experimental and receive only a smaller share of the ad spend. This is paid advertising — it does not include access to Telegram groups or Reddit communities.', worth: '$9,000' },
       { summary: 'Diamond Hand Score', detail: 'Rei scores users by their wallet activity and on-chain behavior to find stronger, more genuine contributors.', worth: '$4,000' },
@@ -153,32 +153,27 @@ export const JoinReiPricing = () => {
                       </div>
                     </div>
 
-                    <div className="min-h-[18px] mb-1">
+                    <div className="min-h-[18px] mb-1 text-center">
                       {activePrice.betaLabel && (
                         <span className="text-[10px] font-mono uppercase tracking-wider text-primary/90">
                           {activePrice.betaLabel}
                         </span>
                       )}
                     </div>
-                    <div className="flex items-baseline gap-2 mb-1 flex-wrap">
-                      <span className={`text-4xl font-light font-mono ${isTeal ? 'text-cyan-300' : 'text-cream'}`}>
+                    <div className="text-center mb-4">
+                      <div className={`text-5xl font-light font-mono ${isTeal ? 'text-cyan-300' : 'text-cream'}`}>
                         {activePrice.price}
-                      </span>
+                      </div>
                       {activePrice.originalPrice && (
-                        <span className="text-lg font-mono text-cream/40 line-through decoration-cream/40">
+                        <div className="mt-1 text-xl font-mono text-cream/40 line-through decoration-cream/40">
                           {activePrice.originalPrice}
-                        </span>
+                        </div>
                       )}
-                      <span className="text-cream/60 font-mono text-xs">{activePrice.period}</span>
-                    </div>
-
-                    <div className="min-h-[18px] mb-3">
                       {activePrice.saveNote && (
-                        <p className="text-[10px] text-cream/50 font-mono">{activePrice.saveNote}</p>
+                        <p className="mt-1 text-[10px] text-cream/50 font-mono">{activePrice.saveNote}</p>
                       )}
                     </div>
 
-                    <p className="text-cream/70 text-xs font-mono leading-relaxed mb-5">{tier.positioning}</p>
 
                     <button
                       className={`w-full font-mono py-2.5 rounded-full transition-all duration-300 text-sm ${
@@ -233,6 +228,14 @@ export const JoinReiPricing = () => {
                         {tier.totalValue}
                       </span>
                     </div>
+
+                    <div className="mt-2 pt-2 flex items-center justify-between">
+                      <span className="text-cream/60 text-[11px] font-mono uppercase tracking-wider">Your Price</span>
+                      <span className={`text-base font-light font-mono ${isTeal ? 'text-cyan-300' : 'text-primary'}`}>
+                        {tier.yourPrice}
+                      </span>
+                    </div>
+
                   </div>
                 </div>
               </ScrollFadeIn>
