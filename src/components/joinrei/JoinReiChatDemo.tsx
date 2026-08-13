@@ -77,25 +77,28 @@ interface FrameProps {
 const Frame = ({ title, children, speed = 0.04, delay = 0, extra, icon }: FrameProps) => (
   <ParallaxWrapper speed={speed}>
     <ScrollFadeIn delay={delay}>
-      <div className="rei-terminal rounded-2xl border-[0.5px] border-white/10 p-8 md:p-10 bg-[#141414]/60 backdrop-blur-sm h-full flex items-start gap-5 min-h-[260px]">
+      <div className="rei-terminal rounded-2xl border-[0.5px] border-white/10 p-6 md:p-8 bg-[#141414]/60 backdrop-blur-sm h-full flex items-stretch gap-6 min-h-[280px]">
         {icon && (
-          <img
-            src={icon}
-            alt=""
-            aria-hidden="true"
-            className="h-16 w-16 md:h-20 md:w-20 shrink-0 rounded-xl object-cover"
-          />
+          <div className="shrink-0 w-[32%] max-w-[200px] self-stretch rounded-xl overflow-hidden bg-black/40">
+            <img
+              src={icon}
+              alt=""
+              aria-hidden="true"
+              className="h-full w-full object-cover"
+            />
+          </div>
         )}
-        <div className="min-w-0 flex-1 flex flex-col h-full text-left">
+        <div className="min-w-0 flex-1 flex flex-col justify-center text-left">
           <h3 className="text-xl md:text-2xl lg:text-3xl font-light leading-tight mb-4" style={{ color: '#898377' }}>
             {title}
           </h3>
-          <div className="text-sm md:text-base font-mono leading-relaxed flex-1" style={{ color: '#898377' }}>
+          <div className="text-sm md:text-base font-mono leading-relaxed" style={{ color: '#898377' }}>
             {children}
           </div>
           {extra}
         </div>
       </div>
+
     </ScrollFadeIn>
   </ParallaxWrapper>
 );
