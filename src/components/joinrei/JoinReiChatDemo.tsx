@@ -1,5 +1,9 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
 import { ParallaxWrapper } from './ParallaxWrapper';
+import hiwIcon1 from '@/assets/joinrei/rei-icon4.png.asset.json';
+import hiwIcon2 from '@/assets/joinrei/rei-icon2.png.asset.json';
+import hiwIcon3 from '@/assets/joinrei/rei-logo3.png.asset.json';
+import hiwIcon4 from '@/assets/joinrei/rei-icon.png.asset.json';
 
 const VerifiedLoginPill = () => (
   <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#181818] border border-primary/20">
