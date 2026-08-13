@@ -5,7 +5,8 @@ import { HomeValueProp } from '@/components/joinrei/HomeValueProp';
 import { HomeAggregation } from '@/components/joinrei/HomeAggregation';
 import { HomeDemoSection } from '@/components/joinrei/HomeDemoSection';
 import { HomeReferral } from '@/components/joinrei/HomeReferral';
-import { HomeAgentChatbot } from '@/components/joinrei/HomeAgentChatbot';
+import { HomeAgentTabs } from '@/components/joinrei/HomeAgentTabs';
+import { HomeDiamondScore } from '@/components/joinrei/HomeDiamondScore';
 
 const JoinReiV2 = () => {
   const navigate = useNavigate();
@@ -19,7 +20,8 @@ const JoinReiV2 = () => {
       <HomeValueProp />
       <HomeAggregation />
       <HomeDemoSection />
-      <HomeAgentChatbot />
+      <HomeAgentTabs />
+      <HomeDiamondScore />
       <HomeReferral />
     </div>
   );
