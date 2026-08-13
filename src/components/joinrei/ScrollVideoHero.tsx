@@ -578,13 +578,14 @@ const LeftPanelTrack = () => (
     {/* Block 3: How it works — centered */}
     <div className="h-screen w-full flex flex-col justify-center items-center px-8 lg:px-12 xl:px-16">
       <ScrollFadeIn>
-        <h2 className="text-[1.5rem] md:text-[1.75rem] lg:text-[2rem] font-light text-primary leading-tight mb-4 text-center">
+        <h2 className="text-[1.5rem] md:text-[1.75rem] lg:text-[2rem] font-light leading-tight mb-4 text-center" style={{ color: '#898377' }}>
           How it works
         </h2>
       </ScrollFadeIn>
       <div className="flex flex-col gap-2.5 w-full max-w-md mx-auto">
         <ScrollFadeIn delay={100}>
           <MiniFrame
+            icon={hiwIcon1.url}
             title="One feed. Every platform."
             extra={
               <>
@@ -599,12 +600,13 @@ const LeftPanelTrack = () => (
           </MiniFrame>
         </ScrollFadeIn>
         <ScrollFadeIn delay={200}>
-          <MiniFrame title="Tasks that fit your skills." extra={<MatchesSkillsPill />}>
+          <MiniFrame icon={hiwIcon2.url} title="Tasks that fit your skills." extra={<MatchesSkillsPill />}>
             SkillSync surfaces bounties matched to your wallet history and on-chain track record — not random noise.
           </MiniFrame>
         </ScrollFadeIn>
         <ScrollFadeIn delay={300}>
           <MiniFrame
+            icon={hiwIcon3.url}
             title="Get verified, get prioritised."
             extra={
               <>
@@ -618,7 +620,7 @@ const LeftPanelTrack = () => (
           </MiniFrame>
         </ScrollFadeIn>
         <ScrollFadeIn delay={400}>
-          <MiniFrame title="Find Highest Paying Bounties">
+          <MiniFrame icon={hiwIcon4.url} title="Find Highest Paying Bounties">
             Time is money. Rei filters for highest paying rewards automatically.
           </MiniFrame>
         </ScrollFadeIn>
