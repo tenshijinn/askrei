@@ -18,6 +18,10 @@ import platTaskon from '@/assets/joinrei/logo-plat-taskon.png.asset.json';
 import platGalxe from '@/assets/joinrei/logo-plat-galxe.png.asset.json';
 import platScribble from '@/assets/joinrei/logo-plat-scribble.png.asset.json';
 import platSuperteam from '@/assets/joinrei/logo-plat-superteam-earn.png.asset.json';
+import hiwIcon1 from '@/assets/joinrei/rei-icon4.png.asset.json';
+import hiwIcon2 from '@/assets/joinrei/rei-icon2.png.asset.json';
+import hiwIcon3 from '@/assets/joinrei/rei-logo3.png.asset.json';
+import hiwIcon4 from '@/assets/joinrei/rei-icon.png.asset.json';
 
 const PLATFORM_LOGOS = [
   { src: platZealy.url, alt: 'Zealy' },
