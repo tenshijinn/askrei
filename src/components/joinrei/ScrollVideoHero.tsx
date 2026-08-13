@@ -329,17 +329,18 @@ const MiniFrame = ({
   extra?: React.ReactNode;
   icon?: string;
 }) => (
-  <div className="rounded-xl border-[0.5px] border-white/10 p-4 bg-[#141414]/60 backdrop-blur-sm flex items-stretch gap-4 h-full min-h-[132px]">
+  <div className="rounded-xl border-[0.5px] border-white/10 p-4 bg-[#141414]/60 backdrop-blur-sm flex items-center gap-4 h-full min-h-[150px]">
     {icon && (
-      <div className="shrink-0 w-[28%] max-w-[110px] self-stretch rounded-lg overflow-hidden bg-black/40">
+      <div className="shrink-0 w-[30%] max-w-[120px] aspect-square rounded-lg overflow-hidden bg-black/40 flex items-center justify-center">
         <img
           src={icon}
           alt=""
           aria-hidden="true"
-          className="h-full w-full object-cover"
+          className="h-full w-full object-contain"
         />
       </div>
     )}
+
     <div className="min-w-0 flex-1 text-left flex flex-col justify-center">
       <h3 className="text-sm md:text-base font-light leading-tight mb-1" style={{ color: '#898377' }}>{title}</h3>
       <p className="text-[11px] md:text-xs font-mono leading-relaxed" style={{ color: '#898377' }}>{children}</p>
