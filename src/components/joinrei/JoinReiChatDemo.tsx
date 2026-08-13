@@ -105,13 +105,14 @@ export const JoinReiChatDemo = () => {
     <section className="min-h-screen snap-start relative flex items-center justify-center overflow-hidden bg-[#0a0a0a] py-20">
       <div className="container mx-auto px-8 lg:px-16">
         <ScrollFadeIn>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-primary text-center mb-12">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-center mb-12" style={{ color: '#898377' }}>
             How it works
           </h2>
         </ScrollFadeIn>
 
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto items-stretch">
           <Frame
+            icon={hiwIcon1.url}
             title="What is Rei?"
             speed={0}
             delay={0}
@@ -127,6 +128,7 @@ export const JoinReiChatDemo = () => {
           </Frame>
 
           <Frame
+            icon={hiwIcon2.url}
             title="SkillSync Auto Matches Users"
             speed={0}
             delay={100}
@@ -141,6 +143,7 @@ export const JoinReiChatDemo = () => {
           </Frame>
 
           <Frame
+            icon={hiwIcon3.url}
             title="Quality is pre-verified."
             speed={0}
             delay={200}
@@ -151,6 +154,7 @@ export const JoinReiChatDemo = () => {
           </Frame>
 
           <Frame
+            icon={hiwIcon4.url}
             title="Bounties Promo by AI Agent"
             speed={0}
             delay={300}
