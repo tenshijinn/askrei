@@ -18,6 +18,10 @@ import platTaskon from '@/assets/joinrei/logo-plat-taskon.png.asset.json';
 import platGalxe from '@/assets/joinrei/logo-plat-galxe.png.asset.json';
 import platScribble from '@/assets/joinrei/logo-plat-scribble.png.asset.json';
 import platSuperteam from '@/assets/joinrei/logo-plat-superteam-earn.png.asset.json';
+import hiwIcon1 from '@/assets/joinrei/rei-icon4.png.asset.json';
+import hiwIcon2 from '@/assets/joinrei/rei-icon2.png.asset.json';
+import hiwIcon3 from '@/assets/joinrei/rei-logo3.png.asset.json';
+import hiwIcon4 from '@/assets/joinrei/rei-icon.png.asset.json';
 
 const PLATFORM_LOGOS = [
   { src: platZealy.url, alt: 'Zealy' },
@@ -318,15 +322,27 @@ const MiniFrame = ({
   title,
   children,
   extra,
+  icon,
 }: {
   title: string;
   children: React.ReactNode;
   extra?: React.ReactNode;
+  icon?: string;
 }) => (
-  <div className="rounded-xl border-[0.5px] border-white/10 p-4 bg-[#141414]/60 backdrop-blur-sm">
-    <h3 className="text-sm md:text-base font-light text-primary leading-tight mb-1">{title}</h3>
-    <p className="text-[11px] md:text-xs font-mono text-primary/70 leading-relaxed">{children}</p>
-    {extra && <div className="mt-2 flex flex-wrap gap-2">{extra}</div>}
+  <div className="rounded-xl border-[0.5px] border-white/10 p-4 bg-[#141414]/60 backdrop-blur-sm flex items-start gap-3">
+    {icon && (
+      <img
+        src={icon}
+        alt=""
+        aria-hidden="true"
+        className="h-12 w-12 shrink-0 rounded-lg object-cover"
+      />
+    )}
+    <div className="min-w-0 flex-1 text-left">
+      <h3 className="text-sm md:text-base font-light leading-tight mb-1" style={{ color: '#898377' }}>{title}</h3>
+      <p className="text-[11px] md:text-xs font-mono leading-relaxed" style={{ color: '#898377' }}>{children}</p>
+      {extra && <div className="mt-2 flex flex-wrap gap-2">{extra}</div>}
+    </div>
   </div>
 );
 
@@ -562,13 +578,14 @@ const LeftPanelTrack = () => (
     {/* Block 3: How it works — centered */}
     <div className="h-screen w-full flex flex-col justify-center items-center px-8 lg:px-12 xl:px-16">
       <ScrollFadeIn>
-        <h2 className="text-[1.5rem] md:text-[1.75rem] lg:text-[2rem] font-light text-primary leading-tight mb-4 text-center">
+        <h2 className="text-[1.5rem] md:text-[1.75rem] lg:text-[2rem] font-light leading-tight mb-4 text-center" style={{ color: '#898377' }}>
           How it works
         </h2>
       </ScrollFadeIn>
       <div className="flex flex-col gap-2.5 w-full max-w-md mx-auto">
         <ScrollFadeIn delay={100}>
           <MiniFrame
+            icon={hiwIcon1.url}
             title="One feed. Every platform."
             extra={
               <>
@@ -583,12 +600,13 @@ const LeftPanelTrack = () => (
           </MiniFrame>
         </ScrollFadeIn>
         <ScrollFadeIn delay={200}>
-          <MiniFrame title="Tasks that fit your skills." extra={<MatchesSkillsPill />}>
+          <MiniFrame icon={hiwIcon2.url} title="Tasks that fit your skills." extra={<MatchesSkillsPill />}>
             SkillSync surfaces bounties matched to your wallet history and on-chain track record — not random noise.
           </MiniFrame>
         </ScrollFadeIn>
         <ScrollFadeIn delay={300}>
           <MiniFrame
+            icon={hiwIcon3.url}
             title="Get verified, get prioritised."
             extra={
               <>
@@ -602,7 +620,7 @@ const LeftPanelTrack = () => (
           </MiniFrame>
         </ScrollFadeIn>
         <ScrollFadeIn delay={400}>
-          <MiniFrame title="Find Highest Paying Bounties">
+          <MiniFrame icon={hiwIcon4.url} title="Find Highest Paying Bounties">
             Time is money. Rei filters for highest paying rewards automatically.
           </MiniFrame>
         </ScrollFadeIn>

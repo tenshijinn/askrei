@@ -1,5 +1,9 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
 import { ParallaxWrapper } from './ParallaxWrapper';
+import hiwIcon1 from '@/assets/joinrei/rei-icon4.png.asset.json';
+import hiwIcon2 from '@/assets/joinrei/rei-icon2.png.asset.json';
+import hiwIcon3 from '@/assets/joinrei/rei-logo3.png.asset.json';
+import hiwIcon4 from '@/assets/joinrei/rei-icon.png.asset.json';
 
 const VerifiedLoginPill = () => (
   <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#181818] border border-primary/20">
@@ -67,19 +71,30 @@ interface FrameProps {
   speed?: number;
   delay?: number;
   extra?: React.ReactNode;
+  icon?: string;
 }
 
-const Frame = ({ title, children, speed = 0.04, delay = 0, extra }: FrameProps) => (
+const Frame = ({ title, children, speed = 0.04, delay = 0, extra, icon }: FrameProps) => (
   <ParallaxWrapper speed={speed}>
     <ScrollFadeIn delay={delay}>
-      <div className="rei-terminal rounded-2xl border-[0.5px] border-white/10 p-8 md:p-10 bg-[#141414]/60 backdrop-blur-sm h-full flex flex-col min-h-[260px]">
-        <h3 className="text-xl md:text-2xl lg:text-3xl font-light text-primary leading-tight mb-4">
-          {title}
-        </h3>
-        <div className="text-sm md:text-base font-mono text-primary/70 leading-relaxed flex-1">
-          {children}
+      <div className="rei-terminal rounded-2xl border-[0.5px] border-white/10 p-8 md:p-10 bg-[#141414]/60 backdrop-blur-sm h-full flex items-start gap-5 min-h-[260px]">
+        {icon && (
+          <img
+            src={icon}
+            alt=""
+            aria-hidden="true"
+            className="h-16 w-16 md:h-20 md:w-20 shrink-0 rounded-xl object-cover"
+          />
+        )}
+        <div className="min-w-0 flex-1 flex flex-col h-full text-left">
+          <h3 className="text-xl md:text-2xl lg:text-3xl font-light leading-tight mb-4" style={{ color: '#898377' }}>
+            {title}
+          </h3>
+          <div className="text-sm md:text-base font-mono leading-relaxed flex-1" style={{ color: '#898377' }}>
+            {children}
+          </div>
+          {extra}
         </div>
-        {extra}
       </div>
     </ScrollFadeIn>
   </ParallaxWrapper>
@@ -90,13 +105,14 @@ export const JoinReiChatDemo = () => {
     <section className="min-h-screen snap-start relative flex items-center justify-center overflow-hidden bg-[#0a0a0a] py-20">
       <div className="container mx-auto px-8 lg:px-16">
         <ScrollFadeIn>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-primary text-center mb-12">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-center mb-12" style={{ color: '#898377' }}>
             How it works
           </h2>
         </ScrollFadeIn>
 
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8 max-w-5xl mx-auto items-stretch">
           <Frame
+            icon={hiwIcon1.url}
             title="What is Rei?"
             speed={0}
             delay={0}
@@ -112,6 +128,7 @@ export const JoinReiChatDemo = () => {
           </Frame>
 
           <Frame
+            icon={hiwIcon2.url}
             title="SkillSync Auto Matches Users"
             speed={0}
             delay={100}
@@ -126,6 +143,7 @@ export const JoinReiChatDemo = () => {
           </Frame>
 
           <Frame
+            icon={hiwIcon3.url}
             title="Quality is pre-verified."
             speed={0}
             delay={200}
@@ -136,6 +154,7 @@ export const JoinReiChatDemo = () => {
           </Frame>
 
           <Frame
+            icon={hiwIcon4.url}
             title="Bounties Promo by AI Agent"
             speed={0}
             delay={300}
