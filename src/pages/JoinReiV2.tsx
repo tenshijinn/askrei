@@ -20,7 +20,7 @@ const JoinReiV2 = () => {
       <HomeAgentTabs />
       <HomeDiamondScore />
       <HomeReferral />
-      <HomeHowItWorks />
+      <HomeDemoSection />
     </div>
   );
 };
