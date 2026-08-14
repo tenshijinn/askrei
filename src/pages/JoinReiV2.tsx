@@ -1,12 +1,11 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScrollVideoHero } from '@/components/joinrei/ScrollVideoHero';
-import { HomeValueProp } from '@/components/joinrei/HomeValueProp';
 import { HomeAggregation } from '@/components/joinrei/HomeAggregation';
-import { HomeDemoSection } from '@/components/joinrei/HomeDemoSection';
 import { HomeReferral } from '@/components/joinrei/HomeReferral';
 import { HomeAgentTabs } from '@/components/joinrei/HomeAgentTabs';
 import { HomeDiamondScore } from '@/components/joinrei/HomeDiamondScore';
+import { HomeHowItWorks } from '@/components/joinrei/HomeHowItWorks';
 
 const JoinReiV2 = () => {
   const navigate = useNavigate();
@@ -17,12 +16,11 @@ const JoinReiV2 = () => {
   return (
     <div className="rei-theme h-screen overflow-y-scroll snap-y snap-mandatory scrollbar-hide bg-[#0a0a0a]">
       <ScrollVideoHero />
-      <HomeValueProp />
       <HomeAggregation />
-      <HomeDemoSection />
       <HomeAgentTabs />
       <HomeDiamondScore />
       <HomeReferral />
+      <HomeHowItWorks />
     </div>
   );
 };
