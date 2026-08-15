@@ -120,7 +120,8 @@ function buildSvg(r: CalcResult, img: CardImages): string {
   const down = gain < 0;
   const accent = down ? RED : GREEN;
   const chart = sparkline(r);
-  const windowLabel = r.window_label.replace(/\u2192/g, 'to');
+  // short label, same as the on-page card
+  const windowLabel = r.period === 'cycle' ? 'Bear to Bull top' : `Last ${r.period} months`;
   const platformName = r.platform;
 
   // panel geometry: 60% wide art panel on the right with a diagonal seam
