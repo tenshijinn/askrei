@@ -75,7 +75,7 @@ export default function ShareImage({
         <img
           src={artUrl}
           alt=""
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 26%' }}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: artFocus }}
         />
         <div
           style={{
