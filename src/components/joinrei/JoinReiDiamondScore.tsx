@@ -93,8 +93,13 @@ const ParticipantsMockup = () => (
     <div className="space-y-2.5 max-h-[46vh] overflow-hidden">
       {MEMBERS.map((m) => (
         <div key={m.handle} className="flex gap-3 rounded-xl border border-white/10 bg-[#131315] p-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#221f1e] text-sm font-semibold text-[#e8b4a0]">
-            {m.name[0]}
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-[#221f1e] text-sm font-semibold text-[#e8b4a0]">
+            {m.avatar ? (
+              <img src={m.avatar} alt={`${m.name} avatar`} className="h-full w-full object-cover" />
+            ) : (
+              m.name[0]
+            )}
+
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 text-[10px]">
