@@ -1,9 +1,15 @@
+import defiLogo1 from '@/assets/joinrei/defi-logo.png.asset.json';
+import defiLogo2 from '@/assets/joinrei/defi-logo2.png.asset.json';
+import defiLogo3 from '@/assets/joinrei/defi-logo3.png.asset.json';
+import defiLogo4 from '@/assets/joinrei/defi-logo4.png.asset.json';
+
 const bounties = [
-  { title: 'Solana Dev Docs Rewrite', org: 'Superteam Earn', reward: '2,000 USDC' },
-  { title: 'Alpha Quest Sprint', org: 'Zealy · VisionFinance', reward: '750 USDC' },
-  { title: 'Social Degen Campaign', org: 'QuestN · Banana Zone', reward: '1,200 USDC' },
-  { title: 'Galxe OAT Content Drop', org: 'Galxe · Apyx', reward: '900 USDC' },
+  { title: 'Solana Dev Docs Rewrite', org: 'Superteam Earn', reward: '2,000 USDC', logo: defiLogo1.url },
+  { title: 'Alpha Quest Sprint', org: 'Zealy · VisionFinance', reward: '750 USDC', logo: defiLogo2.url },
+  { title: 'Social Degen Campaign', org: 'QuestN · Banana Zone', reward: '1,200 USDC', logo: defiLogo3.url },
+  { title: 'Galxe OAT Content Drop', org: 'Galxe · Apyx', reward: '900 USDC', logo: defiLogo4.url },
 ];
+
 
 /** Static preview of the Rei chat terminal, used on marketing sections. */
 export const ChatFeedMockup = () => (
