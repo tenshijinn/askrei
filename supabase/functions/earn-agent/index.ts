@@ -94,7 +94,7 @@ async function createShare(result: CalcResult) {
   let imagePath: string | null = null;
 
   try {
-    const png = await renderCardPng(result);
+    const png = await renderCardPng(result, id);
     const path = `${id}.png`;
     const { error } = await supabase.storage
       .from(BUCKET)
