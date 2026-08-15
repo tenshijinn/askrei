@@ -577,6 +577,8 @@ export default function BountyDefiCard() {
             invested={invested}
             finalVal={finalVal}
             windowLabel={period === 'cycle' ? 'Bear → Bull top' : `Last ${period} months`}
+            isToken={isTokens}
+            artSeed={`${isTokens ? (token?.sym ?? '') : asset}|${isTokens ? '' : platform}|${period}`}
             chart={chart ? { W: chart.W, H: chart.H, valD: chart.valD, conD: chart.conD, areaD: chart.areaD } : null}
           />
         </div>
