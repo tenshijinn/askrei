@@ -47,7 +47,12 @@ export const ChatFeedMockup = () => (
             key={b.title}
             className="flex items-center gap-3 p-3 rounded-xl border border-[#ed565a]/25 bg-[#141414]"
           >
-            <div className="w-12 h-12 rounded-lg shrink-0 bg-gradient-to-br from-[#2b2154] via-[#1b1b2e] to-[#0f1a2b] border border-white/10" />
+            <img
+              src={b.logo}
+              alt={`${b.org} logo`}
+              className="w-12 h-12 rounded-lg shrink-0 object-cover bg-[#0d0d0d] border border-white/10"
+            />
+
             <div className="min-w-0 flex-1">
               <p className="text-[12px] text-cream truncate">{b.title}</p>
               <p className="text-[10px] text-cream/40 truncate">{b.org}</p>
