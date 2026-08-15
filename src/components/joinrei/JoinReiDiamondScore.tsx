@@ -1,5 +1,8 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
 import { scrollToLastSection } from './scrollHelpers';
+import nft1 from '@/assets/joinrei/nft-1.png.asset.json';
+import nft2 from '@/assets/joinrei/nft-2.png.asset.json';
+
 
 const POINTS = [
   {
