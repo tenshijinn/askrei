@@ -151,3 +151,19 @@ curl -s -X POST "$BASE/calculate" "${H[@]}" \
 curl -s -X POST "$BASE/share" "${H[@]}" \
   -d '{"asset":"JUP","amount":250,"frequency":"Weekly","period":"cycle"}'
 ```
+
+## Share card art (Aug 2026)
+
+The card returned by `/share` is now the same design as the one users generate on
+/earn (diagonal art panel, asset + platform logos, big % headline, value vs
+contribution sparkline), and the background art is chosen automatically from the
+inputs:
+
+- SOL + any DeFi platform (and buy & hold of SOL) → default Rei art
+- USDC / USDT / wBTC / wETH + a platform → that platform's dedicated art
+- custom token (buy & hold) → one of 10 variations, picked deterministically
+
+Nothing changes in the request or response contract — same routes, same fields.
+The agent just keeps using `image_url` from `/share`; art and framing are handled
+server-side. Cards are immutable per `share_id`, so call `/share` again for a new
+one instead of re-fetching an old `image_url` expecting new art.
