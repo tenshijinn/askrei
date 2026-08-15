@@ -9,7 +9,7 @@
 import { initWasm, Resvg } from 'npm:@resvg/resvg-wasm@2.6.2';
 import type { CalcResult } from './earn-calc.ts';
 import { fmt } from './earn-calc.ts';
-import { pickShareArt } from './earn-art.ts';
+import { pickShareArt, pickShareAlign } from './earn-art.ts';
 import PLOGO from './earn-plogo.json' with { type: 'json' };
 
 const WASM_URL = 'https://unpkg.com/@resvg/resvg-wasm@2.6.2/index_bg.wasm';
@@ -92,6 +92,7 @@ const H = 900;
 
 interface CardImages {
   art: string | null;
+  artAlign?: string;
   assetLogo: string | null;
   platformLogo: string | null;
 }
@@ -133,7 +134,7 @@ function buildSvg(r: CalcResult, img: CardImages): string {
     ? `<clipPath id="seam"><polygon points="${seam}"/></clipPath>
   <g clip-path="url(#seam)">
     <rect x="${panelX}" y="0" width="${panelW}" height="${H}" fill="#15130f"/>
-    <image href="${img.art}" x="${panelX}" y="0" width="${panelW}" height="${H}" preserveAspectRatio="xMidYMin slice"/>
+    <image href="${img.art}" x="${panelX}" y="0" width="${panelW}" height="${H}" preserveAspectRatio="${img.artAlign ?? 'xMidYMin slice'}"/>
     <rect x="${panelX}" y="0" width="${panelW}" height="${H}" fill="url(#seamFade)"/>
   </g>`
     : `<clipPath id="seam"><polygon points="${seam}"/></clipPath>
@@ -228,12 +229,14 @@ function buildSvg(r: CalcResult, img: CardImages): string {
 }
 
 export async function buildCardSvg(r: CalcResult, seed?: string): Promise<string> {
-  const artUrl = pickShareArt({
+  const pick = {
     assetSym: r.asset,
     platformName: r.platform,
     isToken: r.mode === 'token' && !ASSET_LOGO_URL[r.asset],
     seed: seed ?? `${r.asset}|${r.platform}|${r.amount}|${r.frequency}|${r.period}`,
-  });
+  };
+  const artUrl = pickShareArt(pick);
+  const artAlign = pickShareAlign(pick);
   const plogo = (PLOGO as Record<string, { url: string }>)[r.platform ?? ''] ?? null;
 
   const [art, assetLogo, platformLogo] = await Promise.all([
@@ -242,7 +245,7 @@ export async function buildCardSvg(r: CalcResult, seed?: string): Promise<string
     dataUri(plogo?.url ?? null),
   ]);
 
-  return buildSvg(r, { art, assetLogo, platformLogo });
+  return buildSvg(r, { art, artAlign, assetLogo, platformLogo });
 }
 
 export async function renderCardPng(r: CalcResult, seed?: string): Promise<Uint8Array> {

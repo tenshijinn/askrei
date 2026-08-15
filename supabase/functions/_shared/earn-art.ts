@@ -84,3 +84,24 @@ export function pickShareArtSlot({ assetSym, platformName, isToken, seed }: ArtP
 export function pickShareArt(pick: ArtPick): string {
   return SHARE_ART[pickShareArtSlot(pick)] ?? DEFAULT_ART;
 }
+
+/** vertical framing per slot, mirrors ART_FOCUS in src/components/earn/shareArt.ts */
+export const ART_ALIGN: Record<string, string> = {
+  'sol-default': 'xMidYMin slice',
+  'listed-jito': 'xMidYMin slice',
+  'listed-marinade': 'xMidYMid slice',
+  'listed-marginfi': 'xMidYMid slice',
+  'listed-nlo': 'xMidYMin slice',
+  'token-jito-1': 'xMidYMin slice',
+  'token-jito-2': 'xMidYMin slice',
+  'token-marinade-1': 'xMidYMid slice',
+  'token-marinade-2': 'xMidYMid slice',
+  'token-marginfi-1': 'xMidYMid slice',
+  'token-marginfi-2': 'xMidYMid slice',
+  'token-nlo-1': 'xMidYMin slice',
+  'token-nlo-2': 'xMidYMid slice',
+};
+
+export function pickShareAlign(pick: ArtPick): string {
+  return ART_ALIGN[pickShareArtSlot(pick)] ?? 'xMidYMin slice';
+}
