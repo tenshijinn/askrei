@@ -1,5 +1,5 @@
 import reiLogo from '@/assets/rei-logo.png';
-import { pickShareArt } from './shareArt';
+import { pickShareArt, pickShareFocus } from './shareArt';
 import { fmt } from './data';
 
 export interface ShareImageProps {
