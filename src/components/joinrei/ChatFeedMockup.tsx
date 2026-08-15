@@ -1,9 +1,15 @@
+import defiLogo1 from '@/assets/joinrei/defi-logo.png.asset.json';
+import defiLogo2 from '@/assets/joinrei/defi-logo2.png.asset.json';
+import defiLogo3 from '@/assets/joinrei/defi-logo3.png.asset.json';
+import defiLogo4 from '@/assets/joinrei/defi-logo4.png.asset.json';
+
 const bounties = [
-  { title: 'Solana Dev Docs Rewrite', org: 'Superteam Earn', reward: '2,000 USDC' },
-  { title: 'Alpha Quest Sprint', org: 'Zealy · VisionFinance', reward: '750 USDC' },
-  { title: 'Social Degen Campaign', org: 'QuestN · Banana Zone', reward: '1,200 USDC' },
-  { title: 'Galxe OAT Content Drop', org: 'Galxe · Apyx', reward: '900 USDC' },
+  { title: 'Solana Dev Docs Rewrite', org: 'Superteam Earn', reward: '2,000 USDC', logo: defiLogo1.url },
+  { title: 'Alpha Quest Sprint', org: 'Zealy · VisionFinance', reward: '750 USDC', logo: defiLogo2.url },
+  { title: 'Social Degen Campaign', org: 'QuestN · Banana Zone', reward: '1,200 USDC', logo: defiLogo3.url },
+  { title: 'Galxe OAT Content Drop', org: 'Galxe · Apyx', reward: '900 USDC', logo: defiLogo4.url },
 ];
+
 
 /** Static preview of the Rei chat terminal, used on marketing sections. */
 export const ChatFeedMockup = () => (
@@ -41,7 +47,12 @@ export const ChatFeedMockup = () => (
             key={b.title}
             className="flex items-center gap-3 p-3 rounded-xl border border-[#ed565a]/25 bg-[#141414]"
           >
-            <div className="w-12 h-12 rounded-lg shrink-0 bg-gradient-to-br from-[#2b2154] via-[#1b1b2e] to-[#0f1a2b] border border-white/10" />
+            <img
+              src={b.logo}
+              alt={`${b.org} logo`}
+              className="w-12 h-12 rounded-lg shrink-0 object-cover bg-[#0d0d0d] border border-white/10"
+            />
+
             <div className="min-w-0 flex-1">
               <p className="text-[12px] text-cream truncate">{b.title}</p>
               <p className="text-[10px] text-cream/40 truncate">{b.org}</p>

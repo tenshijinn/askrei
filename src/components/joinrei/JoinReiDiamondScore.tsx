@@ -1,5 +1,8 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
 import { scrollToLastSection } from './scrollHelpers';
+import nft1 from '@/assets/joinrei/nft-1.png.asset.json';
+import nft2 from '@/assets/joinrei/nft-2.png.asset.json';
+
 
 const POINTS = [
   {
@@ -35,11 +38,11 @@ const POINTS = [
 ];
 
 const MEMBERS = [
-  { name: 'REI', handle: 'rei_protocol', score: 63, tier: 'Sapphire', sol: '9q8Q…t118', evm: '0x1f…2cb8', c: 15, cf: 55, t: 100 },
-  { name: 'MIKA TAN', handle: 'mikabuilds', score: 73, tier: 'Sapphire', sol: 'xDb6…TJN6', evm: '0x45…189f', c: 82, cf: 74, t: 66 },
-  { name: 'DEV ANAND', handle: '0xdevanand', score: 58, tier: 'Sapphire', sol: 'thpf…d7HJ', evm: '0x23…21af', c: 44, cf: 91, t: 38 },
-  { name: 'YUKI', handle: 'yuki_onchain', score: 62, tier: 'Sapphire', sol: 'rV2Q…dYsc', evm: null, c: 61, cf: 33, t: 88 },
-  { name: 'SOL SISTER', handle: 'solsister', score: 52, tier: 'Emerald', sol: 'vJ7p…bqfP', evm: null, c: 29, cf: 67, t: 52 },
+  { name: 'REI', handle: 'rei_protocol', score: 63, tier: 'Sapphire', sol: '9q8Q…t118', evm: '0x1f…2cb8', c: 15, cf: 55, t: 100, avatar: nft1.url },
+  { name: 'MIKA TAN', handle: 'mikabuilds', score: 73, tier: 'Sapphire', sol: 'xDb6…TJN6', evm: '0x45…189f', c: 82, cf: 74, t: 66, avatar: nft2.url },
+  { name: 'DEV ANAND', handle: '0xdevanand', score: 58, tier: 'Sapphire', sol: 'thpf…d7HJ', evm: '0x23…21af', c: 44, cf: 91, t: 38, avatar: null },
+  { name: 'YUKI', handle: 'yuki_onchain', score: 62, tier: 'Sapphire', sol: 'rV2Q…dYsc', evm: null, c: 61, cf: 33, t: 88, avatar: null },
+  { name: 'SOL SISTER', handle: 'solsister', score: 52, tier: 'Emerald', sol: 'vJ7p…bqfP', evm: null, c: 29, cf: 67, t: 52, avatar: null },
 ];
 
 const Chip = ({ label, value }: { label: string; value: number }) => (
@@ -90,8 +93,13 @@ const ParticipantsMockup = () => (
     <div className="space-y-2.5 max-h-[46vh] overflow-hidden">
       {MEMBERS.map((m) => (
         <div key={m.handle} className="flex gap-3 rounded-xl border border-white/10 bg-[#131315] p-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#221f1e] text-sm font-semibold text-[#e8b4a0]">
-            {m.name[0]}
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-[#221f1e] text-sm font-semibold text-[#e8b4a0]">
+            {m.avatar ? (
+              <img src={m.avatar} alt={`${m.name} avatar`} className="h-full w-full object-cover" />
+            ) : (
+              m.name[0]
+            )}
+
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 text-[10px]">

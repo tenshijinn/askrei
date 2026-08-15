@@ -8,7 +8,7 @@ import arubaito from '@/assets/joinrei/logo-bar-arubaito.png';
 import ignyte from '@/assets/joinrei/logo-bar-ignyte.png';
 import solanaFoundation from '@/assets/joinrei/logo-bar-solana-foundation.png';
 import colossium from '@/assets/joinrei/logo-bar-colossium.png';
-import solanaX402Asset from '@/assets/joinrei/logo-bar-solana-x402.png.asset.json';
+
 import nousHermesAsset from '@/assets/joinrei/logo-bar-nous-hermes.png.asset.json';
 import txSolAsset from '@/assets/joinrei/tx-sol.png.asset.json';
 import txUsdgAsset from '@/assets/joinrei/tx-usdg.png.asset.json';
@@ -574,7 +574,7 @@ const LeftPanelTrack = () => (
         <a href="https://arena.colosseum.org/projects/explore/rei" target="_blank" rel="noopener noreferrer" className="opacity-90 hover:opacity-100 transition-opacity">
           <img src={colossium} alt="Colosseum Frontier" className="h-12 lg:h-14 w-auto object-contain" />
         </a>
-        <img src={solanaX402Asset.url} alt="Solana + x402 payments enabled" className="h-14 lg:h-16 w-auto object-contain opacity-90" />
+        
         <img src={nousHermesAsset.url} alt="Powered by Nous + Hermes Agent" className="h-20 lg:h-24 w-auto object-contain opacity-90" />
       </div>
     </div>
