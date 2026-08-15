@@ -108,3 +108,9 @@ export function pickShareArtSlot({ assetSym, platformName, isToken, seed }: ArtP
 export function pickShareArt(pick: ArtPick): string {
   return SHARE_ART[pickShareArtSlot(pick)] ?? DEFAULT_ART;
 }
+
+/** object-position for the picked art so her face lands centred in the panel */
+export function pickShareFocus(pick: ArtPick): string {
+  return ART_FOCUS[pickShareArtSlot(pick)] ?? '50% 26%';
+}
+
