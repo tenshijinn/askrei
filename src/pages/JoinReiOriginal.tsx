@@ -15,13 +15,13 @@ const JoinReiOriginal = () => {
     <div className="rei-theme h-screen overflow-y-scroll snap-y snap-mandatory scrollbar-hide bg-[#0a0a0a]">
       <JoinReiHero />
       <JoinReiChatDemo />
+      <JoinReiCrossChain />
       <JoinReiValueProp />
       <JoinReiCampaignTracking />
-      <HomeVideoDemo />
-      <JoinReiCrossChain />
       <JoinReiDiamondScore />
       <JoinReiDemoSection />
       <JoinReiReferral />
+      <HomeVideoDemo />
       <JoinReiPricing />
     </div>
   );
