@@ -45,13 +45,15 @@ export function buildCardSvg(r: CalcResult): string {
   const up = r.profit >= 0;
   const valueColor = up ? '#79d19a' : ACCENT;
   const headline = r.mode === 'defi' ? `$${r.asset} on ${r.platform}` : `$${r.asset} \u00b7 buy & hold`;
+  // Open Sans has no arrow glyph; keep the card text plain
+  const windowLabel = r.window_label.replace(/\u2192/g, 'to');
   const cadence = `$${fmt(r.amount)} bounty ${r.frequency.toLowerCase()}`;
   const yieldLine = r.mode === 'defi' ? `${r.apy_percent}% ${r.yield_note}` : 'no yield \u00b7 spot only';
 
   // sparkline of the value curve
   const pts = r.monthly_series.map((m) => m.value);
   const maxV = Math.max(...pts, 1);
-  const W = 1000, X0 = 100, Y0 = 470, H = 110;
+  const W = 1000, X0 = 100, Y0 = 442, H = 88;
   const path = pts
     .map((v, i) => {
       const x = X0 + (pts.length === 1 ? W : (i / (pts.length - 1)) * W);
@@ -77,7 +79,7 @@ export function buildCardSvg(r: CalcResult): string {
 
   <text x="100" y="196" font-family="Open Sans" font-weight="700" font-size="46" fill="${INK}">${esc(clip(headline, 34))}</text>
   <text x="100" y="238" font-family="Open Sans" font-size="26" fill="${MUTED}">${esc(clip(`${cadence} \u00b7 ${yieldLine}`, 60))}</text>
-  <text x="100" y="278" font-family="Open Sans" font-size="24" fill="${MUTED}">${esc(clip(r.window_label, 62))}</text>
+  <text x="100" y="278" font-family="Open Sans" font-size="24" fill="${MUTED}">${esc(clip(windowLabel, 62))}</text>
 
   <text x="100" y="352" font-family="Open Sans" font-size="24" fill="${MUTED}">Total bounties earned</text>
   <text x="100" y="410" font-family="Open Sans" font-weight="700" font-size="52" fill="${INK}">$${fmt(r.invested)}</text>
