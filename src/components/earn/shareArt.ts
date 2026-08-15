@@ -68,7 +68,10 @@ export const ART_FOCUS: Record<string, string> = {
   'token-nlo-2': '55% 34%',
 };
 
-export const TOKEN_SLOTS = PLATFORM_SLUGS.flatMap((p) => [`token-${p}-1`, `token-${p}-2`]);
+/** kamino has no art yet, so keep it out of the random token pool */
+export const TOKEN_SLOTS = PLATFORM_SLUGS.filter((p) => p !== 'kamino')
+  .flatMap((p) => [`token-${p}-1`, `token-${p}-2`]);
+
 
 
 /** stable 32-bit hash so the same inputs always resolve to the same art */
