@@ -42,8 +42,7 @@ const MEMBERS = [
   { name: 'MIKA TAN', handle: 'mikabuilds', score: 73, tier: 'Sapphire', sol: 'xDb6…TJN6', evm: '0x45…189f', c: 82, cf: 74, t: 66, avatar: nft2.url },
   { name: 'DEV ANAND', handle: '0xdevanand', score: 58, tier: 'Sapphire', sol: 'thpf…d7HJ', evm: '0x23…21af', c: 44, cf: 91, t: 38, avatar: null },
   { name: 'YUKI', handle: 'yuki_onchain', score: 62, tier: 'Sapphire', sol: 'rV2Q…dYsc', evm: null, c: 61, cf: 33, t: 88, avatar: null },
-
-  { name: 'SOL SISTER', handle: 'solsister', score: 52, tier: 'Emerald', sol: 'vJ7p…bqfP', evm: null, c: 29, cf: 67, t: 52 },
+  { name: 'SOL SISTER', handle: 'solsister', score: 52, tier: 'Emerald', sol: 'vJ7p…bqfP', evm: null, c: 29, cf: 67, t: 52, avatar: null },
 ];
 
 const Chip = ({ label, value }: { label: string; value: number }) => (
