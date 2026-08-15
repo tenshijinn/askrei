@@ -7,6 +7,14 @@
 //   listed-<platform>                USDC / USDT / BTC / ETH + that platform
 //   token-<platform>-1 / -2          custom token pick (random, seeded)
 import reiArt from '@/assets/rei-share-art.png.asset.json';
+import jito1 from '@/assets/earn/jito-rei.webp.asset.json';
+import jito2 from '@/assets/earn/jito-rei2.webp.asset.json';
+import marinade1 from '@/assets/earn/defi-marinade.webp.asset.json';
+import marinade2 from '@/assets/earn/defi-marinade2.webp.asset.json';
+import marginfi1 from '@/assets/earn/defi-marginfi.webp.asset.json';
+import marginfi2 from '@/assets/earn/defi-marginfi2.webp.asset.json';
+import nlo1 from '@/assets/earn/nlo-defi.webp.asset.json';
+import nlo2 from '@/assets/earn/nlo-defi2.webp.asset.json';
 
 /** current art — also the fallback for every slot that has no image yet */
 export const DEFAULT_ART = reiArt.url;
@@ -25,25 +33,43 @@ export const PLATFORM_SLUGS = ['jito', 'kamino', 'marinade', 'marginfi', 'nlo'];
 export const SHARE_ART: Record<string, string> = {
   'sol-default': DEFAULT_ART,
 
-  'listed-jito': DEFAULT_ART,
+  'listed-jito': jito1.url,
   'listed-kamino': DEFAULT_ART,
-  'listed-marinade': DEFAULT_ART,
-  'listed-marginfi': DEFAULT_ART,
-  'listed-nlo': DEFAULT_ART,
+  'listed-marinade': marinade1.url,
+  'listed-marginfi': marginfi1.url,
+  'listed-nlo': nlo1.url,
 
-  'token-jito-1': DEFAULT_ART,
-  'token-jito-2': DEFAULT_ART,
+  'token-jito-1': jito1.url,
+  'token-jito-2': jito2.url,
   'token-kamino-1': DEFAULT_ART,
   'token-kamino-2': DEFAULT_ART,
-  'token-marinade-1': DEFAULT_ART,
-  'token-marinade-2': DEFAULT_ART,
-  'token-marginfi-1': DEFAULT_ART,
-  'token-marginfi-2': DEFAULT_ART,
-  'token-nlo-1': DEFAULT_ART,
-  'token-nlo-2': DEFAULT_ART,
+  'token-marinade-1': marinade1.url,
+  'token-marinade-2': marinade2.url,
+  'token-marginfi-1': marginfi1.url,
+  'token-marginfi-2': marginfi2.url,
+  'token-nlo-1': nlo1.url,
+  'token-nlo-2': nlo2.url,
+};
+
+/** focal point per slot so her face stays centred in the card panel */
+export const ART_FOCUS: Record<string, string> = {
+  'sol-default': '50% 26%',
+  'listed-jito': '48% 30%',
+  'listed-marinade': '46% 34%',
+  'listed-marginfi': '55% 42%',
+  'listed-nlo': '52% 32%',
+  'token-jito-1': '48% 30%',
+  'token-jito-2': '50% 32%',
+  'token-marinade-1': '46% 34%',
+  'token-marinade-2': '48% 34%',
+  'token-marginfi-1': '55% 42%',
+  'token-marginfi-2': '54% 40%',
+  'token-nlo-1': '52% 32%',
+  'token-nlo-2': '55% 34%',
 };
 
 export const TOKEN_SLOTS = PLATFORM_SLUGS.flatMap((p) => [`token-${p}-1`, `token-${p}-2`]);
+
 
 /** stable 32-bit hash so the same inputs always resolve to the same art */
 export function artSeed(s: string): number {
