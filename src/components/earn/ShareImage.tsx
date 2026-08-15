@@ -1,5 +1,5 @@
 import reiLogo from '@/assets/rei-logo.png';
-import { pickShareArt } from './shareArt';
+import { pickShareArt, pickShareFocus } from './shareArt';
 import { fmt } from './data';
 
 export interface ShareImageProps {
@@ -42,7 +42,9 @@ export default function ShareImage({
   assetSym, assetLogoUrl, platformName, platformLogoUrl, invested, finalVal, windowLabel, chart,
   isToken, artSeed,
 }: ShareImageProps) {
-  const artUrl = pickShareArt({ assetSym, platformName, isToken, seed: artSeed ?? assetSym });
+  const pick = { assetSym, platformName, isToken, seed: artSeed ?? assetSym };
+  const artUrl = pickShareArt(pick);
+  const artFocus = pickShareFocus(pick);
   const gain = finalVal - invested;
   const pct = invested > 0 ? (gain / invested) * 100 : 0;
   const down = gain < 0;
@@ -73,7 +75,7 @@ export default function ShareImage({
         <img
           src={artUrl}
           alt=""
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 26%' }}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: artFocus }}
         />
         <div
           style={{

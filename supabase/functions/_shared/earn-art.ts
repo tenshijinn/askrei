@@ -17,28 +17,42 @@ export const PLATFORM_SLUG: Record<string, string> = {
 
 export const PLATFORM_SLUGS = ['jito', 'kamino', 'marinade', 'marginfi', 'nlo'];
 
+const A = (id: string, f: string) => `${SITE}/__l5e/assets-v1/${id}/${f}`;
+
+const JITO_1 = A('ccab5f69-7ba8-4a7b-bb66-694b83026f19', 'jito-rei.webp');
+const JITO_2 = A('32bfe1b6-366c-4dc3-b289-de5c4ff4a174', 'jito-rei2.webp');
+const MARINADE_1 = A('e7ef4f7c-7f97-47e3-b876-9db3568d7502', 'defi-marinade.webp');
+const MARINADE_2 = A('52d97d6f-64c2-4344-9244-39f6163f0fda', 'defi-marinade2.webp');
+const MARGINFI_1 = A('a282bdd3-dbbd-4994-a299-53753a75d41d', 'defi-marginfi.webp');
+const MARGINFI_2 = A('9efc2259-6f3a-475c-b8f5-425a85636bf4', 'defi-marginfi2.webp');
+const NLO_1 = A('e112317a-a5a5-415b-93a3-e2dca908cc56', 'nlo-defi.webp');
+const NLO_2 = A('cff0046a-4de5-421d-ab97-eb4cd4b0a68f', 'nlo-defi2.webp');
+
 export const SHARE_ART: Record<string, string> = {
   'sol-default': DEFAULT_ART,
 
-  'listed-jito': DEFAULT_ART,
+  'listed-jito': JITO_1,
   'listed-kamino': DEFAULT_ART,
-  'listed-marinade': DEFAULT_ART,
-  'listed-marginfi': DEFAULT_ART,
-  'listed-nlo': DEFAULT_ART,
+  'listed-marinade': MARINADE_1,
+  'listed-marginfi': MARGINFI_1,
+  'listed-nlo': NLO_1,
 
-  'token-jito-1': DEFAULT_ART,
-  'token-jito-2': DEFAULT_ART,
+  'token-jito-1': JITO_1,
+  'token-jito-2': JITO_2,
   'token-kamino-1': DEFAULT_ART,
   'token-kamino-2': DEFAULT_ART,
-  'token-marinade-1': DEFAULT_ART,
-  'token-marinade-2': DEFAULT_ART,
-  'token-marginfi-1': DEFAULT_ART,
-  'token-marginfi-2': DEFAULT_ART,
-  'token-nlo-1': DEFAULT_ART,
-  'token-nlo-2': DEFAULT_ART,
+  'token-marinade-1': MARINADE_1,
+  'token-marinade-2': MARINADE_2,
+  'token-marginfi-1': MARGINFI_1,
+  'token-marginfi-2': MARGINFI_2,
+  'token-nlo-1': NLO_1,
+  'token-nlo-2': NLO_2,
 };
 
-export const TOKEN_SLOTS = PLATFORM_SLUGS.flatMap((p) => [`token-${p}-1`, `token-${p}-2`]);
+/** kamino has no art yet, so keep it out of the random token pool */
+export const TOKEN_SLOTS = PLATFORM_SLUGS.filter((p) => p !== 'kamino')
+  .flatMap((p) => [`token-${p}-1`, `token-${p}-2`]);
+
 
 export function artSeed(s: string): number {
   let h = 2166136261;
