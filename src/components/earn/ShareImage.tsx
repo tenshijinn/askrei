@@ -1,5 +1,5 @@
 import reiLogo from '@/assets/rei-logo.png';
-import reiArt from '@/assets/rei-share-art.png.asset.json';
+import { pickShareArt } from './shareArt';
 import { fmt } from './data';
 
 export interface ShareImageProps {
@@ -10,6 +10,10 @@ export interface ShareImageProps {
   invested: number;
   finalVal: number;
   windowLabel: string;
+  /** true when the asset is a custom token from the token list */
+  isToken?: boolean;
+  /** stable seed so the same selection always resolves to the same art */
+  artSeed?: string;
   chart: {
     W: number;
     H: number;
@@ -36,7 +40,9 @@ const SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, 
  *  can serialise it without any external stylesheet. */
 export default function ShareImage({
   assetSym, assetLogoUrl, platformName, platformLogoUrl, invested, finalVal, windowLabel, chart,
+  isToken, artSeed,
 }: ShareImageProps) {
+  const artUrl = pickShareArt({ assetSym, platformName, isToken, seed: artSeed ?? assetSym });
   const gain = finalVal - invested;
   const pct = invested > 0 ? (gain / invested) * 100 : 0;
   const down = gain < 0;
@@ -65,7 +71,7 @@ export default function ShareImage({
         }}
       >
         <img
-          src={reiArt.url}
+          src={artUrl}
           alt=""
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 26%' }}
         />
