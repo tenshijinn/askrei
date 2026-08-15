@@ -42,7 +42,9 @@ export default function ShareImage({
   assetSym, assetLogoUrl, platformName, platformLogoUrl, invested, finalVal, windowLabel, chart,
   isToken, artSeed,
 }: ShareImageProps) {
-  const artUrl = pickShareArt({ assetSym, platformName, isToken, seed: artSeed ?? assetSym });
+  const pick = { assetSym, platformName, isToken, seed: artSeed ?? assetSym };
+  const artUrl = pickShareArt(pick);
+  const artFocus = pickShareFocus(pick);
   const gain = finalVal - invested;
   const pct = invested > 0 ? (gain / invested) * 100 : 0;
   const down = gain < 0;
