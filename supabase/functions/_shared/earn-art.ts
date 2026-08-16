@@ -3,7 +3,7 @@
 
 const SITE = 'https://rei.chat';
 
-/** current art (rei-share-art.png) — fallback for every slot without an image */
+/** current art (rei-share-art.png) — used for SOL and buy & hold */
 export const DEFAULT_ART_PATH = '/__l5e/assets-v1/08052738-2400-4a31-a09b-2509fb74fe0e/rei-share-art.png';
 export const DEFAULT_ART = `${SITE}${DEFAULT_ART_PATH}`;
 
@@ -19,40 +19,25 @@ export const PLATFORM_SLUGS = ['jito', 'kamino', 'marinade', 'marginfi', 'nlo'];
 
 const A = (id: string, f: string) => `${SITE}/__l5e/assets-v1/${id}/${f}`;
 
-const JITO_1 = A('ccab5f69-7ba8-4a7b-bb66-694b83026f19', 'jito-rei.webp');
-const JITO_2 = A('32bfe1b6-366c-4dc3-b289-de5c4ff4a174', 'jito-rei2.webp');
-const MARINADE_1 = A('e7ef4f7c-7f97-47e3-b876-9db3568d7502', 'defi-marinade.webp');
-const MARINADE_2 = A('52d97d6f-64c2-4344-9244-39f6163f0fda', 'defi-marinade2.webp');
-const MARGINFI_1 = A('a282bdd3-dbbd-4994-a299-53753a75d41d', 'defi-marginfi.webp');
-const MARGINFI_2 = A('9efc2259-6f3a-475c-b8f5-425a85636bf4', 'defi-marginfi2.webp');
-const NLO_1 = A('e112317a-a5a5-415b-93a3-e2dca908cc56', 'nlo-defi.webp');
-const NLO_2 = A('cff0046a-4de5-421d-ab97-eb4cd4b0a68f', 'nlo-defi2.webp');
-
 export const SHARE_ART: Record<string, string> = {
   'sol-default': DEFAULT_ART,
 
-  'listed-jito': JITO_1,
-  'listed-kamino': DEFAULT_ART,
-  'listed-marinade': MARINADE_1,
-  'listed-marginfi': MARGINFI_1,
-  'listed-nlo': NLO_1,
+  'jito-1': A('ccab5f69-7ba8-4a7b-bb66-694b83026f19', 'jito-rei.webp'),
+  'jito-2': A('32bfe1b6-366c-4dc3-b289-de5c4ff4a174', 'jito-rei2.webp'),
+  'kamino-1': A('ab46b701-0ecd-4968-bd36-06cae85dcb07', 'kamino-defi1.png'),
+  'kamino-2': A('c1482141-25d7-4338-97b8-ca2918008320', 'kamino-defi2.png'),
+  'marinade-1': A('e7ef4f7c-7f97-47e3-b876-9db3568d7502', 'defi-marinade.webp'),
+  'marinade-2': A('52d97d6f-64c2-4344-9244-39f6163f0fda', 'defi-marinade2.webp'),
+  'marginfi-1': A('a282bdd3-dbbd-4994-a299-53753a75d41d', 'defi-marginfi.webp'),
+  'marginfi-2': A('9efc2259-6f3a-475c-b8f5-425a85636bf4', 'defi-marginfi2.webp'),
+  'nlo-1': A('e112317a-a5a5-415b-93a3-e2dca908cc56', 'nlo-defi.webp'),
+  'nlo-2': A('cff0046a-4de5-421d-ab97-eb4cd4b0a68f', 'nlo-defi2.webp'),
 
-  'token-jito-1': JITO_1,
-  'token-jito-2': JITO_2,
-  'token-kamino-1': DEFAULT_ART,
-  'token-kamino-2': DEFAULT_ART,
-  'token-marinade-1': MARINADE_1,
-  'token-marinade-2': MARINADE_2,
-  'token-marginfi-1': MARGINFI_1,
-  'token-marginfi-2': MARGINFI_2,
-  'token-nlo-1': NLO_1,
-  'token-nlo-2': NLO_2,
+  'token-1': A('3f119531-8532-493b-9482-718228902ba8', 'rei-token1.png'),
+  'token-2': A('1910f481-3c24-4ade-90bc-484a8a03044a', 'rei-token2.png'),
 };
 
-/** kamino has no art yet, so keep it out of the random token pool */
-export const TOKEN_SLOTS = PLATFORM_SLUGS.filter((p) => p !== 'kamino')
-  .flatMap((p) => [`token-${p}-1`, `token-${p}-2`]);
-
+export const TOKEN_SLOTS = ['token-1', 'token-2'];
 
 export function artSeed(s: string): number {
   let h = 2166136261;
@@ -71,14 +56,12 @@ export interface ArtPick {
 }
 
 export function pickShareArtSlot({ assetSym, platformName, isToken, seed }: ArtPick): string {
-  if (isToken) {
-    const idx = artSeed(seed ?? assetSym ?? 'token') % TOKEN_SLOTS.length;
-    return TOKEN_SLOTS[idx];
-  }
+  const key = seed ?? `${assetSym}|${platformName}`;
+  if (isToken) return TOKEN_SLOTS[artSeed(key) % TOKEN_SLOTS.length];
   const slug = platformName ? PLATFORM_SLUG[platformName] : null;
   if (!slug) return 'sol-default';
   if ((assetSym || '').toUpperCase() === 'SOL') return 'sol-default';
-  return `listed-${slug}`;
+  return `${slug}-${(artSeed(key) % 2) + 1}`;
 }
 
 export function pickShareArt(pick: ArtPick): string {
@@ -88,18 +71,18 @@ export function pickShareArt(pick: ArtPick): string {
 /** vertical framing per slot, mirrors ART_FOCUS in src/components/earn/shareArt.ts */
 export const ART_ALIGN: Record<string, string> = {
   'sol-default': 'xMidYMin slice',
-  'listed-jito': 'xMidYMin slice',
-  'listed-marinade': 'xMidYMid slice',
-  'listed-marginfi': 'xMidYMid slice',
-  'listed-nlo': 'xMidYMin slice',
-  'token-jito-1': 'xMidYMin slice',
-  'token-jito-2': 'xMidYMin slice',
-  'token-marinade-1': 'xMidYMid slice',
-  'token-marinade-2': 'xMidYMid slice',
-  'token-marginfi-1': 'xMidYMid slice',
-  'token-marginfi-2': 'xMidYMid slice',
-  'token-nlo-1': 'xMidYMin slice',
-  'token-nlo-2': 'xMidYMid slice',
+  'jito-1': 'xMidYMin slice',
+  'jito-2': 'xMidYMin slice',
+  'kamino-1': 'xMidYMid slice',
+  'kamino-2': 'xMidYMid slice',
+  'marinade-1': 'xMidYMid slice',
+  'marinade-2': 'xMidYMid slice',
+  'marginfi-1': 'xMidYMid slice',
+  'marginfi-2': 'xMidYMid slice',
+  'nlo-1': 'xMidYMin slice',
+  'nlo-2': 'xMidYMid slice',
+  'token-1': 'xMinYMid slice',
+  'token-2': 'xMidYMid slice',
 };
 
 export function pickShareAlign(pick: ArtPick): string {
