@@ -232,7 +232,7 @@ export async function buildCardSvg(r: CalcResult, seed?: string): Promise<string
   const pick = {
     assetSym: r.asset,
     platformName: r.platform,
-    isToken: r.mode === 'token' && !ASSET_LOGO_URL[r.asset],
+    isToken: r.mode === 'token',
     seed: seed ?? `${r.asset}|${r.platform}|${r.amount}|${r.frequency}|${r.period}`,
   };
   const artUrl = pickShareArt(pick);
