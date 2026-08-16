@@ -3,9 +3,9 @@
 // agent card (supabase/functions/_shared/earn-art.ts mirrors this map).
 //
 // Slots:
-//   sol-default                      SOL + any DeFi platform (and buy & hold)
-//   listed-<platform>                USDC / USDT / BTC / ETH + that platform
-//   token-<platform>-1 / -2          custom token pick (random, seeded)
+//   sol-default            SOL + any DeFi platform (and buy & hold)
+//   <platform>-1 / -2      any other asset on that platform (random, seeded)
+//   token-1 / token-2      token mode (random, seeded)
 import reiArt from '@/assets/rei-share-art.png.asset.json';
 import jito1 from '@/assets/earn/jito-rei.webp.asset.json';
 import jito2 from '@/assets/earn/jito-rei2.webp.asset.json';
@@ -15,6 +15,10 @@ import marginfi1 from '@/assets/earn/defi-marginfi.webp.asset.json';
 import marginfi2 from '@/assets/earn/defi-marginfi2.webp.asset.json';
 import nlo1 from '@/assets/earn/nlo-defi.webp.asset.json';
 import nlo2 from '@/assets/earn/nlo-defi2.webp.asset.json';
+import kamino1 from '@/assets/earn/kamino-defi1.png.asset.json';
+import kamino2 from '@/assets/earn/kamino-defi2.png.asset.json';
+import token1 from '@/assets/earn/rei-token1.png.asset.json';
+import token2 from '@/assets/earn/rei-token2.png.asset.json';
 
 /** current art — also the fallback for every slot that has no image yet */
 export const DEFAULT_ART = reiArt.url;
@@ -29,50 +33,43 @@ export const PLATFORM_SLUG: Record<string, string> = {
 
 export const PLATFORM_SLUGS = ['jito', 'kamino', 'marinade', 'marginfi', 'nlo'];
 
-/** every art slot -> image url. Swap a value when the real image is uploaded. */
+/** every art slot -> image url */
 export const SHARE_ART: Record<string, string> = {
   'sol-default': DEFAULT_ART,
 
-  'listed-jito': jito1.url,
-  'listed-kamino': DEFAULT_ART,
-  'listed-marinade': marinade1.url,
-  'listed-marginfi': marginfi1.url,
-  'listed-nlo': nlo1.url,
+  'jito-1': jito1.url,
+  'jito-2': jito2.url,
+  'kamino-1': kamino1.url,
+  'kamino-2': kamino2.url,
+  'marinade-1': marinade1.url,
+  'marinade-2': marinade2.url,
+  'marginfi-1': marginfi1.url,
+  'marginfi-2': marginfi2.url,
+  'nlo-1': nlo1.url,
+  'nlo-2': nlo2.url,
 
-  'token-jito-1': jito1.url,
-  'token-jito-2': jito2.url,
-  'token-kamino-1': DEFAULT_ART,
-  'token-kamino-2': DEFAULT_ART,
-  'token-marinade-1': marinade1.url,
-  'token-marinade-2': marinade2.url,
-  'token-marginfi-1': marginfi1.url,
-  'token-marginfi-2': marginfi2.url,
-  'token-nlo-1': nlo1.url,
-  'token-nlo-2': nlo2.url,
+  'token-1': token1.url,
+  'token-2': token2.url,
 };
 
 /** focal point per slot so her face stays centred in the card panel */
 export const ART_FOCUS: Record<string, string> = {
   'sol-default': '50% 26%',
-  'listed-jito': '48% 30%',
-  'listed-marinade': '46% 34%',
-  'listed-marginfi': '55% 42%',
-  'listed-nlo': '52% 32%',
-  'token-jito-1': '48% 30%',
-  'token-jito-2': '50% 32%',
-  'token-marinade-1': '46% 34%',
-  'token-marinade-2': '48% 34%',
-  'token-marginfi-1': '55% 42%',
-  'token-marginfi-2': '54% 40%',
-  'token-nlo-1': '52% 32%',
-  'token-nlo-2': '55% 34%',
+  'jito-1': '48% 30%',
+  'jito-2': '50% 32%',
+  'kamino-1': '50% 40%',
+  'kamino-2': '52% 38%',
+  'marinade-1': '46% 34%',
+  'marinade-2': '48% 34%',
+  'marginfi-1': '55% 42%',
+  'marginfi-2': '54% 40%',
+  'nlo-1': '52% 32%',
+  'nlo-2': '55% 34%',
+  'token-1': '38% 32%',
+  'token-2': '45% 30%',
 };
 
-/** kamino has no art yet, so keep it out of the random token pool */
-export const TOKEN_SLOTS = PLATFORM_SLUGS.filter((p) => p !== 'kamino')
-  .flatMap((p) => [`token-${p}-1`, `token-${p}-2`]);
-
-
+export const TOKEN_SLOTS = ['token-1', 'token-2'];
 
 /** stable 32-bit hash so the same inputs always resolve to the same art */
 export function artSeed(s: string): number {
@@ -95,14 +92,12 @@ export interface ArtPick {
 }
 
 export function pickShareArtSlot({ assetSym, platformName, isToken, seed }: ArtPick): string {
-  if (isToken) {
-    const idx = artSeed(seed ?? assetSym ?? 'token') % TOKEN_SLOTS.length;
-    return TOKEN_SLOTS[idx];
-  }
+  const key = seed ?? `${assetSym}|${platformName}`;
+  if (isToken) return TOKEN_SLOTS[artSeed(key) % TOKEN_SLOTS.length];
   const slug = platformName ? PLATFORM_SLUG[platformName] : null;
   if (!slug) return 'sol-default';
   if ((assetSym || '').toUpperCase() === 'SOL') return 'sol-default';
-  return `listed-${slug}`;
+  return `${slug}-${(artSeed(key) % 2) + 1}`;
 }
 
 export function pickShareArt(pick: ArtPick): string {
@@ -113,4 +108,3 @@ export function pickShareArt(pick: ArtPick): string {
 export function pickShareFocus(pick: ArtPick): string {
   return ART_FOCUS[pickShareArtSlot(pick)] ?? '50% 26%';
 }
-
