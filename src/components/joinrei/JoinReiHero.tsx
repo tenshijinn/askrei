@@ -132,8 +132,7 @@ export const JoinReiHero = () => {
               and rewarding <strong className="font-bold">Diamond Hands</strong>.
             </p>
             <p className="mt-4 flex flex-wrap items-center gap-2">
-              <span>through</span>
-              <span className={pill} style={{ color: '#181818' }}>
+              <span className={pill} style={{ color: '#181818', borderColor: '#181818' }}>
                 <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
@@ -142,7 +141,7 @@ export const JoinReiHero = () => {
                 </svg>
                 Premium X
               </span>
-              <span className={pill} style={{ color: '#181818' }}>
+              <span className={pill} style={{ color: '#181818', borderColor: '#181818' }}>
                 <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
                   <circle cx="11" cy="11" r="6" />
                   <path d="M11 8v6M8 11h6" opacity="0.5" />
@@ -150,7 +149,7 @@ export const JoinReiHero = () => {
                 </svg>
                 Wallet Scanning
               </span>
-              <span className={pill} style={{ color: '#181818' }}>
+              <span className={pill} style={{ color: '#181818', borderColor: '#181818' }}>
                 <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
                   <path d="M4 7h10M18 7h2M4 17h4M12 17h8" />
                   <circle cx="16" cy="7" r="2" />
