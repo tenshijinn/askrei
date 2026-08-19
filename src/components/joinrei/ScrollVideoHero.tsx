@@ -237,7 +237,7 @@ const CombinedSocialProofPill = () => {
   );
 };
 
-const ROTATOR_WORDS = ['Bounties', 'Quests', 'Tasks', 'Airdrops'];
+const ROTATOR_WORDS = ['Bounties', 'Quests', 'Campaigns', 'Airdrops'];
 
 const TX_ITEMS = [
   { src: txSolAsset.url, alt: '+5.5 SOL received', threshold: 0 },
@@ -604,7 +604,7 @@ const LeftPanelTrack = () => (
           </MiniFrame>
         </ScrollFadeIn>
         <ScrollFadeIn delay={200}>
-          <MiniFrame icon={hiwIcon2.url} title="Tasks that fit your skills." extra={<MatchesSkillsPill />}>
+          <MiniFrame icon={hiwIcon2.url} title="Campaigns that fit your skills." extra={<MatchesSkillsPill />}>
             SkillSync surfaces bounties matched to your wallet history and on-chain track record — not random noise.
           </MiniFrame>
         </ScrollFadeIn>
