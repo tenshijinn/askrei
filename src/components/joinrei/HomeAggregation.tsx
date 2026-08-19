@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { ScrollFadeIn } from './ScrollFadeIn';
 import reiFlowDiagram from '@/assets/joinrei/rei-aggregation-home.png';
 
-const rotatingPhrases = ['Task Platforms', 'Across Chains', 'Communities'];
+const rotatingPhrases = ['Campaign Platforms', 'Across Chains', 'Communities'];
 
 export const HomeAggregation = () => {
   const [phraseIndex, setPhraseIndex] = useState(0);
@@ -24,7 +24,7 @@ export const HomeAggregation = () => {
       <div className="container mx-auto px-8 lg:px-16 flex flex-col h-full justify-center">
         <ScrollFadeIn>
           <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary text-center leading-tight mb-6">
-            Find Tasks from Across{' '}
+            Find Campaigns from Across{' '}
             <span 
               className={`inline-block transition-opacity duration-300 ${fade ? 'opacity-100' : 'opacity-0'}`}
               style={{ color: '#ed565a' }}
@@ -38,7 +38,7 @@ export const HomeAggregation = () => {
           <div className="flex justify-center">
             <img 
               src={reiFlowDiagram} 
-              alt="Rei Aggregation Flow - Blockchains to Project Tasks to Aggregation Layer to Talent" 
+              alt="Rei Aggregation Flow - Blockchains to Project Campaigns to Aggregation Layer to Talent" 
               className="w-full max-w-5xl mx-auto object-contain max-h-[68vh]"
             />
           </div>

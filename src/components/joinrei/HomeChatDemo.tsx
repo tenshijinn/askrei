@@ -92,7 +92,7 @@ export const HomeChatDemo = () => {
           </Frame>
 
           <Frame
-            title="Tasks that fit your skills."
+            title="Campaigns that fit your skills."
             speed={0}
             delay={100}
             extra={<SinglePill><MatchesSkillsPill /></SinglePill>}

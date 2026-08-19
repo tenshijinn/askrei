@@ -70,7 +70,7 @@ export const JoinReiCrossChain = () => {
         <div className="hidden lg:flex order-1 relative items-center justify-center pl-4 pr-6 py-10">
           <img
             src={reiFlowDiagram}
-            alt="Rei aggregation flow from blockchains and task platforms to talent"
+            alt="Rei aggregation flow from blockchains and campaign platforms to talent"
             className="w-full max-w-none object-contain max-h-[88vh]"
           />
         </div>
@@ -92,14 +92,14 @@ export const JoinReiCrossChain = () => {
 
           <ScrollFadeIn delay={100}>
             <p className="text-sm md:text-base font-mono text-primary/70 leading-relaxed">
-              Your tasks will get exposure to cross-platform traffic through Rei.
+              Your campaigns will get exposure to cross-platform traffic through Rei.
             </p>
           </ScrollFadeIn>
 
           <ScrollFadeIn delay={150}>
             <blockquote className="text-xs md:text-sm font-mono text-primary/50 leading-relaxed border-l border-primary/30 pl-4 italic">
-              "A user who only uses Zealy may be matched to your Task on QuestN, meaning your tasks
-              and community is now exposed to the traffic from every task platform, community and
+              "A user who only uses Zealy may be matched to your campaign on QuestN, meaning your campaign
+              and community is now exposed to the traffic from every campaign platform, community and
               project userbase that Rei works with."
             </blockquote>
           </ScrollFadeIn>

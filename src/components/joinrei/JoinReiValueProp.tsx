@@ -152,7 +152,7 @@ export const JoinReiValueProp = () => {
                     </svg>
                   }
                 >
-                  Matches Skills to Tasks
+                  Matches Skills to Campaigns
                 </Pill>
 
                 <Pill

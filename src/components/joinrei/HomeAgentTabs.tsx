@@ -150,7 +150,7 @@ export const HomeAgentTabs = () => {
                     </svg>
                   }
                 >
-                  Matches Skills to Tasks
+                  Matches Skills to Campaigns
                 </Pill>
 
                 <Pill
@@ -177,7 +177,7 @@ export const HomeAgentTabs = () => {
 
               <p className="text-sm md:text-base font-mono text-primary/70 leading-relaxed">
                 @AskRei_ is an Automated AI Agent that lives on X. When she finds a new bounty on
-                rei.chat she posts about it, so you hear about tasks early. Rei's posts reach our KOL
+                rei.chat she posts about it, so you hear about campaigns early. Rei's posts reach our KOL
                 network of 1 million+ on X.
               </p>
 
