@@ -21,7 +21,7 @@ const MatchesSkillsPill = () => (
       <path d="M9 12l2 2 4-4" />
       <line x1="3" y1="9" x2="21" y2="9" />
     </svg>
-    <span className="text-xs text-cream/80 font-mono">Matches Skills to Tasks</span>
+    <span className="text-xs text-cream/80 font-mono">Matches Skills to Campaigns</span>
   </div>
 );
 
@@ -143,7 +143,7 @@ export const JoinReiChatDemo = () => {
               </SinglePill>
             }
           >
-            AI matches the right tasks to the right people before they ever apply.
+            AI matches the right campaigns to the right people before they ever apply.
           </Frame>
 
           <Frame
