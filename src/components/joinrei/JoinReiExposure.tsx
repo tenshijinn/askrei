@@ -23,16 +23,16 @@ export const JoinReiExposure = () => {
 
           <ScrollFadeIn delay={100}>
             <p className="text-sm md:text-base font-mono text-primary/70 leading-relaxed">
-              Your tasks will get exposure to cross-platform traffic through Rei.
+              Your campaigns will get exposure to cross-platform traffic through Rei.
             </p>
           </ScrollFadeIn>
 
           <ScrollFadeIn delay={200}>
             <blockquote className="text-xs md:text-sm font-mono text-primary/50 leading-relaxed border-l border-primary/30 pl-4 italic">
               "A user who only uses Zealy may be matched
-              to your Task on QuestN, meaning your tasks
+              to your campaign on QuestN, meaning your campaign
               and community is now exposed to the
-              traffic from every task platform, community and project userbase that Rei works with."
+              traffic from every campaign platform, community and project userbase that Rei works with."
             </blockquote>
           </ScrollFadeIn>
 
@@ -54,7 +54,7 @@ export const JoinReiExposure = () => {
                   <path d="M9 12l2 2 4-4" />
                   <line x1="3" y1="9" x2="21" y2="9" />
                 </svg>
-                <span className="text-xs text-cream/80 font-mono">Matches Skills to Tasks</span>
+                <span className="text-xs text-cream/80 font-mono">Matches Skills to Campaigns</span>
               </div>
             </ScrollFadeIn>
           </div>

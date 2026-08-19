@@ -9,7 +9,7 @@ export const JoinReiAggregation = () => {
       <div className="container mx-auto px-8 lg:px-16 flex flex-col h-full justify-start">
         <ScrollFadeIn>
           <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary text-center leading-tight mb-6">
-            Get Task Talent from Cross-Chains,<br />
+            Get Campaign Talent from Cross-Chains,<br />
             Cross Platforms, Cross Communities
           </h2>
         </ScrollFadeIn>
@@ -18,7 +18,7 @@ export const JoinReiAggregation = () => {
           <div className="flex justify-center">
             <img 
               src={reiFlowDiagram} 
-              alt="Rei Aggregation Flow - Blockchains to Project Tasks to Aggregation Layer to Talent" 
+              alt="Rei Aggregation Flow - Blockchains to Project Campaigns to Aggregation Layer to Talent" 
               className="w-full max-w-5xl mx-auto object-contain max-h-[58vh]"
             />
           </div>

@@ -7,7 +7,7 @@ import hiwImg3 from '@/assets/joinrei/hiw-img3.png';
 
 const steps = [
   { title: 'Signup', icon: hiwImg1 },
-  { title: 'Post Task', icon: hiwImg2 },
+  { title: 'Post Campaign', icon: hiwImg2 },
   { title: 'Pay SOL', icon: hiwImg3, showBadges: true },
 ];
 
