@@ -5,7 +5,7 @@ import hiwImg3 from '@/assets/joinrei/hiw-img3.png';
 
 const steps = [
   { title: 'Signup', icon: hiwImg1 },
-  { title: 'Search Tasks', icon: hiwImg2 },
+  { title: 'Search Campaigns', icon: hiwImg2 },
   { title: 'Earn Crypto', icon: hiwImg3 },
 ];
 
