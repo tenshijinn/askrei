@@ -103,7 +103,7 @@ export const JoinReiHero = () => {
         <img src={mobileBg} alt="Rei's Diamond wallet behaviour score" className="w-full h-full object-cover object-center" />
       </div>
 
-      <div className="w-full lg:w-[55%] h-full p-8 lg:p-12 xl:p-16 relative z-10">
+      <div className="w-full lg:w-[55%] h-full p-8 lg:p-12 xl:p-16 relative z-10 flex flex-col">
         <div className="pt-2">
           <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-bold leading-[1.15] tracking-tight text-primary">
             <span>Your Crypto Growth AI.</span>
@@ -169,7 +169,7 @@ export const JoinReiHero = () => {
           </div>
         </div>
 
-        <div className={`absolute left-8 lg:left-12 xl:left-16 top-[60%] -translate-y-1/2 transition-all duration-500 delay-300 ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`mt-8 lg:mt-10 transition-all duration-500 delay-300 ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
           <div className="flex items-center gap-6 flex-wrap">
             <button
               className="btn-manga font-bold"
