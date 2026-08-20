@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import reiLogo from '@/assets/joinrei/rei-logo.png';
-import desktopBgAsset from '@/assets/joinrei/joinrei-desktop-bg-2.png.asset.json';
-import mobileBgAsset from '@/assets/joinrei/joinrei-mobile-bg-2.png.asset.json';
+import desktopBgAsset from '@/assets/joinrei/bg-diamondhand-desktop.png.asset.json';
+import mobileBgAsset from '@/assets/joinrei/bg-diamondhand-mobile.png.asset.json';
 import arubaito from '@/assets/joinrei/logo-bar-arubaito.png';
 import ignyte from '@/assets/joinrei/logo-bar-ignyte.png';
 import solanaFoundation from '@/assets/joinrei/logo-bar-solana-foundation.png';
@@ -90,8 +90,7 @@ export const JoinReiHero = () => {
   };
 
   const pill =
-    'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-transparent border border-[#181818] text-[11px] font-normal whitespace-nowrap';
-
+    'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-transparent border border-primary text-[10px] font-bold whitespace-nowrap text-primary';
 
   return (
     <section className="h-screen snap-start relative flex overflow-hidden bg-[#0a0a0a]">
@@ -106,10 +105,11 @@ export const JoinReiHero = () => {
 
       <div className="w-full lg:w-[55%] h-full p-8 lg:p-12 xl:p-16 relative z-10">
         <div className="pt-2">
-          <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-bold leading-[1.15] tracking-tight" style={{ color: '#181818' }}>
+          <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-bold leading-[1.15] tracking-tight text-primary">
             <span>Your Crypto Growth AI.</span>
             <br />
-            <span>Filters for Diamond Hand Holders.</span>
+            <span>Target </span>
+            <span className="font-bold">Diamond Hand Holders</span>
             <br />
             <span>to </span>
             <span style={{ color: '#ed565a' }}>
@@ -119,20 +119,21 @@ export const JoinReiHero = () => {
           </h1>
 
           <div
-            className={`mt-6 text-sm md:text-base font-mono leading-relaxed transition-opacity duration-500 max-w-lg ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}
-            style={{ color: '#181818' }}
+            className={`mt-6 text-sm md:text-base font-mono leading-relaxed transition-opacity duration-500 max-w-lg text-primary ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}
           >
             <p>
-              Rei AI <strong className="font-bold">reduces</strong> marketing budget
+              Cut your marketing cost by
               <br />
-              protects from <strong className="font-bold">token dumpers</strong>
+              promoting your project with <strong className="font-bold">Rei AI</strong>.
               <br />
-              by filtering out <strong className="font-bold">JEETs</strong> &amp; <strong className="font-bold">Sybils</strong>
+              Rei blocks <strong className="font-bold">Farmers</strong>,{' '}
+              <strong className="font-bold">Paper-hands</strong> and{' '}
+              <strong className="font-bold">Sybils</strong>
               <br />
-              and rewarding <strong className="font-bold">Diamond Hands</strong>.
+              with a user <strong className="font-bold">Diamond Hand Score</strong>.
             </p>
             <p className="mt-4 flex flex-wrap items-center gap-2">
-              <span className={pill} style={{ color: '#181818', borderColor: '#181818' }}>
+              <span className={pill}>
                 <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
@@ -141,7 +142,7 @@ export const JoinReiHero = () => {
                 </svg>
                 Premium X
               </span>
-              <span className={pill} style={{ color: '#181818', borderColor: '#181818' }}>
+              <span className={pill}>
                 <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
                   <circle cx="11" cy="11" r="6" />
                   <path d="M11 8v6M8 11h6" opacity="0.5" />
@@ -149,7 +150,7 @@ export const JoinReiHero = () => {
                 </svg>
                 Wallet Scanning
               </span>
-              <span className={pill} style={{ color: '#181818', borderColor: '#181818' }}>
+              <span className={pill}>
                 <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
                   <path d="M4 7h10M18 7h2M4 17h4M12 17h8" />
                   <circle cx="16" cy="7" r="2" />
@@ -157,16 +158,22 @@ export const JoinReiHero = () => {
                 </svg>
                 Skill-Sync
               </span>
+              <span className={pill}>
+                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+                  <path d="M3 21l6-6M16 4l5 5-9 9-5-5 9-9z" />
+                  <path d="M15 4h6v6" />
+                </svg>
+                KOL Boosted
+              </span>
             </p>
           </div>
         </div>
-
 
         <div className={`absolute left-8 lg:left-12 xl:left-16 top-[60%] -translate-y-1/2 transition-all duration-500 delay-300 ${headlineComplete ? 'opacity-100' : 'opacity-0'}`}>
           <div className="flex items-center gap-6 flex-wrap">
             <button
               className="btn-manga font-bold"
-              style={{ backgroundColor: '#ed565a', borderColor: '#ed565a', color: '#181818' }}
+              style={{ backgroundColor: '#ed565a', borderColor: '#ed565a', color: 'hsl(30, 10%, 93%)' }}
               onClick={scrollToLastSection}
             >
               Promote Task
@@ -174,7 +181,7 @@ export const JoinReiHero = () => {
             <button
               onClick={scrollToHowItWorks}
               className="btn-manga btn-manga-outline font-bold"
-              style={{ backgroundColor: '#181818', borderColor: '#181818' }}
+              style={{ backgroundColor: 'transparent', borderColor: 'hsla(0, 0%, 100%, 0.18)' }}
             >
               How it Works
             </button>
