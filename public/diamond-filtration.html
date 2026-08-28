@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<title>Diamond Filtration</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/4.5.0/anime.umd.min.js"></script>
+
+<style>
+:root[data-theme="dark"]{
+  --ground:transparent; --ground-2:#232120; --ground-3:transparent;
+  --ink:#f0d5b7; --ink-2:rgba(240,213,183,.60);
+  --line:rgba(240,213,183,.22); --line-2:rgba(240,213,183,.10);
+  --teal:#2bb0ab; --teal-2:#5ad6ce; --teal-ink:#8fe6df;
+  --dirt:#7a6144; --dirt-2:#9c7f5b; --stamp:#f0d5b7; --glow:rgba(90,214,206,.6);
+  --wall:#2b2724; --wall-lo:#211d1b; --well:#0e0e0e;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:transparent}
+body{ color:var(--ink); font-family:"Archivo","Helvetica Neue",Arial,sans-serif; overflow:hidden; -webkit-font-smoothing:antialiased; }
+
+.plate{ position:fixed; inset:0; display:flex; flex-direction:column; background:transparent; }
+
+.stage-wrap{ position:relative; flex:1; min-height:0; z-index:2; }
+.stage{ position:absolute; left:50%; top:0; bottom:0; transform:translateX(-50%); width:min(300px,92vw); }
+.guides{ position:absolute; inset:0; z-index:1; pointer-events:none; }
+.guides line,.guides polyline{ stroke:var(--ink-2); fill:none; stroke-width:1.6; }
+.guides .g-dash{ stroke-dasharray:2 5; opacity:.7; }
+#fx{ position:absolute; inset:0; z-index:2; pointer-events:none; }
+
+.unit{ position:absolute; left:0; width:100%; }
+.unit svg{ display:block; width:100%; height:auto; overflow:visible; }
+.z-back{ z-index:1; }
+.z-front{ z-index:3; }
+
+.rim{ fill:var(--well); fill-opacity:.34; stroke:var(--ink); stroke-width:2.4; }
+.rim-hi{ fill:var(--ground-3); opacity:.32; }
+.wall{ fill:var(--wall); fill-opacity:.42; stroke:var(--ink); stroke-width:2.4; }
+.wall-lo{ fill:var(--wall-lo); opacity:.2; }
+.base{ fill:var(--wall); fill-opacity:.42; stroke:var(--ink); stroke-width:2.4; }
+.mesh-hole{ fill:var(--ink); opacity:.5; }
+.stamp{ font-family:"Archivo Black",sans-serif; fill:var(--stamp); letter-spacing:2.4px; }
+
+.p{ position:absolute; left:0; top:0; will-change:transform,opacity; }
+.p svg{ display:block; overflow:visible; }
+.dia .body{ fill:var(--teal); stroke:var(--teal-ink); stroke-width:1.4; }
+.dia .facet{ fill:var(--teal-2); opacity:.92; }
+.dia.lit{ filter:drop-shadow(0 0 7px var(--glow)); }
+.dirt .lump{ fill:var(--dirt); stroke:var(--dirt-2); stroke-width:1; }
+
+/* surrounding copy removed — labels stay stamped on the filters */
+.notes,.figs,.hidden-meta{ display:none !important; }
+</style>
+</head>
+<body>
+<div class="plate">
+  <div class="stage-wrap">
+    <div class="stage" id="stage">
+
+      <!-- SYBIL back -->
+      <div class="unit z-back" id="f1b" style="top:6%">
+        <svg viewBox="0 0 400 150">
+          <ellipse class="rim" cx="200" cy="30" rx="164" ry="24"></ellipse>
+          <ellipse class="rim-hi" cx="200" cy="28" rx="150" ry="18"></ellipse>
+        </svg>
+      </div>
+      <!-- SYBIL front (opaque wall + bottom mesh) -->
+      <div class="unit z-front" id="f1f" style="top:6%">
+        <svg viewBox="0 0 400 150">
+          <path class="wall" d="M36,30 L36,108 A164,24 0 0,0 364,108 L364,30 A164,24 0 0,1 36,30 Z"></path>
+          <path class="wall-lo" d="M36,90 L36,108 A164,24 0 0,0 364,108 L364,90 A164,24 0 0,1 36,90 Z"></path>
+          <ellipse class="base" cx="200" cy="108" rx="164" ry="24"></ellipse>
+          <g class="mesh" data-mesh="f1"></g>
+          <text class="stamp" x="200" y="72" text-anchor="middle" font-size="17">SYBIL FILTER</text>
+        </svg>
+      </div>
+
+      <!-- PAPER HANDS back -->
+      <div class="unit z-back" id="f2b" style="top:40%">
+        <svg viewBox="0 0 400 150">
+          <ellipse class="rim" cx="200" cy="30" rx="164" ry="24"></ellipse>
+          <ellipse class="rim-hi" cx="200" cy="28" rx="150" ry="18"></ellipse>
+        </svg>
+      </div>
+      <!-- PAPER HANDS front -->
+      <div class="unit z-front" id="f2f" style="top:40%">
+        <svg viewBox="0 0 400 150">
+          <path class="wall" d="M36,30 L36,108 A164,24 0 0,0 364,108 L364,30 A164,24 0 0,1 36,30 Z"></path>
+          <path class="wall-lo" d="M36,90 L36,108 A164,24 0 0,0 364,108 L364,90 A164,24 0 0,1 36,90 Z"></path>
+          <ellipse class="base" cx="200" cy="108" rx="164" ry="24"></ellipse>
+          <g class="mesh" data-mesh="f2"></g>
+          <text class="stamp" x="200" y="72" text-anchor="middle" font-size="15">PAPER HANDS FILTER</text>
+        </svg>
+      </div>
+
+      <!-- PROJECT back -->
+      <div class="unit z-back" id="vb" style="top:74%">
+        <svg viewBox="0 0 400 140">
+          <ellipse class="rim" cx="200" cy="32" rx="150" ry="24"></ellipse>
+          <ellipse class="rim-hi" cx="200" cy="30" rx="138" ry="18"></ellipse>
+        </svg>
+      </div>
+      <!-- PROJECT front (solid container, collects diamonds) -->
+      <div class="unit z-front" id="vf" style="top:74%">
+        <svg viewBox="0 0 400 140">
+          <path class="wall" d="M50,32 L50,104 A150,24 0 0,0 350,104 L350,32 A150,24 0 0,1 50,32 Z"></path>
+          <path class="wall-lo" d="M50,84 L50,104 A150,24 0 0,0 350,104 L350,84 A150,24 0 0,1 50,84 Z"></path>
+          <text class="stamp" x="200" y="74" text-anchor="middle" font-size="18">PROJECT</text>
+        </svg>
+      </div>
+
+      <svg class="guides" id="guides"></svg>
+      <div id="fx"></div>
+    </div>
+
+    <div class="notes" id="notes">
+      <div class="note" id="n1"></div>
+      <div class="note" id="n2"></div>
+      <div class="note l" id="n3"></div>
+    </div>
+    <div class="figs" id="figs"></div>
+    <span class="hidden-meta" id="rcount">0</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  var A=window.anime;
+  var fx=document.getElementById('fx');
+  var f1f=document.getElementById('f1f'), f2f=document.getElementById('f2f'), vf=document.getElementById('vf');
+  var rcount=document.getElementById('rcount');
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var SVGNS='http://www.w3.org/2000/svg';
+  function rnd(a,b){ return a+Math.random()*(b-a); }
+
+  function buildMesh(g,cx,cy,rx,ry){
+    var stepX=12, stepY=6, row=0;
+    for(var gy=-ry+2; gy<=ry-2; gy+=stepY, row++){
+      var off=(row%2)*stepX/2;
+      for(var gx=-rx+2+off; gx<=rx-2; gx+=stepX){
+        var nx=gx/rx, ny=gy/ry; if(nx*nx+ny*ny>0.9) continue;
+        var e=document.createElementNS(SVGNS,'ellipse');
+        e.setAttribute('class','mesh-hole');
+        e.setAttribute('cx',(cx+gx+rnd(-0.8,0.8)).toFixed(1));
+        e.setAttribute('cy',(cy+gy+rnd(-0.6,0.6)).toFixed(1));
+        e.setAttribute('rx','1.7'); e.setAttribute('ry','1.0');
+        g.appendChild(e);
+      }
+    }
+  }
+  buildMesh(document.querySelector('[data-mesh="f1"]'),200,108,164,24);
+  buildMesh(document.querySelector('[data-mesh="f2"]'),200,108,164,24);
+
+  var G={};
+  function yAt(el,ratio){ var r=el.getBoundingClientRect(), f=fx.getBoundingClientRect();
+    return { x:(r.left+r.width/2)-f.left, y:(r.top-f.top)+r.height*ratio, left:r.left-f.left, right:r.right-f.left }; }
+  function measure(){
+    var f=fx.getBoundingClientRect(); G.W=f.width; G.H=f.height;
+    var e1=yAt(f1f,30/150), x1=yAt(f1f,108/150);
+    var e2=yAt(f2f,30/150), x2=yAt(f2f,108/150);
+    var v =yAt(vf,32/140);
+    G.f1={ x:e1.x, enter:e1.y, exit:x1.y, mid:(e1.y+x1.y)/2, right:e1.right, left:e1.left };
+    G.f2={ x:e2.x, enter:e2.y, exit:x2.y, mid:(e2.y+x2.y)/2, right:e2.right, left:e2.left };
+    G.vault={ x:v.x, enter:v.y, right:v.right, left:v.left };
+    G.intakeL=G.W*0.28; G.intakeR=G.W*0.72; G.cx=G.W/2;
+
+    var gsvg=document.getElementById('guides'); gsvg.setAttribute('viewBox','0 0 '+G.W+' '+G.H);
+    var mids=[ G.f1.enter-52, (G.f1.exit+G.f2.enter)/2, (G.f2.exit+G.vault.enter)/2 ];
+    var gh='';
+    for(var gi=0;gi<mids.length;gi++){ var my=mids[gi], top=my-20, tip=my+20;
+      gh+='<line class="g-dash" x1="'+G.cx+'" y1="'+top+'" x2="'+G.cx+'" y2="'+(tip-7)+'"></line>'+
+          '<polyline points="'+(G.cx-5)+','+(tip-9)+' '+G.cx+','+tip+' '+(G.cx+5)+','+(tip-9)+'"></polyline>';
+    }
+    gsvg.innerHTML=gh;
+  }
+
+  function diamondEl(){ var d=document.createElement('div'); d.className='p dia'; var s=rnd(7,9.5);
+    d.style.marginLeft=(-s/2)+'px'; d.style.marginTop=(-s/2)+'px';
+    d.innerHTML='<svg width="'+s+'" height="'+s+'" viewBox="0 0 20 20"><polygon class="body" points="10,0.6 19.4,10 10,19.4 0.6,10"></polygon><polygon class="facet" points="10,0.6 19.4,10 10,10 0.6,10"></polygon><line x1="0.6" y1="10" x2="19.4" y2="10" stroke="var(--teal-ink)" stroke-width="0.8" opacity="0.7"></line></svg>';
+    return d; }
+  function dirtEl(){ var d=document.createElement('div'); d.className='p dirt'; var s=rnd(5,7.5);
+    d.style.marginLeft=(-s/2)+'px'; d.style.marginTop=(-s/2)+'px';
+    var pts=[], v=6+(Math.random()*3|0);
+    for(var i=0;i<v;i++){ var a=i/v*Math.PI*2, rr=rnd(3.4,5); pts.push((5+Math.cos(a)*rr).toFixed(1)+','+(5+Math.sin(a)*rr).toFixed(1)); }
+    d.innerHTML='<svg width="'+s+'" height="'+s+'" viewBox="0 0 10 10"><polygon class="lump" points="'+pts.join(' ')+'"></polygon></svg>';
+    return d; }
+
+  function glow(el){ if(!el.parentNode) return; el.classList.add('lit'); setTimeout(function(){ el.classList.remove('lit'); },280); }
+  function pinch(el,isDia){ if(!el.parentNode) return; if(isDia) glow(el); A.animate(el,{ scale:[1,0.5,1], duration:200, ease:'inOutQuad' }); }
+  function clampDur(dist,k){ return Math.max(300, Math.min(1500, Math.abs(dist)*1.5*(k||1))); }
+
+  var pile=[], retained=0, landed=0, filling=false, CAP=40;
+  function bump(v){ retained=v; if(rcount) rcount.textContent=v; }
+  function binCount(x){ var bin=12*(G.W/500), c=0; for(var i=0;i<pile.length;i++){ if(Math.abs(pile[i].x-x)<bin) c++; } return c; }
+  function stackY(x){ return G.vault.enter + 6 - binCount(x)*(8*(G.W/500)); }
+  function resetPile(){ if(filling) return; filling=true;
+    A.animate(pile.map(function(p){return p.el;}),{ scale:0, opacity:0, duration:520, delay:A.stagger(11,{from:'last'}), ease:'inQuad',
+      onComplete:function(){ pile.forEach(function(p){ if(p.el.parentNode) p.el.remove(); }); pile.length=0; landed=0; bump(0); filling=false; } }); }
+
+  var LIVE=0, MAXLIVE=110;
+  function removeEl(el){ if(el.parentNode) el.remove(); }
+  function caughtAtMesh(tl, el, enterY, exitY){
+    tl.add(el,{ y:exitY-3, rotate:'+='+rnd(-90,90), duration:clampDur(exitY-enterY,0.95), ease:'linear' });
+    tl.add(el,{ opacity:0, scale:0.2, rotate:'+='+rnd(-40,40), duration:320, delay:rnd(40,200), ease:'inQuad',
+      onComplete:function(){ removeEl(el); } });
+  }
+  function spawn(){
+    if(filling && Math.random()<0.7) return;
+    if(LIVE>MAXLIVE) return;
+    var roll=Math.random();
+    var type = roll<0.40 ? 0 : (roll<0.64 ? 1 : 2);
+    var isDia = type===2;
+    var el = isDia ? diamondEl() : dirtEl();
+    fx.appendChild(el); LIVE++;
+    var x=rnd(G.intakeL,G.intakeR), spin=isDia?26:100;
+    A.utils.set(el,{ x:x, y:-20, rotate:rnd(0,360) });
+    var tl=A.createTimeline({ onComplete:function(){ LIVE--; } });
+
+    tl.add(el,{ y:G.f1.enter, rotate:'+='+rnd(-spin,spin), duration:clampDur(G.f1.enter+20,1.0), ease:'linear' });
+    if(type===0){ caughtAtMesh(tl, el, G.f1.enter, G.f1.exit); return; }
+
+    tl.add(el,{ y:G.f1.exit, rotate:'+='+rnd(-spin,spin), duration:clampDur(G.f1.exit-G.f1.enter,1.0), ease:'linear',
+      onComplete:function(){ pinch(el,isDia); } });
+    tl.add(el,{ y:G.f2.enter, rotate:'+='+rnd(-spin,spin), duration:clampDur(G.f2.enter-G.f1.exit,1.0), ease:'linear' });
+    if(type===1){ caughtAtMesh(tl, el, G.f2.enter, G.f2.exit); return; }
+
+    tl.add(el,{ y:G.f2.exit, rotate:'+='+rnd(-spin,spin), duration:clampDur(G.f2.exit-G.f2.enter,1.0), ease:'linear',
+      onComplete:function(){ pinch(el,true); } });
+    var landY=stackY(x); pile.push({ el:el, x:x });
+    tl.add(el,{ y:landY, rotate:'+='+rnd(-22,22), duration:clampDur(landY-G.f2.exit,1.0), ease:'linear',
+      onComplete:function(){ landed++; bump(landed); if(landed>=CAP && !filling){ setTimeout(resetPile,600); } } });
+  }
+
+  function staticScene(){
+    function place(el,x,y){ fx.appendChild(el); A.utils.set(el,{x:x,y:y,rotate:rnd(-30,30)}); }
+    for(var i=0;i<10;i++){ place(Math.random()<0.5?diamondEl():dirtEl(), rnd(G.intakeL,G.intakeR), rnd(6,G.f1.enter-24)); }
+    for(var j=0;j<6;j++){ place(diamondEl(), rnd(G.intakeL,G.intakeR), rnd(G.f1.exit+8,G.f2.enter-8)); }
+    for(var k=0;k<24;k++){ var x=rnd(G.intakeL,G.intakeR); var d=diamondEl(); place(d,x,stackY(x)); pile.push({el:d,x:x}); }
+    bump(pile.length);
+  }
+
+  function boot(){
+    measure();
+    if(reduce){ staticScene(); return; }
+    A.animate([document.getElementById('f1b'),f1f,document.getElementById('f2b'),f2f,document.getElementById('vb'),vf],
+      { opacity:[0,1], y:[14,0], duration:640, delay:A.stagger(90), ease:'outQuad' });
+    A.createTimer({ duration:180, loop:true, onLoop:function(){ spawn(); if(Math.random()<0.7) spawn(); } });
+  }
+  var rt; window.addEventListener('resize', function(){ clearTimeout(rt); rt=setTimeout(measure,180); });
+  if(A && A.animate){ boot(); }
+})();
+</script>
+
+</body>
+</html>
