@@ -185,10 +185,10 @@ export const JoinReiValueProp = () => {
                 of 1 million+ reach on X.
               </p>
 
-              <div className="flex items-start gap-6">
-                <DiamondFiltration className="w-[200px] shrink-0" height={300} />
+              <div className="flex items-center justify-start gap-5">
+                <DiamondFiltration className="w-[170px] shrink-0" height={280} />
 
-                <div className="space-y-3 pt-2">
+                <div className="space-y-3 min-w-0">
                   <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-[#ed565a]">Rei Posts</h3>
                   <ul className="space-y-2.5">
                     {[
