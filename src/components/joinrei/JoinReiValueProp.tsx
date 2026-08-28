@@ -120,7 +120,14 @@ export const JoinReiValueProp = () => {
         {/* Copy */}
         <div className="space-y-6 order-2 px-8 lg:px-16">
           {tab === 'chatbot' ? (
-            <div className="space-y-6 animate-fade-in">
+            <div className="grid lg:grid-cols-2 gap-6 items-center animate-fade-in">
+              {/* Animation (left half) */}
+              <div className="hidden lg:flex items-center justify-center">
+                <DiamondFiltration className="w-full max-w-[280px]" height={340} />
+              </div>
+
+              {/* Copy (right half) */}
+              <div className="space-y-6">
               <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.2]">
                 AskRei Bounty Chatbot.
               </h2>
