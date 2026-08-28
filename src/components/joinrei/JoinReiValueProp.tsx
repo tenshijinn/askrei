@@ -202,6 +202,10 @@ export const JoinReiValueProp = () => {
                 </ul>
               </div>
 
+              <DiamondFiltration className="max-w-[360px]" height={300} />
+
+
+
               <button className="btn-manga btn-manga-primary px-8 py-3 mt-4" onClick={scrollToLastSection}>
                 Promote Task
               </button>
