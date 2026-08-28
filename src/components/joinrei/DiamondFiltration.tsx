@@ -14,8 +14,8 @@ export const DiamondFiltration = ({ className = '', height = 320 }: DiamondFiltr
     title="Diamond Filtration"
     loading="lazy"
     scrolling="no"
-    className={className}
-    style={{ width: '100%', height, border: 0, display: 'block', background: 'transparent' }}
+    className={`block border-0 bg-transparent ${className}`}
+    style={{ height }}
   />
 );
 
