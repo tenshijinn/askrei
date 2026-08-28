@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { ScrollFadeIn } from './ScrollFadeIn';
 import { scrollToLastSection } from './scrollHelpers';
 import { ChatFeedMockup } from './ChatFeedMockup';
+import { DiamondFiltration } from './DiamondFiltration';
+
 import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
 import agentVideo from '@/assets/joinrei/rei-on-X.webm.asset.json';
 
@@ -201,6 +203,10 @@ export const JoinReiValueProp = () => {
                   ))}
                 </ul>
               </div>
+
+              <DiamondFiltration className="max-w-[360px]" height={300} />
+
+
 
               <button className="btn-manga btn-manga-primary px-8 py-3 mt-4" onClick={scrollToLastSection}>
                 Promote Task
