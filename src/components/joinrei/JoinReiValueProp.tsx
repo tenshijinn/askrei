@@ -120,7 +120,14 @@ export const JoinReiValueProp = () => {
         {/* Copy */}
         <div className="space-y-6 order-2 px-8 lg:px-16">
           {tab === 'chatbot' ? (
-            <div className="space-y-6 animate-fade-in">
+            <div className="grid lg:grid-cols-2 gap-6 items-center animate-fade-in">
+              {/* Animation (left half) */}
+              <div className="hidden lg:flex items-center justify-center">
+                <DiamondFiltration className="w-full max-w-[280px]" height={340} />
+              </div>
+
+              {/* Copy (right half) */}
+              <div className="space-y-6">
               <h2 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.2]">
                 AskRei Bounty Chatbot.
               </h2>
@@ -172,6 +179,7 @@ export const JoinReiValueProp = () => {
               <button className="btn-manga btn-manga-primary px-8 py-3 mt-4" onClick={scrollToLastSection}>
                 Promote Task
               </button>
+              </div>
             </div>
           ) : (
             <div className="space-y-6 animate-fade-in">
@@ -185,27 +193,23 @@ export const JoinReiValueProp = () => {
                 of 1 million+ reach on X.
               </p>
 
-              <div className="flex items-center justify-start gap-4 overflow-hidden">
-                <DiamondFiltration className="w-[120px] shrink-0" height={200} />
-
-                <div className="space-y-3 min-w-0">
-                  <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-[#ed565a]">Rei Posts</h3>
-                  <ul className="space-y-2.5">
-                    {[
-                      { label: 'Bounties & Deadline Reminders', d: 'M12 6v6l4 2M12 2a10 10 0 100 20 10 10 0 000-20z' },
-                      { label: 'Bounty Tips & Earning Info', d: 'M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6' },
-                      { label: 'Chart Analysis', d: 'M3 3v18h18M7 15l4-5 3 3 4-6' },
-                      { label: 'Community Interaction', d: 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z' },
-                    ].map((item) => (
-                      <li key={item.label} className="flex items-center gap-3 text-xs md:text-sm font-mono text-primary/70">
-                        <svg className="h-4 w-4 shrink-0 text-[#ed565a]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d={item.d} />
-                        </svg>
-                        {item.label}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              <div className="space-y-3">
+                <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-[#ed565a]">Rei Posts</h3>
+                <ul className="space-y-2.5">
+                  {[
+                    { label: 'Bounties & Deadline Reminders', d: 'M12 6v6l4 2M12 2a10 10 0 100 20 10 10 0 000-20z' },
+                    { label: 'Bounty Tips & Earning Info', d: 'M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6' },
+                    { label: 'Chart Analysis', d: 'M3 3v18h18M7 15l4-5 3 3 4-6' },
+                    { label: 'Community Interaction', d: 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z' },
+                  ].map((item) => (
+                    <li key={item.label} className="flex items-center gap-3 text-xs md:text-sm font-mono text-primary/70">
+                      <svg className="h-4 w-4 shrink-0 text-[#ed565a]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d={item.d} />
+                      </svg>
+                      {item.label}
+                    </li>
+                  ))}
+                </ul>
               </div>
 
               <button className="btn-manga btn-manga-primary px-8 py-3 mt-2" onClick={scrollToLastSection}>
