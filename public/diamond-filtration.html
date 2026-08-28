@@ -26,7 +26,7 @@ body{ color:var(--ink); font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
 .plate{ position:fixed; inset:0; display:flex; flex-direction:column; background:transparent; }
 
 .stage-wrap{ position:relative; flex:1; min-height:0; z-index:2; }
-.stage{ position:absolute; left:50%; top:0; bottom:0; transform:translateX(-50%); width:min(300px,92vw); }
+.stage{ position:absolute; left:50%; top:0; bottom:0; transform:translateX(-50%); width:min(240px,86vw); }
 .guides{ position:absolute; inset:0; z-index:1; pointer-events:none; }
 .guides line,.guides polyline{ stroke:var(--ink-2); fill:none; stroke-width:1.6; }
 .guides .g-dash{ stroke-dasharray:2 5; opacity:.7; }
@@ -62,14 +62,14 @@ body{ color:var(--ink); font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
     <div class="stage" id="stage">
 
       <!-- SYBIL back -->
-      <div class="unit z-back" id="f1b" style="top:6%">
+      <div class="unit z-back" id="f1b" style="top:9%">
         <svg viewBox="0 0 400 150">
           <ellipse class="rim" cx="200" cy="30" rx="164" ry="24"></ellipse>
           <ellipse class="rim-hi" cx="200" cy="28" rx="150" ry="18"></ellipse>
         </svg>
       </div>
       <!-- SYBIL front (opaque wall + bottom mesh) -->
-      <div class="unit z-front" id="f1f" style="top:6%">
+      <div class="unit z-front" id="f1f" style="top:9%">
         <svg viewBox="0 0 400 150">
           <path class="wall" d="M36,30 L36,108 A164,24 0 0,0 364,108 L364,30 A164,24 0 0,1 36,30 Z"></path>
           <path class="wall-lo" d="M36,90 L36,108 A164,24 0 0,0 364,108 L364,90 A164,24 0 0,1 36,90 Z"></path>
@@ -80,14 +80,14 @@ body{ color:var(--ink); font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
       </div>
 
       <!-- PAPER HANDS back -->
-      <div class="unit z-back" id="f2b" style="top:40%">
+      <div class="unit z-back" id="f2b" style="top:41%">
         <svg viewBox="0 0 400 150">
           <ellipse class="rim" cx="200" cy="30" rx="164" ry="24"></ellipse>
           <ellipse class="rim-hi" cx="200" cy="28" rx="150" ry="18"></ellipse>
         </svg>
       </div>
       <!-- PAPER HANDS front -->
-      <div class="unit z-front" id="f2f" style="top:40%">
+      <div class="unit z-front" id="f2f" style="top:41%">
         <svg viewBox="0 0 400 150">
           <path class="wall" d="M36,30 L36,108 A164,24 0 0,0 364,108 L364,30 A164,24 0 0,1 36,30 Z"></path>
           <path class="wall-lo" d="M36,90 L36,108 A164,24 0 0,0 364,108 L364,90 A164,24 0 0,1 36,90 Z"></path>
@@ -98,14 +98,14 @@ body{ color:var(--ink); font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
       </div>
 
       <!-- PROJECT back -->
-      <div class="unit z-back" id="vb" style="top:74%">
+      <div class="unit z-back" id="vb" style="top:72%">
         <svg viewBox="0 0 400 140">
           <ellipse class="rim" cx="200" cy="32" rx="150" ry="24"></ellipse>
           <ellipse class="rim-hi" cx="200" cy="30" rx="138" ry="18"></ellipse>
         </svg>
       </div>
       <!-- PROJECT front (solid container, collects diamonds) -->
-      <div class="unit z-front" id="vf" style="top:74%">
+      <div class="unit z-front" id="vf" style="top:72%">
         <svg viewBox="0 0 400 140">
           <path class="wall" d="M50,32 L50,104 A150,24 0 0,0 350,104 L350,32 A150,24 0 0,1 50,32 Z"></path>
           <path class="wall-lo" d="M50,84 L50,104 A150,24 0 0,0 350,104 L350,84 A150,24 0 0,1 50,84 Z"></path>
