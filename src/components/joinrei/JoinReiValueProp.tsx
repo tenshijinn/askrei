@@ -204,7 +204,7 @@ export const JoinReiValueProp = () => {
                 </ul>
               </div>
 
-              <DiamondFiltration className="max-w-[360px]" height={300} />
+              <DiamondFiltration className="max-w-[300px]" height={360} />
 
 
 
