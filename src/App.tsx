@@ -21,6 +21,9 @@ import OAuthConsent from "./pages/OAuthConsent";
 import Login from "./pages/Login";
 import Ask from "./pages/Ask";
 import Earn from "./pages/Earn";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
+
 
 const queryClient = new QueryClient();
 
