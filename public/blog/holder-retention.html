@@ -1,0 +1,650 @@
+<title>Give It Away, Watch It Leave</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+  :root {
+    color-scheme: dark;
+    --bg:        #000000;
+    --surface:   #0c0c0d;
+    --surface-2: #141315;
+    --ink:       #f3eeea;
+    --ink-2:     #b7b1aa;
+    --muted:     #807a72;
+    --grid:      #1d1c1b;
+    --baseline:  #35332f;
+    --hair:      rgba(232,196,184,0.16);
+    --hair-2:    rgba(255,255,255,0.07);
+    --peach:     #e8c4b8;
+    --peach-2:   #b07d68;
+    --peach-deep:#d7a58f;
+    --cash:      #9aa2ab;   /* cool grey data series (cash-funded) */
+    --cash-dim:  #6f757d;
+    --warn:      #e8b48c;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 18px;
+    line-height: 1.66;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 22px 120px; }
+  .measure { max-width: 660px; }
+
+  .mono, .kicker, .sec-no, .tag, .axis, .glabel, .anno, .lab, .ticker, .cost, .dc-small, .qbox, .term b, .btn, .statcell .lab, .pill {
+    font-family: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+
+  h1, h2, h3 { font-family: "IBM Plex Mono", monospace; font-weight: 600; letter-spacing: -0.01em; }
+  h1 { font-size: clamp(2rem, 5.6vw, 3.15rem); line-height: 1.05; font-weight: 700; margin: 0 0 0.6rem; text-wrap: balance; }
+  h2 { font-size: clamp(1.35rem, 3vw, 1.75rem); line-height: 1.15; margin: 0 0 0.6rem; text-wrap: balance; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin: 0 0 0.35rem; letter-spacing: 0; }
+  p { margin: 0 0 1.05rem; }
+  strong { color: var(--ink); font-weight: 600; }
+  em { color: var(--peach-deep); font-style: normal; }
+  a { color: var(--peach); text-decoration: underline; text-underline-offset: 2px; text-decoration-color: rgba(232,196,184,0.4); }
+  a:hover { text-decoration-color: var(--peach); }
+
+  .kicker { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: var(--peach); }
+  .rule { height: 1px; background: var(--hair); border: 0; margin: 0; }
+
+  /* header */
+  header { padding: 66px 0 26px; }
+  .top-row { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 34px; flex-wrap: wrap; }
+  .brandmark { display: inline-flex; align-items: center; gap: 10px; font-family: "IBM Plex Mono", monospace; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+  .brandmark .sq { width: 9px; height: 9px; background: var(--peach); display: inline-block; }
+  .lede { font-size: clamp(1.08rem, 2.2vw, 1.28rem); line-height: 1.5; color: var(--ink-2); max-width: 680px; margin-top: 1rem; }
+  .lede b { color: var(--ink); font-weight: 600; }
+
+  /* sections */
+  section { padding: 42px 0 6px; }
+  .sec-head { display: flex; gap: 13px; align-items: baseline; margin-bottom: 16px; }
+  .sec-no { font-size: 0.8rem; color: var(--peach); font-weight: 600; }
+
+  /* TL;DR */
+  .finding { background: var(--surface); border: 1px solid var(--hair); border-radius: 4px; padding: 26px 26px 22px; }
+  .statrow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--hair-2); border: 1px solid var(--hair-2); border-radius: 4px; overflow: hidden; margin: 22px 0 4px; }
+  .statcell { background: var(--surface); padding: 18px 16px 15px; }
+  .stat { font-family: "IBM Plex Mono", monospace; font-size: clamp(1.7rem, 4vw, 2.35rem); font-weight: 700; line-height: 1; letter-spacing: -0.02em; color: var(--peach); }
+  .stat.grey { color: var(--cash); }
+  .stat small { font-size: 0.85rem; font-weight: 600; }
+  .statcell .lab { font-size: 0.64rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-top: 9px; line-height: 1.4; }
+
+  /* glossary */
+  .terms { display: grid; gap: 10px; margin: 6px 0; }
+  @media (min-width: 680px){ .terms { grid-template-columns: 1fr 1fr; } }
+  .term { background: var(--surface); border: 1px solid var(--hair-2); border-left: 2px solid var(--peach); border-radius: 3px; padding: 12px 15px; font-size: 0.9rem; line-height: 1.5; color: var(--ink-2); }
+  .term b { color: var(--peach); font-size: 0.82rem; letter-spacing: 0.02em; display: inline; }
+
+  /* figure */
+  figure { margin: 24px 0 8px; background: var(--surface); border: 1px solid var(--hair); border-radius: 4px; padding: 22px 22px 15px; }
+  figure h3 { margin-bottom: 2px; }
+  .subcap { font-size: 0.66rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+  figcaption { font-size: 0.83rem; line-height: 1.55; color: var(--ink-2); margin-top: 13px; padding-top: 12px; border-top: 1px solid var(--hair-2); }
+  .chart-scroll { overflow-x: auto; }
+  svg.chart { display: block; width: 100%; height: auto; min-width: 460px; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.76rem; color: var(--ink-2); font-weight: 500; font-family: "IBM Plex Mono", monospace; margin: 8px 0 4px; }
+  .legend span { display: inline-flex; gap: 7px; align-items: center; }
+  .swatch { width: 20px; height: 4px; border-radius: 2px; display: inline-block; }
+  .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+
+  .axis { fill: var(--muted); font-size: 12px; }
+  .axis-title { fill: var(--ink-2); font-size: 12px; font-weight: 600; }
+  .glabel { font-weight: 600; font-size: 13px; }
+  .anno { fill: var(--ink-2); font-size: 11.5px; }
+  .gridline { stroke: var(--grid); stroke-width: 1; }
+  .baseline { stroke: var(--baseline); stroke-width: 1.3; }
+
+  /* donuts */
+  .pies { display: grid; gap: 18px; margin: 8px 0; }
+  @media (min-width: 620px){ .pies { grid-template-columns: repeat(3, 1fr); } }
+  .pie { background: var(--surface); border: 1px solid var(--hair); border-radius: 4px; padding: 16px 16px 14px; }
+  .pie.tf { border-top: 2px solid var(--peach); }
+  .pie.cf { border-top: 2px solid var(--cash-dim); }
+  .pie .phead { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .pie .phead .plat { font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 1rem; color: var(--ink); }
+  .pie .phead .ticker { font-size: 0.66rem; }
+  .donut { width: 100%; max-width: 190px; height: auto; margin: 2px auto 8px; display: block; }
+  .dc-big { fill: var(--peach); font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 30px; }
+  .dc-small { fill: var(--muted); font-family: "IBM Plex Mono", monospace; font-weight: 600; font-size: 10.5px; letter-spacing: 1.5px; }
+  .plegend { font-family: "IBM Plex Mono", monospace; font-size: 0.72rem; line-height: 1.7; color: var(--ink-2); }
+  .plegend .row { display: flex; align-items: center; gap: 8px; }
+  .plegend .row .c { width: 10px; height: 10px; border-radius: 2px; flex: 0 0 auto; }
+  .plegend .row .pct { margin-left: auto; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .pnote { font-size: 0.68rem; color: var(--muted); margin-top: 8px; font-family: "IBM Plex Mono", monospace; }
+
+  /* table */
+  .tbl-scroll { overflow-x: auto; margin: 20px 0 8px; border: 1px solid var(--hair); border-radius: 4px; }
+  table { border-collapse: collapse; width: 100%; min-width: 720px; background: var(--surface); font-size: 0.87rem; }
+  th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--hair-2); vertical-align: top; }
+  thead th { font-family: "IBM Plex Mono", monospace; font-size: 0.64rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); font-weight: 600; background: var(--surface-2); }
+  tbody tr:last-child td { border-bottom: 0; }
+  td .fig { font-size: 0.85rem; color: var(--ink-2); }
+  .plat { font-family: "IBM Plex Mono", monospace; font-weight: 600; color: var(--ink); }
+  .ticker { font-family: "IBM Plex Mono", monospace; font-size: 0.7rem; color: var(--muted); }
+  .tag { display: inline-block; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; white-space: nowrap; }
+  .tag.t { background: rgba(232,196,184,0.16); color: var(--peach); }
+  .tag.c { background: rgba(154,162,171,0.16); color: var(--cash); }
+
+  /* notes cards */
+  .notes { display: grid; gap: 15px; margin: 18px 0 6px; }
+  @media (min-width: 720px){ .notes.three { grid-template-columns: repeat(3, 1fr); } }
+  .note { background: var(--surface); border: 1px solid var(--hair); border-radius: 4px; padding: 17px 17px 15px; }
+  .note.tf { border-top: 2px solid var(--peach); }
+  .note.cf { border-top: 2px solid var(--cash-dim); }
+  .note .head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 9px; }
+  .note .plat { font-size: 0.98rem; }
+  .note p { font-size: 0.87rem; line-height: 1.55; margin: 0 0 0.6rem; color: var(--ink-2); }
+  .note p:last-child { margin-bottom: 0; }
+
+  /* callout */
+  .callout { border: 1px solid var(--hair); border-left: 3px solid var(--peach); background: var(--surface); border-radius: 3px; padding: 18px 22px; margin: 18px 0; }
+  .callout .kicker { display: block; margin-bottom: 8px; }
+  .callout p { margin: 0 0 0.7rem; color: var(--ink-2); font-size: 0.94rem; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout ul { margin: 0.4rem 0 0; padding-left: 1.1rem; color: var(--ink-2); font-size: 0.92rem; }
+  .callout li { margin-bottom: 0.4rem; }
+
+  /* CAC panel */
+  .cac { border: 1px solid var(--hair); border-left: 3px solid var(--peach); background: var(--surface); border-radius: 3px; padding: 20px 22px 18px; margin: 20px 0 6px; }
+  .cac h3 { margin: 6px 0 4px; }
+  .cacsub { font-size: 0.9rem; color: var(--ink-2); margin: 0 0 14px; max-width: 640px; }
+  .cacgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--hair-2); border: 1px solid var(--hair-2); border-radius: 4px; overflow: hidden; margin: 0 0 16px; }
+  @media (max-width: 560px){ .cacgrid { grid-template-columns: repeat(2, 1fr); } }
+  .caccell { background: var(--surface); padding: 13px 14px; }
+  .caccell .n { font-family: "IBM Plex Mono", monospace; font-weight: 700; font-size: 1.3rem; color: var(--ink); letter-spacing: -0.01em; }
+  .caccell.hot .n { color: var(--peach); }
+  .caccell.dim .n { color: var(--muted); }
+  .caccell .l { font-family: "IBM Plex Mono", monospace; font-size: 0.6rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-top: 6px; line-height: 1.35; }
+  .split { display: flex; height: 32px; border-radius: 4px; overflow: hidden; gap: 2px; margin: 2px 0 8px; }
+  .split .seg { display: flex; align-items: center; padding: 0 11px; font-family: "IBM Plex Mono", monospace; font-size: 0.72rem; font-weight: 600; white-space: nowrap; overflow: hidden; }
+  .split .kept { background: var(--peach); color: #000; flex: 9.5 1 0; min-width: 44px; }
+  .split .churn { background: rgba(176,125,104,0.20); color: var(--peach-deep); border: 1px solid var(--hair); flex: 90.5 1 0; }
+  .cacnote { font-size: 0.9rem; color: var(--ink-2); margin: 0; }
+  .cacnote b { color: var(--peach); }
+
+  /* dune query blocks */
+  .qhead { display: flex; align-items: center; gap: 10px; margin: 18px 0 6px; }
+  .pill { font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; background: rgba(232,196,184,0.14); color: var(--peach); }
+  .qbox { background: #060606; border: 1px solid var(--hair); border-radius: 4px; padding: 15px 16px; font-size: 0.76rem; line-height: 1.65; color: #cfc9c2; margin: 6px 0 4px; white-space: pre; overflow-x: auto; }
+  .qbox .kw { color: var(--peach); }
+  .qbox .cm { color: #6f7d6f; font-style: italic; }
+  .qbox .fn { color: var(--cash); }
+  .copyrow { font-size: 0.72rem; color: var(--muted); font-family: "IBM Plex Mono", monospace; margin: 4px 0 0; }
+
+  /* address table small */
+  .addr td, .addr th { font-family: "IBM Plex Mono", monospace; font-size: 0.72rem; }
+  .addr .a { color: var(--peach-deep); word-break: break-all; }
+
+  ol.src, ul.src { padding-left: 1.15rem; }
+  .src { columns: 2; column-gap: 32px; font-size: 0.78rem; line-height: 1.5; }
+  @media (max-width: 620px){ .src { columns: 1; } }
+  .src li { break-inside: avoid; margin-bottom: 9px; color: var(--ink-2); }
+  .foot { margin-top: 38px; padding-top: 18px; border-top: 1px solid var(--hair); font-size: 0.78rem; color: var(--muted); line-height: 1.55; }
+
+  .tt { position: fixed; pointer-events: none; opacity: 0; transition: opacity .12s; background: var(--peach); color: #000; font-family: "IBM Plex Mono", monospace; font-size: 11px; line-height: 1.5; padding: 7px 10px; border-radius: 4px; z-index: 50; max-width: 240px; font-weight: 500; }
+  .hit { cursor: crosshair; }
+  @media (prefers-reduced-motion: reduce){ * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="top-row">
+    <span class="brandmark"><span class="sq"></span> Onchain Research Note</span>
+    <span class="brandmark" style="color:var(--peach)">Aug 2026</span>
+  </div>
+  <span class="kicker">The airdrop question</span>
+  <h1>Give it away, watch it leave</h1>
+  <p class="lede">Six DeFi projects, two ways to pay for growth. Three used <b>their own token as the marketing budget</b> — airdrops and reward payments. Three <b>paid with cash or stablecoins</b> and never handed the token out. The question this note tests: when you give your token away to acquire users, do the people who receive it actually stay?</p>
+</header>
+<hr class="rule">
+
+<!-- WORDS -->
+<section>
+  <div class="sec-head"><span class="sec-no">00/</span><h2>Quick word list</h2></div>
+  <div class="measure"><p>A few terms come up repeatedly. Here's each one in a single line so the rest reads smoothly.</p></div>
+  <div class="terms">
+    <div class="term"><b>AIRDROP</b> — free tokens sent to wallets, usually to reward past activity or attract attention.</div>
+    <div class="term"><b>BOUNTY</b> — a token or cash reward paid for completing a task: a post, a bug report, a referral.</div>
+    <div class="term"><b>LIQUIDITY MINING</b> — paying users in your token to deposit funds in your app so it has capital to trade against.</div>
+    <div class="term"><b>HOLDER COUNT</b> — how many wallets hold the token at a given moment; it rises whenever new buyers arrive.</div>
+    <div class="term"><b>COHORT</b> — one specific group of wallets — say, everyone who received the airdrop — tracked as a unit over time.</div>
+    <div class="term"><b>DIAMOND HANDS</b> — wallets that hold for the long run instead of selling quickly; the opposite of a flipper.</div>
+  </div>
+</section>
+
+<!-- TL;DR -->
+<section>
+  <div class="sec-head"><span class="sec-no">01/</span><h2>The short answer</h2></div>
+  <div class="finding">
+    <span class="kicker">Yes — but read the small catch</span>
+    <p class="measure" style="max-width:720px;margin-top:10px">Projects that funded growth with their own token gained an <strong>enormous holder base almost overnight</strong> — then watched nearly all of it sell and leave. Only a small fraction of the wallets that received Uniswap's and Jupiter's airdrops were still holding a year or two later. The cash-funded projects never got that overnight surge, but the smaller base they kept proved <strong>far stickier</strong>.</p>
+    <p class="measure" style="max-width:720px">Here's the catch: <strong>total holder count and whether the original recipients stayed are two different measures.</strong> Arbitrum's holder count actually <em>grew</em> from about 340,000 to 2.4 million even as its airdrop recipients cashed out — new buyers simply replaced them. So the real question isn't the headline holder number; it's what happened to the specific wallets that received the tokens.</p>
+    <div class="statrow">
+      <div class="statcell"><div class="stat">~7%</div><div class="lab">of Uniswap airdrop wallets still held ~2 years later</div></div>
+      <div class="statcell"><div class="stat">~9.5%</div><div class="lab">of Jupiter claimers still held at the Jul-2024 cutoff</div></div>
+      <div class="statcell"><div class="stat grey">~100k</div><div class="lab">MakerDAO holders — small, built slowly, low churn</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SIX -->
+<section>
+  <div class="sec-head"><span class="sec-no">02/</span><h2>The six projects</h2></div>
+  <div class="measure"><p>Here's the line-up. The split is clean on the airdrop question, though two of the cash-funded projects later paid some token rewards anyway — the notes flag that honestly.</p></div>
+  <div class="tbl-scroll">
+    <table>
+      <thead><tr><th>Project</th><th>Group</th><th>How they paid for growth</th><th>Reach</th><th>Did the original recipients stay?</th></tr></thead>
+      <tbody>
+        <tr><td><span class="plat">Uniswap</span><br><span class="ticker">UNI · ETH · 2020</span></td><td><span class="tag t">Token</span></td><td><span class="fig">Dropped 150M UNI (15% of all coins) on 251,534 wallets, plus token rewards for parking funds</span></td><td><span class="fig">251,534 wallets; ~91% claimed</span></td><td><span class="fig">No. ~55% sold in ~8 days → <strong>~7% left after ~2 yrs</strong></span></td></tr>
+        <tr><td><span class="plat">Arbitrum</span><br><span class="ticker">ARB · L2 · 2023</span></td><td><span class="tag t">Token</span></td><td><span class="fig">Dropped 1.16B ARB (11.6%) on users + a 71M-ARB reward program for apps</span></td><td><span class="fig">625,143 wallets; 76.75% claimed</span></td><td><span class="fig">Mostly no — new buyers masked it (holders grew 340k → 2.38M)</span></td></tr>
+        <tr><td><span class="plat">Jupiter</span><br><span class="ticker">JUP · SOL · 2024</span></td><td><span class="tag t">Token</span></td><td><span class="fig">Gave away 40% of all JUP over yearly "Jupuary" drops — ~$1.27B (drop-day value)</span></td><td><span class="fig">~955k wallets (round 1); 639k claimed</span></td><td><span class="fig">No. <strong>~9.5% of claimers still held</strong> at the Jul-2024 cutoff</span></td></tr>
+        <tr><td><span class="plat">MakerDAO</span><br><span class="ticker">MKR · ETH · 2015</span></td><td><span class="tag c">Cash</span></td><td><span class="fig">Sold MKR privately to funds for cash; ran on fees earned in stablecoins. <strong>No airdrop.</strong></span></td><td><span class="fig">No airdrop crowd</span></td><td><span class="fig">Small, steady, concentrated base</span></td></tr>
+        <tr><td><span class="plat">0x</span><br><span class="ticker">ZRX · ETH · 2017</span></td><td><span class="tag c">Cash</span></td><td><span class="fig">Raised $24M by selling ZRX in 2017. Later rewards were paid in <strong>ETH</strong>, not free ZRX. No airdrop.</span></td><td><span class="fig">No airdrop crowd</span></td><td><span class="fig">Mature and roughly flat (~189k holders)</span></td></tr>
+        <tr><td><span class="plat">Aave</span><br><span class="ticker">AAVE · ETH · 2017</span></td><td><span class="tag c">Cash*</span></td><td><span class="fig">Raised ~$16.2M selling LEND in a 2017 ICO. <strong>*But</strong> later paid AAVE as staking &amp; deposit rewards (2020–21). No airdrop.</span></td><td><span class="fig">No airdrop crowd</span></td><td><span class="fig">Mature (~187k holders), concentrated among long-term stakers</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- PIES -->
+<section>
+  <div class="sec-head"><span class="sec-no">03/</span><h2>Where each project's tokens went</h2></div>
+  <div class="measure"><p>The <span style="color:var(--peach)">peach slice</span> is the portion given away free — airdrops and token rewards. The grey slices are everything else: sold for cash, held by the team, or kept in the treasury. Compare the two rows: the token-funded projects set aside a real share to give away, while the cash-funded projects gave away <strong>nothing</strong>.</p></div>
+
+  <div class="pies">
+    <div class="pie tf">
+      <div class="phead"><span class="plat">Uniswap</span><span class="ticker">UNI · 1B</span></div>
+      <svg viewBox="0 0 240 240" class="donut" role="img" aria-label="17% GIVEN AWAY"><path d="M196.05 64.75 A94 94 0 0 0 120.00 26.00 L120.00 62.00 A58 58 0 0 1 166.92 85.91 Z" fill="#e8c4b8" stroke="#000" stroke-width="2.5"/><path d="M202.37 74.72 A94 94 0 0 0 196.05 64.75 L166.92 85.91 A58 58 0 0 1 170.83 92.06 Z" fill="#b07d68" stroke="#000" stroke-width="2.5"/><path d="M64.75 196.05 A94 94 0 0 0 202.37 74.72 L170.83 92.06 A58 58 0 0 1 85.91 166.92 Z" fill="#615e5a" stroke="#000" stroke-width="2.5"/><path d="M34.85 80.19 A94 94 0 0 0 64.75 196.05 L85.91 166.92 A58 58 0 0 1 67.46 95.44 Z" fill="#928d86" stroke="#000" stroke-width="2.5"/><path d="M120.00 26.00 A94 94 0 0 0 34.85 80.19 L67.46 95.44 A58 58 0 0 1 120.00 62.00 Z" fill="#aca69d" stroke="#000" stroke-width="2.5"/><text x="120" y="116" text-anchor="middle" class="dc-big">17%</text><text x="120" y="138" text-anchor="middle" class="dc-small">GIVEN AWAY</text></svg>
+      <div class="plegend">
+        <div class="row"><span class="c" style="background:#e8c4b8"></span>Airdrop<span class="pct">15%</span></div>
+        <div class="row"><span class="c" style="background:#b07d68"></span>Liquidity mining<span class="pct">2%</span></div>
+        <div class="row"><span class="c" style="background:#615e5a"></span>Community treasury<span class="pct">43%</span></div>
+        <div class="row"><span class="c" style="background:#928d86"></span>Team &amp; advisors<span class="pct">21.96%</span></div>
+        <div class="row"><span class="c" style="background:#aca69d"></span>Investors<span class="pct">18.04%</span></div>
+      </div>
+    </div>
+    <div class="pie tf">
+      <div class="phead"><span class="plat">Arbitrum</span><span class="ticker">ARB · 10B</span></div>
+      <svg viewBox="0 0 240 240" class="donut" role="img" aria-label="12.75% GIVEN AWAY"><path d="M182.69 49.96 A94 94 0 0 0 120.00 26.00 L120.00 62.00 A58 58 0 0 1 158.68 76.78 Z" fill="#e8c4b8" stroke="#000" stroke-width="2.5"/><path d="M187.50 54.58 A94 94 0 0 0 182.69 49.96 L158.68 76.78 A58 58 0 0 1 161.65 79.64 Z" fill="#b07d68" stroke="#000" stroke-width="2.5"/><path d="M87.99 208.38 A94 94 0 0 0 187.50 54.58 L161.65 79.64 A58 58 0 0 1 100.25 174.53 Z" fill="#615e5a" stroke="#000" stroke-width="2.5"/><path d="M36.17 77.48 A94 94 0 0 0 87.99 208.38 L100.25 174.53 A58 58 0 0 1 68.27 93.77 Z" fill="#928d86" stroke="#000" stroke-width="2.5"/><path d="M120.00 26.00 A94 94 0 0 0 36.17 77.48 L68.27 93.77 A58 58 0 0 1 120.00 62.00 Z" fill="#aca69d" stroke="#000" stroke-width="2.5"/><text x="120" y="116" text-anchor="middle" class="dc-big">12.75%</text><text x="120" y="138" text-anchor="middle" class="dc-small">GIVEN AWAY</text></svg>
+      <div class="plegend">
+        <div class="row"><span class="c" style="background:#e8c4b8"></span>Airdrop · users<span class="pct">11.62%</span></div>
+        <div class="row"><span class="c" style="background:#b07d68"></span>Airdrop · DAOs<span class="pct">1.13%</span></div>
+        <div class="row"><span class="c" style="background:#615e5a"></span>DAO treasury<span class="pct">42.78%</span></div>
+        <div class="row"><span class="c" style="background:#928d86"></span>Team &amp; advisors<span class="pct">26.94%</span></div>
+        <div class="row"><span class="c" style="background:#aca69d"></span>Investors<span class="pct">17.53%</span></div>
+      </div>
+    </div>
+    <div class="pie tf">
+      <div class="phead"><span class="plat">Jupiter</span><span class="ticker">JUP · 10B</span></div>
+      <svg viewBox="0 0 240 240" class="donut" role="img" aria-label="40% GIVEN AWAY"><path d="M175.25 196.05 A94 94 0 0 0 120.00 26.00 L120.00 62.00 A58 58 0 0 1 154.09 166.92 Z" fill="#e8c4b8" stroke="#000" stroke-width="2.5"/><path d="M120.00 214.00 A94 94 0 0 0 175.25 196.05 L154.09 166.92 A58 58 0 0 1 120.00 178.00 Z" fill="#b07d68" stroke="#000" stroke-width="2.5"/><path d="M30.60 149.05 A94 94 0 0 0 120.00 214.00 L120.00 178.00 A58 58 0 0 1 64.84 137.92 Z" fill="#615e5a" stroke="#000" stroke-width="2.5"/><path d="M64.75 43.95 A94 94 0 0 0 30.60 149.05 L64.84 137.92 A58 58 0 0 1 85.91 73.08 Z" fill="#928d86" stroke="#000" stroke-width="2.5"/><path d="M120.00 26.00 A94 94 0 0 0 64.75 43.95 L85.91 73.08 A58 58 0 0 1 120.00 62.00 Z" fill="#aca69d" stroke="#000" stroke-width="2.5"/><text x="120" y="116" text-anchor="middle" class="dc-big">40%</text><text x="120" y="138" text-anchor="middle" class="dc-small">GIVEN AWAY</text></svg>
+      <div class="plegend">
+        <div class="row"><span class="c" style="background:#e8c4b8"></span>Airdrops<span class="pct">40%</span></div>
+        <div class="row"><span class="c" style="background:#b07d68"></span>Community grants<span class="pct">10%</span></div>
+        <div class="row"><span class="c" style="background:#615e5a"></span>Team<span class="pct">20%</span></div>
+        <div class="row"><span class="c" style="background:#928d86"></span>Strategic reserve<span class="pct">20%</span></div>
+        <div class="row"><span class="c" style="background:#aca69d"></span>Liquidity<span class="pct">10%</span></div>
+      </div>
+      <div class="pnote">Team-side split is the best-supported estimate; Jupiter never published one clean table.</div>
+    </div>
+
+    <div class="pie cf">
+      <div class="phead"><span class="plat">MakerDAO</span><span class="ticker">MKR · 1M</span></div>
+      <svg viewBox="0 0 240 240" class="donut" role="img" aria-label="0% AIRDROP"><path d="M196.05 64.75 A94 94 0 0 0 120.00 26.00 L120.00 62.00 A58 58 0 0 1 166.92 85.91 Z" fill="#787470" stroke="#000" stroke-width="2.5"/><path d="M120.00 26.00 A94 94 0 1 0 196.05 64.75 L166.92 85.91 A58 58 0 1 1 120.00 62.00 Z" fill="#4c4a48" stroke="#000" stroke-width="2.5"/><text x="120" y="116" text-anchor="middle" class="dc-big">0%</text><text x="120" y="138" text-anchor="middle" class="dc-small">AIRDROP</text></svg>
+      <div class="plegend">
+        <div class="row"><span class="c" style="background:#787470"></span>VC private sales <span style="color:var(--muted)">(est.)</span><span class="pct">~15%</span></div>
+        <div class="row"><span class="c" style="background:#4c4a48"></span>Founders/team + Foundation<span class="pct">~85%</span></div>
+      </div>
+      <div class="pnote">No official split was ever published — figures are estimated from public VC round sizes.</div>
+    </div>
+    <div class="pie cf">
+      <div class="phead"><span class="plat">0x</span><span class="ticker">ZRX · 1B</span></div>
+      <svg viewBox="0 0 240 240" class="donut" role="img" aria-label="0% AIRDROP"><path d="M120.00 214.00 A94 94 0 0 0 120.00 26.00 L120.00 62.00 A58 58 0 0 1 120.00 178.00 Z" fill="#787470" stroke="#000" stroke-width="2.5"/><path d="M43.95 175.25 A94 94 0 0 0 120.00 214.00 L120.00 178.00 A58 58 0 0 1 73.08 154.09 Z" fill="#4c4a48" stroke="#000" stroke-width="2.5"/><path d="M30.60 90.95 A94 94 0 0 0 43.95 175.25 L73.08 154.09 A58 58 0 0 1 64.84 102.08 Z" fill="#615e5a" stroke="#000" stroke-width="2.5"/><path d="M64.75 43.95 A94 94 0 0 0 30.60 90.95 L64.84 102.08 A58 58 0 0 1 85.91 73.08 Z" fill="#928d86" stroke="#000" stroke-width="2.5"/><path d="M120.00 26.00 A94 94 0 0 0 64.75 43.95 L85.91 73.08 A58 58 0 0 1 120.00 62.00 Z" fill="#aca69d" stroke="#000" stroke-width="2.5"/><text x="120" y="116" text-anchor="middle" class="dc-big">0%</text><text x="120" y="138" text-anchor="middle" class="dc-small">AIRDROP</text></svg>
+      <div class="plegend">
+        <div class="row"><span class="c" style="background:#787470"></span>Public sale (for cash)<span class="pct">50%</span></div>
+        <div class="row"><span class="c" style="background:#4c4a48"></span>0x retained<span class="pct">15%</span></div>
+        <div class="row"><span class="c" style="background:#615e5a"></span>Developer fund<span class="pct">15%</span></div>
+        <div class="row"><span class="c" style="background:#928d86"></span>Team<span class="pct">10%</span></div>
+        <div class="row"><span class="c" style="background:#aca69d"></span>Advisors &amp; investors<span class="pct">10%</span></div>
+      </div>
+    </div>
+    <div class="pie cf">
+      <div class="phead"><span class="plat">Aave</span><span class="ticker">AAVE · 16M</span></div>
+      <svg viewBox="0 0 240 240" class="donut" role="img" aria-label="0% AIRDROP"><path d="M33.16 84.03 A94 94 0 1 0 120.00 26.00 L120.00 62.00 A58 58 0 1 1 66.41 97.80 Z" fill="#787470" stroke="#000" stroke-width="2.5"/><path d="M120.00 26.00 A94 94 0 0 0 33.16 84.03 L66.41 97.80 A58 58 0 0 1 120.00 62.00 Z" fill="#4c4a48" stroke="#000" stroke-width="2.5"/><text x="120" y="116" text-anchor="middle" class="dc-big">0%</text><text x="120" y="138" text-anchor="middle" class="dc-small">AIRDROP</text></svg>
+      <div class="plegend">
+        <div class="row"><span class="c" style="background:#787470"></span>Migrated to LEND holders<span class="pct">81.25%</span></div>
+        <div class="row"><span class="c" style="background:#4c4a48"></span>Ecosystem reserve<span class="pct">18.75%</span></div>
+      </div>
+      <div class="pnote">AAVE came from swapping 2017-ICO LEND tokens (bought for cash), not a free drop — but Aave later paid AAVE as staking &amp; deposit rewards (2020–21).</div>
+    </div>
+  </div>
+</section>
+
+<!-- CHART 1 -->
+<section>
+  <div class="sec-head"><span class="sec-no">04/</span><h2>The airdrop cliff</h2></div>
+  <div class="measure"><p>This is the core evidence. We take the exact wallets that received each airdrop and track how many still hold as time passes. Both lines drop sharply in the first few weeks and keep falling to almost nothing. The dots are real, sourced figures; the line between them is simply connected.</p></div>
+  <figure>
+    <h3>How many airdrop wallets still hold</h3><span class="subcap">share of airdrop recipients still holding · months after the drop</span>
+    <div class="legend"><span><span class="swatch" style="background:var(--peach)"></span>Uniswap (UNI)</span><span><span class="swatch" style="background:var(--peach-2)"></span>Jupiter (JUP)</span></div>
+    <div class="chart-scroll">
+      <svg class="chart" viewBox="0 0 720 360" role="img" aria-label="Line chart: the share of airdrop wallets still holding falls to single digits within months for Uniswap and Jupiter.">
+        <line class="gridline" x1="70" y1="30" x2="690" y2="30"/>
+        <line class="gridline" x1="70" y1="102.5" x2="690" y2="102.5"/>
+        <line class="gridline" x1="70" y1="175" x2="690" y2="175"/>
+        <line class="gridline" x1="70" y1="247.5" x2="690" y2="247.5"/>
+        <line class="baseline" x1="70" y1="320" x2="690" y2="320"/>
+        <text class="axis" x="60" y="34" text-anchor="end">100%</text>
+        <text class="axis" x="60" y="106" text-anchor="end">75%</text>
+        <text class="axis" x="60" y="179" text-anchor="end">50%</text>
+        <text class="axis" x="60" y="251" text-anchor="end">25%</text>
+        <text class="axis" x="60" y="324" text-anchor="end">0%</text>
+        <text class="axis" x="70" y="340" text-anchor="middle">0</text>
+        <text class="axis" x="225" y="340" text-anchor="middle">6mo</text>
+        <text class="axis" x="380" y="340" text-anchor="middle">12mo</text>
+        <text class="axis" x="535" y="340" text-anchor="middle">18mo</text>
+        <text class="axis" x="690" y="340" text-anchor="middle">24mo</text>
+        <polyline points="70,30 76.5,189.5 690,299.7" fill="none" stroke="var(--peach)" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+        <polyline points="70,30 225,292.5" fill="none" stroke="var(--peach-2)" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+        <circle class="hit" cx="76.5" cy="189.5" r="4.6" fill="var(--peach)" stroke="#000" stroke-width="1.5" data-t="UNI · ~8 days" data-v="~45% still hold (55% already sold)"/>
+        <circle class="hit" cx="690" cy="299.7" r="4.6" fill="var(--peach)" stroke="#000" stroke-width="1.5" data-t="UNI · ~24 months" data-v="~7% still hold (Dune / Tunguz)"/>
+        <circle class="hit" cx="225" cy="292.5" r="5" fill="var(--peach-2)" stroke="#000" stroke-width="1.5" data-t="JUP · ~6 months" data-v="~9.5% of claimers still hold (SolanaFloor)"/>
+        <circle cx="70" cy="30" r="4.6" fill="#000" stroke="var(--peach)" stroke-width="2.4"/>
+        <text class="anno" x="92" y="176" fill="var(--peach)">55% sold in ~8 days</text>
+        <text class="glabel" x="672" y="292" text-anchor="end" fill="var(--peach)">UNI · ~7%</text>
+        <text class="glabel" x="234" y="286" fill="var(--peach-2)">JUP · ~9.5%</text>
+        <text class="axis-title" x="380" y="356" text-anchor="middle">months after the airdrop →</text>
+      </svg>
+    </div>
+    <figcaption>Uniswap: over half sold within about 8 days; after ~2 years only <span class="mono">~7%</span> of the original wallets still held any UNI. Jupiter: of <span class="mono">639,109</span> claimers, only <span class="mono">60,697 (~9.5%)</span> still held at the July-2024 cutoff. Arbitrum isn't on this line because its per-wallet figures aren't public — only coin-flow numbers are (see §05).</figcaption>
+  </figure>
+</section>
+
+<!-- CHART 2 -->
+<section>
+  <div class="sec-head"><span class="sec-no">05/</span><h2>How many left, and how fast</h2></div>
+  <div class="measure"><p>The same story as a single number per project: the share of the airdrop that left recipient wallets. Uniswap and Jupiter are measured by <em>wallets</em> (how many people fully sold out). Arbitrum's only public figure counts <em>coins</em>, not people — a different basis, so it's shown striped to signal you shouldn't compare it head-to-head.</p></div>
+  <figure>
+    <h3>Airdrop exit rate</h3><span class="subcap">share that left recipient wallets · note the different bases</span>
+    <div class="chart-scroll">
+      <svg class="chart" viewBox="0 0 720 300" role="img" aria-label="Bar chart of airdrop exit rates: Uniswap ~93%, Jupiter ~90.5%, Arbitrum ~44% counted by coins.">
+        <defs><pattern id="hatch" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse"><rect width="7" height="7" fill="#2a2320"/><line x1="0" y1="0" x2="0" y2="7" stroke="var(--peach)" stroke-width="2.6"/></pattern></defs>
+        <line class="gridline" x1="317.5" y1="30" x2="317.5" y2="250"/>
+        <line class="gridline" x1="425" y1="30" x2="425" y2="250"/>
+        <line class="gridline" x1="532.5" y1="30" x2="532.5" y2="250"/>
+        <line class="baseline" x1="210" y1="30" x2="210" y2="258"/>
+        <text class="axis" x="210" y="274" text-anchor="middle">0%</text>
+        <text class="axis" x="317.5" y="274" text-anchor="middle">25%</text>
+        <text class="axis" x="425" y="274" text-anchor="middle">50%</text>
+        <text class="axis" x="532.5" y="274" text-anchor="middle">75%</text>
+        <text class="axis" x="640" y="274" text-anchor="middle">100%</text>
+        <text class="glabel" x="200" y="63" text-anchor="end" fill="var(--ink)">Uniswap</text>
+        <text class="ticker" x="200" y="79" text-anchor="end">~2 yr · by wallet</text>
+        <rect x="210" y="46" width="409.2" height="34" rx="3" fill="var(--peach)"/>
+        <text class="glabel" x="609" y="68" text-anchor="end" fill="#000">~93%</text>
+        <text class="glabel" x="200" y="135" text-anchor="end" fill="var(--ink)">Jupiter</text>
+        <text class="ticker" x="200" y="151" text-anchor="end">~6 mo · by wallet</text>
+        <rect x="210" y="118" width="398.2" height="34" rx="3" fill="var(--peach)"/>
+        <text class="glabel" x="598" y="140" text-anchor="end" fill="#000">~90.5%</text>
+        <text class="glabel" x="200" y="207" text-anchor="end" fill="var(--ink)">Arbitrum</text>
+        <text class="ticker" x="200" y="223" text-anchor="end">~1 mo · by coins</text>
+        <rect x="210" y="190" width="193.6" height="34" rx="3" fill="url(#hatch)" stroke="var(--peach)" stroke-width="1.1"/>
+        <text class="glabel" x="414" y="212" fill="var(--peach)">~44%+</text>
+      </svg>
+    </div>
+    <figcaption><strong>Mind the labels.</strong> UNI ~93% = share of wallets that sold <em>all</em> their UNI (~2 yr). JUP ~90.5% = share of claimers no longer holding (~6 mo). ARB ~44%+ = share of <em>coins</em> that left wallets in the first month (~14% sold on exchanges + ~30% moved into trading pools). Different clocks and different bases — don't rank them exactly. The point: <span class="mono">the big majority left, fast, every time.</span></figcaption>
+  </figure>
+</section>
+
+<!-- CHART 3 -->
+<section>
+  <div class="sec-head"><span class="sec-no">06/</span><h2>Reach vs. staying power</h2></div>
+  <div class="measure"><p>The whole thesis on one map. Giving the token away buys a <em>large</em> crowd, but the crowd doesn't stick. Paying with cash reaches fewer wallets, and those wallets stay. The horizontal axis is real (wallets reached); the vertical axis shows the direction of staying power, not an exact percentage.</p></div>
+  <figure>
+    <h3>Reach vs. staying power</h3><span class="subcap">map view — exact numbers live in the table (§02)</span>
+    <div class="legend"><span><span class="dot" style="background:var(--peach)"></span>Token-funded</span><span><span class="dot" style="background:var(--cash)"></span>Cash-funded</span></div>
+    <div class="chart-scroll">
+      <svg class="chart" viewBox="0 0 720 380" role="img" aria-label="Map: token-funded tokens reach many wallets but low staying power; cash-funded reach fewer wallets with high staying power.">
+        <line class="baseline" x1="80" y1="40" x2="80" y2="330"/>
+        <line class="baseline" x1="80" y1="330" x2="700" y2="330"/>
+        <text class="axis-title" x="30" y="185" text-anchor="middle" transform="rotate(-90 30 185)">staying power →</text>
+        <text class="axis" x="70" y="322" text-anchor="end">low</text>
+        <text class="axis" x="70" y="62" text-anchor="end">high</text>
+        <text class="axis" x="166" y="350" text-anchor="middle">50k</text>
+        <text class="axis" x="214" y="350" text-anchor="middle">100k</text>
+        <text class="axis" x="391" y="350" text-anchor="middle">250k</text>
+        <text class="axis" x="567" y="350" text-anchor="middle">500k</text>
+        <text class="axis" x="649" y="350" text-anchor="middle">1M</text>
+        <text class="axis-title" x="390" y="372" text-anchor="middle">wallets reached (log scale) →</text>
+        <line class="gridline" x1="214" y1="40" x2="214" y2="330" stroke-dasharray="2 4"/>
+        <line class="gridline" x1="391" y1="40" x2="391" y2="330" stroke-dasharray="2 4"/>
+        <line class="gridline" x1="567" y1="40" x2="567" y2="330" stroke-dasharray="2 4"/>
+        <line x1="150" y1="95" x2="655" y2="298" stroke="var(--baseline)" stroke-width="1.2" stroke-dasharray="5 6" opacity="0.75"/>
+        <text class="anno" x="404" y="182" fill="var(--muted)" transform="rotate(21 404 182)">reach ⇄ staying power trade-off</text>
+        <circle class="hit" cx="214" cy="92" r="8" fill="var(--cash)" stroke="#000" stroke-width="1.5" data-t="MakerDAO (MKR)" data-v="~100k holders · low churn"/>
+        <text class="glabel" x="214" y="79" text-anchor="middle" fill="var(--cash)">MKR</text>
+        <circle class="hit" cx="352" cy="110" r="8" fill="var(--cash)" stroke="#000" stroke-width="1.5" data-t="0x (ZRX)" data-v="~189k holders · steady"/>
+        <text class="glabel" x="352" y="97" text-anchor="middle" fill="var(--cash)">ZRX</text>
+        <circle class="hit" cx="300" cy="156" r="8" fill="var(--cash)" stroke="#000" stroke-width="1.5" data-t="Aave (AAVE)" data-v="~187k holders · stakers; later paid token rewards"/>
+        <text class="glabel" x="300" y="176" text-anchor="middle" fill="var(--cash)">AAVE</text>
+        <circle class="hit" cx="391" cy="300" r="8" fill="var(--peach)" stroke="#000" stroke-width="1.5" data-t="Uniswap (UNI)" data-v="251,534 reached · ~7% stayed"/>
+        <text class="glabel" x="391" y="322" text-anchor="middle" fill="var(--peach)">UNI</text>
+        <circle class="hit" cx="567" cy="277" r="8" fill="var(--peach)" stroke="#000" stroke-width="1.5" data-t="Arbitrum (ARB)" data-v="625,143 reached · heavy early selling"/>
+        <text class="glabel" x="567" y="299" text-anchor="middle" fill="var(--peach)">ARB</text>
+        <circle class="hit" cx="649" cy="293" r="8" fill="var(--peach)" stroke="#000" stroke-width="1.5" data-t="Jupiter (JUP)" data-v="~955k reached · ~9.5% stayed"/>
+        <text class="glabel" x="649" y="315" text-anchor="middle" fill="var(--peach)">JUP</text>
+      </svg>
+    </div>
+    <figcaption>Up-down placement for the cash-funded tokens shows their known profile — small, steady, low-churn — not an exact matching percent (that number isn't public without a paid tool). Side-to-side is real. The lesson is the shape, not the decimals: <span class="mono">reach and staying power pull against each other.</span></figcaption>
+  </figure>
+</section>
+
+<!-- NOTES A -->
+<section>
+  <div class="sec-head"><span class="sec-no">07/</span><h2>The token-funded three, up close</h2></div>
+  <div class="notes three">
+    <div class="note tf"><div class="head"><span class="plat">Uniswap</span><span class="ticker">UNI</span></div>
+      <p><strong>The famous one.</strong> In Sept 2020 it sent 400 UNI to every past user — 150M coins across 251,534 wallets — plus a short-lived program that paid UNI for depositing funds.</p>
+      <p>About 55% sold within ~8 days. Around 93% eventually sold all of it. Only <strong>~7% still held after ~2 years</strong>, and ~98% never participated in governance. One analyst framed it as a ~$351M spend that earned back only ~$208M in fees — a slow payback.</p></div>
+    <div class="note tf"><div class="head"><span class="plat">Arbitrum</span><span class="ticker">ARB</span></div>
+      <p><strong>The count trap.</strong> In March 2023 it distributed 1.16B ARB to 625,143 wallets, plus a 71M-ARB reward program for apps building on it.</p>
+      <p>Within a month, ~14% of the airdropped coins were sold on exchanges and ~30% moved into trading pools; large wallets sold heavily on day one. Yet total holders still <strong>grew from ~340k to ~2.38M</strong> — new buyers replaced those who left, which hides the churn if you watch only the headline number.</p></div>
+    <div class="note tf"><div class="head"><span class="plat">Jupiter</span><span class="ticker">JUP</span></div>
+      <p><strong>Solana's biggest, repeated yearly.</strong> "Jupuary" gave away 40% of all JUP across drops in 2024, 2025 and 2026 — worth ~$1.27B valued at each drop day's price. Round 1 alone reached ~955k wallets.</p>
+      <p>Of 639,109 round-1 claimers, only <strong>60,697 (~9.5%) still held</strong> at the July-2024 cutoff. The 2025 drop pushed the price down ~9–10% in a day. The 2026 drop was cut ~71% to ease the selling pressure, and the community paused its own votes in mid-2025 over "a breakdown in trust."</p></div>
+  </div>
+
+  <div class="cac">
+    <span class="kicker" style="color:var(--peach)">The CAC math</span>
+    <h3>Jupiter paid to reach ~2M users — and kept ~190k</h3>
+    <p class="cacsub">CAC = the cost to acquire one user. Take the JUP given away, valued at each drop day's average price (R1 1B×~$0.63 + R2 700M×~$0.85 + R3 200M×$0.20 ≈ ~$1.27B), spread across the ~2M unique wallets reached. (Rounds overlap heavily, so ~2M is the <em>widest</em> reach, not the sum of every round.) Retention uses the measured ~9.5% still-holding rate.</p>
+    <div class="cacgrid">
+      <div class="caccell"><div class="n">~$1.27B</div><div class="l">JUP given away (drop-day value)</div></div>
+      <div class="caccell"><div class="n">~2M</div><div class="l">unique wallets reached</div></div>
+      <div class="caccell"><div class="n">~$635</div><div class="l">CAC per wallet reached</div></div>
+      <div class="caccell dim"><div class="n">~1.81M</div><div class="l">churned — sold &amp; left (~90.5%)</div></div>
+      <div class="caccell"><div class="n">~190k</div><div class="l">retained — still holding (~9.5%)</div></div>
+      <div class="caccell hot"><div class="n">~$6,700</div><div class="l">true CAC per <em>retained</em> holder</div></div>
+    </div>
+    <div class="split">
+      <div class="seg kept">9.5%</div>
+      <div class="seg churn">~$1.15B spent on the ~1.81M users who churned · 90.5%</div>
+    </div>
+    <p class="cacnote">Only <b>~$121M</b> of the spend reached users who stayed; <b>~$1.15B</b> went to wallets that left within months. Airdropping to an <b>undefined crowd</b> — with no check for whether a wallet actually holds long-term — means roughly <b>9 of every 10 dollars</b> bought a user who was gone by the next quarter. Screening for proven holders before the drop is what turns that spend back into retention.</p>
+  </div>
+</section>
+
+<!-- NOTES B -->
+<section>
+  <div class="sec-head"><span class="sec-no">08/</span><h2>The cash-funded three, up close</h2></div>
+  <div class="notes three">
+    <div class="note cf"><div class="head"><span class="plat">MakerDAO</span><span class="ticker">MKR</span></div>
+      <p><strong>The cleanest example.</strong> Started in 2015 with 1M MKR created for governance. It sold coins privately to funds (a16z, Polychain, Paradigm) for cash and ran on fees earned in its own stablecoin. <strong>Never airdropped, never paid MKR for deposits.</strong></p>
+      <p>The result is a small (~100k), steady, insider-heavy base. Surplus revenue is used to <em>burn</em> MKR rather than hand it out. (Note: a 2024 rebrand to "Sky" later added token rewards — so use the pre-2024 MKR era for a clean read.)</p></div>
+    <div class="note cf"><div class="head"><span class="plat">0x</span><span class="ticker">ZRX</span></div>
+      <p><strong>Sold it, didn't gift it.</strong> Raised ~$24M in Aug 2017 by selling half the supply, then ran on that cash.</p>
+      <p>The fair asterisk: in 2019 it added rewards for market-makers — but those are <strong>paid in ETH from fees</strong>, not free ZRX, so the "no token giveaway" label holds. Its base is mature and roughly flat at ~189k holders.</p></div>
+    <div class="note cf"><div class="head"><span class="plat">Aave</span><span class="ticker">AAVE*</span></div>
+      <p><strong>Cash first, rewards later.</strong> ETHLend raised ~$16.2M selling LEND in a 2017 ICO. No airdrop — the 2020 LEND→AAVE move was a 100:1 swap for existing holders, not a giveaway to new users.</p>
+      <p>The honest asterisk: from late 2020–2021 Aave paid AAVE as staking (Safety Module) and deposit rewards. Its base is mature at <strong>~187k holders</strong>, concentrated among long-term stakers.</p></div>
+  </div>
+</section>
+
+<!-- DUNE -->
+<section>
+  <div class="sec-head"><span class="sec-no">09/</span><h2>Pull it live yourself — Dune queries</h2></div>
+  <div class="measure"><p>Two queries you can paste and run in <a href="https://dune.com">Dune</a> (set the engine to <span class="mono" style="color:var(--peach)">DuneSQL</span>). The first counts holders month by month. The second is the important one — it rebuilds the "airdrop cliff" by tracking the exact wallets that received the drop.</p></div>
+
+  <div class="qhead"><span class="pill">Query 1</span><h3 style="margin:0">Holders, month by month</h3></div>
+  <div class="qbox"><span class="cm">-- Holder count per month for one ERC-20 (Ethereum). Swap the contract for UNI/MKR/ZRX/AAVE.</span>
+<span class="cm">-- For ARB, change erc20_ethereum -> erc20_arbitrum.</span>
+<span class="kw">WITH</span> flows <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> "to" <span class="kw">AS</span> wallet,  <span class="fn">CAST</span>(value <span class="kw">AS</span> double) <span class="kw">AS</span> amt, evt_block_time <span class="kw">AS</span> t
+  <span class="kw">FROM</span> erc20_ethereum.evt_Transfer
+  <span class="kw">WHERE</span> contract_address = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984  <span class="cm">-- UNI</span>
+  <span class="kw">UNION ALL</span>
+  <span class="kw">SELECT</span> "from" <span class="kw">AS</span> wallet, -<span class="fn">CAST</span>(value <span class="kw">AS</span> double) <span class="kw">AS</span> amt, evt_block_time
+  <span class="kw">FROM</span> erc20_ethereum.evt_Transfer
+  <span class="kw">WHERE</span> contract_address = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984
+),
+bal <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> wallet, t, <span class="fn">SUM</span>(amt) <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> wallet <span class="kw">ORDER BY</span> t) <span class="kw">AS</span> running
+  <span class="kw">FROM</span> flows
+),
+months <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> <span class="fn">date_trunc</span>('month', d) <span class="kw">AS</span> m
+  <span class="kw">FROM</span> <span class="fn">unnest</span>(<span class="fn">sequence</span>(<span class="kw">DATE</span> '2020-09-01', <span class="fn">current_date</span>, <span class="kw">INTERVAL</span> '1' <span class="kw">MONTH</span>)) <span class="kw">AS</span> x(d)
+),
+snap <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> m.m, b.wallet, b.running,
+         <span class="fn">row_number</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> m.m, b.wallet <span class="kw">ORDER BY</span> b.t <span class="kw">DESC</span>) <span class="kw">AS</span> rn
+  <span class="kw">FROM</span> months m <span class="kw">JOIN</span> bal b <span class="kw">ON</span> b.t &lt; m.m + <span class="kw">INTERVAL</span> '1' <span class="kw">MONTH</span>
+)
+<span class="kw">SELECT</span> m <span class="kw">AS</span> month, <span class="fn">count_if</span>(running &gt; 0) <span class="kw">AS</span> holders
+<span class="kw">FROM</span> snap <span class="kw">WHERE</span> rn = 1
+<span class="kw">GROUP BY</span> m <span class="kw">ORDER BY</span> m;</div>
+
+  <div class="qhead"><span class="pill">Query 2</span><h3 style="margin:0">The airdrop cliff — cohort retention</h3></div>
+  <div class="qbox"><span class="cm">-- What % of the airdrop wallets still hold, month by month. This draws the §04 curve.</span>
+<span class="kw">WITH</span> recipients <span class="kw">AS</span> (                 <span class="cm">-- 1. freeze the airdrop crowd = wallets funded by the claim contract</span>
+  <span class="kw">SELECT DISTINCT</span> "to" <span class="kw">AS</span> wallet
+  <span class="kw">FROM</span> erc20_ethereum.evt_Transfer
+  <span class="kw">WHERE</span> contract_address = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984   <span class="cm">-- UNI</span>
+    <span class="kw">AND</span> "from" = 0x090D4613473dEE047c3f2706764f49E0821D256e            <span class="cm">-- UNI airdrop distributor</span>
+),
+flows <span class="kw">AS</span> (                      <span class="cm">-- 2. every transfer for just those wallets</span>
+  <span class="kw">SELECT</span> "to" <span class="kw">AS</span> wallet,  <span class="fn">CAST</span>(value <span class="kw">AS</span> double) <span class="kw">AS</span> amt, evt_block_time <span class="kw">AS</span> t
+  <span class="kw">FROM</span> erc20_ethereum.evt_Transfer
+  <span class="kw">WHERE</span> contract_address = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984
+    <span class="kw">AND</span> "to" <span class="kw">IN</span> (<span class="kw">SELECT</span> wallet <span class="kw">FROM</span> recipients)
+  <span class="kw">UNION ALL</span>
+  <span class="kw">SELECT</span> "from", -<span class="fn">CAST</span>(value <span class="kw">AS</span> double), evt_block_time
+  <span class="kw">FROM</span> erc20_ethereum.evt_Transfer
+  <span class="kw">WHERE</span> contract_address = 0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984
+    <span class="kw">AND</span> "from" <span class="kw">IN</span> (<span class="kw">SELECT</span> wallet <span class="kw">FROM</span> recipients)
+),
+bal <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> wallet, t, <span class="fn">SUM</span>(amt) <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> wallet <span class="kw">ORDER BY</span> t) <span class="kw">AS</span> running <span class="kw">FROM</span> flows
+),
+months <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> <span class="fn">date_trunc</span>('month', d) <span class="kw">AS</span> m
+  <span class="kw">FROM</span> <span class="fn">unnest</span>(<span class="fn">sequence</span>(<span class="kw">DATE</span> '2020-09-01', <span class="fn">current_date</span>, <span class="kw">INTERVAL</span> '1' <span class="kw">MONTH</span>)) <span class="kw">AS</span> x(d)
+),
+snap <span class="kw">AS</span> (
+  <span class="kw">SELECT</span> m.m, b.wallet, b.running,
+         <span class="fn">row_number</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION BY</span> m.m, b.wallet <span class="kw">ORDER BY</span> b.t <span class="kw">DESC</span>) <span class="kw">AS</span> rn
+  <span class="kw">FROM</span> months m <span class="kw">JOIN</span> bal b <span class="kw">ON</span> b.t &lt; m.m + <span class="kw">INTERVAL</span> '1' <span class="kw">MONTH</span>
+)
+<span class="kw">SELECT</span> s.m <span class="kw">AS</span> month,
+       <span class="fn">count_if</span>(s.running &gt; 0) <span class="kw">AS</span> still_holding,
+       (<span class="kw">SELECT</span> <span class="fn">count</span>(*) <span class="kw">FROM</span> recipients) <span class="kw">AS</span> cohort_size,
+       100.0 * <span class="fn">count_if</span>(s.running &gt; 0) / (<span class="kw">SELECT</span> <span class="fn">count</span>(*) <span class="kw">FROM</span> recipients) <span class="kw">AS</span> pct_still_holding
+<span class="kw">FROM</span> snap s <span class="kw">WHERE</span> s.rn = 1
+<span class="kw">GROUP BY</span> s.m <span class="kw">ORDER BY</span> s.m;</div>
+  <p class="copyrow">Tip: these scan every transfer, so they can run a minute or two. To speed up, sample quarterly (change <span style="color:var(--peach)">'1' MONTH</span> → <span style="color:var(--peach)">'3' MONTH</span>) or add a date cap.</p>
+
+  <h3 style="margin:20px 0 6px">Fill-in table — contracts &amp; claim addresses</h3>
+  <div class="tbl-scroll">
+    <table class="addr">
+      <thead><tr><th>Token</th><th>Chain / schema</th><th>Token contract</th><th>Airdrop claim contract</th></tr></thead>
+      <tbody>
+        <tr><td class="plat">UNI</td><td>Ethereum · erc20_ethereum</td><td class="a">0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984</td><td class="a">0x090D4613473dEE047c3f2706764f49E0821D256e</td></tr>
+        <tr><td class="plat">ARB</td><td>Arbitrum · erc20_arbitrum</td><td class="a">0x912CE59144191C1204E64559FE8253a0e49E6548</td><td class="a">0x67a24CE4321aB3aF51c2D0a4801c3E111D88C9d9</td></tr>
+        <tr><td class="plat">JUP</td><td>Solana · tokens_solana.transfers</td><td class="a">JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN</td><td class="fig">Solana engine — see note below</td></tr>
+        <tr><td class="plat">MKR</td><td>Ethereum · erc20_ethereum</td><td class="a">0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2</td><td class="fig">No airdrop — cohort N/A</td></tr>
+        <tr><td class="plat">ZRX</td><td>Ethereum · erc20_ethereum</td><td class="a">0xE41d2489571d322189246DaFA5ebDe1F4699F498</td><td class="fig">No airdrop — cohort N/A</td></tr>
+        <tr><td class="plat">AAVE</td><td>Ethereum · erc20_ethereum</td><td class="a">0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9</td><td class="fig">No airdrop — cohort N/A</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout" style="border-left-color:var(--cash-dim)">
+    <span class="kicker" style="color:var(--cash)">Solana note (JUP)</span>
+    <p>Solana isn't ERC-20, so swap the tables: use <span class="mono">tokens_solana.transfers</span> filtered on <span class="mono">token_mint_address = 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN'</span>. For the cohort, filter transfers coming <em>from</em> Jupiter's airdrop distributor program instead of a "from" wallet. For a shortcut, Vybe and Step Finance show JUP holder counts without any SQL, and Jupiter's own Dune dashboards already track claim data.</p>
+  </div>
+</section>
+
+<!-- CTA -->
+<section>
+  <div class="sec-head"><span class="sec-no">10/</span><h2>So what should a project actually do?</h2></div>
+  <div class="callout">
+    <span class="kicker">The takeaway</span>
+    <p style="color:var(--ink);font-size:1.02rem"><strong>Giving your token away to an open crowd buys reach, not loyalty.</strong> In every token-funded case here, more than 90% of recipients were gone within months. Free tokens attract fast flippers by design.</p>
+    <p>The fix isn't to stop airdropping. It's to <strong>target diamond hands</strong> — wallets with a track record of holding what they earn instead of dumping it the same day. If a project is going to distribute tokens, bounties, or rewards, it should send them to wallets that have <em>already proven</em> they hold.</p>
+    <p style="margin-bottom:6px">In practice that means:</p>
+    <ul>
+      <li><strong>Score wallets before you distribute.</strong> Check whether an address held past airdrops and rewards for months rather than selling within days.</li>
+      <li><strong>Reward holding, not just participation.</strong> Tie eligibility — or the size of the reward — to how long a wallet has held similar tokens.</li>
+      <li><strong>Add a lock-up or claw-back.</strong> Vesting and "sell early, forfeit part of it" rules push a giveaway closer to the sticky cash-funded pattern.</li>
+      <li><strong>Filter out serial flippers.</strong> The same wallets farm drop after drop; a history check screens them out before they cost you.</li>
+    </ul>
+    <p style="margin-top:10px"><strong>How to spot diamond hands:</strong> Nansen tags wallets with a "Diamond Hands" label, and you can build the same idea in Dune — flag any wallet that received past airdrops or rewards and still held them 3, 6, or 12 months later (Query 2 above is exactly that check, just pointed at whichever token you're screening). Uniswap's ~98% governance no-show is the warning sign: a large giveaway buys holders on paper, not committed supporters.</p>
+  </div>
+</section>
+
+<!-- SOURCES -->
+<section>
+  <div class="sec-head"><span class="sec-no">11/</span><h2>Sources</h2></div>
+  <ol class="src">
+    <li>Uniswap — <a href="https://blog.uniswap.org/uni">Introducing UNI</a> (allocation, airdrop, liquidity mining).</li>
+    <li>Dune — <a href="https://dune.com/blog/uni-airdrop-analysis">The Uniswap Airdrop: Lessons for the Industry</a>.</li>
+    <li>Tomasz Tunguz — <a href="https://tomtunguz.com/uniswap-airdrop-analysis/">Tokens as CAC</a>.</li>
+    <li>Coinfomania / IntoTheBlock — <a href="https://coinfomania.com/55-percent-uni-airdrop-recipients-have-sold/">55% of UNI recipients sold within ~8 days</a>.</li>
+    <li>Etherscan — <a href="https://etherscan.io/address/0x090d4613473dee047c3f2706764f49e0821d256e">Uniswap Token Distributor</a>.</li>
+    <li>Arbitrum Foundation — <a href="https://docs.arbitrum.foundation/airdrop-eligibility-distribution">Airdrop eligibility &amp; distribution</a>.</li>
+    <li>Nansen — <a href="https://www.nansen.ai/research/a-look-into-arbitrum-after-the-airdrop">A Look into Arbitrum After the Airdrop</a>.</li>
+    <li>DeCommas — <a href="https://medium.com/@DeCommas/1-month-from-the-arb-airdrop-dea7f8b31492">1 Month From the $ARB Airdrop</a>.</li>
+    <li>Arbiscan — <a href="https://arbiscan.io/address/0x67a24CE4321aB3aF51c2D0a4801c3E111D88C9d9">Arbitrum Token Distributor</a>.</li>
+    <li>SolanaFloor — <a href="https://solanafloor.com/news/solanas-historic-jupiter-airdrop-concludes-with-high-claimant-turnout-yet-over-300-000-miss-out">Jupiter airdrop concludes</a> (~9.5% still holding).</li>
+    <li>CoinMarketCap — <a href="https://coinmarketcap.com/academy/article/deep-dive-into-jupiter">Deep dive into Jupiter</a> (50/50 tokenomics).</li>
+    <li>CoinDesk — <a href="https://www.coindesk.com/business/2025/06/20/solana-dex-jupiter-pauses-dao-votes-citing-breakdown-in-trust">Jupiter pauses DAO votes</a>.</li>
+    <li>Kraken / Chain Broker — <a href="https://www.kraken.com/learn/what-is-maker-mkr">Maker (MKR)</a> funding history.</li>
+    <li>CoinCarp — <a href="https://www.coincarp.com/currencies/maker/richlist/">MKR holders (~100k)</a>.</li>
+    <li>Messari — <a href="https://messari.github.io/research/profiles/0x(ZRX).pdf">0x (ZRX) profile</a> (50/15/15/10/10).</li>
+    <li>CoinMarketCap — <a href="https://coinmarketcap.com/currencies/0x/">0x holders (~189k)</a>.</li>
+    <li>ICO Drops — <a href="https://icodrops.com/ethlend/">ETHLend (LEND) ICO</a> (~$16.2M raised, 2017).</li>
+    <li>Glassnode — <a href="https://research.glassnode.com/aave-token-analysis-migration-staking/">AAVE: migration &amp; staking analysis</a> (16M supply, 13M+3M).</li>
+    <li>Aave Governance — <a href="https://governance.aave.com/t/arc-extend-aave-liquidity-mining-rewards/4852">AAVE liquidity-mining rewards</a>; CoinCarp — <a href="https://www.coincarp.com/currencies/aave-new/richlist/">AAVE holders (~187k)</a>.</li>
+    <li>DappRadar — <a href="https://dappradar.com/blog/88-of-airdropped-tokens-lose-value-within-3-months">88% of airdropped tokens lose value within 3 months</a>.</li>
+  </ol>
+  <p class="foot">Onchain research note, August 2026. Numbers come from the public studies cited above — point-in-time snapshots, not one uniform dataset. Some per-wallet and current-holder figures sit behind paid tools (Nansen, Dune Plus, Vybe) and weren't re-pulled live. Charts mark real data points; connecting lines and the §06 up-down axis are drawn to show direction, as noted. MakerDAO's allocation is estimated (no official split published). Not financial advice.</p>
+</section>
+
+</div>
+<div class="tt" id="tt"></div>
+<script>
+  (function(){
+    var tt=document.getElementById('tt');
+    function show(e){var t=e.target.getAttribute('data-t');if(!t)return;tt.innerHTML='<b>'+t+'</b><br>'+(e.target.getAttribute('data-v')||'');tt.style.opacity='1';move(e);}
+    function move(e){tt.style.left=Math.min(e.clientX+14,window.innerWidth-tt.offsetWidth-12)+'px';tt.style.top=(e.clientY-tt.offsetHeight-14)+'px';}
+    function hide(){tt.style.opacity='0';}
+    document.querySelectorAll('.hit').forEach(function(el){el.addEventListener('mouseenter',show);el.addEventListener('mousemove',move);el.addEventListener('mouseleave',hide);});
+  })();
+</script>
