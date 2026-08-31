@@ -209,3 +209,16 @@
 
 </div>
 </body></html>
+<script>
+(function(){
+  function post(){
+    var h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+    parent.postMessage({ type: 'rei-blog-height', height: h }, '*');
+  }
+  window.addEventListener('load', post);
+  window.addEventListener('resize', post);
+  if (window.ResizeObserver) new ResizeObserver(post).observe(document.body);
+  setInterval(post, 1000);
+  post();
+})();
+</script>
