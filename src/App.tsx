@@ -50,6 +50,9 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/ask" element={<Ask />} />
               <Route path="/earn" element={<Earn />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+
               <Route path="/s/:shareId" element={<Earn />} />
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
               <Route path="*" element={<NotFound />} />
