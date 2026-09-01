@@ -20,6 +20,7 @@ const entries: SitemapEntry[] = [
   { path: "/agents", changefreq: "monthly", priority: "0.7" },
   { path: "/joinrei", changefreq: "monthly", priority: "0.6" },
   { path: "/articles", changefreq: "weekly", priority: "0.7" },
+  { path: "/articles/refer-to-earn-with-rei-ai", changefreq: "monthly", priority: "0.6" },
   { path: "/articles/the-airdrop-that-held", changefreq: "monthly", priority: "0.6" },
   { path: "/articles/give-it-away-watch-it-leave", changefreq: "monthly", priority: "0.6" },
 
