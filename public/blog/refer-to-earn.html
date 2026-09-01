@@ -1,0 +1,184 @@
+<title>Refer-To-Earn with Rei AI for Crypto Bounties</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+  :root {
+    color-scheme: dark;
+    --bg:        #000000;
+    --surface:   #0c0c0d;
+    --surface-2: #141315;
+    --ink:       #f3eeea;
+    --ink-2:     #b7b1aa;
+    --muted:     #807a72;
+    --hair:      rgba(232,196,184,0.16);
+    --hair-2:    rgba(255,255,255,0.07);
+    --peach:     #e8c4b8;
+    --peach-deep:#d7a58f;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 18px; line-height: 1.66; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 22px 90px; }
+  .mono, .kicker, .sec-no, .lab, .pill, .btn, th, .wallet { font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace; }
+  h1, h2, h3 { font-family: "IBM Plex Mono", monospace; font-weight: 600; letter-spacing: -0.01em; }
+  h1 { font-size: clamp(2rem, 5.6vw, 3.05rem); line-height: 1.06; font-weight: 700; margin: 0 0 0.6rem; text-wrap: balance; }
+  h2 { font-size: clamp(1.3rem, 3vw, 1.7rem); line-height: 1.15; margin: 0 0 0.6rem; }
+  h3 { font-size: 1.02rem; margin: 0 0 0.35rem; letter-spacing: 0; }
+  p { margin: 0 0 1.05rem; }
+  strong { color: var(--ink); font-weight: 600; }
+  a { color: var(--peach); text-decoration: underline; text-underline-offset: 2px; text-decoration-color: rgba(232,196,184,0.4); }
+  a:hover { text-decoration-color: var(--peach); }
+  .kicker { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: var(--peach); }
+  .rule { height: 1px; background: var(--hair); border: 0; margin: 0; }
+  header { padding: 56px 0 22px; }
+  .lede { font-size: clamp(1.06rem, 2.2vw, 1.24rem); line-height: 1.5; color: var(--ink-2); max-width: 680px; margin-top: 1rem; }
+  section { padding: 38px 0 6px; }
+  .sec-head { display: flex; gap: 13px; align-items: baseline; margin-bottom: 14px; }
+  .sec-no { font-size: 0.8rem; color: var(--peach); font-weight: 600; }
+  .card { background: var(--surface); border: 1px solid var(--hair); border-radius: 4px; padding: 22px 24px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 22px; }
+  .pill { font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--peach); border: 1px solid #181818; border-radius: 999px; padding: 6px 11px; }
+  table { width: 100%; border-collapse: collapse; margin: 6px 0 18px; font-size: 0.95rem; }
+  th { text-align: left; font-size: 0.63rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); padding: 10px 12px; border-bottom: 1px solid var(--hair); }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--hair-2); color: var(--ink-2); }
+  td:first-child { color: var(--ink); }
+  tr:last-child td { border-bottom: 0; }
+  .fund { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 16px; background: var(--surface-2); border: 1px solid var(--hair); border-radius: 4px; padding: 16px 18px; margin: 0 0 20px; }
+  .fund .lab { font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+  .fund .bal { font-family: "IBM Plex Mono", monospace; font-size: clamp(1.3rem, 3.4vw, 1.8rem); font-weight: 700; color: var(--peach); letter-spacing: -0.02em; }
+  .wallet { font-size: 0.78rem; color: var(--muted); }
+  /* referral points mockup */
+  .mock { border: 1px solid var(--hair); border-radius: 6px; background: var(--surface); overflow: hidden; margin: 4px 0 20px; }
+  .mock-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--hair-2); }
+  .mock-title { font-family: "IBM Plex Mono", monospace; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink); }
+  .mock-chev { color: var(--peach); font-size: 0.8rem; }
+  .mock-body { padding: 16px; display: grid; gap: 12px; }
+  .mock-row { display: flex; justify-content: space-between; gap: 10px; font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; color: var(--ink-2); border: 1px solid var(--hair-2); border-radius: 4px; padding: 10px 12px; background: var(--surface-2); }
+  .mock-row b { color: var(--peach); }
+  .mock-ref { font-family: "IBM Plex Mono", monospace; font-size: 0.74rem; color: var(--muted); word-break: break-all; border: 1px dashed var(--hair); border-radius: 4px; padding: 10px 12px; }
+  .note { font-size: 0.78rem; color: var(--muted); }
+  .foot { font-size: 0.76rem; color: var(--muted); line-height: 1.55; border-top: 1px solid var(--hair-2); padding-top: 16px; margin-top: 26px; }
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="kicker">Refer-To-Earn · Rei AI</div>
+  <h1>Refer-To-Earn with Rei AI for Crypto Bounties</h1>
+  <hr class="rule">
+  <p class="lede">Rei AI is a <b>Chatbot and AI Agent</b> that aggregates crypto bounties from across the whole crypto market. Share your referral link, earn points and commission.</p>
+  <div class="pills">
+    <span class="pill">Superteam UK Grant Funded</span>
+    <span class="pill">Ignyte Challenge · 1 of 15 from 3000</span>
+    <span class="pill">Build on Solana · Dubai, UAE</span>
+  </div>
+  <p>Rei AI was built by <strong>Arubaito Labs</strong> and is Superteam UK Grant Funded, and 1 of 15 shortlisted from 3,000 applicants to the Ignyte Challenge &lsquo;Build on Solana&rsquo; in UAE, Dubai.</p>
+</header>
+
+<section>
+  <div class="sec-head"><span class="sec-no">01</span><h2>Earn Points</h2></div>
+  <p>Earn points when a bounty hunting user becomes a <strong>Rei&rsquo;s Diamond</strong> member using your referral link.</p>
+  <p>You have the chance to rise through the ranks every month on the leader board to win a percentage from the community pot funds.</p>
+
+  <div class="fund">
+    <span class="lab">Community Fund</span>
+    <span class="bal" id="fund-bal">— SOL</span>
+    <span class="wallet">ogcBw…..cCa5</span>
+  </div>
+
+  <div class="mock" aria-label="Referral points panel preview">
+    <div class="mock-head">
+      <span class="mock-title">Referral Points</span>
+      <span class="mock-chev">▾</span>
+    </div>
+    <div class="mock-body">
+      <div class="mock-row"><span>Your points this month</span><b>1,240</b></div>
+      <div class="mock-row"><span>Referred Rei&rsquo;s Diamond members</span><b>18</b></div>
+      <div class="mock-row"><span>Leader board rank</span><b>#4</b></div>
+      <div class="mock-row"><span>Projected pot share</span><b>7.1%</b></div>
+      <div class="mock-ref">https://rei.chat/r/your-handle</div>
+      <div class="note">Preview only — your live numbers appear in your Rei account.</div>
+    </div>
+  </div>
+
+  <table>
+    <thead><tr><th>Ranking</th><th>Distribution percentage</th></tr></thead>
+    <tbody>
+      <tr><td>1st</td><td>25%</td></tr>
+      <tr><td>2nd</td><td>15%</td></tr>
+      <tr><td>3rd</td><td>10%</td></tr>
+      <tr><td>4th</td><td>7.1%</td></tr>
+      <tr><td>5th</td><td>7.1%</td></tr>
+      <tr><td>6th</td><td>7.1%</td></tr>
+      <tr><td>7th</td><td>7.1%</td></tr>
+      <tr><td>8th</td><td>7.1%</td></tr>
+      <tr><td>9th</td><td>7.1%</td></tr>
+      <tr><td>10th</td><td>7.1%</td></tr>
+    </tbody>
+  </table>
+
+  <p class="note">Funds will be auto-distributed at the end of the month to the wallet that you registered to Rei AI with.</p>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-no">02</span><h2>Earn Commission</h2></div>
+  <p>You&rsquo;ll earn commission if a project signs up using your referral link and posts a bounty on Rei AI.</p>
+  <p>During this temporary period you&rsquo;ll earn <strong>50% commission</strong> from any package that the project pays for.</p>
+  <p>See our packages on <a href="https://rei.chat/joinrei">Join Rei</a>. Packages are currently in the Beta pricing model and will move to Alpha in time.</p>
+
+  <table>
+    <thead><tr><th>Package</th><th>Commission (50%)</th></tr></thead>
+    <tbody>
+      <tr><td>$500 (beta)</td><td>$250</td></tr>
+      <tr><td>$2,500 (beta)</td><td>$1,250</td></tr>
+      <tr><td>$5,000 (alpha)</td><td>$2,500</td></tr>
+      <tr><td>$25,000 (alpha)</td><td>$12,500</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <div class="sec-head"><span class="sec-no">03</span><h2>Get Started</h2></div>
+  <div class="card">
+    <p><a href="https://rei.chat">Sign up to Rei</a> to get started.</p>
+    <p style="margin:0">Need more info? Reach out on <a href="mailto:rei@arubaito.app">rei@arubaito.app</a> or <a href="https://t.me/+bWbG914IIu9jOGJk">Telegram</a>.</p>
+  </div>
+  <p class="foot">The current commission percentages are subject to Rei AI&rsquo;s development stages and will reduce in time. We reserve the right to change the commissions when required. 50% commission is limited to the startup stage.</p>
+</section>
+
+</div>
+
+<script>
+(function(){
+  var el = document.getElementById('fund-bal');
+  var addr = 'ogcBwDkmQe3NggoUS2yQk7CJmXpQBdcyyn1Qb5PcCa5';
+  fetch('https://api.mainnet-beta.solana.com', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'getBalance', params: [addr] })
+  }).then(function(r){ return r.json(); }).then(function(j){
+    var lamports = j && j.result && j.result.value;
+    if (typeof lamports !== 'number') throw new Error('no balance');
+    el.textContent = (lamports / 1e9).toFixed(3) + ' SOL';
+  }).catch(function(){ el.textContent = '— SOL'; });
+})();
+</script>
+<script>
+(function(){
+  function post(){
+    var h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+    parent.postMessage({ type: 'rei-blog-height', height: h }, '*');
+  }
+  window.addEventListener('load', post);
+  window.addEventListener('resize', post);
+  if (window.ResizeObserver) new ResizeObserver(post).observe(document.body);
+  setInterval(post, 1000);
+  post();
+})();
+</script>
