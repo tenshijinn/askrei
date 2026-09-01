@@ -6,6 +6,8 @@ export interface BlogPost {
   excerpt: string;
   file: string;
   description: string;
+  /** Optional featured image URL. When absent, a placeholder area is shown. */
+  image?: string;
 }
 
 export const blogPosts: BlogPost[] = [
