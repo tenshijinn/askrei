@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,6 +23,12 @@ import Ask from "./pages/Ask";
 import Earn from "./pages/Earn";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+
+const BlogSlugRedirect = () => {
+  const { slug } = useParams();
+  return <Navigate to={`/articles/${slug}`} replace />;
+};
+
 
 
 const queryClient = new QueryClient();
@@ -50,8 +56,11 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/ask" element={<Ask />} />
               <Route path="/earn" element={<Earn />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/articles" element={<Blog />} />
+              <Route path="/articles/:slug" element={<BlogPost />} />
+              <Route path="/blog" element={<Navigate to="/articles" replace />} />
+              <Route path="/blog/:slug" element={<BlogSlugRedirect />} />
+
 
               <Route path="/s/:shareId" element={<Earn />} />
               <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />

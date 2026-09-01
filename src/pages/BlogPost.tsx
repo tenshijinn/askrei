@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import NotFound from "./NotFound";
 import { getPost } from "./blogPosts";
+import FeaturedImagePlaceholder from "@/components/FeaturedImagePlaceholder";
 
 const BlogPost = () => {
   const { slug } = useParams();
@@ -33,11 +34,24 @@ const BlogPost = () => {
     <div className="min-h-screen bg-background text-foreground">
       <div className="mx-auto max-w-[960px] px-4 pb-24 pt-8">
         <Link
-          to="/blog"
+          to="/articles"
           className="inline-block font-mono text-xs text-muted-foreground transition-colors hover:text-primary"
         >
-          ← All posts
+          ← All articles
         </Link>
+
+        <div className="mt-4 overflow-hidden rounded-[14px]">
+          {post.image ? (
+            <img
+              src={post.image}
+              alt={post.title}
+              className="aspect-[16/6] w-full object-cover"
+            />
+          ) : (
+            <FeaturedImagePlaceholder title={post.title} />
+          )}
+        </div>
+
         <iframe
           ref={iframeRef}
           src={post.file}
@@ -48,10 +62,10 @@ const BlogPost = () => {
         />
         <div className="mt-10 border-t border-border pt-8">
           <Link
-            to="/blog"
+            to="/articles"
             className="font-mono text-xs text-primary transition-opacity hover:opacity-80"
           >
-            ← All posts
+            ← All articles
           </Link>
         </div>
       </div>

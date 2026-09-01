@@ -2,15 +2,16 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { blogPosts } from "./blogPosts";
+import FeaturedImagePlaceholder from "@/components/FeaturedImagePlaceholder";
 
 const Blog = () => {
   useEffect(() => {
-    document.title = "Research & Blog | Rei";
+    document.title = "Articles & Announcements | Rei";
     document
       .querySelector('meta[name="description"]')
       ?.setAttribute(
         "content",
-        "Onchain research notes from Rei on airdrops, holder retention, diamond hands and crypto growth marketing.",
+        "Announcements from Rei AI plus short, data-led notes on airdrops, holder retention and what keeps people holding a token.",
       );
   }, []);
 
@@ -20,16 +21,16 @@ const Blog = () => {
         <header className="mb-14">
           <div className="mb-5 flex items-center gap-4">
             <span className="font-mono text-[11px] uppercase tracking-[0.24em] text-primary">
-              Research / Blog
+              Articles / Announcements
             </span>
             <span className="h-px flex-1 bg-border" />
           </div>
           <h1 className="mb-3 text-4xl font-light tracking-tight md:text-5xl">
-            Onchain notes from Rei
+            Bounties &amp; Beyond
           </h1>
-          <p className="max-w-[560px] text-muted-foreground">
-            Short, data-led notes on airdrops, holder retention and what actually keeps
-            people holding a token.
+          <p className="max-w-[620px] text-muted-foreground">
+            Announcements from Rei AI and short, data-led notes on airdrops, holder
+            retention and what actually keeps people holding a token.
           </p>
         </header>
 
@@ -37,22 +38,34 @@ const Blog = () => {
           {blogPosts.map((post) => (
             <Link
               key={post.slug}
-              to={`/blog/${post.slug}`}
-              className="group block rounded-[14px] border border-border bg-card p-6 transition-colors hover:border-primary/40 md:p-8"
+              to={`/articles/${post.slug}`}
+              className="group block overflow-hidden rounded-[14px] border border-border bg-card transition-colors hover:border-primary/40"
             >
-              <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                {post.date} · {post.category}
+              {post.image ? (
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  loading="lazy"
+                  className="aspect-[16/7] w-full object-cover"
+                />
+              ) : (
+                <FeaturedImagePlaceholder title={post.title} compact />
+              )}
+              <div className="p-6 md:p-8">
+                <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                  {post.date} · {post.category}
+                </div>
+                <h2 className="mb-3 text-2xl font-normal tracking-tight transition-colors group-hover:text-primary">
+                  {post.title}
+                </h2>
+                <p className="mb-5 max-w-[620px] text-sm leading-relaxed text-muted-foreground">
+                  {post.excerpt}
+                </p>
+                <span className="inline-flex items-center gap-2 font-mono text-xs text-primary">
+                  Read
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                </span>
               </div>
-              <h2 className="mb-3 text-2xl font-normal tracking-tight transition-colors group-hover:text-primary">
-                {post.title}
-              </h2>
-              <p className="mb-5 max-w-[620px] text-sm leading-relaxed text-muted-foreground">
-                {post.excerpt}
-              </p>
-              <span className="inline-flex items-center gap-2 font-mono text-xs text-primary">
-                Read
-                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-              </span>
             </Link>
           ))}
         </div>

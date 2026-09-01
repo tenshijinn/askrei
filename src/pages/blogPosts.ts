@@ -6,6 +6,8 @@ export interface BlogPost {
   excerpt: string;
   file: string;
   description: string;
+  /** Optional featured image URL. When absent, a placeholder area is shown. */
+  image?: string;
 }
 
 export const blogPosts: BlogPost[] = [
@@ -22,7 +24,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: "give-it-away-watch-it-leave",
-    title: "Give It Away, Watch It Leave",
+    title: "How Jupiter DEX Paid 40x Higher Than SaaS Average",
     date: "Aug 2026",
     category: "Onchain Research",
     excerpt:
