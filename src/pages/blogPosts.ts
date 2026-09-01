@@ -12,6 +12,18 @@ export interface BlogPost {
 
 export const blogPosts: BlogPost[] = [
   {
+    slug: "refer-to-earn-with-rei-ai",
+    title: "Refer-To-Earn with Rei AI for Crypto Bounties",
+    date: "Sep 2026",
+    category: "Announcement",
+    excerpt:
+      "Share your Rei referral link, earn points toward the monthly community pot, and take 50% commission when a project signs up and posts a bounty.",
+    file: "/blog/refer-to-earn.html",
+    description:
+      "How Rei AI's refer-to-earn works: points for referred Rei's Diamond members, a monthly community pot leader board, and 50% commission on project packages.",
+  },
+  {
+
     slug: "the-airdrop-that-held",
     title: "The Airdrop That Held — $ANSEM Case Study",
     date: "Aug 2026",
