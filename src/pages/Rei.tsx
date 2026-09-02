@@ -27,6 +27,7 @@ import { useRegistrationWalkthrough } from '@/hooks/useRegistrationWalkthrough';
 import { walkthroughCopy } from '@/components/joinrei/walkthroughContent';
 import { BountyPromotions } from '@/components/rei/BountyPromotions';
 import { AccountAccordionCard } from '@/components/rei/AccountAccordionCard';
+import { ReferralStatsCard } from '@/components/rei/ReferralStatsCard';
 
 
 import { ConnectReiCard } from '@/components/rei/ConnectReiCard';
@@ -72,7 +73,7 @@ export default function Rei() {
   const [whitelistSubmitted, setWhitelistSubmitted] = useState(false);
   const [registrationData, setRegistrationData] = useState<any>(null);
   const [shareOpen, setShareOpen] = useState(false);
-  const [openCard, setOpenCard] = useState<'diamond' | 'promotions' | null>('diamond');
+  const [openCard, setOpenCard] = useState<'diamond' | 'referrals' | 'promotions' | null>('diamond');
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [isLoadingRegistration, setIsLoadingRegistration] = useState(false);
@@ -547,7 +548,18 @@ export default function Rei() {
                   {analysis.key_strengths?.length > 0 && <div><div className="rei-section-label">Key Strengths</div><div className="space-y-1.5">{analysis.key_strengths.map((strength: string, idx: number) => <div key={idx} className="flex items-start gap-2" style={{ fontSize: '13px', color: '#a09e9a' }}><CheckCircle2 className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" style={{ color: '#e8c4b8' }} /><span>{strength}</span></div>)}</div></div>}
                   <button data-tour="edit-profile" onClick={() => setIsEditMode(true)} className="btn-manga btn-manga-outline w-full" style={{ borderRadius: '28px', padding: '11px 22px', fontSize: '13px', cursor: 'pointer', marginTop: 20 }}>Edit Profile</button>
                 </AccountAccordionCard>}
-                <ReiDiamondShareCard
+                 <AccountAccordionCard
+                   title="Referrals & Points"
+                   subtitle="Track the people you bring to Rei and your monthly rewards."
+                   open={openCard === 'referrals'}
+                   onToggle={() => setOpenCard(openCard === 'referrals' ? null : 'referrals')}
+                 >
+                   <ReferralStatsCard
+                     walletAddress={effectiveWallet || registrationData?.wallet_address}
+                     xUserId={twitterUser?.x_user_id}
+                   />
+                 </AccountAccordionCard>
+                 <ReiDiamondShareCard
                   open={shareOpen}
                   onClose={() => setShareOpen(false)}
                   handle={registrationData.handle}
