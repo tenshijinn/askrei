@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { setReferralAttribution, getReferralAttribution } from "@/lib/referralAttribution";
 import { Loader2 } from "lucide-react";
 
 const ReferralRedirect = () => {
@@ -15,16 +16,17 @@ const ReferralRedirect = () => {
         return;
       }
       try {
-        const sessionId = crypto.randomUUID();
-        localStorage.setItem("referral_session_id", sessionId);
-        localStorage.setItem("referral_code", code);
+        setReferralAttribution(code, crypto.randomUUID());
+        const { referralSessionId } = getReferralAttribution();
         await supabase.functions.invoke("track-referral-click", {
           body: {
             referralCode: code,
+            sessionId: referralSessionId,
             sourceUrl: document.referrer || window.location.href,
             targetPath: "/rei",
           },
         });
+
         navigate("/rei", { replace: true });
       } catch (err) {
         console.error("Error tracking referral:", err);
