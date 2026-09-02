@@ -31,17 +31,22 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://rei.chat/blog</loc>
+    <loc>https://rei.chat/articles</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://rei.chat/blog/the-airdrop-that-held</loc>
+    <loc>https://rei.chat/articles/refer-to-earn-with-rei-ai</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://rei.chat/blog/give-it-away-watch-it-leave</loc>
+    <loc>https://rei.chat/articles/the-airdrop-that-held</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://rei.chat/articles/give-it-away-watch-it-leave</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
