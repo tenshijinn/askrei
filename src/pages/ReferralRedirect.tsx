@@ -17,11 +17,11 @@ const ReferralRedirect = () => {
       }
       try {
         setReferralAttribution(code, crypto.randomUUID());
-        const { referralSessionId } = getReferralAttribution();
+        const attribution = getReferralAttribution();
         await supabase.functions.invoke("track-referral-click", {
           body: {
-            referralCode: code,
-            sessionId: referralSessionId,
+            referralCode: attribution.referralCode || code,
+            sessionId: attribution.referralSessionId,
             sourceUrl: document.referrer || window.location.href,
             targetPath: "/rei",
           },

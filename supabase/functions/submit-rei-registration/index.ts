@@ -18,6 +18,8 @@ interface RegistrationData {
   role_tags: string[];
   consent: boolean;
   reanalyze?: boolean; // Flag to force re-analysis with existing transcript
+  referral_code?: string;
+  referral_session_id?: string;
 }
 
 Deno.serve(async (req) => {
