@@ -42,9 +42,6 @@ Deno.serve(async (req) => {
     if (codeErr) throw codeErr;
 
     const codes = (codeRows || []).map((r) => r.referral_code);
-    const wallets = new Set<string>();
-    if (walletAddress) wallets.add(walletAddress);
-    for (const r of codeRows || []) if (r.wallet_address) wallets.add(r.wallet_address);
 
     // Month window (UTC calendar month) — the same window the monthly pot uses.
     const now = new Date();
@@ -56,18 +53,25 @@ Deno.serve(async (req) => {
     let conversionsThisMonth = 0;
     let clicksThisMonth = 0;
     let allTimeClicks = 0;
+    let pointsThisMonth = 0;
+    let pointsAllTime = 0;
 
     if (codes.length > 0) {
       const { data: conversions, error: convErr } = await supabase
         .from("referral_conversions")
-        .select("conversion_type, created_at")
+        .select("conversion_type, points_awarded, created_at")
         .in("referral_code", codes);
       if (convErr) throw convErr;
 
       for (const c of conversions || []) {
         allTimeConversions++;
         const inMonth = c.created_at >= monthStart;
-        if (inMonth) conversionsThisMonth++;
+        const points = c.points_awarded || 0;
+        pointsAllTime += points;
+        if (inMonth) {
+          conversionsThisMonth++;
+          pointsThisMonth += points;
+        }
         if (c.conversion_type === "registration") {
           allTimeReferrals++;
           if (inMonth) referralsThisMonth++;
@@ -86,23 +90,6 @@ Deno.serve(async (req) => {
         .in("referral_code", codes)
         .gte("clicked_at", monthStart);
       clicksThisMonth = monthClicks ?? 0;
-    }
-
-    // Points this month resets naturally: it is the sum of this month's ledger rows.
-    let pointsThisMonth = 0;
-    let pointsAllTime = 0;
-    if (wallets.size > 0) {
-      const walletList = Array.from(wallets);
-      const { data: txs, error: txErr } = await supabase
-        .from("points_transactions")
-        .select("points, created_at")
-        .in("wallet_address", walletList);
-      if (txErr) throw txErr;
-      for (const t of txs || []) {
-        const pts = t.points || 0;
-        pointsAllTime += pts;
-        if (t.created_at && t.created_at >= monthStart) pointsThisMonth += pts;
-      }
     }
 
     return json({
