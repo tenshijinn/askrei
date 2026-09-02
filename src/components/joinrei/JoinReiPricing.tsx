@@ -184,7 +184,21 @@ export const JoinReiPricing = () => {
                           ? 'bg-cyan-400 text-[#0a0a0a] hover:bg-cyan-300'
                           : 'btn-manga btn-manga-primary'
                       }`}
-                      onClick={() => window.open(CALENDLY_URL, '_blank')}
+                      onClick={async () => {
+                        const attribution = getReferralAttribution();
+                        if (attribution.referralCode) {
+                          await supabase.functions.invoke('track-referral-conversion', {
+                            body: {
+                              conversionType: 'booking',
+                              referralCode: attribution.referralCode,
+                              sessionId: attribution.referralSessionId,
+                              dedupeKey: `booking:${attribution.referralCode}:${attribution.referralSessionId || 'visitor'}`,
+                            },
+                          });
+                        }
+                        window.open(CALENDLY_URL, '_blank', 'noopener,noreferrer');
+                      }}
+
                     >
                       Book a Call
                     </button>
