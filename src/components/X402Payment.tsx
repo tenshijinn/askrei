@@ -5,6 +5,7 @@ import { Loader2, CheckCircle2, XCircle, Zap } from 'lucide-react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { getReferralAttribution } from '@/lib/referralAttribution';
 
 interface X402PaymentProps {
   amount: number;
@@ -36,7 +37,8 @@ export const X402Payment = ({ amount, memo, onSuccess, onCancel }: X402PaymentPr
       const signedTransaction = await signTransaction(transaction);
       const signedTransactionBase64 = signedTransaction.serialize().toString('base64');
       setPaymentStatus('verifying');
-      const { data: verifyData, error: verifyError } = await supabase.functions.invoke('x402-verify-payment', { body: { signedTransaction: signedTransactionBase64, reference: paymentData.reference } });
+      const referral = getReferralAttribution();
+      const { data: verifyData, error: verifyError } = await supabase.functions.invoke('x402-verify-payment', { body: { signedTransaction: signedTransactionBase64, reference: paymentData.reference, referralCode: referral.referralCode, referralSessionId: referral.referralSessionId } });
       if (verifyError) throw verifyError;
       if (!verifyData?.success) throw new Error(verifyData?.error || 'Payment verification failed');
       setPaymentStatus('success'); toast.success('Payment completed successfully!');

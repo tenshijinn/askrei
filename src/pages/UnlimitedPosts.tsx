@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { getStripeEnvironment } from "@/lib/stripe";
+import { referralMetadata } from "@/lib/referralAttribution";
 
 type Interval = "monthly" | "yearly";
 const PRICE_IDS: Record<Interval, string> = {
@@ -110,6 +111,7 @@ export default function UnlimitedPosts() {
         customerEmail: email,
         interval,
         metadata: {
+          ...referralMetadata(),
           product_id: "unlimited_posts",
           project_name: projectName,
           project_link: projectLink,
