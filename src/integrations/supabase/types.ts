@@ -839,6 +839,7 @@ export type Database = {
           conversion_type: string
           converted_wallet: string
           created_at: string
+          dedupe_key: string | null
           id: string
           payment_amount: number | null
           points_awarded: number
@@ -849,6 +850,7 @@ export type Database = {
           conversion_type: string
           converted_wallet: string
           created_at?: string
+          dedupe_key?: string | null
           id?: string
           payment_amount?: number | null
           points_awarded: number
@@ -859,6 +861,7 @@ export type Database = {
           conversion_type?: string
           converted_wallet?: string
           created_at?: string
+          dedupe_key?: string | null
           id?: string
           payment_amount?: number | null
           points_awarded?: number
