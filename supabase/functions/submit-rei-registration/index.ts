@@ -18,6 +18,8 @@ interface RegistrationData {
   role_tags: string[];
   consent: boolean;
   reanalyze?: boolean; // Flag to force re-analysis with existing transcript
+  referral_code?: string;
+  referral_session_id?: string;
 }
 
 Deno.serve(async (req) => {
@@ -184,6 +186,7 @@ Deno.serve(async (req) => {
     // wallet_address and evm_wallet_address regardless of what the client sent.
     let existingWallet: string | null = null;
     let existingEvmWallet: string | null = null;
+    let isInitialRegistration = true;
     if (registrationData.x_user_id) {
       const { data: existing } = await supabase
         .from('rei_registry')
@@ -191,6 +194,7 @@ Deno.serve(async (req) => {
         .eq('x_user_id', registrationData.x_user_id)
         .maybeSingle();
       if (existing) {
+        isInitialRegistration = false;
         existingWallet = (existing as any).wallet_address ?? null;
         existingEvmWallet = (existing as any).evm_wallet_address ?? null;
       }
@@ -249,6 +253,23 @@ Deno.serve(async (req) => {
     }
 
     console.log('Registration successful:', data.id);
+
+    if (isInitialRegistration && registrationData.referral_code) {
+      try {
+        const { error: conversionError } = await supabase.functions.invoke('track-referral-conversion', {
+          body: {
+            conversionType: 'registration',
+            referralCode: registrationData.referral_code,
+            sessionId: registrationData.referral_session_id,
+            convertedWallet: finalWallet,
+            dedupeKey: `registration:${registrationData.x_user_id || finalWallet}`,
+          },
+        });
+        if (conversionError) console.error('Failed to track registration referral:', conversionError);
+      } catch (conversionError) {
+        console.error('Registration referral tracking failed:', conversionError);
+      }
+    }
 
     return new Response(
       JSON.stringify({

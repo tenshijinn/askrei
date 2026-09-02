@@ -31,6 +31,7 @@ import { AccountAccordionCard } from '@/components/rei/AccountAccordionCard';
 
 import { ConnectReiCard } from '@/components/rei/ConnectReiCard';
 import { ReiDiamondShareCard } from '@/components/rei/ReiDiamondShareCard';
+import { getReferralAttribution } from '@/lib/referralAttribution';
 
 interface TwitterUser { x_user_id: string; handle: string; display_name: string; profile_image_url?: string; verified: boolean; }
 interface VerificationStatus { bluechip_verified: boolean; verification_type: string | null; }
@@ -228,7 +229,8 @@ export default function Rei() {
       const evmToSubmit = isEditMode
         ? (registrationData?.evm_wallet_address || null)
         : (evmConnected && evmAddress ? evmAddress : null);
-      const { data, error } = await supabase.functions.invoke('submit-rei-registration', { body: { x_user_id: twitterUser.x_user_id, handle: twitterUser.handle, display_name: twitterUser.display_name, profile_image_url: twitterUser.profile_image_url, verified: twitterUser.verified, wallet_address: walletAddress, evm_wallet_address: evmToSubmit, file_path: filePath, portfolio_url: portfolioUrl || null, role_tags: selectedRoles, consent: true, reanalyze: useExistingTranscript } });
+      const referral = getReferralAttribution();
+      const { data, error } = await supabase.functions.invoke('submit-rei-registration', { body: { x_user_id: twitterUser.x_user_id, handle: twitterUser.handle, display_name: twitterUser.display_name, profile_image_url: twitterUser.profile_image_url, verified: twitterUser.verified, wallet_address: walletAddress, evm_wallet_address: evmToSubmit, file_path: filePath, portfolio_url: portfolioUrl || null, role_tags: selectedRoles, consent: true, reanalyze: useExistingTranscript, referral_code: referral.referralCode, referral_session_id: referral.referralSessionId } });
       clearStageTimers();
       if (error) throw error;
       if (data?.error) throw new Error(data.error);

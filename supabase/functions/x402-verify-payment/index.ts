@@ -94,6 +94,7 @@ serve(async (req) => {
             paymentAmount: paymentRef.amount,
             sessionId: referralSessionId,
             referralCode: referralCode,
+            dedupeKey: `payment:${reference}`,
           },
         });
 
