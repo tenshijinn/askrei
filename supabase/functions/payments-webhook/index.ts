@@ -104,14 +104,14 @@ async function handleCheckoutCompleted(session: any, env: StripeEnv) {
     );
   if (csErr) console.error("Failed to upsert campaign_subscription:", csErr);
 
-  if (md.referral_code && md.wallet_address) {
+  if (md.referral_code) {
     try {
       const { error: conversionError } = await supabase.functions.invoke("track-referral-conversion", {
         body: {
           conversionType: "payment",
           referralCode: md.referral_code,
           sessionId: md.referral_session_id || undefined,
-          convertedWallet: md.wallet_address,
+          convertedWallet: md.wallet_address || `stripe:${session.id}`,
           paymentAmount: typeof session.amount_total === "number" ? session.amount_total / 100 : undefined,
           dedupeKey: `stripe:${session.id}`,
         },
