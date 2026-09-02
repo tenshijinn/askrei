@@ -1,7 +1,10 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
 import { Check } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { getReferralAttribution } from '@/lib/referralAttribution';
 import iconDIY from '@/assets/pricing-diy.png';
 import iconAutomated from '@/assets/pricing-automated.png';
+
 
 interface PricingPoint {
   price: string;

@@ -28,7 +28,7 @@ serve(async (req) => {
   }
 
   try {
-    const { referralCode, sourceUrl, targetPath } = await req.json();
+    const { referralCode, sourceUrl, targetPath, sessionId: clientSessionId } = await req.json();
 
     if (!referralCode) {
       throw new Error('referralCode is required');
@@ -71,7 +71,11 @@ serve(async (req) => {
     
     const ipHash = await hashString(clientIP);
     const userAgentHash = await hashString(userAgent);
-    const sessionId = generateSessionId();
+    const sessionId =
+      typeof clientSessionId === "string" && clientSessionId.length > 0 && clientSessionId.length <= 64
+        ? clientSessionId
+        : generateSessionId();
+
     const today = new Date().toISOString().split('T')[0];
 
     // Rate limiting: Check clicks in last hour
