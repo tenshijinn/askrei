@@ -1,9 +1,5 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.75.1";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { createClient } from "npm:@supabase/supabase-js@2.75.1";
+import { corsHeaders } from "npm:@supabase/supabase-js@2.75.1/cors";
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -24,10 +20,10 @@ Deno.serve(async (req) => {
       return json({ error: "walletAddress or xUserId required" }, 400);
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !serviceRoleKey) return json({ error: "Backend configuration missing" }, 500);
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     // Resolve every referral code owned by this user (wallet or X identity).
     const filters: string[] = [];
