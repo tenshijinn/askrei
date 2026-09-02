@@ -95,7 +95,7 @@ serve(async (req) => {
             sessionId: referralSessionId,
             referralCode: referralCode,
             dedupeKey: `payment:${reference}`,
-
+          },
         });
 
         if (conversionError) {
