@@ -10,6 +10,10 @@ export interface BlogPost {
   image?: string;
 }
 
+import referToEarnBanner from "@/assets/articles/refer-to-earn.png.asset.json";
+import jupiterBanner from "@/assets/articles/jupiter-cac.png.asset.json";
+import ansemBanner from "@/assets/articles/ansem.png.asset.json";
+
 export const blogPosts: BlogPost[] = [
   {
     slug: "refer-to-earn-with-rei-ai",
@@ -21,6 +25,7 @@ export const blogPosts: BlogPost[] = [
     file: "/blog/refer-to-earn.html",
     description:
       "How Rei AI's refer-to-earn works: points for referred Rei's Diamond members, a monthly community pot leader board, and 50% commission on project packages.",
+    image: referToEarnBanner.url,
   },
   {
 
@@ -33,6 +38,7 @@ export const blogPosts: BlogPost[] = [
     file: "/blog/ansem-case-study.html",
     description:
       "How $ANSEM used wallet scoring and staggered, recurring airdrops to hold a ~$100M+ market cap while still distributing tokens.",
+    image: ansemBanner.url,
   },
   {
     slug: "give-it-away-watch-it-leave",
@@ -44,7 +50,9 @@ export const blogPosts: BlogPost[] = [
     file: "/blog/holder-retention.html",
     description:
       "Six DeFi projects compared: token-funded airdrops versus cash-funded growth, and whether the original recipients actually stayed.",
+    image: jupiterBanner.url,
   },
 ];
+
 
 export const getPost = (slug?: string) => blogPosts.find((p) => p.slug === slug);
