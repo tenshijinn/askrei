@@ -47,14 +47,19 @@ Deno.serve(async (req) => {
     const now = new Date();
     const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
 
-    let allTimeReferrals = 0;
-    let referralsThisMonth = 0;
     let allTimeConversions = 0;
     let conversionsThisMonth = 0;
     let clicksThisMonth = 0;
     let allTimeClicks = 0;
     let pointsThisMonth = 0;
     let pointsAllTime = 0;
+
+    // Per-type conversion counts (registration | payment | booking), month + all time.
+    const byType: Record<string, { allTime: number; month: number }> = {
+      registration: { allTime: 0, month: 0 },
+      payment: { allTime: 0, month: 0 },
+      booking: { allTime: 0, month: 0 },
+    };
 
     if (codes.length > 0) {
       const { data: conversions, error: convErr } = await supabase
@@ -72,9 +77,10 @@ Deno.serve(async (req) => {
           conversionsThisMonth++;
           pointsThisMonth += points;
         }
-        if (c.conversion_type === "registration") {
-          allTimeReferrals++;
-          if (inMonth) referralsThisMonth++;
+        const bucket = byType[c.conversion_type];
+        if (bucket) {
+          bucket.allTime++;
+          if (inMonth) bucket.month++;
         }
       }
 
@@ -95,14 +101,21 @@ Deno.serve(async (req) => {
     return json({
       monthStart,
       codes,
-      allTimeReferrals,
-      referralsThisMonth,
+      // "Referrals" = registration conversions (kept for existing consumers).
+      allTimeReferrals: byType.registration.allTime,
+      referralsThisMonth: byType.registration.month,
       pointsThisMonth,
       pointsAllTime,
       allTimeConversions,
       conversionsThisMonth,
       allTimeClicks,
       clicksThisMonth,
+      registrationsAllTime: byType.registration.allTime,
+      registrationsThisMonth: byType.registration.month,
+      paymentsAllTime: byType.payment.allTime,
+      paymentsThisMonth: byType.payment.month,
+      bookingsAllTime: byType.booking.allTime,
+      bookingsThisMonth: byType.booking.month,
     });
   } catch (e) {
     console.error("referral-stats error:", e);
