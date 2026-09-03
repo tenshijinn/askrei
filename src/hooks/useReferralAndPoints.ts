@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -116,10 +116,13 @@ export function useReferralAndPoints({ registrationWallet, connectedWallet, xUse
 
   // Realtime points updates keep both surfaces in sync.
   const [isAnimating, setIsAnimating] = useState(false);
+  // Unique per hook instance — two components sharing one channel name makes
+  // supabase-js throw ("cannot add postgres_changes callbacks after subscribe").
+  const instanceId = useId();
   useEffect(() => {
     if (!primaryWallet) return;
     const channel = supabase
-      .channel(`points-${primaryWallet}`)
+      .channel(`points-${primaryWallet}-${instanceId}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'user_points', filter: `wallet_address=eq.${primaryWallet}` }, () => {
         setIsAnimating(true);
         queryClient.invalidateQueries({ queryKey: ['user-points-aggregated', xUserId, primaryWallet] });
@@ -128,7 +131,7 @@ export function useReferralAndPoints({ registrationWallet, connectedWallet, xUse
       })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [primaryWallet, xUserId, queryClient]);
+  }, [primaryWallet, xUserId, queryClient, instanceId]);
 
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
