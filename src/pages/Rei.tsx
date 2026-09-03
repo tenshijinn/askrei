@@ -556,7 +556,7 @@ export default function Rei() {
                  >
                    <ReferralStatsCard
                      registrationWallet={registrationData?.wallet_address}
-                     connectedWallet={effectiveWallet || publicKey?.toString()}
+                     connectedWallet={publicKey?.toString()}
                      xUserId={twitterUser?.x_user_id}
                    />
                  </AccountAccordionCard>
