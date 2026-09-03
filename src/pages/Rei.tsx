@@ -555,7 +555,8 @@ export default function Rei() {
                    onToggle={() => setOpenCard(openCard === 'referrals' ? null : 'referrals')}
                  >
                    <ReferralStatsCard
-                     walletAddress={effectiveWallet || registrationData?.wallet_address}
+                     registrationWallet={registrationData?.wallet_address}
+                     connectedWallet={effectiveWallet || publicKey?.toString()}
                      xUserId={twitterUser?.x_user_id}
                    />
                  </AccountAccordionCard>
