@@ -74,7 +74,7 @@ export default function Rei() {
   const [whitelistSubmitted, setWhitelistSubmitted] = useState(false);
   const [registrationData, setRegistrationData] = useState<any>(null);
   const [shareOpen, setShareOpen] = useState(false);
-  const [openCard, setOpenCard] = useState<'diamond' | 'referrals' | 'promotions' | null>('diamond');
+  const [openCard, setOpenCard] = useState<'diamond' | 'referrals' | 'leaderboard' | 'promotions' | null>('diamond');
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [isLoadingRegistration, setIsLoadingRegistration] = useState(false);
