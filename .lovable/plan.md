@@ -18,7 +18,7 @@ Adds a monthly, self-resetting top-10 referrer leaderboard using the pot split f
 ## Technical plan
 
 **Database (migration)**
-- `referral_leaderboard_snapshots`: `id`, `period_month` (date, first day of month), `rank`, `wallet_address`, `x_user_id`, `referral_code`, `points`, `conversions`, `pot_share_pct`, `created_at`; unique on `(period_month, rank)`. GRANT `SELECT` to `anon`/`authenticated` (public board), `ALL` to `service_role`; RLS on with a public read policy and no client write policy.
+- `referral_leaderboard_snapshots`: `id`, `period_month` (date, first day of month), `rank`, `wallet_address`, `x_user_id`, `x_handle`, `referral_code`, `points`, `conversions`, `pot_share_pct`, `created_at`; unique on `(period_month, rank)`. GRANT `SELECT` to `anon`/`authenticated` (public board), `ALL` to `service_role`; RLS on with a public read policy and no client write policy.
 - `referral_leaderboard(p_month date)` security-definer SQL function: aggregates `referral_conversions.points_awarded` joined to `referral_codes` for the month, groups by promoter wallet, orders by points desc then earliest conversion as tiebreak, returns top 50 with rank. Used for the live board.
 
 **Edge functions**
