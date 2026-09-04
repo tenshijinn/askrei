@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import NotFound from "./NotFound";
 import { getPost } from "./blogPosts";
 import FeaturedImagePlaceholder from "@/components/FeaturedImagePlaceholder";
+import { ReferralLeaderboardCard } from "@/components/rei/ReferralLeaderboardCard";
 
 const BlogPost = () => {
   const { slug } = useParams();
@@ -60,6 +61,12 @@ const BlogPost = () => {
           style={{ height }}
           scrolling="no"
         />
+        {slug === "refer-to-earn-with-rei-ai" && (
+          <section className="mt-6">
+            <h2 className="mb-3 text-lg font-medium">This month's top 10 referrers</h2>
+            <ReferralLeaderboardCard compact />
+          </section>
+        )}
         <div className="mt-10 border-t border-border pt-8">
           <Link
             to="/articles"
