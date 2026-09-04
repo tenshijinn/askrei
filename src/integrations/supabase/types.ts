@@ -1666,6 +1666,13 @@ export type Database = {
       }
     }
     Functions: {
+      close_referral_month: {
+        Args: { p_month?: string }
+        Returns: {
+          period_month: string
+          winners: number
+        }[]
+      }
       generate_campaign_short_code: { Args: never; Returns: string }
       get_campaign_click_stats: {
         Args: { p_campaign_ids: string[] }
