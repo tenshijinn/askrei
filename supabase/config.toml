@@ -51,3 +51,9 @@ verify_jwt = false
 [functions.earn-agent]
 verify_jwt = false
 
+[functions.referral-leaderboard]
+verify_jwt = false
+
+[functions.close-referral-month]
+verify_jwt = false
+

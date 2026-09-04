@@ -8,6 +8,20 @@
       "when": 1788380148001,
       "tag": "0000_referral_conversion_booking_and_idempotency",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788540539268,
+      "tag": "0001_referral_monthly_leaderboard",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788540732704,
+      "tag": "0002_close_referral_month_job",
+      "breakpoints": true
     }
   ]
 }

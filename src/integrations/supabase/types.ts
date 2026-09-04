@@ -877,6 +877,48 @@ export type Database = {
           },
         ]
       }
+      referral_leaderboard_snapshots: {
+        Row: {
+          conversions: number
+          created_at: string
+          id: string
+          period_month: string
+          points: number
+          pot_share_pct: number
+          rank: number
+          referral_code: string | null
+          wallet_address: string
+          x_handle: string | null
+          x_user_id: string | null
+        }
+        Insert: {
+          conversions?: number
+          created_at?: string
+          id?: string
+          period_month: string
+          points?: number
+          pot_share_pct?: number
+          rank: number
+          referral_code?: string | null
+          wallet_address: string
+          x_handle?: string | null
+          x_user_id?: string | null
+        }
+        Update: {
+          conversions?: number
+          created_at?: string
+          id?: string
+          period_month?: string
+          points?: number
+          pot_share_pct?: number
+          rank?: number
+          referral_code?: string | null
+          wallet_address?: string
+          x_handle?: string | null
+          x_user_id?: string | null
+        }
+        Relationships: []
+      }
       rei_registry: {
         Row: {
           analysis_summary: string | null
@@ -1624,6 +1666,13 @@ export type Database = {
       }
     }
     Functions: {
+      close_referral_month: {
+        Args: { p_month?: string }
+        Returns: {
+          period_month: string
+          winners: number
+        }[]
+      }
       generate_campaign_short_code: { Args: never; Returns: string }
       get_campaign_click_stats: {
         Args: { p_campaign_ids: string[] }
@@ -1703,6 +1752,20 @@ export type Database = {
           successes_24h: number
         }[]
       }
+      referral_leaderboard: {
+        Args: { p_month?: string }
+        Returns: {
+          conversions: number
+          points: number
+          pot_share_pct: number
+          rank: number
+          referral_code: string
+          wallet_address: string
+          x_handle: string
+          x_user_id: string
+        }[]
+      }
+      referral_pot_share_pct: { Args: { p_rank: number }; Returns: number }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

@@ -28,6 +28,7 @@ import { walkthroughCopy } from '@/components/joinrei/walkthroughContent';
 import { BountyPromotions } from '@/components/rei/BountyPromotions';
 import { AccountAccordionCard } from '@/components/rei/AccountAccordionCard';
 import { ReferralStatsCard } from '@/components/rei/ReferralStatsCard';
+import { ReferralLeaderboardCard } from '@/components/rei/ReferralLeaderboardCard';
 
 
 import { ConnectReiCard } from '@/components/rei/ConnectReiCard';
@@ -73,7 +74,7 @@ export default function Rei() {
   const [whitelistSubmitted, setWhitelistSubmitted] = useState(false);
   const [registrationData, setRegistrationData] = useState<any>(null);
   const [shareOpen, setShareOpen] = useState(false);
-  const [openCard, setOpenCard] = useState<'diamond' | 'referrals' | 'promotions' | null>('diamond');
+  const [openCard, setOpenCard] = useState<'diamond' | 'referrals' | 'leaderboard' | 'promotions' | null>('diamond');
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [isLoadingRegistration, setIsLoadingRegistration] = useState(false);
@@ -555,6 +556,18 @@ export default function Rei() {
                    onToggle={() => setOpenCard(openCard === 'referrals' ? null : 'referrals')}
                  >
                    <ReferralStatsCard
+                     registrationWallet={registrationData?.wallet_address}
+                     connectedWallet={publicKey?.toString()}
+                     xUserId={twitterUser?.x_user_id}
+                   />
+                 </AccountAccordionCard>
+                 <AccountAccordionCard
+                   title="Monthly Leaderboard"
+                   subtitle="Top 10 referrers this month share the community pot."
+                   open={openCard === 'leaderboard'}
+                   onToggle={() => setOpenCard(openCard === 'leaderboard' ? null : 'leaderboard')}
+                 >
+                   <ReferralLeaderboardCard
                      registrationWallet={registrationData?.wallet_address}
                      connectedWallet={publicKey?.toString()}
                      xUserId={twitterUser?.x_user_id}
