@@ -24,6 +24,12 @@ import {
 import PostToXButton from './PostToXButton';
 import ShareImage from './ShareImage';
 
+type NloStrategy = 'ultra_safe' | 'capital_safe';
+const NLO_STRATEGIES: Record<NloStrategy, string> = {
+  ultra_safe: 'USDC · Ultra Safe',
+  capital_safe: 'USDC · Capital Safe',
+};
+
 const FN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/earn-market`;
 const FN_HEADERS = {
   'Content-Type': 'application/json',
@@ -259,7 +265,11 @@ export default function BountyDefiCard() {
   const yieldValue = isTokens
     ? 'Buy & hold'
     : `${apyVal % 1 === 0 ? apyVal.toFixed(0) : apyVal.toFixed(2)}%`;
-  const yieldLabel = isTokens ? 'no yield' : platformCfg.yieldNote;
+  const yieldLabel = isTokens
+    ? 'no yield'
+    : platform === 'NLO by L1X'
+      ? `live top ${nloStrategy === 'capital_safe' ? 'Capital Safe' : 'Ultra Safe'} pool APR`
+      : platformCfg.yieldNote;
 
   const syncedLabel = (() => {
     if (!syncedAt) return 'live prices';
