@@ -425,35 +425,26 @@ Deno.serve(async (req) => {
       return json({ tokens: tokens.length, warmed: ok, failed });
     }
 
-    // NLO by L1X yield: sampled once per day from nlo.finance/live ("Verified
-    // accuracy" card) and returned as a rolling 30-day average.
+    // NLO by L1X: live top pool APR on the Ultra-Safe strategy, from NLO's
+    // structured portal endpoint (same source as the nlo.finance homepage).
     if (action === 'nlo') {
       const hit = memGet('nlo');
       if (hit) return json(hit);
-
-      const today = new Date().toISOString().slice(0, 10);
-      const row = await dbGet('nlo:samples');
-      const store = (row?.data as { samples?: Array<{ date: string; apr: number }> } | undefined) ?? {};
-      let samples = (store.samples ?? []).filter((s) => Number.isFinite(s.apr));
-
-      if (!samples.some((s) => s.date === today)) {
-        const live = await scrapeNloYield();
-        if (live !== null) {
-          samples = [...samples.filter((s) => s.date !== today), { date: today, apr: live }];
-          const cutoff = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
-          samples = samples.filter((s) => s.date >= cutoff).sort((a, b) => a.date.localeCompare(b.date));
-          await dbPut('nlo:samples', { samples });
-        }
-      }
-
-      const apr = samples.length
-        ? samples.reduce((a, s) => a + s.apr, 0) / samples.length
-        : null;
+      const res = await fetch('https://nlo.finance/api/v2/portal/strategy-top-apr?strategy=ultra_safe', {
+        headers: { 'User-Agent': 'rei-earn', Accept: 'application/json' },
+      });
+      if (!res.ok) return json({ apr: null, error: `nlo HTTP ${res.status}` }, 502);
+      const body = await res.json();
+      const d = body?.data ?? {};
+      const apr = Number(d.top_apr_pct);
+      const top = (d.pools ?? []).find((p: { reported_apr_pct?: number }) => p.reported_apr_pct === d.top_apr_pct);
       const payload = {
-        apr,
-        latest: samples.length ? samples[samples.length - 1].apr : null,
-        samples: samples.length,
-        windowDays: 30,
+        apr: Number.isFinite(apr) && apr > 0 ? apr : null,
+        strategy: 'ultra_safe',
+        pair: d.top_pair ?? null,
+        network: top?.network ?? null,
+        dex: top?.dex ?? null,
+        refreshedAt: top?.refreshed_at ?? null,
         syncedAt: new Date().toISOString(),
       };
       return json(memPut('nlo', payload));
