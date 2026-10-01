@@ -384,26 +384,36 @@ Deno.serve(async (req) => {
       return json({ tokens: tokens.length, warmed: ok, failed });
     }
 
-    // NLO by L1X: live top pool APR on the Ultra-Safe strategy, from NLO's
-    // structured portal endpoint (same source as the nlo.finance homepage).
+    // NLO by L1X: live top pool APR per strategy (ultra_safe, capital_safe),
+    // from NLO's structured portal endpoint (same source as nlo.finance).
     if (action === 'nlo') {
       const hit = memGet('nlo');
       if (hit) return json(hit);
-      const res = await fetch('https://nlo.finance/api/v2/portal/strategy-top-apr?strategy=ultra_safe', {
-        headers: { 'User-Agent': 'rei-earn', Accept: 'application/json' },
-      });
-      if (!res.ok) return json({ apr: null, error: `nlo HTTP ${res.status}` }, 502);
-      const body = await res.json();
-      const d = body?.data ?? {};
-      const apr = Number(d.top_apr_pct);
-      const top = (d.pools ?? []).find((p: { reported_apr_pct?: number }) => p.reported_apr_pct === d.top_apr_pct);
+      const fetchStrategy = async (strategy: string) => {
+        const res = await fetch(`https://nlo.finance/api/v2/portal/strategy-top-apr?strategy=${strategy}`, {
+          headers: { 'User-Agent': 'rei-earn', Accept: 'application/json' },
+        });
+        if (!res.ok) throw new Error(`nlo ${strategy} HTTP ${res.status}`);
+        const d = (await res.json())?.data ?? {};
+        const apr = Number(d.top_apr_pct);
+        const top = (d.pools ?? []).find((p: { reported_apr_pct?: number }) => p.reported_apr_pct === d.top_apr_pct);
+        return {
+          apr: Number.isFinite(apr) && apr > 0 ? apr : null,
+          pair: d.top_pair ?? null,
+          network: top?.network ?? null,
+          dex: top?.dex ?? null,
+          refreshedAt: top?.refreshed_at ?? null,
+        };
+      };
+      const names = ['ultra_safe', 'capital_safe'] as const;
+      const results = await Promise.allSettled(names.map(fetchStrategy));
+      const strategies: Record<string, unknown> = {};
+      results.forEach((r, i) => { if (r.status === 'fulfilled') strategies[names[i]] = r.value; });
+      if (!Object.keys(strategies).length) return json({ apr: null, error: 'nlo unavailable' }, 502);
+      const ultra = strategies.ultra_safe as { apr: number | null } | undefined;
       const payload = {
-        apr: Number.isFinite(apr) && apr > 0 ? apr : null,
-        strategy: 'ultra_safe',
-        pair: d.top_pair ?? null,
-        network: top?.network ?? null,
-        dex: top?.dex ?? null,
-        refreshedAt: top?.refreshed_at ?? null,
+        apr: ultra?.apr ?? null, // back-compat: Ultra Safe
+        strategies,
         syncedAt: new Date().toISOString(),
       };
       return json(memPut('nlo', payload));

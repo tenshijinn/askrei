@@ -24,6 +24,12 @@ import {
 import PostToXButton from './PostToXButton';
 import ShareImage from './ShareImage';
 
+type NloStrategy = 'ultra_safe' | 'capital_safe';
+const NLO_STRATEGIES: Record<NloStrategy, string> = {
+  ultra_safe: 'USDC · Ultra Safe',
+  capital_safe: 'USDC · Capital Safe',
+};
+
 const FN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/earn-market`;
 const FN_HEADERS = {
   'Content-Type': 'application/json',
@@ -67,7 +73,8 @@ export default function BountyDefiCard() {
   const [ddOpen, setDdOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [syncedAt, setSyncedAt] = useState<string | null>(null);
-  const [nloApr, setNloApr] = useState<number | null>(null);
+  const [nloApr, setNloApr] = useState<Partial<Record<NloStrategy, number>> | null>(null);
+  const [nloStrategy, setNloStrategy] = useState<NloStrategy>('ultra_safe');
   const ddRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const shareRef = useRef<HTMLDivElement>(null);
@@ -132,7 +139,12 @@ export default function BountyDefiCard() {
       })
       .catch(() => {/* seed list stays */});
     callFn({ action: 'nlo' })
-      .then((data) => { if (alive && Number.isFinite(data?.apr)) setNloApr(Number(data.apr)); })
+      .then((data) => {
+        if (!alive) return;
+        const s = data?.strategies ?? {};
+        const pick = (k: NloStrategy) => (Number.isFinite(s[k]?.apr) ? Number(s[k].apr) : undefined);
+        setNloApr({ ultra_safe: pick('ultra_safe') ?? (Number.isFinite(data?.apr) ? Number(data.apr) : undefined), capital_safe: pick('capital_safe') });
+      })
       .catch(() => {});
     return () => { alive = false; };
   }, []);
@@ -188,7 +200,8 @@ export default function BountyDefiCard() {
   const isTokens = mode === 'Tokens';
   const platformCfg = PLATFORMS[platform];
   const rawApy = platformCfg.apy[asset] ?? 0;
-  const apyVal = isTokens ? 0 : (platform === 'NLO by L1X' && nloApr ? nloApr : rawApy);
+  const nloLive = nloApr?.[nloStrategy];
+  const apyVal = isTokens ? 0 : (platform === 'NLO by L1X' && nloLive ? nloLive : rawApy);
 
   const series: AssetSeries | null = isTokens
     ? (token?.data ? assets[token.data] : tokenSeries[token?.sym] ?? null)
@@ -252,7 +265,11 @@ export default function BountyDefiCard() {
   const yieldValue = isTokens
     ? 'Buy & hold'
     : `${apyVal % 1 === 0 ? apyVal.toFixed(0) : apyVal.toFixed(2)}%`;
-  const yieldLabel = isTokens ? 'no yield' : platformCfg.yieldNote;
+  const yieldLabel = isTokens
+    ? 'no yield'
+    : platform === 'NLO by L1X'
+      ? `live top ${nloStrategy === 'capital_safe' ? 'Capital Safe' : 'Ultra Safe'} pool APR`
+      : platformCfg.yieldNote;
 
   const syncedLabel = (() => {
     if (!syncedAt) return 'live prices';
@@ -423,6 +440,17 @@ export default function BountyDefiCard() {
               </div>
               <div className="field">
                 <label>Asset</label>
+                {platform === 'NLO by L1X' ? (
+                  <select
+                    className="w-asset"
+                    value={nloStrategy}
+                    onChange={(e) => setNloStrategy(e.target.value as NloStrategy)}
+                  >
+                    {(Object.keys(NLO_STRATEGIES) as NloStrategy[]).map((k) => (
+                      <option key={k} value={k}>{NLO_STRATEGIES[k]}</option>
+                    ))}
+                  </select>
+                ) : (
                 <select
                   className="w-asset"
                   value={platformAssets.includes(asset) ? asset : platformAssets[0]}
@@ -433,6 +461,7 @@ export default function BountyDefiCard() {
                     <option key={a} value={a}>{a}</option>
                   ))}
                 </select>
+                )}
               </div>
             </>
           )}
