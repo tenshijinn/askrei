@@ -152,13 +152,38 @@ export function resolveWindow(periodVal: string, a: AssetSeries): [number, numbe
   return [Math.max(tge, L - N), L - 1];       // last N months, clamped to TGE
 }
 
-export function computeSeries(a: AssetSeries, apyPct: number, startIdx: number, endIdx: number, monthlyContribution: number) {
-  const r = (apyPct / 100) / 12;
+/** month key 'YYYY-MM' for series index gi */
+export function monthKey(a: AssetSeries, gi: number) {
+  const t = a.startYear * 12 + a.startMonth + gi;
+  return `${Math.floor(t / 12)}-${String((t % 12) + 1).padStart(2, '0')}`;
+}
+
+/**
+ * Per-month APY for a window: uses the recorded monthly average where known;
+ * months before the pool's recorded history use the earliest recorded value,
+ * gaps carry the previous month forward. Falls back to `fallback` with no history.
+ */
+export function monthlyApys(a: AssetSeries, startIdx: number, endIdx: number, fallback: number, hist?: Record<string, number>) {
+  const keys = hist ? Object.keys(hist).sort() : [];
+  const out: number[] = [];
+  if (!keys.length) { for (let gi = startIdx; gi <= endIdx; gi++) out.push(fallback); return out; }
+  let prev = hist![keys[0]];
+  for (let gi = startIdx; gi <= endIdx; gi++) {
+    const v = hist![monthKey(a, gi)];
+    if (Number.isFinite(v)) prev = v;
+    out.push(prev);
+  }
+  return out;
+}
+
+export function computeSeries(a: AssetSeries, apyPct: number | number[], startIdx: number, endIdx: number, monthlyContribution: number) {
   const n = endIdx - startIdx + 1;
   let qty = 0;
   const value: number[] = [], contrib: number[] = [];
   for (let i = 0; i < n; i++) {
     const gi = startIdx + i;
+    const apy = Array.isArray(apyPct) ? (apyPct[i] ?? 0) : apyPct;
+    const r = (apy / 100) / 12;
     qty = (qty + monthlyContribution / a.prices[gi]) * (1 + r);
     const mark = (gi === a.prices.length - 1) ? a.current : a.prices[gi];  // latest month at current price
     value.push(qty * mark);

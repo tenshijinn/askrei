@@ -425,11 +425,12 @@ Deno.serve(async (req) => {
       const hit = memGet('yields');
       if (hit) return json(hit);
       const row = await dbGet('defi_yields');
-      if (row && Date.now() - new Date(row.updated_at).getTime() < 6 * 3600e3) return json(memPut('yields', row.data));
+      const rowHasHistory = !!(row?.data as { history?: unknown } | undefined)?.history;
+      if (row && rowHasHistory && Date.now() - new Date(row.updated_at).getTime() < 6 * 3600e3) return json(memPut('yields', row.data));
       try {
         const res = await fetch('https://yields.llama.fi/pools', { headers: { 'User-Agent': 'rei-earn' } });
         if (!res.ok) throw new Error(`llama HTTP ${res.status}`);
-        const pools = ((await res.json())?.data ?? []) as Array<{ chain: string; project: string; symbol: string; apy: number | null; tvlUsd: number }>;
+        const pools = ((await res.json())?.data ?? []) as Array<{ pool: string; chain: string; project: string; symbol: string; apy: number | null; tvlUsd: number }>;
         const map: Record<string, { project: string; assets: Record<string, string[]> }> = {
           Jito: { project: 'jito-liquid-staking', assets: { SOL: ['JITOSOL'] } },
           Marinade: { project: 'marinade-liquid-staking', assets: { SOL: ['MSOL'] } },
@@ -437,16 +438,41 @@ Deno.serve(async (req) => {
           marginfi: { project: 'project-0', assets: { USDC: ['USDC'], USDT: ['USDT'], SOL: ['SOL'], BTC: ['WBTC', 'CBBTC'], ETH: ['ETH', 'WETH'] } },
         };
         const yields: Record<string, Record<string, number>> = {};
+        const poolIds: Array<[string, string, string]> = [];
         for (const [plat, cfg] of Object.entries(map)) {
           for (const [asset, syms] of Object.entries(cfg.assets)) {
             const best = pools
               .filter((p) => p.chain === 'Solana' && p.project === cfg.project && syms.includes(p.symbol) && Number.isFinite(p.apy))
               .sort((a, b) => b.tvlUsd - a.tvlUsd)[0];
-            if (best) (yields[plat] ??= {})[asset] = Math.round(Number(best.apy) * 100) / 100;
+            if (best) {
+              (yields[plat] ??= {})[asset] = Math.round(Number(best.apy) * 100) / 100;
+              poolIds.push([plat, asset, best.pool]);
+            }
           }
         }
         if (!Object.keys(yields).length) throw new Error('no pools matched');
-        const payload = { yields, source: 'defillama', syncedAt: new Date().toISOString() };
+        // historical monthly average APY per pool: { plat: { asset: { 'YYYY-MM': apy } } }
+        const history: Record<string, Record<string, Record<string, number>>> = {};
+        for (const [plat, asset, id] of poolIds) {
+          try {
+            const r = await fetch(`https://yields.llama.fi/chart/${id}`, { headers: { 'User-Agent': 'rei-earn' } });
+            if (!r.ok) continue;
+            const pts = ((await r.json())?.data ?? []) as Array<{ timestamp: string; apy: number | null }>;
+            const acc = new Map<string, { s: number; n: number }>();
+            for (const p of pts) {
+              if (!Number.isFinite(p.apy)) continue;
+              const k = p.timestamp.slice(0, 7);
+              const a = acc.get(k) ?? { s: 0, n: 0 };
+              a.s += Number(p.apy); a.n++;
+              acc.set(k, a);
+            }
+            const months: Record<string, number> = {};
+            for (const [k, a] of acc) months[k] = Math.round((a.s / a.n) * 100) / 100;
+            (history[plat] ??= {})[asset] = months;
+          } catch (_) { /* skip pool */ }
+          await new Promise((res) => setTimeout(res, 250));
+        }
+        const payload = { yields, history, source: 'defillama', syncedAt: new Date().toISOString() };
         await dbPut('defi_yields', payload);
         return json(memPut('yields', payload));
       } catch (e) {
