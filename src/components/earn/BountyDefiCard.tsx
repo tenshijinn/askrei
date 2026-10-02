@@ -601,7 +601,7 @@ export default function BountyDefiCard() {
         <a className="earn-btn primary" href="https://rei.chat" target="_blank" rel="noopener noreferrer">
           Find 1,000+ bounties on Rei →
         </a>
-        {!isTokens && platform === 'NLO by L1X' && platformUrl(platform) && (
+        {!isTokens && (platform === 'NLO by L1X' || platform === 'Jito') && platformUrl(platform) && (
           <a className="earn-btn ghost" href={platformUrl(platform)} target="_blank" rel="noopener noreferrer">
             Stake Bounty Earnings on {platformLabel(platform)} for{' '}
             <span className="apy">{apyVal % 1 === 0 ? apyVal.toFixed(0) : apyVal.toFixed(2)}% APY</span> ↗
