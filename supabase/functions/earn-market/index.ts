@@ -419,6 +419,43 @@ Deno.serve(async (req) => {
       return json(memPut('nlo', payload));
     }
 
+    // Live DeFi yields (DefiLlama yields API), cached 1h in memory + 6h in DB.
+    // Picks the highest-TVL Solana pool per platform/asset.
+    if (action === 'yields') {
+      const hit = memGet('yields');
+      if (hit) return json(hit);
+      const row = await dbGet('defi_yields');
+      if (row && Date.now() - new Date(row.updated_at).getTime() < 6 * 3600e3) return json(memPut('yields', row.data));
+      try {
+        const res = await fetch('https://yields.llama.fi/pools', { headers: { 'User-Agent': 'rei-earn' } });
+        if (!res.ok) throw new Error(`llama HTTP ${res.status}`);
+        const pools = ((await res.json())?.data ?? []) as Array<{ chain: string; project: string; symbol: string; apy: number | null; tvlUsd: number }>;
+        const map: Record<string, { project: string; assets: Record<string, string[]> }> = {
+          Jito: { project: 'jito-liquid-staking', assets: { SOL: ['JITOSOL'] } },
+          Marinade: { project: 'marinade-liquid-staking', assets: { SOL: ['MSOL'] } },
+          Kamino: { project: 'kamino-lend', assets: { USDC: ['USDC'], USDT: ['USDT'], SOL: ['SOL'], BTC: ['CBBTC', 'WBTC'], ETH: ['ETH', 'WETH'] } },
+          marginfi: { project: 'project-0', assets: { USDC: ['USDC'], USDT: ['USDT'], SOL: ['SOL'], BTC: ['WBTC', 'CBBTC'], ETH: ['ETH', 'WETH'] } },
+        };
+        const yields: Record<string, Record<string, number>> = {};
+        for (const [plat, cfg] of Object.entries(map)) {
+          for (const [asset, syms] of Object.entries(cfg.assets)) {
+            const best = pools
+              .filter((p) => p.chain === 'Solana' && p.project === cfg.project && syms.includes(p.symbol) && Number.isFinite(p.apy))
+              .sort((a, b) => b.tvlUsd - a.tvlUsd)[0];
+            if (best) (yields[plat] ??= {})[asset] = Math.round(Number(best.apy) * 100) / 100;
+          }
+        }
+        if (!Object.keys(yields).length) throw new Error('no pools matched');
+        const payload = { yields, source: 'defillama', syncedAt: new Date().toISOString() };
+        await dbPut('defi_yields', payload);
+        return json(memPut('yields', payload));
+      } catch (e) {
+        console.warn('[earn-market] yields failed:', (e as Error).message);
+        if (row) return json(row.data);
+        return json({ yields: null, error: (e as Error).message }, 502);
+      }
+    }
+
 
     return json({ error: 'unknown action' }, 400);
   } catch (e) {

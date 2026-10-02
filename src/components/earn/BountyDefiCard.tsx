@@ -75,6 +75,7 @@ export default function BountyDefiCard() {
   const [syncedAt, setSyncedAt] = useState<string | null>(null);
   const [nloApr, setNloApr] = useState<Partial<Record<NloStrategy, number>> | null>(null);
   const [nloStrategy, setNloStrategy] = useState<NloStrategy>('ultra_safe');
+  const [liveYields, setLiveYields] = useState<Record<string, Record<string, number>> | null>(null);
   const ddRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const shareRef = useRef<HTMLDivElement>(null);
@@ -146,6 +147,9 @@ export default function BountyDefiCard() {
         setNloApr({ ultra_safe: pick('ultra_safe') ?? (Number.isFinite(data?.apr) ? Number(data.apr) : undefined), capital_safe: pick('capital_safe') });
       })
       .catch(() => {});
+    callFn({ action: 'yields' })
+      .then((data) => { if (alive && data?.yields) setLiveYields(data.yields); })
+      .catch(() => {/* baseline yields stay */});
     return () => { alive = false; };
   }, []);
 
@@ -199,7 +203,8 @@ export default function BountyDefiCard() {
   // ----- resolve the active series -----
   const isTokens = mode === 'Tokens';
   const platformCfg = PLATFORMS[platform];
-  const rawApy = platformCfg.apy[asset] ?? 0;
+  const liveYield = liveYields?.[platform]?.[asset];
+  const rawApy = liveYield ?? platformCfg.apy[asset] ?? 0;
   const nloLive = nloApr?.[nloStrategy];
   const apyVal = isTokens ? 0 : (platform === 'NLO by L1X' && nloLive ? nloLive : rawApy);
 
@@ -269,7 +274,9 @@ export default function BountyDefiCard() {
     ? 'no yield'
     : platform === 'NLO by L1X'
       ? `live top ${nloStrategy === 'capital_safe' ? 'Capital Safe' : 'Ultra Safe'} pool APR`
-      : platformCfg.yieldNote;
+      : liveYield != null
+        ? platformCfg.yieldNote.replace(/^avg/, 'live')
+        : platformCfg.yieldNote;
 
   const syncedLabel = (() => {
     if (!syncedAt) return 'live prices';
