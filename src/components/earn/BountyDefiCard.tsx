@@ -12,6 +12,7 @@ import {
   SEED_ASSETS,
   SEED_TOKENS,
   computeSeries,
+  monthlyApys,
   fmt,
   resolveWindow,
   smoothPath,
@@ -148,7 +149,11 @@ export default function BountyDefiCard() {
       })
       .catch(() => {});
     callFn({ action: 'yields' })
-      .then((data) => { if (alive && data?.yields) setLiveYields(data.yields); })
+      .then((data) => {
+        if (!alive) return;
+        if (data?.yields) setLiveYields(data.yields);
+        if (data?.history) setYieldHistory(data.history);
+      })
       .catch(() => {/* baseline yields stay */});
     return () => { alive = false; };
   }, []);
@@ -214,12 +219,15 @@ export default function BountyDefiCard() {
 
   const hasData = !!series?.prices?.length;
 
+  const hist = !isTokens && platform !== 'NLO by L1X' ? yieldHistory?.[platform]?.[asset] : undefined;
   const computed = useMemo(() => {
     if (!series?.prices?.length) return null;
     const [startIdx, endIdx] = resolveWindow(period, series);
-    const { value, contrib, invested } = computeSeries(series, apyVal, startIdx, endIdx, monthlyContribution);
-    return { value, contrib, invested, startIdx };
-  }, [series, period, apyVal, monthlyContribution]);
+    const rates = hist && Object.keys(hist).length ? monthlyApys(series, startIdx, endIdx, apyVal, hist) : null;
+    const { value, contrib, invested } = computeSeries(series, rates ?? apyVal, startIdx, endIdx, monthlyContribution);
+    const avgApy = rates ? rates.reduce((s, v) => s + v, 0) / rates.length : null;
+    return { value, contrib, invested, startIdx, avgApy };
+  }, [series, period, apyVal, monthlyContribution, hist]);
 
   // ----- header / title -----
   const platformLogo = PLOGO[platform];
@@ -267,16 +275,19 @@ export default function BountyDefiCard() {
   const down = finalVal - invested < 0;
 
   const cycleTag = period === 'cycle' && !series?.stable;
+  const shownApy = computed?.avgApy ?? apyVal;
   const yieldValue = isTokens
     ? 'Buy & hold'
-    : `${apyVal % 1 === 0 ? apyVal.toFixed(0) : apyVal.toFixed(2)}%`;
+    : `${shownApy % 1 === 0 ? shownApy.toFixed(0) : shownApy.toFixed(2)}%`;
   const yieldLabel = isTokens
     ? 'no yield'
     : platform === 'NLO by L1X'
       ? `live top ${nloStrategy === 'capital_safe' ? 'Capital Safe' : 'Ultra Safe'} pool APR`
-      : liveYield != null
-        ? platformCfg.yieldNote.replace(/^avg/, 'live')
-        : platformCfg.yieldNote;
+      : computed?.avgApy != null
+        ? `avg historical yield · now ${apyVal.toFixed(2)}%`
+        : liveYield != null
+          ? platformCfg.yieldNote.replace(/^avg/, 'live')
+          : platformCfg.yieldNote;
 
   const syncedLabel = (() => {
     if (!syncedAt) return 'live prices';
