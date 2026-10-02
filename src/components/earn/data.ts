@@ -208,6 +208,7 @@ export const PLATFORM_LABEL: Record<string, string> = {
 
 export const PLATFORM_URL: Record<string, string> = {
   'NLO by L1X': 'https://nlo.finance/portal/register?ref=4ZSVABJF',
+  'Jito': 'https://app.jtx.com/ref/Rei_AI',
 };
 
 export const PLATFORM_COLOR: Record<string, string> = {
