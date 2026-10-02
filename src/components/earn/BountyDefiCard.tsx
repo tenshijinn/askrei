@@ -77,6 +77,7 @@ export default function BountyDefiCard() {
   const [nloApr, setNloApr] = useState<Partial<Record<NloStrategy, number>> | null>(null);
   const [nloStrategy, setNloStrategy] = useState<NloStrategy>('ultra_safe');
   const [liveYields, setLiveYields] = useState<Record<string, Record<string, number>> | null>(null);
+  const [yieldHistory, setYieldHistory] = useState<Record<string, Record<string, Record<string, number>>> | null>(null);
   const ddRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const shareRef = useRef<HTMLDivElement>(null);
