@@ -211,6 +211,27 @@ export default function Diamond() {
               </div>
             </div>
 
+            <div style={{ borderTop: `1px solid ${C.lineSoft}`, paddingTop: 16 }}>
+              <div style={{ fontSize: 13, color: C.cream, lineHeight: 1.7 }}>
+                {p.diamond_score >= 75
+                  ? "Strong fit — a genuine holder worth rewarding with an airdrop or bounty."
+                  : p.diamond_score >= 50
+                    ? "Good fit — holder-like behaviour, reasonable to reward."
+                    : p.diamond_score >= 25
+                      ? "Mixed signals — review the datapoints below before rewarding."
+                      : "Poor fit — reward behaviour looks farmed or unproven."}
+              </div>
+              <div className="mt-1.5" style={{ fontSize: 11, color: C.dim }}>
+                {result.signals?.sybil_signal === null || result.signals?.sybil_signal === undefined
+                  ? "Sybil check: no similarity data available for this wallet."
+                  : result.signals.sybil_signal >= 0.5
+                    ? "Sybil check: flagged — this wallet looks similar to known farm clusters."
+                    : result.signals.sybil_signal >= 0.2
+                      ? "Sybil check: some similarity to clustered wallets — proceed with care."
+                      : "Sybil check: passed — no cluster-similarity patterns detected."}
+              </div>
+            </div>
+
             <ul className="space-y-1.5" style={{ fontSize: 12, color: C.muted }}>
               {(p.reasons ?? []).slice(0, 3).map((r: string) => (
                 <li key={r}>{r}</li>
