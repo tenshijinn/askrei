@@ -275,8 +275,32 @@ export default function Diamond() {
                 const good = s.invert ? 100 - sub.score : sub.score;
                 return (
                   <div key={s.key} className="flex items-center gap-4">
-                    <span className="w-24 shrink-0" style={{ fontSize: 12, color: C.cream }}>
-                      {s.label}
+                    <span
+                      className="group relative w-24 shrink-0 cursor-help outline-none"
+                      tabIndex={0}
+                      aria-label={`${s.label} explained`}
+                    >
+                      <span className="inline-block" style={{ fontSize: 12, color: C.cream, borderBottom: `1px dotted ${C.dim}` }}>
+                        {s.label}
+                      </span>
+                      <span
+                        role="tooltip"
+                        className="pointer-events-none absolute bottom-full left-0 z-20 mb-2 w-64 px-3.5 py-3 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
+                        style={{
+                          background: C.bubble,
+                          border: `1px solid ${C.line}`,
+                          borderRadius: 9,
+                          boxShadow: "0 12px 32px rgba(0,0,0,0.55)",
+                          fontSize: 11,
+                          lineHeight: 1.7,
+                          color: C.muted,
+                        }}
+                      >
+                        <span className="block" style={{ color: C.peach, letterSpacing: "0.12em", fontSize: 10, marginBottom: 5 }}>
+                          {s.label.toUpperCase()} · {s.weight}%
+                        </span>
+                        {s.tip}
+                      </span>
                     </span>
                     <span className="w-10 shrink-0 text-right" style={{ fontSize: 11, color: C.dim }}>
                       {s.weight}%
