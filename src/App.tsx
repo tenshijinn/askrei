@@ -19,6 +19,7 @@ import ButtonLab from "./pages/ButtonLab";
 import NotFound from "./pages/NotFound";
 import OAuthConsent from "./pages/OAuthConsent";
 import Login from "./pages/Login";
+import Diamond from "./pages/Diamond";
 import Ask from "./pages/Ask";
 import Earn from "./pages/Earn";
 import Blog from "./pages/Blog";
@@ -55,6 +56,7 @@ const App = () => (
               <Route path="/button-lab" element={<ButtonLab />} />
               <Route path="/login" element={<Login />} />
               <Route path="/ask" element={<Ask />} />
+              <Route path="/diamond" element={<Diamond />} />
               <Route path="/earn" element={<Earn />} />
               <Route path="/articles" element={<Blog />} />
               <Route path="/articles/:slug" element={<BlogPost />} />
