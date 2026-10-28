@@ -65,7 +65,7 @@ export default function Diamond() {
   const [remaining, setRemaining] = useState<number | null>(null);
 
   useEffect(() => {
-    document.title = "Rei's Diamond Scanner — Score any wallet";
+    document.title = "Rei's Diamond Hand Scanner — Score any wallet";
     supabase.functions.invoke("diamond-scan", { body: { peek: true } }).then(({ data }) => {
       if (data?.remaining !== undefined) setRemaining(data.remaining);
     });
@@ -104,7 +104,7 @@ export default function Diamond() {
       <header className="flex items-center justify-between px-6 py-5" style={{ borderBottom: `1px solid ${C.lineSoft}` }}>
         <Link to="/" className="flex items-center gap-2.5">
           <img src={reiLogo} alt="Rei" className="h-6 w-6" />
-          <span style={{ fontSize: 11, letterSpacing: "0.2em", color: C.muted }}>DIAMOND</span>
+          <span style={{ fontSize: 11, letterSpacing: "0.2em", color: C.muted }}>DIAMOND HAND</span>
         </Link>
         <Link to="/joinrei" style={{ fontSize: 11, color: C.muted }} className="transition-colors hover:text-[#e8c4b8]">
           For projects →
@@ -113,7 +113,7 @@ export default function Diamond() {
 
       <main className="mx-auto max-w-2xl px-6 py-24 md:py-32">
         <h1 className="text-3xl md:text-4xl font-semibold leading-tight tracking-tight">
-          Diamond Score
+          Diamond Hand Score
         </h1>
         <p className="mt-3" style={{ color: C.muted, fontSize: 13, lineHeight: 1.7 }}>
           Paste a public Solana or EVM address. Rei reads its history and returns the same score projects use.
@@ -208,6 +208,27 @@ export default function Diamond() {
               <div className="text-right" style={{ fontSize: 11, color: C.dim, lineHeight: 1.8 }}>
                 <div>{result.chain.toUpperCase()}</div>
                 <div>{short(result.address)}</div>
+              </div>
+            </div>
+
+            <div style={{ borderTop: `1px solid ${C.lineSoft}`, paddingTop: 16 }}>
+              <div style={{ fontSize: 13, color: C.cream, lineHeight: 1.7 }}>
+                {p.diamond_score >= 75
+                  ? "Strong fit — a genuine holder worth rewarding with an airdrop or bounty."
+                  : p.diamond_score >= 50
+                    ? "Good fit — holder-like behaviour, reasonable to reward."
+                    : p.diamond_score >= 25
+                      ? "Mixed signals — review the datapoints below before rewarding."
+                      : "Poor fit — reward behaviour looks farmed or unproven."}
+              </div>
+              <div className="mt-1.5" style={{ fontSize: 11, color: C.dim }}>
+                {result.signals?.sybil_signal === null || result.signals?.sybil_signal === undefined
+                  ? "Sybil check: no similarity data available for this wallet."
+                  : result.signals.sybil_signal >= 0.5
+                    ? "Sybil check: flagged — this wallet looks similar to known farm clusters."
+                    : result.signals.sybil_signal >= 0.2
+                      ? "Sybil check: some similarity to clustered wallets — proceed with care."
+                      : "Sybil check: passed — no cluster-similarity patterns detected."}
               </div>
             </div>
 
