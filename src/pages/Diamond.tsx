@@ -7,6 +7,7 @@ import reiLogo from "@/assets/joinrei/rei-logo.png";
 const C = {
   bg: "#0b0b0b",
   card: "#111111",
+  bubble: "#181818",
   line: "rgba(240, 237, 232, 0.08)",
   lineSoft: "rgba(240, 237, 232, 0.05)",
   cream: "#f0ede8",
@@ -22,12 +23,42 @@ const SAMPLES = [
   { name: "Justin Sun", chain: "evm", address: "0x3DdfA8eC3052539b6C9549F12cEA2C295cfF5296" },
 ];
 
-const SUBS: Array<{ key: string; label: string; invert: boolean; weight: number }> = [
-  { key: "community", label: "Community", invert: false, weight: 35 },
-  { key: "farmer", label: "Farmer", invert: true, weight: 20 },
-  { key: "jeet", label: "Jeet", invert: true, weight: 20 },
-  { key: "risk", label: "Risk", invert: true, weight: 15 },
-  { key: "confidence", label: "Confidence", invert: false, weight: 10 },
+const SUBS: Array<{ key: string; label: string; invert: boolean; weight: number; tip: string }> = [
+  {
+    key: "community",
+    label: "Community",
+    invert: false,
+    weight: 35,
+    tip: "How long the wallet has been alive and how deep it goes — years of activity, distinct DeFi protocols used, NFT collections held, transaction volume and reputation. A wallet that has been around and uses a lot of the chain scores highest.",
+  },
+  {
+    key: "farmer",
+    label: "Farmer",
+    invert: true,
+    weight: 20,
+    tip: "Detects airdrop farming — flipping tokens constantly (high churn), holding almost nothing, racking up activity on one protocol only, or a young wallet trading at high frequency. Lower is better.",
+  },
+  {
+    key: "jeet",
+    label: "JEET",
+    invert: true,
+    weight: 20,
+    tip: "Jump-and-exit behaviour — tokens sold back within 24 hours of arriving, and average holds under two days. A wallet that buys and immediately dumps scores high here, which pulls its overall score down.",
+  },
+  {
+    key: "risk",
+    label: "Risk",
+    invert: true,
+    weight: 15,
+    tip: "Suspicious patterns — a flagged reputation signal, similarity to known sybil or bot clusters, or a brand-new wallet already trading heavily. Lower is better.",
+  },
+  {
+    key: "confidence",
+    label: "Confidence",
+    invert: false,
+    weight: 10,
+    tip: "How much Rei could actually see — the number of data sources that answered, the size of the transaction sample and the wallet's age. Low confidence caps the overall score, so a thin record can't look brilliant by accident.",
+  },
 ];
 
 const SIGNAL_LABELS: Record<string, string> = {
@@ -245,8 +276,32 @@ export default function Diamond() {
                 const good = s.invert ? 100 - sub.score : sub.score;
                 return (
                   <div key={s.key} className="flex items-center gap-4">
-                    <span className="w-24 shrink-0" style={{ fontSize: 12, color: C.cream }}>
-                      {s.label}
+                    <span
+                      className="group relative w-24 shrink-0 cursor-help outline-none"
+                      tabIndex={0}
+                      aria-label={`${s.label} explained`}
+                    >
+                      <span className="inline-block" style={{ fontSize: 12, color: C.cream, borderBottom: `1px dotted ${C.dim}` }}>
+                        {s.label}
+                      </span>
+                      <span
+                        role="tooltip"
+                        className="pointer-events-none absolute bottom-full left-0 z-20 mb-2 w-64 px-3.5 py-3 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
+                        style={{
+                          background: C.bubble,
+                          border: `1px solid ${C.line}`,
+                          borderRadius: 9,
+                          boxShadow: "0 12px 32px rgba(0,0,0,0.55)",
+                          fontSize: 11,
+                          lineHeight: 1.7,
+                          color: C.muted,
+                        }}
+                      >
+                        <span className="block" style={{ color: C.peach, letterSpacing: "0.12em", fontSize: 10, marginBottom: 5 }}>
+                          {s.label.toUpperCase()} · {s.weight}%
+                        </span>
+                        {s.tip}
+                      </span>
                     </span>
                     <span className="w-10 shrink-0 text-right" style={{ fontSize: 11, color: C.dim }}>
                       {s.weight}%
