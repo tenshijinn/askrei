@@ -7,6 +7,7 @@ import reiLogo from "@/assets/joinrei/rei-logo.png";
 const C = {
   bg: "#0b0b0b",
   card: "#111111",
+  bubble: "#181818",
   line: "rgba(240, 237, 232, 0.08)",
   lineSoft: "rgba(240, 237, 232, 0.05)",
   cream: "#f0ede8",
