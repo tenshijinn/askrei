@@ -65,7 +65,7 @@ export default function Diamond() {
   const [remaining, setRemaining] = useState<number | null>(null);
 
   useEffect(() => {
-    document.title = "Rei's Diamond Scanner — Score any wallet";
+    document.title = "Rei's Diamond Hand Scanner — Score any wallet";
     supabase.functions.invoke("diamond-scan", { body: { peek: true } }).then(({ data }) => {
       if (data?.remaining !== undefined) setRemaining(data.remaining);
     });
@@ -104,7 +104,7 @@ export default function Diamond() {
       <header className="flex items-center justify-between px-6 py-5" style={{ borderBottom: `1px solid ${C.lineSoft}` }}>
         <Link to="/" className="flex items-center gap-2.5">
           <img src={reiLogo} alt="Rei" className="h-6 w-6" />
-          <span style={{ fontSize: 11, letterSpacing: "0.2em", color: C.muted }}>DIAMOND</span>
+          <span style={{ fontSize: 11, letterSpacing: "0.2em", color: C.muted }}>DIAMOND HAND</span>
         </Link>
         <Link to="/joinrei" style={{ fontSize: 11, color: C.muted }} className="transition-colors hover:text-[#e8c4b8]">
           For projects →
@@ -113,7 +113,7 @@ export default function Diamond() {
 
       <main className="mx-auto max-w-2xl px-6 py-24 md:py-32">
         <h1 className="text-3xl md:text-4xl font-semibold leading-tight tracking-tight">
-          Diamond Score
+          Diamond Hand Score
         </h1>
         <p className="mt-3" style={{ color: C.muted, fontSize: 13, lineHeight: 1.7 }}>
           Paste a public Solana or EVM address. Rei reads its history and returns the same score projects use.
