@@ -24,6 +24,7 @@ import Ask from "./pages/Ask";
 import Earn from "./pages/Earn";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import Docs from "./pages/Docs";
 
 const BlogSlugRedirect = () => {
   const { slug } = useParams();
@@ -58,6 +59,7 @@ const App = () => (
               <Route path="/ask" element={<Ask />} />
               <Route path="/diamond" element={<Diamond />} />
               <Route path="/earn" element={<Earn />} />
+              <Route path="/docs" element={<Docs />} />
               <Route path="/articles" element={<Blog />} />
               <Route path="/articles/:slug" element={<BlogPost />} />
               <Route path="/blog" element={<Navigate to="/articles" replace />} />
