@@ -12,9 +12,22 @@ export interface BlogPost {
 
 import referToEarnBanner from "@/assets/articles/refer-to-earn.png.asset.json";
 import jupiterBanner from "@/assets/articles/jupiter-cac.png.asset.json";
+import cryptoTasksBanner from "@/assets/articles/crypto-tasks-hero.jpg.asset.json";
 import ansemBanner from "@/assets/articles/ansem.png.asset.json";
 
 export const blogPosts: BlogPost[] = [
+  {
+    slug: "best-platforms-to-earn-crypto-for-tasks",
+    title: "Best Platforms to Earn Crypto for Tasks in 2026",
+    date: "Nov 2026",
+    category: "Guides",
+    excerpt:
+      "Quest platforms, microtask sites and bounty aggregators compared on payout reliability, skill fit and legitimacy — plus scam and tax checks.",
+    file: "/blog/best-crypto-task-platforms.html",
+    description:
+      "Compare Galxe, Zealy, TaskOn, QuestN, Layer3, Cointiply and more on payout reliability, skill fit and legitimacy, with scam-check and tax tips.",
+    image: cryptoTasksBanner.url,
+  },
   {
     slug: "refer-to-earn-with-rei-ai",
     title: "Refer-To-Earn with Rei AI for Crypto Bounties",
