@@ -153,3 +153,18 @@
 <h3>What records should I keep for crypto task rewards?</h3><p>Record the date and token received, its local-currency value at the time, your wallet address and the platform, plus any later sale or swap.</p>
 <h3>Can fees reduce my crypto task earnings?</h3><p>Yes, network fees and minimum withdrawals can erode small payouts. Check withdrawal terms before you spend time earning.</p></section>
 </div>
+<script>
+(function(){
+  function post(){
+    var h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+    parent.postMessage({ type: 'rei-blog-height', height: h }, '*');
+  }
+  window.addEventListener('load', post);
+  window.addEventListener('resize', post);
+  if (window.ResizeObserver) new ResizeObserver(post).observe(document.body);
+  setInterval(post, 1000);
+  post();
+})();
+</script>
+</body>
+</html>
