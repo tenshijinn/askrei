@@ -1,13 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import homeImg from "@/assets/docs/docs-home.jpg.asset.json";
+import signupImg from "@/assets/docs/docs-signup.jpg.asset.json";
+import askImg from "@/assets/docs/docs-ask.jpg.asset.json";
+import diamondSearchImg from "@/assets/docs/docs-diamond-search.jpg.asset.json";
+import diamondReportImg from "@/assets/docs/docs-diamond-report.jpg.asset.json";
+import earnImg from "@/assets/docs/docs-earn.jpg.asset.json";
 import { Moon, Sun, Menu, X, Search, ChevronLeft, ChevronRight } from "lucide-react";
 
-type Block = { h?: string; p?: string; list?: string[]; table?: string[][]; code?: string };
+type Block = { h?: string; p?: string; list?: string[]; table?: string[][]; code?: string; img?: { src: string; caption: string } };
 type DocPage = { id: string; group: string; title: string; lead: string; blocks: Block[] };
 
 const PAGES: DocPage[] = [
   { id: "about", group: "Getting started", title: "What is Rei?", lead: "Rei is an AI that finds crypto bounties, airdrops and campaigns for you — and helps projects reward the right people.",
     blocks: [
+      { img: { src: homeImg.url, caption: "The rei.chat home page — “Start Now” opens the app, “Read the docs” brings you here." } },
       { p: "Rei gathers bounties from across the web3 space (task boards, quest platforms, project campaigns) into one place. You ask Rei what you want to earn, and it finds, ranks and explains opportunities that fit you." },
       { h: "Who Rei is for", list: ["Seekers — people who want to earn crypto by completing tasks, bounties and campaigns.", "Projects & companies — teams that want to reach genuine holders and avoid bots and farmers.", "KOLs & referrers — people who share Rei and earn points on the monthly leaderboard."] },
       { h: "The Rei family", list: ["Rei Chatbot — chat with Rei on rei.chat/rei.", "Rei AI Agent — @AskRei_ on X, answering and posting in public.", "Diamond Hand Score — Rei's wallet behaviour engine.", "Earn calculator — see what your bounty earnings could grow into."] },
@@ -19,8 +26,10 @@ const PAGES: DocPage[] = [
     ] },
   { id: "quickstart", group: "Getting started", title: "Quick start", lead: "Get from zero to your first bounty in a few minutes.",
     blocks: [
+      { img: { src: signupImg.url, caption: "Step 1 — the sign-up card on rei.chat/rei. Click “Sign up with X”." } },
       { list: ["Go to rei.chat/rei and sign up with your X account.", "Connect your Solana wallet, EVM wallet, or both.", "Open the chat and ask something like “show me bounties paying in SOL”.", "Open your Account tab to see your Diamond Hand Score, referrals and points."] },
       { h: "Just want to try?", p: "Visit rei.chat/ask — you can ask Rei one question per week without an account." },
+      { img: { src: askImg.url, caption: "rei.chat/ask — type your question in the bar and press send." } },
     ] },
   { id: "chatbot", group: "Products", title: "Rei Chatbot", lead: "Your personal bounty assistant inside rei.chat.",
     blocks: [
@@ -36,20 +45,26 @@ const PAGES: DocPage[] = [
     ] },
   { id: "diamond", group: "Products", title: "Diamond Hand Score", lead: "A 0–100 score showing whether a wallet behaves like a genuine long-term holder.",
     blocks: [
+      { img: { src: diamondReportImg.url, caption: "A scan result — the big number is the score, the five bars below are the factors. Hover a factor name to see what it means." } },
       { p: "Rei reads on-chain history across Solana and EVM chains and turns it into five factors, then combines them into one score." },
       { h: "The five factors", table: [["Factor", "Weight", "What it measures"], ["Community", "35%", "Real participation and long-term holding"], ["Farmer", "20%", "Airdrop-farming patterns (lower is better)"], ["JEET", "20%", "Quick selling right after receiving tokens (lower is better)"], ["Risk", "15%", "Risky activity, including sybil similarity (lower is better)"], ["Confidence", "10%", "How much data Rei had to judge"]] },
       { h: "Formula", code: "score = 0.35×Community + 0.20×(100−Farmer)\n      + 0.20×(100−JEET) + 0.15×(100−Risk)\n      + 0.10×Confidence" },
       { h: "Sybil protection", p: "A sybil attack is one person running many fake wallets to grab more rewards. Rei's Risk factor checks for wallets that look alike and act together, so projects can spot them." },
       { h: "Try it", p: "Projects can scan any wallet at rei.chat/diamond (5 scans per week)." },
+      { img: { src: diamondSearchImg.url, caption: "Paste a wallet into the search bar and press Scan, or tap one of the “Try” wallets." } },
     ] },
   { id: "earn", group: "Products", title: "Earn calculator", lead: "See what your bounty earnings could have become if you staked or held them.",
     blocks: [
       { p: "On rei.chat/earn pick a platform (Jito, Marinade, Kamino, marginfi, NLO by L1X) or a token, an amount and a time period. Rei uses real historical prices and yields to show the result." },
+      { img: { src: earnImg.url, caption: "The Earn calculator — set the amount, platform, asset and time period in the row of boxes; the chart and sentence update instantly." } },
       { list: ["Yields are pulled live and refreshed regularly.", "Past months use the yield the platform actually paid when records exist.", "Share your result as an image card on X."] },
     ] },
   { id: "projects", group: "For projects", title: "Launch a campaign", lead: "Reach real holders, not bots.",
     blocks: [
-      { list: ["Post an opportunity with PostToRei — a $5 SOL fee applies per submission.", "Target wallets by Diamond Hand Score.", "Track impressions and participants on your campaign.", "Book a call from rei.chat/joinrei for larger campaigns."] },
+      { h: "Post a single opportunity", p: "Use PostToRei inside rei.chat/rei. Each post costs $5 (USD), paid in SOL at the live SOL price." },
+      { h: "Campaign packages", table: [["Package", "Beta launch price", "Regular price"], ["AI Crypto Growth — Web3 Distribution Campaign", "$500 per campaign", "$5,000"], ["AI Crypto Growth [Hyper] — Full-Spectrum Campaign", "$2,500 per campaign", "$25,000"]] },
+      { p: "Packages are booked through a call from rei.chat/joinrei. Both include Diamond Hand Score targeting and anti-sybil filtering." },
+      { list: ["Target wallets by Diamond Hand Score.", "Track impressions and participants on your campaign."] },
     ] },
   { id: "referrals", group: "Rewards", title: "Referrals & leaderboard", lead: "Share your link, earn points, climb the monthly top 10.",
     blocks: [
@@ -129,6 +144,12 @@ export default function Docs() {
               <section key={i} className="mb-8 text-[15px] leading-7">
                 {b.h && <h2 className="text-lg font-semibold mb-3 pb-2 border-b" style={{ borderColor: t.line }}>{b.h}</h2>}
                 {b.p && <p>{b.p}</p>}
+                {b.img && (
+                  <figure className="rounded-xl border overflow-hidden" style={{ borderColor: t.line, background: t.card }}>
+                    <img src={b.img.src} alt={b.img.caption} loading="lazy" className="w-full h-auto block" />
+                    <figcaption className="px-4 py-2 text-xs border-t" style={{ color: t.mute, borderColor: t.line }}>{b.img.caption}</figcaption>
+                  </figure>
+                )}
                 {b.list && <ul className="space-y-2">{b.list.map((l) => <li key={l} className="flex gap-3"><span style={{ color: t.acc }}>›</span><span>{l}</span></li>)}</ul>}
                 {b.code && <pre className="rounded-lg p-4 text-sm overflow-x-auto border" style={{ background: t.card, borderColor: t.line }}>{b.code}</pre>}
                 {b.table && (

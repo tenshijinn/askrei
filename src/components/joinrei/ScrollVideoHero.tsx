@@ -466,11 +466,6 @@ const LeftPanelTrack = () => (
           <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed">
             Stop wasting hours searching ways to earn crypto. Rei AI Agent+Chatbot aggregates <strong>a 1000 Crypto <RotatorText words={ROTATOR_WORDS} /> in your Chat</strong>.
           </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <HeroPill label="Early Discovery" />
-            <HeroPill label="Save Hours" />
-            <HeroPill label="Bounties-to-Skills-Matched" />
-          </div>
           <div className="mt-6 flex items-center gap-4 sm:gap-6 flex-wrap">
             <button
               className="btn-manga"
@@ -489,6 +484,9 @@ const LeftPanelTrack = () => (
             >
               How it Works
             </button>
+            <a href="/docs" className="font-mono text-sm text-cream/80 hover:text-cream underline underline-offset-8 decoration-1">
+              Read the docs ↗
+            </a>
           </div>
         </div>
         <div className="flex items-stretch gap-4">
@@ -503,6 +501,8 @@ const LeftPanelTrack = () => (
         {/* Top header: logo left, How it works right */}
         <div className="flex items-center justify-between shrink-0">
           <img src={reiLogo} alt="Rei AI" className="h-8 w-auto object-contain" />
+          <div className="flex items-center gap-4">
+          <a href="/docs" className="text-xs font-mono text-cream/80 hover:text-cream underline underline-offset-4">Read the docs ↗</a>
           <button
             className="text-xs font-mono text-cream/80 hover:text-cream transition-colors"
             onClick={() => {
@@ -513,6 +513,7 @@ const LeftPanelTrack = () => (
           >
             How it works
           </button>
+          </div>
         </div>
         <div className="shrink-0 flex flex-nowrap gap-1 overflow-hidden">
 <CombinedSocialProofPill />
@@ -525,17 +526,7 @@ const LeftPanelTrack = () => (
         <p className="text-[11px] sm:text-[13px] text-primary/70 font-mono leading-relaxed whitespace-normal shrink-0">
           Stop wasting hours searching ways to earn crypto. Rei AI Agent+Chatbot aggregates <strong>a 1000 Crypto <RotatorText words={ROTATOR_WORDS} /> in your Chat</strong>.
         </p>
-        <div className="flex flex-nowrap gap-1 shrink-0 overflow-hidden">
-          <span className="shrink-0 px-1.5 py-0.5 rounded-full bg-transparent border border-white/20 text-[9px] text-white/50 font-mono whitespace-nowrap">
-            Early Discovery
-          </span>
-          <span className="shrink-0 px-1.5 py-0.5 rounded-full bg-transparent border border-white/20 text-[9px] text-white/50 font-mono whitespace-nowrap">
-            Save Hours
-          </span>
-          <span className="shrink-0 px-1.5 py-0.5 rounded-full bg-transparent border border-white/20 text-[9px] text-white/50 font-mono whitespace-nowrap">
-            Bounties-to-Skills-Matched
-          </span>
-        </div>
+        
         <div className="flex flex-col gap-2 shrink-0">
           <button
             className="btn-manga w-full"
