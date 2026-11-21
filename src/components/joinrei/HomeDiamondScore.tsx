@@ -1,5 +1,12 @@
 import { ScrollFadeIn } from './ScrollFadeIn';
 
+const Pill = ({ children, icon }: { children: React.ReactNode; icon: React.ReactNode }) => (
+  <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#181818] border border-primary/20">
+    {icon}
+    <span className="text-xs text-cream/80 font-mono">{children}</span>
+  </div>
+);
+
 const POINTS = [
   {
     title: 'How You Hold',
@@ -113,18 +120,10 @@ export const HomeDiamondScore = () => (
           </p>
         </ScrollFadeIn>
 
-        <div className="space-y-4">
+        <div className="flex flex-wrap items-center gap-4 pt-2">
           {POINTS.map((p, i) => (
             <ScrollFadeIn key={p.title} delay={200 + i * 100}>
-              <div className="flex gap-3">
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/25 text-[#ed565a]">
-                  {p.icon}
-                </span>
-                <div>
-                  <p className="text-sm font-medium text-primary">{p.title}</p>
-                  <p className="text-xs md:text-sm font-mono text-primary/60 leading-relaxed">{p.body}</p>
-                </div>
-              </div>
+              <Pill icon={<span className="text-[#ed565a]">{p.icon}</span>}>{p.title}</Pill>
             </ScrollFadeIn>
           ))}
         </div>
