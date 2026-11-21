@@ -7,9 +7,6 @@ import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
 import arubaito from '@/assets/joinrei/logo-bar-arubaito.png';
 import ignyte from '@/assets/joinrei/logo-bar-ignyte.png';
 import solanaFoundation from '@/assets/joinrei/logo-bar-solana-foundation.png';
-import colossium from '@/assets/joinrei/logo-bar-colossium.png';
-
-import nousHermesAsset from '@/assets/joinrei/logo-bar-nous-hermes.png.asset.json';
 import txSolAsset from '@/assets/joinrei/tx-sol.png.asset.json';
 import txUsdgAsset from '@/assets/joinrei/tx-usdg.png.asset.json';
 import txUsdcAsset from '@/assets/joinrei/tx-usdc.png.asset.json';
@@ -553,20 +550,15 @@ const LeftPanelTrack = () => (
 
     {/* Block 2: Logo bar — centered */}
     <div className="h-screen w-full flex flex-col justify-center items-center px-8 lg:px-12 xl:px-16">
-      <h2 className="text-xs font-mono text-primary/50 tracking-widest uppercase mb-10 text-center">
+      <h2 className="text-xs font-mono text-primary/50 tracking-widest uppercase mb-12 text-center">
         Backed by
       </h2>
-      <div className="flex flex-col gap-10 items-center justify-center w-full">
+      <div className="flex flex-col gap-12 items-center justify-center w-full">
         <a href="https://arubaito.app" target="_blank" rel="noopener noreferrer" className="opacity-90 hover:opacity-100 transition-opacity">
           <img src={arubaito} alt="Arubaito" className="h-12 lg:h-14 w-auto object-contain" />
         </a>
         <img src={ignyte} alt="IGNYTE - 1 of 15 / 3000" className="h-12 lg:h-14 w-auto object-contain opacity-90" />
         <img src={solanaFoundation} alt="Solana Foundation" className="h-12 lg:h-14 w-auto object-contain opacity-90" />
-        <a href="https://arena.colosseum.org/projects/explore/rei" target="_blank" rel="noopener noreferrer" className="opacity-90 hover:opacity-100 transition-opacity">
-          <img src={colossium} alt="Colosseum Frontier" className="h-12 lg:h-14 w-auto object-contain" />
-        </a>
-        
-        <img src={nousHermesAsset.url} alt="Powered by Nous + Hermes Agent" className="h-20 lg:h-24 w-auto object-contain opacity-90" />
       </div>
     </div>
 
@@ -581,7 +573,7 @@ const LeftPanelTrack = () => (
         <ScrollFadeIn delay={100}>
           <MiniFrame
             icon={hiwIcon1.url}
-            title="One feed. Every platform."
+            title="1000 Bounties in Your Chat"
             extra={
               <>
                 <SimplePill label="Galxe" />
@@ -591,18 +583,18 @@ const LeftPanelTrack = () => (
               </>
             }
           >
-            Stop tab-hopping across quest platforms. Rei aggregates live bounties into one matched feed.
+            Stop tab-hopping, bounties are aggregated so you can just ask "what's the latest?".
           </MiniFrame>
         </ScrollFadeIn>
         <ScrollFadeIn delay={200}>
-          <MiniFrame icon={hiwIcon2.url} title="Campaigns that fit your skills." extra={<MatchesSkillsPill />}>
-            SkillSync surfaces bounties matched to your wallet history and on-chain track record — not random noise.
+          <MiniFrame icon={hiwIcon2.url} title="Bounties match your skills." extra={<MatchesSkillsPill />}>
+            SkillSync reveals bounties matched to your skills and wallet activity
           </MiniFrame>
         </ScrollFadeIn>
         <ScrollFadeIn delay={300}>
           <MiniFrame
             icon={hiwIcon3.url}
-            title="Get verified, get prioritised."
+            title="Get verified, Get prioritised."
             extra={
               <>
                 <VerifiedLoginPill />
@@ -610,8 +602,8 @@ const LeftPanelTrack = () => (
               </>
             }
           >
-            Verified X + 60s voice intro gives you a proof-of-talent score, so projects see{' '}
-            <strong className="text-cream font-semibold">you, not the farmers</strong>.
+            Get your Diamond Hand Score when you sign up, to separate you from farmers and
+            <strong className="text-cream font-semibold"> sybils</strong>
           </MiniFrame>
         </ScrollFadeIn>
         <ScrollFadeIn delay={400}>
