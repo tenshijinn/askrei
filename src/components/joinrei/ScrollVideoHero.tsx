@@ -447,9 +447,9 @@ const LeftPanelTrack = () => (
         <div>
           <CombinedSocialProofPill />
           <h1 className="text-[2rem] xl:text-[2.25rem] 2xl:text-[2.5rem] font-light text-primary leading-[1.15] tracking-tight">
-            Find Bounties, Do Bounties,
+            Find Bounties and Earn Crypto,
             <br />
-            Earn Crypto.
+            In One Chat.
           </h1>
           <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed">
             Don't waste hours searching ways to earn crypto. Rei AI aggregates <strong>a 1000 Crypto <RotatorText words={ROTATOR_WORDS} /> in your Chat</strong>.
@@ -509,9 +509,9 @@ const LeftPanelTrack = () => (
 <CombinedSocialProofPill />
         </div>
         <h1 className="text-[1.5rem] sm:text-[1.75rem] font-light text-primary leading-[1.05] tracking-tight shrink-0">
-          Find Bounties, Do Bounties,
+          Find Bounties and Earn Crypto,
           <br />
-          Earn Crypto.
+          In One Chat.
         </h1>
         <p className="text-[11px] sm:text-[13px] text-primary/70 font-mono leading-relaxed whitespace-normal shrink-0">
           Don't waste hours searching ways to earn crypto. Rei AI aggregates <strong>a 1000 Crypto <RotatorText words={ROTATOR_WORDS} /> in your Chat</strong>.
