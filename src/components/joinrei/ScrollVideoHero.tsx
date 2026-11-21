@@ -311,7 +311,7 @@ const ProofOfTalentPill = () => (
     <svg className="h-3.5 w-3.5 text-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <path d="M12 2l2.39 4.84L20 7.74l-4 3.9.94 5.5L12 14.77 7.06 17.14 8 11.64l-4-3.9 5.61-.9z" />
     </svg>
-    <span className="text-xs text-cream/80 font-mono">Proof-of-Talent</span>
+    <span className="text-xs text-cream/80 font-mono">Diamond Hand Score</span>
   </div>
 );
 
