@@ -446,15 +446,17 @@ const LeftPanelTrack = () => (
       <div className="hidden lg:flex lg:flex-col lg:justify-between h-full pt-2 pb-2">
         <div>
           <CombinedSocialProofPill />
-          <h1 className="text-[2rem] md:text-[2.25rem] lg:text-[2.5rem] xl:text-[2.75rem] font-light text-primary leading-[1.15] tracking-tight">
-            Spend Less Time <strong className="font-semibold">Searching</strong>.
+          <h1 className="text-[2rem] xl:text-[2.25rem] 2xl:text-[2.5rem] font-light text-primary leading-[1.15] tracking-tight">
+            Find Bounties, Do Bounties,
             <br />
-            Spend More Time <strong className="font-semibold">Earning</strong>.
+            Earn Crypto.
           </h1>
           <p className="mt-6 text-sm md:text-base text-primary/70 font-mono leading-relaxed">
-            Stop wasting hours searching ways to earn crypto. Rei AI Agent+Chatbot aggregates <strong>a 1000 Crypto <RotatorText words={ROTATOR_WORDS} /> in your Chat</strong>.
+            Don't waste hours searching ways to earn crypto. Rei AI aggregates <strong>a 1000 Crypto <RotatorText words={ROTATOR_WORDS} /> in your Chat</strong>.
           </p>
-          <div className="mt-6 flex items-center gap-4 sm:gap-6 flex-wrap">
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
             <button
               className="btn-manga"
               style={{ backgroundColor: '#ed565a', borderColor: '#ed565a', color: '#181818' }}
@@ -506,13 +508,13 @@ const LeftPanelTrack = () => (
         <div className="shrink-0 flex flex-nowrap gap-1 overflow-hidden">
 <CombinedSocialProofPill />
         </div>
-        <h1 className="text-[1.75rem] sm:text-[2rem] font-light text-primary leading-[1.05] tracking-tight shrink-0">
-          Spend Less Time <strong className="font-semibold">Searching</strong>.
+        <h1 className="text-[1.5rem] sm:text-[1.75rem] font-light text-primary leading-[1.05] tracking-tight shrink-0">
+          Find Bounties, Do Bounties,
           <br />
-          Spend More Time <strong className="font-semibold">Earning</strong>.
+          Earn Crypto.
         </h1>
         <p className="text-[11px] sm:text-[13px] text-primary/70 font-mono leading-relaxed whitespace-normal shrink-0">
-          Stop wasting hours searching ways to earn crypto. Rei AI Agent+Chatbot aggregates <strong>a 1000 Crypto <RotatorText words={ROTATOR_WORDS} /> in your Chat</strong>.
+          Don't waste hours searching ways to earn crypto. Rei AI aggregates <strong>a 1000 Crypto <RotatorText words={ROTATOR_WORDS} /> in your Chat</strong>.
         </p>
         
         <div className="flex flex-col gap-2 shrink-0">
@@ -574,7 +576,7 @@ const LeftPanelTrack = () => (
               </>
             }
           >
-            Stop tab-hopping, bounties are aggregated so you can just ask "what's the latest?".
+            Rei aggregates bounties for you, just ask "what's the latest bounties?".
           </MiniFrame>
         </ScrollFadeIn>
         <ScrollFadeIn delay={200}>
@@ -592,8 +594,7 @@ const LeftPanelTrack = () => (
               </>
             }
           >
-            Get your Diamond Hand Score when you sign up, to separate you from farmers and
-            <strong className="text-cream font-semibold"> sybils</strong>
+            Higher Diamond Hand Score matches you to better bounties.
           </MiniFrame>
         </ScrollFadeIn>
         <ScrollFadeIn delay={400}>
