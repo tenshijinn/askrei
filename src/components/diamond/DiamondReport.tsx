@@ -1,9 +1,25 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, Check, ChevronDown, Copy, Diamond, Plus } from "lucide-react";
+import { Activity, ArrowLeft, ArrowLeftRight, Check, ChevronDown, Clock3, Copy, Database, Diamond, Gem, Plus, ShieldAlert, ShieldCheck, Sprout, Users, VenetianMask } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { PixelAvatar } from "./PixelAvatar";
 import { chainLabel, formatSignal, METRICS, relativeTime, rewardVerdict, SIGNAL_LABELS, shortAddress, sybilVerdict, type SavedScan } from "./model";
+
+function reasonIcon(reason: string) {
+  // Presentation only: preserve every explanation from the live scoring engine.
+  if (/sybil|cluster similarity/i.test(reason)) return VenetianMask;
+  if (/insufficient|limited.*history|sparse.*sample/i.test(reason)) return Clock3;
+  if (/^uses\b|protocol|\bdex\b/i.test(reason)) return ArrowLeftRight;
+  if (/farmer|farming|churn/i.test(reason)) return Sprout;
+  if (/holding|\bhold\b|retention|sell|dump|jeet/i.test(reason)) return Gem;
+  if (/confidence|data|provider|source/i.test(reason)) return Database;
+  if (/risk|suspicious|reputation|counterpart/i.test(reason)) {
+    return /low|clean|healthy|no flagged/i.test(reason) ? ShieldCheck : ShieldAlert;
+  }
+  if (/active|activity|history|transaction|\btxns\b/i.test(reason)) return Clock3;
+  if (/community|nft|collection/i.test(reason)) return Users;
+  return Activity;
+}
 
 function MetricHelp({ metric }: { metric: typeof METRICS[number] }) {
   const [open, setOpen] = useState(false);
@@ -86,9 +102,15 @@ export function DiamondReport({ report, historySaved, onBack }: { report: SavedS
 
         <div className="mt-8 border-t border-border pt-7">
           <p className="text-[13px] leading-6 text-foreground">{rewardVerdict(p.diamond_score)}</p>
-          <p className="diamond-dim mt-1.5 text-[11px] leading-6">{sybilVerdict(report.signals.sybil_signal)}</p>
+          <p className="diamond-dim mt-1.5 flex items-start gap-2.5 text-[11px] leading-6">
+            <VenetianMask aria-hidden="true" className={`mt-[5px] h-3.5 w-3.5 shrink-0 ${report.signals.sybil_signal === null ? "" : report.signals.sybil_signal >= 0.2 ? "text-destructive" : "text-primary/70"}`} />
+            <span>{sybilVerdict(report.signals.sybil_signal)}</span>
+          </p>
           <ul className="mt-6 space-y-1.5 text-xs leading-6 text-muted-foreground">
-            {p.reasons.map((reason) => <li key={reason} className="flex gap-2"><span aria-hidden="true" className="text-primary/60">·</span><span>{reason}</span></li>)}
+            {p.reasons.map((reason) => {
+              const ReasonIcon = reasonIcon(reason);
+              return <li key={reason} className="flex items-start gap-2.5"><ReasonIcon aria-hidden="true" className="mt-[5px] h-3.5 w-3.5 shrink-0 text-primary/70" /><span>{reason}</span></li>;
+            })}
           </ul>
 
           <div className="mt-8 space-y-5">
