@@ -1,5 +1,5 @@
 // Public /diamond scanner: score any wallet with Rei's Diamonds engine.
-// Limited to 5 scans per IP per rolling week. Read-only — nothing persisted
+// Limited to 7 scans per IP per rolling week. Read-only — nothing persisted
 // except the hashed-IP usage counter (shared ask_public_usage table, own salt).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.75.1';
 import { normalizeMoralis, type MoralisRawBundle } from '../_shared/diamonds/providers/moralis.ts';
@@ -8,15 +8,13 @@ import { fetchBirdeyeSignals } from '../_shared/diamonds/providers/birdeye.ts';
 import { fetchAlchemySignals } from '../_shared/diamonds/providers/alchemy.ts';
 import { fetchBlockscoutSignals } from '../_shared/diamonds/providers/blockscout.ts';
 import { computeDiamonds, mergeSignals } from '../_shared/diamonds/engine.ts';
+import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { z } from 'npm:zod@4';
+import { DIAMOND_SCAN_LIMIT as LIMIT, diamondScanUsage } from '../_shared/diamonds/scan-quota.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-const LIMIT = 5;
-const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const SOL_RE = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 const EVM_RE = /^0x[a-fA-F0-9]{40}$/;
+const BodySchema = z.object({ address: z.string().trim().max(44).optional(), peek: z.boolean().optional() });
 
 const json = (b: unknown, status = 200) =>
   new Response(JSON.stringify(b), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
@@ -52,23 +50,25 @@ async function fetchMoralisBundle(address: string): Promise<MoralisRawBundle> {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
   try {
-    const body = await req.json().catch(() => ({}));
-    const address = String(body?.address ?? '').trim();
-    const peek = body?.peek === true;
+    const parsed = BodySchema.safeParse(await req.json().catch(() => null));
+    if (!parsed.success) return json({ error: 'invalid_request', message: 'Enter a public wallet address.' }, 400);
+    const address = parsed.data.address ?? '';
+    const peek = parsed.data.peek === true;
     const chain = EVM_RE.test(address) ? 'evm' : SOL_RE.test(address) ? 'solana' : null;
 
-    const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+    const url = Deno.env.get('SUPABASE_URL');
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    if (!url || !serviceKey) throw new Error('Scanner configuration unavailable');
+    const supabase = createClient(url, serviceKey);
     const ipHash = await sha256(getIp(req) + '|rei-diamond-salt');
     const { data: usage } = await supabase
       .from('ask_public_usage').select('last_asked_at, ask_count').eq('ip_hash', ipHash).maybeSingle();
-    const windowStart = usage ? new Date(usage.last_asked_at).getTime() : 0;
-    const active = usage && Date.now() - windowStart < WEEK_MS;
-    const used = active ? usage!.ask_count : 0;
+    const { active, used, remaining } = diamondScanUsage(usage);
 
-    if (peek) return json({ remaining: Math.max(0, LIMIT - used), limit: LIMIT });
+    if (peek) return json({ remaining, limit: LIMIT });
     if (!chain) return json({ error: 'invalid_address', message: 'Paste a valid Solana or EVM (0x…) address.' }, 400);
     if (used >= LIMIT) {
-      return json({ error: 'rate_limited', remaining: 0, message: 'You have used all 5 free scans this week.' }, 429);
+      return json({ error: 'rate_limited', remaining: 0, limit: LIMIT, message: `You have used all ${LIMIT} free scans this week. Your allowance renews seven days after your first scan.` }, 429);
     }
 
     const providers = chain === 'solana'
@@ -83,11 +83,11 @@ Deno.serve(async (req) => {
 
     await supabase.from('ask_public_usage').upsert({
       ip_hash: ipHash,
-      last_asked_at: active ? usage!.last_asked_at : new Date().toISOString(),
+      last_asked_at: active && usage ? usage.last_asked_at : new Date().toISOString(),
       ask_count: used + 1,
     }, { onConflict: 'ip_hash' });
 
-    const { provider: _p, ok: _o, ...signals } = merged as any;
+    const { provider: _p, ok: _o, ...signals } = merged;
     return json({ address, chain, profile, signals, remaining: LIMIT - used - 1, limit: LIMIT });
   } catch (e) {
     console.error('[diamond-scan]', (e as Error).message);

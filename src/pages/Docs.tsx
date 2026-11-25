@@ -50,7 +50,7 @@ const PAGES: DocPage[] = [
       { h: "The five factors", table: [["Factor", "Weight", "What it measures"], ["Community", "35%", "Real participation and long-term holding"], ["Farmer", "20%", "Airdrop-farming patterns (lower is better)"], ["JEET", "20%", "Quick selling right after receiving tokens (lower is better)"], ["Risk", "15%", "Risky activity, including sybil similarity (lower is better)"], ["Confidence", "10%", "How much data Rei had to judge"]] },
       { h: "Formula", code: "score = 0.35×Community + 0.20×(100−Farmer)\n      + 0.20×(100−JEET) + 0.15×(100−Risk)\n      + 0.10×Confidence" },
       { h: "Sybil protection", p: "A sybil attack is one person running many fake wallets to grab more rewards. Rei's Risk factor checks for wallets that look alike and act together, so projects can spot them." },
-      { h: "Try it", p: "Projects can scan any wallet at rei.chat/diamond (5 scans per week)." },
+      { h: "Try it", p: "Projects can scan public wallets at rei.chat/diamond (7 scans per rolling week). Saved reports reopen without using another scan." },
       { img: { src: diamondSearchImg.url, caption: "Paste a wallet into the search bar and press Scan, or tap one of the “Try” wallets." } },
     ] },
   { id: "earn", group: "Products", title: "Earn calculator", lead: "See what your bounty earnings could have become if you staked or held them.",

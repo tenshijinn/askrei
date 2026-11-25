@@ -31,7 +31,7 @@ export async function fetchBlockscoutSignals(address: string): Promise<Normalize
   if (!address.startsWith("0x")) return empty();
   try {
     const res = await fetch(
-      `${BLOCKSCOUT_BASE}/api/v2/addresses/${encodeURIComponent(address)}/transactions?filter=to%20%7C%20from`,
+      `${BLOCKSCOUT_BASE}/api/v2/addresses/${encodeURIComponent(address)}/transactions`,
     );
     if (!res.ok) return empty();
     const json = await res.json();

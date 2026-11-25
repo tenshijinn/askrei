@@ -310,3 +310,51 @@
   z-index: 2 !important;
   pointer-events: auto !important;
 }
+
+/* Diamond scanner: restrained terminal palette from the approved reference. */
+.diamond-page {
+  --background: 0 0% 4.3%;
+  --foreground: 38 21% 93%;
+  --card: 0 0% 5.5%;
+  --card-foreground: 38 21% 93%;
+  --input: 0 0% 6.7%;
+  --muted: 0 0% 7.5%;
+  --muted-foreground: 33 5% 53%;
+  --primary: 16 51% 82%;
+  --primary-foreground: 0 0% 4.3%;
+  --accent: 16 51% 82%;
+  --accent-foreground: 0 0% 4.3%;
+  --border: 38 21% 93% / 0.08;
+  --ring: 16 51% 82%;
+  --diamond-ice: 207 100% 87%;
+  --diamond-dim: 33 4% 44%;
+  --diamond-avatar-mint: #c9f0dc;
+  --diamond-avatar-ice: #bfe2ff;
+  --diamond-avatar-peach: #ffd3c9;
+  --diamond-avatar-ink: #2b2b2b;
+  --diamond-avatar-rose: #e2557a;
+  --diamond-avatar-teal: #2f8f6b;
+  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  letter-spacing: 0;
+}
+.diamond-page :is(h1,h2,h3,button,input) { letter-spacing: 0; }
+.diamond-page h1 { font-family: 'SF Pro Display', system-ui, sans-serif; }
+.diamond-page input { font-family: inherit; caret-color: hsl(var(--primary)); }
+.diamond-ice { color: hsl(var(--diamond-ice)); }
+.diamond-dim { color: hsl(var(--diamond-dim)); }
+.diamond-frame { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 20px; }
+.diamond-pixel { image-rendering: pixelated; }
+.diamond-view { animation: fadeIn .35s ease-out both; }
+.diamond-score { font-family: 'SF Pro Display', system-ui, sans-serif; }
+.diamond-caret { background: hsl(var(--primary)); animation: rei-blink 1.05s step-end infinite; }
+.diamond-meter { accent-color: hsl(var(--primary)); appearance: none; height: 1px; width: 100%; border: 0; background: hsl(var(--border)); }
+.diamond-meter::-webkit-progress-bar { background: hsl(var(--border)); }
+.diamond-meter::-webkit-progress-value { background: hsl(var(--primary) / .75); transition: width .8s ease; animation: diamond-fill .8s ease both; }
+.diamond-meter::-moz-progress-bar { background: hsl(var(--primary) / .75); animation: diamond-fill .8s ease both; }
+@keyframes diamond-fill { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
+@media (max-width: 600px) { .diamond-frame { border-radius: 16px; } }
+@media (prefers-reduced-motion: reduce) {
+  .diamond-view, .diamond-caret { animation: none; }
+  .diamond-meter::-webkit-progress-value { transition: none; animation: none; }
+  .diamond-meter::-moz-progress-bar { animation: none; }
+}
