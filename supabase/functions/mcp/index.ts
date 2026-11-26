@@ -18,10 +18,10 @@ function sb(ctx) {
 var search_bounties_default = defineTool({
   name: "search_bounties",
   title: "Search bounties",
-  description: "Search active crypto bounties and tasks aggregated on rei.chat (Superteam, Zealy, QuestN, Scribble, and others). Filter by keyword, role tag, or platform.",
+  description: "Search active crypto bounties and tasks aggregated on rei.chat (Superteam, Zealy, QuestN, Scribble, make.fun, pump.fun, and others). Filter by keyword, role tag, or platform.",
   inputSchema: {
     query: z.string().optional().describe("Case-insensitive match on title / description / company_name."),
-    role: z.string().optional().describe("Role tag, e.g. developer, designer, kol, writer, or platform tag like scribble, zealy."),
+    role: z.string().optional().describe("Role tag, e.g. developer, designer, kol, writer, or platform tag like scribble, zealy, makefun (make.fun), pumpfun (pump.fun)."),
     limit: z.number().int().min(1).max(50).default(20).describe("Max rows to return (1-50).")
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
@@ -134,7 +134,7 @@ var mcp_default = defineMcp({
   name: "rei-chat-mcp",
   title: "Rei.chat MCP",
   version: "0.1.0",
-  instructions: "Read-only access to rei.chat's aggregated Web3 opportunity index. Use `search_bounties` for active bounties/tasks (Superteam, Zealy, QuestN, Scribble, etc.), `search_jobs` for active jobs, `list_skill_categories` for the taxonomy, and `whoami` to verify the connection.",
+  instructions: "Read-only access to rei.chat's aggregated Web3 opportunity index. Use `search_bounties` for active bounties/tasks (Superteam, Zealy, QuestN, Scribble, make.fun, pump.fun, etc.), `search_jobs` for active jobs, `list_skill_categories` for the taxonomy, and `whoami` to verify the connection.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated"

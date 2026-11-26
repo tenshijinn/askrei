@@ -13,7 +13,7 @@ export default defineMcp({
   title: "Rei.chat MCP",
   version: "0.1.0",
   instructions:
-    "Read-only access to rei.chat's aggregated Web3 opportunity index. Use `search_bounties` for active bounties/tasks (Superteam, Zealy, QuestN, Scribble, etc.), `search_jobs` for active jobs, `list_skill_categories` for the taxonomy, and `whoami` to verify the connection.",
+    "Read-only access to rei.chat's aggregated Web3 opportunity index. Use `search_bounties` for active bounties/tasks (Superteam, Zealy, QuestN, Scribble, make.fun, pump.fun, etc.), `search_jobs` for active jobs, `list_skill_categories` for the taxonomy, and `whoami` to verify the connection.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated",

@@ -1,3 +1,4 @@
+import { bountyPlatformLabel } from "../../supabase/functions/_shared/bounty-platforms";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Loader2, Lock } from "lucide-react";
@@ -384,7 +385,7 @@ const Ask = () => {
                               color: "#a09e9a",
                             }}
                           >
-                            {t}
+                            {bountyPlatformLabel(t)}
                           </span>
                         ))}
                       </div>

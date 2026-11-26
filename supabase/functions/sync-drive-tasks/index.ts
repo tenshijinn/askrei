@@ -5,6 +5,7 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 import { z } from "https://esm.sh/zod@3.23.8";
+import { bountyPlatformLabel } from "../_shared/bounty-platforms.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -43,6 +44,10 @@ const BountySchema = z.object({
 const PayloadSchema = z.object({
   generated_at: z.string().optional(),
   bounties: z.array(z.unknown()),
+  // v2.4 diagnostics — never shown to users. `.catch` keeps an odd shape from
+  // failing the whole run.
+  notes: z.record(z.string()).nullable().optional().catch(undefined),
+  platforms_pending: z.array(z.string()).nullable().optional().catch(undefined),
 });
 
 type Bounty = z.infer<typeof BountySchema>;
@@ -134,7 +139,7 @@ async function fetchOgImage(url: string): Promise<string | null> {
 function mapBounty(b: Bounty) {
   const description =
     b.description?.trim() ||
-    `${b.sponsor ?? "Unknown"} bounty${b.platform ? ` on ${b.platform}` : ""}.`;
+    `${b.sponsor ?? "Unknown"} bounty${b.platform ? ` on ${bountyPlatformLabel(b.platform)}` : ""}.`;
 
   const role_tags = [
     ...(b.skills ?? []),
@@ -280,6 +285,15 @@ Deno.serve(async (req) => {
       );
     }
 
+    const feedNotes = parsed.data.notes ?? {};
+    const platformsPending = parsed.data.platforms_pending ?? [];
+    if (Object.keys(feedNotes).length) {
+      console.log(`feed notes: ${JSON.stringify(feedNotes)}`);
+    }
+    if (platformsPending.length) {
+      console.warn(`platforms pending today: ${platformsPending.join(", ")}`);
+    }
+
     // 2. Validate + map each bounty individually so a few bad rows don't kill the run.
     const rows: ReturnType<typeof mapBounty>[] = [];
     const skipped: { id?: string; reason: string }[] = [];
@@ -351,6 +365,8 @@ Deno.serve(async (req) => {
         og_filled: ogFilled,
         skipped: skipped.length,
         skipped_sample: skipped.slice(0, 5),
+        platforms_pending: platformsPending,
+        notes: feedNotes,
         errors,
       }),
       {

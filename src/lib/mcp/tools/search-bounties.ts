@@ -13,10 +13,10 @@ export default defineTool({
   name: "search_bounties",
   title: "Search bounties",
   description:
-    "Search active crypto bounties and tasks aggregated on rei.chat (Superteam, Zealy, QuestN, Scribble, and others). Filter by keyword, role tag, or platform.",
+    "Search active crypto bounties and tasks aggregated on rei.chat (Superteam, Zealy, QuestN, Scribble, make.fun, pump.fun, and others). Filter by keyword, role tag, or platform.",
   inputSchema: {
     query: z.string().optional().describe("Case-insensitive match on title / description / company_name."),
-    role: z.string().optional().describe("Role tag, e.g. developer, designer, kol, writer, or platform tag like scribble, zealy."),
+    role: z.string().optional().describe("Role tag, e.g. developer, designer, kol, writer, or platform tag like scribble, zealy, makefun (make.fun), pumpfun (pump.fun)."),
     limit: z.number().int().min(1).max(50).default(20).describe("Max rows to return (1-50)."),
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: true },
