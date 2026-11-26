@@ -19,7 +19,7 @@
       {
         "name": "search_bounties",
         "title": "Search bounties",
-        "description": "Search active crypto bounties and tasks aggregated on rei.chat (Superteam, Zealy, QuestN, Scribble, and others). Filter by keyword, role tag, or platform.",
+        "description": "Search active crypto bounties and tasks aggregated on rei.chat (Superteam, Zealy, QuestN, Scribble, make.fun, pump.fun, and others). Filter by keyword, role tag, or platform.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -34,7 +34,7 @@
               "type": "string"
             },
             "role": {
-              "description": "Role tag, e.g. developer, designer, kol, writer, or platform tag like scribble, zealy.",
+              "description": "Role tag, e.g. developer, designer, kol, writer, or platform tag like scribble, zealy, makefun (make.fun), pumpfun (pump.fun).",
               "type": "string"
             },
             "limit": {
