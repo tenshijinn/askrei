@@ -26,18 +26,19 @@ export const AverageBountyCard = () => {
   return (
     <div className="rounded-xl border-[0.5px] border-white/10 bg-[#141414]/60 backdrop-blur-sm px-5 py-3 min-w-0 lg:min-w-[180px] flex flex-col justify-between">
       <div>
-        <p className="text-[10px] font-mono text-white/40 tracking-wider mb-1 flex items-center gap-1.5">
-          Average Bounty Size
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#ed565a] animate-pulse" aria-hidden="true" />
-        </p>
+        <p className="text-[10px] font-mono text-white/40 tracking-wider mb-1">Average Bounty Size</p>
         <p className="text-2xl font-light text-white/70 tabular-nums whitespace-nowrap">
           {hasAverage ? formatAverageUsd(data.average) : '—'}
         </p>
       </div>
       <p className="text-[10px] font-mono text-white/30 mt-2 leading-snug lg:max-w-[210px]">
-        {hasAverage
-          ? `Average bounty size of ${data.priced} from ${formatAverageUsd(data.highest)} to ${formatAverageUsd(data.lowest)}`
-          : ''}
+        {hasAverage ? (
+          <>
+            Last {data.priced} Bounties Range{' '}
+            <strong className="font-bold text-white/50">{formatAverageUsd(data.highest)}</strong> to{' '}
+            <strong className="font-bold text-white/50">{formatAverageUsd(data.lowest)}</strong>
+          </>
+        ) : null}
       </p>
     </div>
   );
