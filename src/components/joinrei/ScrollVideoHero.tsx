@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { ScrollFadeIn } from './ScrollFadeIn';
+import { AverageBountyCard } from './AverageBountyCard';
 import reiLogo from '@/assets/joinrei/rei-logo.png';
 import reiHero from '@/assets/joinrei/rei-hero.png';
 import twitterVerifiedBadge from '@/assets/joinrei/twitter-verified-badge.png';
@@ -10,23 +11,10 @@ import solanaFoundation from '@/assets/joinrei/logo-bar-solana-foundation.png';
 import txSolAsset from '@/assets/joinrei/tx-sol.png.asset.json';
 import txUsdgAsset from '@/assets/joinrei/tx-usdg.png.asset.json';
 import txUsdcAsset from '@/assets/joinrei/tx-usdc.png.asset.json';
-import platZealy from '@/assets/joinrei/logo-plat-zealy.png.asset.json';
-import platTaskon from '@/assets/joinrei/logo-plat-taskon.png.asset.json';
-import platGalxe from '@/assets/joinrei/logo-plat-galxe.png.asset.json';
-import platScribble from '@/assets/joinrei/logo-plat-scribble.png.asset.json';
-import platSuperteam from '@/assets/joinrei/logo-plat-superteam-earn.png.asset.json';
 import hiwIcon1 from '@/assets/joinrei/rei-icon4.png.asset.json';
 import hiwIcon2 from '@/assets/joinrei/rei-icon2.png.asset.json';
 import hiwIcon3 from '@/assets/joinrei/rei-logo3.png.asset.json';
 import hiwIcon4 from '@/assets/joinrei/rei-icon.png.asset.json';
-
-const PLATFORM_LOGOS = [
-  { src: platZealy.url, alt: 'Zealy' },
-  { src: platTaskon.url, alt: 'TaskOn' },
-  { src: platGalxe.url, alt: 'Galxe' },
-  { src: platScribble.url, alt: 'Scribble' },
-  { src: platSuperteam.url, alt: 'Superteam Earn' },
-];
 
 const HeroPill = ({ label }: { label: string }) => (
   <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-transparent border border-white/20">
@@ -146,40 +134,6 @@ const LatestBountyCard = () => {
     </div>
   );
 };
-
-const PlatformTicker = () => {
-  const [paused, setPaused] = useState(false);
-  return (
-    <div
-      className="rounded-xl border-[0.5px] border-white/10 bg-[#141414]/60 backdrop-blur-sm px-5 py-3 flex-1 min-w-0 overflow-hidden flex flex-col justify-start"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-    >
-      <p className="text-[10px] font-mono text-white/40 tracking-wider mb-2">Now Aggregating</p>
-      <div className="hero-ticker-viewport">
-        <div className="hero-ticker-track" style={{ animationPlayState: paused ? 'paused' : 'running' }}>
-          {[...PLATFORM_LOGOS, ...PLATFORM_LOGOS].map((l, i) => (
-            <img key={i} src={l.src} alt={l.alt} className="h-10 w-auto object-contain opacity-60 shrink-0" />
-          ))}
-        </div>
-      </div>
-      <style>{`
-        .hero-ticker-viewport { overflow: hidden; width: 100%; }
-        .hero-ticker-track {
-          display: flex; align-items: center; gap: 3rem; width: max-content;
-          animation: hero-ticker 40s linear infinite;
-        }
-        @keyframes hero-ticker {
-          from { transform: translateX(0); }
-          to   { transform: translateX(-50%); }
-        }
-      `}</style>
-    </div>
-  );
-};
-
-
-
 
 const SCROLL_FRAME_COUNT = 60;
 const getScrollFrameSrc = (index: number) =>
@@ -481,7 +435,7 @@ const LeftPanelTrack = () => (
         </div>
         <div className="flex items-stretch gap-4">
           <LatestBountyCard />
-          <PlatformTicker />
+          <AverageBountyCard />
         </div>
       </div>
 
@@ -535,7 +489,7 @@ const LeftPanelTrack = () => (
         </div>
         <div className="grid grid-cols-2 gap-2 shrink-0">
           <LatestBountyCard />
-          <PlatformTicker />
+          <AverageBountyCard />
         </div>
       </div>
 
