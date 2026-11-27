@@ -29,6 +29,8 @@ export interface BountyAverage {
   average: number | null;
   priced: number;
   total: number;
+  highest: number | null;
+  lowest: number | null;
 }
 
 export const averageBountyUsd = (
@@ -42,8 +44,10 @@ export const averageBountyUsd = (
     average: values.length ? sum / values.length : null,
     priced: values.length,
     total: sample.length,
+    highest: values.length ? Math.max(...values) : null,
+    lowest: values.length ? Math.min(...values) : null,
   };
 };
 
 export const formatAverageUsd = (n: number): string =>
-  n >= 100_000 ? `$${(n / 1_000).toFixed(0)}K` : `$${Math.round(n).toLocaleString('en-US')}`;
+  n < 1 ? `$${n.toFixed(2)}` : n >= 100_000 ? `$${(n / 1_000).toFixed(0)}K` : `$${Math.round(n).toLocaleString('en-US')}`;

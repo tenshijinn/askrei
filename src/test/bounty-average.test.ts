@@ -16,16 +16,20 @@ describe('average bounty size', () => {
       average: 75,
       priced: 2,
       total: 4,
+      highest: 100,
+      lowest: 50,
     });
   });
 
   it('only looks at the latest 100 bounties', () => {
     const rows = [...Array(100).fill('10 USDC'), '13,000 USDC'];
-    expect(averageBountyUsd(rows)).toEqual({ average: 10, priced: 100, total: 100 });
+    expect(averageBountyUsd(rows)).toEqual({ average: 10, priced: 100, total: 100, highest: 10, lowest: 10 });
   });
 
   it('has no average when nothing is priced', () => {
     expect(averageBountyUsd([null, '300 NOS']).average).toBeNull();
     expect(formatAverageUsd(183.4)).toBe('$183');
+    expect(formatAverageUsd(13000)).toBe('$13,000');
+    expect(formatAverageUsd(0.5)).toBe('$0.50');
   });
 });
