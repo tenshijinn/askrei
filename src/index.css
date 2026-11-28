@@ -148,6 +148,31 @@
   border-color: hsla(0, 0%, 100%, 0.08);
 }
 
+/* Static grain sits in the background paint layer, never above text or media.
+   Match the existing home-only dark surfaces without changing their colors. */
+.home-page {
+  --home-grain-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='grain' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch' seed='17'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='.09'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Cpath fill='none' filter='url(%23grain)' d='M0 0h180v180H0z'/%3E%3C/svg%3E");
+}
+
+.home-page,
+.home-page :is(
+  [class~="bg-black"],
+  [class*="bg-[#0a0a0a]"],
+  [class*="bg-[#0d0d0d]"],
+  [class*="bg-[#0d0d0e]"],
+  [class*="bg-[#0f0f0f]"],
+  [class*="bg-[#111]"],
+  [class*="bg-[#111112]"],
+  [class*="bg-[#131315]"],
+  [class*="bg-[#141414]"],
+  [class*="bg-[#161618]"],
+  [class*="bg-[#181818]"]
+):not(img):not(video) {
+  background-image: var(--home-grain-image);
+  background-size: 180px 180px;
+  background-repeat: repeat;
+}
+
 .rei-theme h1, .rei-theme h2, .rei-theme h3, .rei-theme h4, .rei-theme h5, .rei-theme h6 {
   font-family: 'SF Pro Display', 'Inter', system-ui, sans-serif;
   font-weight: 300;
