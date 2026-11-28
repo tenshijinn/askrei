@@ -1,18 +1,27 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { BOUNTY_AVERAGE_WINDOW, averageBountyUsd, formatAverageUsd } from '@/lib/bountyAverage';
+import { BOUNTY_AVERAGE_WINDOW, averageBountyUsd, formatAverageUsd, highestBountyUsd } from '@/lib/bountyAverage';
 
 const useAverageBounty = () =>
   useQuery({
-    queryKey: ['average-bounty', BOUNTY_AVERAGE_WINDOW],
+    queryKey: ['average-bounty', BOUNTY_AVERAGE_WINDOW, 'highest-30d'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('v_public_tasks')
-        .select('compensation, created_at')
-        .order('created_at', { ascending: false })
-        .limit(BOUNTY_AVERAGE_WINDOW);
-      if (error) throw error;
-      return averageBountyUsd((data ?? []).map((r) => r.compensation));
+      const compensations: Array<string | null> = [];
+      const pageSize = 500;
+      // This view already restricts the feed to the last 30 days.
+      for (let offset = 0; ; offset += pageSize) {
+        const { data, error } = await supabase
+          .from('v_public_tasks')
+          .select('compensation, created_at, id')
+          .order('created_at', { ascending: false })
+          .order('id', { ascending: false })
+          .range(offset, offset + pageSize - 1);
+        if (error) throw error;
+        const rows = data ?? [];
+        compensations.push(...rows.map((row) => row.compensation));
+        if (rows.length < pageSize) break;
+      }
+      return { ...averageBountyUsd(compensations), highest30d: highestBountyUsd(compensations) };
     },
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
@@ -32,11 +41,10 @@ export const AverageBountyCard = () => {
         </p>
       </div>
       <p className="text-[10px] font-mono text-white/30 mt-2 leading-snug lg:max-w-[210px]">
-        {hasAverage ? (
+        {data?.highest30d != null ? (
           <>
-            Last {data.priced} Bounties Range{' '}
-            <strong className="font-bold text-white/50">{formatAverageUsd(data.highest)}</strong> to{' '}
-            <strong className="font-bold text-white/50">{formatAverageUsd(data.lowest)}</strong>
+            Highest 30d bounty:{' '}
+            <strong className="font-bold text-foreground/50">{formatAverageUsd(data.highest30d)}</strong>
           </>
         ) : null}
       </p>

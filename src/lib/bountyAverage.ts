@@ -4,6 +4,14 @@
 
 export const BOUNTY_AVERAGE_WINDOW = 100;
 
+// The public feed contains only available bounties created in the last 30 days.
+// Unlike the average, the highest reward uses the entire feed, not just 100 rows.
+export const highestBountyUsd = (compensations: Array<string | null | undefined>): number | null =>
+  compensations.reduce<number | null>((highest, compensation) => {
+    const value = bountyUsdValue(compensation);
+    return value === null ? highest : highest === null ? value : Math.max(highest, value);
+  }, null);
+
 const DOLLAR_PEGGED = new Set(['USD', 'USDC', 'USDT', 'USDG', 'DAI', 'PYUSD', 'BUSD', 'FDUSD', 'USDP']);
 
 export const bountyUsdValue = (compensation: string | null | undefined): number | null => {

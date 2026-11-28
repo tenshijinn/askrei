@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { averageBountyUsd, bountyUsdValue, formatAverageUsd } from '@/lib/bountyAverage';
+import { averageBountyUsd, bountyUsdValue, formatAverageUsd, highestBountyUsd } from '@/lib/bountyAverage';
 
 describe('average bounty size', () => {
   it('counts dollar and stablecoin rewards at face value', () => {
@@ -24,6 +24,11 @@ describe('average bounty size', () => {
   it('only looks at the latest 100 bounties', () => {
     const rows = [...Array(100).fill('10 USDC'), '13,000 USDC'];
     expect(averageBountyUsd(rows)).toEqual({ average: 10, priced: 100, total: 100, highest: 10, lowest: 10 });
+  });
+
+  it('uses every available 30-day reward for the highest, beyond the average sample', () => {
+    expect(highestBountyUsd([...Array(100).fill('10 USDC'), '13,000 USDC', '100,000 ORDER'])).toBe(13000);
+    expect(highestBountyUsd([null, '300 NOS'])).toBeNull();
   });
 
   it('has no average when nothing is priced', () => {
